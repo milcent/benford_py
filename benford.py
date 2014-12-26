@@ -15,3 +15,9 @@ import matplotlib.pyplot as plt
 
 # create functions to run the tests
 
+def _get_mantissa_(arr, sort=True):
+	m = np.log10(arr) - np.log10(arr).astype(int)
+	if sort==True:
+		return m.sort()
+	else:
+		return m
