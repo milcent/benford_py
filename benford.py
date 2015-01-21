@@ -14,11 +14,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-# create expected Benford distributions for the first digit, the 
-# second digit, and the first two digits
-
-# create functions to run the tests
-
 def _getMantissas_(arr):
 	'''
 	The mantissa is the non-integer part of the log of a number.
@@ -30,30 +25,60 @@ def _getMantissas_(arr):
 
 	return np.log10(arr) - np.log10(arr).astype(int)
 
-# create arrays with expected Benford's distributions
 
-def firstDigit():
+def firstDigit(output_DF=True):
+	'''
+	Returns the expected probabilities of the first digits
+	according to Benford's distribution.
+	
+	- output_DF: Defaluts to Ture, Outputing a pandas Series
+				object with the probabilities and the respective
+				digits as the index, or a numpy array if False.
+	'''
 	a = np.arange(1,10)
-	return np.log10(1 + (1. / a))
+	b = np.log10(1 + (1. / a))
+	if output_DF == False:
+		return b
+	else:
+		return pd.Series(b, index = a)
 
-
-def secondDigit(in_dataFrame=True):
+def secondDigit(output_DF=True):
+	'''
+	Returns the expected probabilities of the second digits
+	according to Benford's distribution.
+	
+	output_DF: Defaluts to Ture, Outputing a pandas DataFrame
+	with the digit as index and the respective probability in
+	the 'prob' column, or a numpy array if False.
+	'''
 	a = np.arange(10,100)
-	probs = np.log10(1 + (1. / a))
+	prob = np.log10(1 + (1. / a))
 	s = np.array(range(10)*9)
-	if in_dataFrame == False:
+	if output_DF == False:
 		c = np.zeros(10)
 		for n in b:
-			c[n] = probs[s == n].sum()
+			c[n] = prob[s == n].sum()
 		return c
 	else:
-		d = pd.DataFrame({'probs': probs, 'secdig': s}, index = a)
+		d = pd.DataFrame({'prob': prob, 'secdig': s}, index = a)
 		return d.groupby('secdig').agg(sum)
 
 
-def firstTwoDigits():
+def firstTwoDigits(output_DF=True):
+	'''
+	Returns the expected probabilities of the first two digits
+	according to Benford's distribution.
+	
+	- output_DF: Defaluts to Ture, Outputing a pandas Series
+				object with the probabilities and the respective
+				digits as the index, or a numpy array if False.
+	'''
 	a = np.arange(10,100)
-	return np.log10(1 + (1. / a))
+	b = np.log10(1 + (1. / a))
+	if output_DF == False:
+		return b
+	else:
+		return pd.Series(b, index = a)
 
 
 def lowUpBounds():
