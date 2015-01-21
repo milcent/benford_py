@@ -37,16 +37,19 @@ def firstDigit():
 	return np.log10(1 + (1. / a))
 
 
-def secondDigit():
+def secondDigit(in_dataFrame=True):
 	a = np.arange(10,100)
-	aa = a.astype(str)
-	s = np.array([l[1] for l in aa]).astype(int)
-	b = np.arange(0,10)
 	probs = np.log10(1 + (1. / a))
-	c = np.zeros(10)
-	for n in b:
-		c[n] = probs[s == n].sum()
-	return c
+	s = np.array(range(10)*9)
+	if in_dataFrame == False:
+		c = np.zeros(10)
+		for n in b:
+			c[n] = probs[s == n].sum()
+		return c
+	else:
+		d = pd.DataFrame({'probs': probs, 'secdig': s}, index = a)
+		return d.groupby('secdig').agg(sum)
+
 
 def firstTwoDigits():
 	a = np.arange(10,100)
