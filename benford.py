@@ -17,10 +17,10 @@ import matplotlib.pyplot as plt
 def _getMantissas_(arr):
 	'''
 	The mantissa is the non-integer part of the log of a number.
-	This fuction uses the element-wise array operations on numpy
+	This fuction uses the element-wise array operations of numpy
 	to get the mantissas of each number's log.
 
-	arr: np.array of integers or floats >>> np.array of floats
+	arr: np.array of integers or floats ---> np.array of floats
 	'''
 
 	return np.log10(arr) - np.log10(arr).astype(int)
