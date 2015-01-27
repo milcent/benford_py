@@ -14,7 +14,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-def _getMantissas_(arr):
+
+
+def __getMantissas__(arr):
 	'''
 	The mantissa is the non-integer part of the log of a number.
 	This fuction uses the element-wise array operations of numpy
@@ -26,7 +28,7 @@ def _getMantissas_(arr):
 	return np.log10(arr) - np.log10(arr).astype(int)
 
 
-def firstDigit(output_DF=True):
+def __first__(output_DF=True):
 	'''
 	Returns the expected probabilities of the first digits
 	according to Benford's distribution.
@@ -47,7 +49,7 @@ def firstDigit(output_DF=True):
 		return pd.DataFrame({'Expected':Expected,\
 			'First_Dig':First_Dig}).set_index('First_Dig')
 
-def secondDigit(output_DF=True):
+def __second__(output_DF=True):
 	'''
 	Returns the expected probabilities of the second digits
 	according to Benford's distribution.
@@ -73,14 +75,18 @@ def secondDigit(output_DF=True):
 		return d.groupby('Sec_Dig').agg(sum)
 
 
-def firstTwoDigits(output_DF=True):
+def __firstTwo__(output_DF=True):
 	'''
 	Returns the expected probabilities of the first two digits
 	according to Benford's distribution.
 	
 	- output_DF: Defaluts to Ture, Outputing a pandas DataFrame
 				object with the probabilities and the respective
-				digits as the index, or a numpy array if False.
+				digits as the index, or a numpy array if False, when
+				there will not be an index column, and one must
+				remember that the indexing for the 10 probability
+				will be [0], [1] for 11, and so on up untill [89] for
+				the probability of the first digit 99.
 	'''
 	First_2_Dig = np.arange(10,100)
 	Expected = np.log10(1 + (1. / First_2_Dig))
@@ -91,18 +97,47 @@ def firstTwoDigits(output_DF=True):
 			'Expected':Expected}).set_index('First_2_Dig')
 
 
-def lowUpBounds():
+def __lowUpBounds__():
 
-def ________(arr, digits=2, dropLowerTen=True):
-	arr.sort()
+
+def firstTwoDigits(arr, dropLowerTen=True, lowUpBounds=True, plot=True):
+	'''
+	Performs the First Two Digits test with the series of numbers provided.
+
+	'''
+	# Ensure we are dealing with a pandas Series object
+	arr = pd.Series(arr)
+	# Handle numbers < 10
 	if dropLowerTen == False:
 		# Multiply by constant to make all number with at least two
-		# digits left from the floating point.
+		# digits at the left of the floating point.
 		# Take the second [1] element, should the first be 0, invert it
 		# and use the number of digits at the left to generate the power
 		# to elevate 10
-		p = len(str((1/arr[1]).astype(int)))	
-		arr *= 10**(p+1)
+		p = len(str((1/arr[1]).astype(int))) + 1	
+		arr *= 10**p
+		print "The whole sequence was multiplied by " + str(10**p)\
+		+ " to ensure that there is no number lower than ten left."
 	else:
-		arr = arr[arr>=10]
+		n = len(arr[arr<10])			# number of values < 10
+		p = float(n)/len(arr) * 100		# and their proportion
+		arr = arr[arr>=10]				# Discard all < 10
+		print "Discarded " + str(n) + " values lower than 10, corresponding to "\
+		+ str(p) + " percent of the sample."
+	# convert into string, take the first two digits, and then convert
+	# back to integer 		
+	arr = arr.apply(str).apply(lambda x: x[:2]).apply(int)
+	# get the number of occurrences of the first two digits
+	v = arr.value_counts()
+	# get their relative frequencies
+	p = arr.value_counts(normalize =True)
+	# crate dataframe from them
+	df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
+	# reindex from 10 to 99 if one of the first two digits are missing
+	# so the Expected frequencies column can later be joined
+	if len(df.index<90):
+		df = df.reindex(np.arange(10,100))
+	# join the dataframe with the one of expected Benford's frequencies
+	df = __firstTwo__().join(df)
+	# calculate the Z-test
 
