@@ -93,7 +93,7 @@ def __firstTwo__(output_DF=True):
 	if output_DF == False:
 		return Expected
 	else:
-		return return pd.DataFrame({'First_2_Dig':First_2_Dig,\
+		return pd.DataFrame({'First_2_Dig':First_2_Dig,\
 			'Expected':Expected}).set_index('First_2_Dig')
 
 
@@ -105,8 +105,8 @@ def firstTwoDigits(arr, dropLowerTen=True, lowUpBounds=True, plot=True):
 	Performs the First Two Digits test with the series of numbers provided.
 
 	'''
-	# Ensure we are dealing with a pandas Series object
-	arr = pd.Series(arr)
+	# Ensure we are dealing with a pandas Series object and no missing values
+	arr = pd.Series(arr).dropna()
 	# Handle numbers < 10
 	if dropLowerTen == False:
 		# Multiply by constant to make all number with at least two
@@ -133,11 +133,20 @@ def firstTwoDigits(arr, dropLowerTen=True, lowUpBounds=True, plot=True):
 	p = arr.value_counts(normalize =True)
 	# crate dataframe from them
 	df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
-	# reindex from 10 to 99 if one of the first two digits are missing
-	# so the Expected frequencies column can later be joined
+	# reindex from 10 to 99 if one of the first two digits are
+	# missing so the Expected frequencies column can later be
+	# joined, and fill NANs with 0
 	if len(df.index<90):
-		df = df.reindex(np.arange(10,100))
+		df = df.reindex(np.arange(10,100)).fillna(0)
 	# join the dataframe with the one of expected Benford's frequencies
 	df = __firstTwo__().join(df)
-	# calculate the Z-test
+	N = len(arr)
+	# create column with absolute differences
+	df['AbsDif'] = np.absolute(df.Found - df.Expected)
+	# calculate the Z-test colum
+	df['Z'] = (df.AbsDif - (1/2*N))/(np.sqrt(df.Expected*\
+		(1-df.Expected/N)))
+	# Mean absolute difference
+	MAD = df.Z.mean()
+
 
