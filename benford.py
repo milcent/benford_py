@@ -97,28 +97,8 @@ def __firstTwo__(output_DF=True):
 			'Expected':Expected}).set_index('First_2_Dig')
 
 
-def __MAD__(df):
-	'''
-	'''
-	try:
-		return df.AbsDif.mean()
-	except:
-		df['AbsDif'] = np.absolute(df.Found-df.Expected)
-		return df.AbsDif.mean()
-
-
-def __Z_test__(df):
-	'''
-	'''
-	N = len(df)
-	return (df.Abs_Dif - (1/2*N))/(np.sqrt(df.Expected*\
-		(1-df.Expected)/N))
-
-
-def __lowUpBounds__():
-
-
-def firstTwoDigits(arr, dropLowerTen=True, lowUpBounds=True, plot=True):
+def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
+	MSE=False, lowUpBounds=True, plot=True):
 	'''
 	Performs the First Two Digits test with the series of numbers provided.
 
@@ -162,13 +142,17 @@ def firstTwoDigits(arr, dropLowerTen=True, lowUpBounds=True, plot=True):
 	# create column with absolute differences
 	df['AbsDif'] = np.absolute(df.Found - df.Expected)
 	# calculate the Z-test colum
-	df['Z_test'] = (df.AbsDif - (1/2*N))/(np.sqrt(df.Expected*\
+	if Z_test == True:
+		df['Z_test'] = (df.AbsDif - (1/2*N))/(np.sqrt(df.Expected*\
 		(1-df.Expected/N)))
 	# Mean absolute difference
-	MAD = df.AbsDif.mean()
-	print "Mean Absolute Deviation = " + str(MAD)
+	if MAD == True:
+		mad = df.AbsDif.mean()
+		print "Mean Absolute Deviation = " + str(mad)
 	#Mean Square Error
-	MSE = (df.AbsDif**2).mean()
-	print "Mean Squar Error = " + str(MSE)
+	if MSE == False:
+		mse = (df.AbsDif**2).mean()
+		print "Mean Square Error = " + str(mse)
+
 
 
