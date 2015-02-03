@@ -98,7 +98,7 @@ def __firstTwo__(output_DF=True):
 
 
 def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
-	MSE=False, lowUpBounds=True, plot=True):
+	MSE=False, plot=True, lowUpBounds=True):
 	'''
 	Performs the First Two Digits test with the series of numbers provided.
 
@@ -141,18 +141,31 @@ def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
 	N = len(arr)
 	# create column with absolute differences
 	df['AbsDif'] = np.absolute(df.Found - df.Expected)
-	# calculate the Z-test colum
+	# calculate the Z-test column
 	if Z_test == True:
 		df['Z_test'] = (df.AbsDif - (1/2*N))/(np.sqrt(df.Expected*\
-		(1-df.Expected/N)))
+		(1-df.Expected)/N))
 	# Mean absolute difference
 	if MAD == True:
 		mad = df.AbsDif.mean()
 		print "Mean Absolute Deviation = " + str(mad)
 	#Mean Square Error
-	if MSE == False:
+	if MSE == True:
 		mse = (df.AbsDif**2).mean()
 		print "Mean Square Error = " + str(mse)
+	if plot == True:
+		fig = plt.figure(figsize=(15,10))
+		ax = fig.add_subplot(111)
+		ax.bar(df.index, df.Found)
+		ax.plot(df.index,df.Expected, color='g',linewidth=2.5)
+		if lowUpBounds == True:
+			sig_5 = 1.96 * np.sqrt(df.Expected*(1-df.Expected)/N)
+			upper = df.Expected + sig_5 + (1/(2*N))
+			lower = df.Expected - sig_5 - (1/(2*N))
+			ax.plot(df.index, upper, color= 'r')
+			ax.plot(df.index, lower, color= 'r')
+			ax.fill_between(df2.index, upper,lower, color='r', alpha=.3)
+		
 
 
 
