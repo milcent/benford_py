@@ -134,7 +134,7 @@ def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
 	# reindex from 10 to 99 if one of the first two digits are
 	# missing so the Expected frequencies column can later be
 	# joined, and fill NANs with 0
-	if len(df.index<90):
+	if len(df.index) < 90:
 		df = df.reindex(np.arange(10,100)).fillna(0)
 	# join the dataframe with the one of expected Benford's frequencies
 	df = __firstTwo__().join(df)
@@ -149,15 +149,22 @@ def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
 	if MAD == True:
 		mad = df.AbsDif.mean()
 		print "Mean Absolute Deviation = " + str(mad)
-	#Mean Square Error
+	# Mean Square Error
 	if MSE == True:
 		mse = (df.AbsDif**2).mean()
 		print "Mean Square Error = " + str(mse)
+	# Plotting the expected frequncies (line) against the found ones(bars)
 	if plot == True:
 		fig = plt.figure(figsize=(15,10))
 		ax = fig.add_subplot(111)
-		ax.bar(df.index, df.Found)
-		ax.plot(df.index,df.Expected, color='g',linewidth=2.5)
+		ax.title('Expected versus Found Distributions')
+		ax.xlabel('First Two Digits')
+		ax.ylabel('Distribution (%)')
+		ax.bar(df.index, df.Found * 100., label='Found')
+		ax.plot(df.index,df.Expected * 100., color='g',linewidth=2.5,\
+		 label='Expected')
+		ax.legend()
+		# Plotting the Upper and Lower bounds considering p=0.05
 		if lowUpBounds == True:
 			sig_5 = 1.96 * np.sqrt(df.Expected*(1-df.Expected)/N)
 			upper = df.Expected + sig_5 + (1/(2*N))
@@ -165,7 +172,7 @@ def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
 			ax.plot(df.index, upper, color= 'r')
 			ax.plot(df.index, lower, color= 'r')
 			ax.fill_between(df2.index, upper,lower, color='r', alpha=.3)
-		
+		plt.show()
 
 
 
