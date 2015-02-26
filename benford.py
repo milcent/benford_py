@@ -98,7 +98,7 @@ def __firstTwo__(output_DF=True):
 
 
 def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
-	MSE=False, plot=True, lowUpBounds=True):
+	MSE=False, plot=True):
 	'''
 	Performs the First Two Digits test with the series of numbers provided.
 
@@ -107,7 +107,7 @@ def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
 	arr = pd.Series(arr).dropna()
 	# Handle numbers < 10
 	if dropLowerTen == False:
-		# Multiply by constant to make all number with at least two
+		# Multiply by constant to make all numbers with at least two
 		# digits at the left of the floating point.
 		# Take the second [1] element, should the first be 0, invert it
 		# and use the number of digits at the left to generate the power
@@ -145,34 +145,45 @@ def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
 	if Z_test == True:
 		df['Z_test'] = (df.AbsDif - (1/2*N))/(np.sqrt(df.Expected*\
 		(1-df.Expected)/N))
+		print 'The 15 highest Z scores are:/n'
+		print df[['Expected','Found','Z_test']].sort('Z_test',\
+		 ascending=False).head(15)
 	# Mean absolute difference
 	if MAD == True:
 		mad = df.AbsDif.mean()
-		print "Mean Absolute Deviation = " + str(mad)
+		print "Mean Absolute Deviation = " + str(mad) + '/n'\
+		+ 'For the First Two Digits:/n\
+		- 0.0000 to 0.0012: Close Conformity/n\
+		- 0.0012 to 0.0018: Acceptable Conformity/n\
+		- 0.0018 to 0.0022: Marginally Acceptable Conformity\
+		- > 0.0022: Nonconformity'
 	# Mean Square Error
 	if MSE == True:
 		mse = (df.AbsDif**2).mean()
 		print "Mean Square Error = " + str(mse)
 	# Plotting the expected frequncies (line) against the found ones(bars)
 	if plot == True:
-		fig = plt.figure(figsize=(15,10))
-		ax = fig.add_subplot(111)
-		ax.title('Expected versus Found Distributions')
-		ax.xlabel('First Two Digits')
-		ax.ylabel('Distribution (%)')
-		ax.bar(df.index, df.Found * 100., label='Found')
-		ax.plot(df.index,df.Expected * 100., color='g',linewidth=2.5,\
-		 label='Expected')
-		ax.legend()
-		# Plotting the Upper and Lower bounds considering p=0.05
-		if lowUpBounds == True:
-			sig_5 = 1.96 * np.sqrt(df.Expected*(1-df.Expected)/N)
-			upper = df.Expected + sig_5 + (1/(2*N))
-			lower = df.Expected - sig_5 - (1/(2*N))
-			ax.plot(df.index, upper, color= 'r')
-			ax.plot(df.index, lower, color= 'r')
-			ax.fill_between(df2.index, upper,lower, color='r', alpha=.3)
-		plt.show()
+		__plot_benford__(df, N=N)
+
+def __plot_benford__(df, N,lowUpBounds = True):		
+	fig = plt.figure(figsize=(15,10))
+	ax = fig.add_subplot(111)
+	ax.title('Expected versus Found Distributions')
+	ax.xlabel('First Two Digits')
+	ax.ylabel('Distribution (%)')
+	ax.bar(df.index, df.Found * 100., label='Found')
+	ax.plot(df.index,df.Expected * 100., color='g',linewidth=2.5,\
+	 label='Expected')
+	ax.legend()
+	# Plotting the Upper and Lower bounds considering p=0.05
+	if lowUpBounds == True:
+		sig_5 = 1.96 * np.sqrt(df.Expected*(1-df.Expected)/N)
+		upper = df.Expected + sig_5 + (1/(2*N))
+		lower = df.Expected - sig_5 - (1/(2*N))
+		ax.plot(df.index, upper, color= 'r')
+		ax.plot(df.index, lower, color= 'r')
+		ax.fill_between(df2.index, upper,lower, color='r', alpha=.3)
+	plt.show()
 
 
 
