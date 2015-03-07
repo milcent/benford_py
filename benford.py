@@ -97,14 +97,28 @@ def __firstTwo__(output_DF=True):
 			'Expected':Expected}).set_index('First_2_Dig')
 
 
+def __sanitize__(arr):
+	'''
+	Prepares the series to enter the test functions, in case pandas
+	has not inferred the type to be float, especially when parsing
+	from latin datases which use '.' for thousands and ',' for the
+	floating point.
+	'''
+	arr = pd.Series(arr).dropna()
+
+	if not isinstance(arr[0:1],float):
+		arr = arr.apply(str).apply(lambda x: x.replace('.','')).apply(lambda x:\
+		 x.replace(',','.')).apply(float)
+
+	return arr
+
 def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
 	MSE=False, plot=True):
 	'''
 	Performs the First Two Digits test with the series of numbers provided.
 
 	'''
-	# Ensure we are dealing with a pandas Series object and no missing values
-	arr = pd.Series(arr).dropna()
+	arr = __sanitize__(arr)
 	# Handle numbers < 10
 	if dropLowerTen == False:
 		# Multiply by constant to make all numbers with at least two
@@ -112,7 +126,7 @@ def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
 		# Take the second [1] element, should the first be 0, invert it
 		# and use the number of digits at the left to generate the power
 		# to elevate 10
-		p = len(str((1/arr[1]).astype(int))) + 1	
+		p = len(str((1/arr[1:2]).astype(int))) + 1	
 		arr *= 10**p
 		print "The whole sequence was multiplied by " + str(10**p)\
 		+ " to ensure that there is no number lower than ten left."
@@ -121,7 +135,7 @@ def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
 		p = float(n)/len(arr) * 100		# and their proportion
 		arr = arr[arr>=10]				# Discard all < 10
 		print "Discarded " + str(n) + " values lower than 10, corresponding to "\
-		+ str(p) + " percent of the sample."
+		+ str(np.round(p,2)) + " percent of the sample."
 	# convert into string, take the first two digits, and then convert
 	# back to integer 		
 	arr = arr.apply(str).apply(lambda x: x[:2]).apply(int)
@@ -145,34 +159,36 @@ def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
 	if Z_test == True:
 		df['Z_test'] = (df.AbsDif - (1/2*N))/(np.sqrt(df.Expected*\
 		(1-df.Expected)/N))
-		print 'The 15 highest Z scores are:/n'
+		print '\nThe 15 highest Z scores are:\n'
 		print df[['Expected','Found','Z_test']].sort('Z_test',\
 		 ascending=False).head(15)
 	# Mean absolute difference
 	if MAD == True:
 		mad = df.AbsDif.mean()
-		print "Mean Absolute Deviation = " + str(mad) + '/n'\
-		+ 'For the First Two Digits:/n\
-		- 0.0000 to 0.0012: Close Conformity/n\
-		- 0.0012 to 0.0018: Acceptable Conformity/n\
-		- 0.0018 to 0.0022: Marginally Acceptable Conformity\
+		print "\nMean Absolute Deviation = " + str(mad) + '\n'\
+		+ 'For the First Two Digits:\n\
+		- 0.0000 to 0.0012: Close Conformity\n\
+		- 0.0012 to 0.0018: Acceptable Conformity\n\
+		- 0.0018 to 0.0022: Marginally Acceptable Conformity\n\
 		- > 0.0022: Nonconformity'
 	# Mean Square Error
 	if MSE == True:
 		mse = (df.AbsDif**2).mean()
-		print "Mean Square Error = " + str(mse)
+		print "\nMean Square Error = " + str(mse)
 	# Plotting the expected frequncies (line) against the found ones(bars)
 	if plot == True:
 		__plot_benford__(df, N=N)
+	
+	return df
 
 def __plot_benford__(df, N,lowUpBounds = True):		
 	fig = plt.figure(figsize=(15,10))
 	ax = fig.add_subplot(111)
-	ax.title('Expected versus Found Distributions')
-	ax.xlabel('First Two Digits')
-	ax.ylabel('Distribution (%)')
-	ax.bar(df.index, df.Found * 100., label='Found')
-	ax.plot(df.index,df.Expected * 100., color='g',linewidth=2.5,\
+	plt.title('Expected versus Found Distributions')
+	plt.xlabel('First Two Digits')
+	plt.ylabel('Distribution')
+	ax.bar(df.index, df.Found, label='Found')
+	ax.plot(df.index,df.Expected, color='g',linewidth=2.5,\
 	 label='Expected')
 	ax.legend()
 	# Plotting the Upper and Lower bounds considering p=0.05
@@ -182,7 +198,7 @@ def __plot_benford__(df, N,lowUpBounds = True):
 		lower = df.Expected - sig_5 - (1/(2*N))
 		ax.plot(df.index, upper, color= 'r')
 		ax.plot(df.index, lower, color= 'r')
-		ax.fill_between(df2.index, upper,lower, color='r', alpha=.3)
+		ax.fill_between(df.index, upper,lower, color='r', alpha=.3)
 	plt.show()
 
 
