@@ -115,7 +115,23 @@ def __sanitize__(arr):
 def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
 	MSE=False, plot=True):
 	'''
-	Performs the First Two Digits test with the series of numbers provided.
+	Performs the Benford First Two Digits test with the series of
+	numbers provided.
+
+	arr -> sequence of numbers to apply the test on.
+
+	dropLowerTen ->  option to diecard numbers lower than 10, so as to 
+	keep the tested numbers with two first digits; defaults to True.
+
+	MAD -> calculates the Mean of the Absolute Differences from the respective
+	expected distributions; defaults to True.
+
+	Z_test -> calculates the Z test of the sample; defaluts to True.
+
+	MSE -> calculate the Mean Square Error of the sample; defaluts to False.
+
+	plot -> draws the plot of test for visual comparison, with the found
+	distributions in bars and the expected ones in a line.
 
 	'''
 	arr = __sanitize__(arr)
@@ -128,14 +144,16 @@ def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
 		# to elevate 10
 		p = len(str((1/arr[1:2]).astype(int))) + 1	
 		arr *= 10**p
-		print "The whole sequence was multiplied by " + str(10**p)\
-		+ " to ensure that there is no number lower than ten left."
+		print "---The whole sequence was multiplied by " + str(10**p)\
+		+ " to ensure that there is no number lower than ten left.---"
 	else:
 		n = len(arr[arr<10])			# number of values < 10
 		p = float(n)/len(arr) * 100		# and their proportion
 		arr = arr[arr>=10]				# Discard all < 10
-		print "Discarded " + str(n) + " values lower than 10, corresponding to "\
-		+ str(np.round(p,2)) + " percent of the sample."
+		print "---Discarded " + str(n) + " values lower than 10, corresponding to "\
+		+ str(np.round(p,2)) + " percent of the sample.---"
+	N = len(arr)
+	print "\n---Performing test on " str(N) + "registries.---\n"
 	# convert into string, take the first two digits, and then convert
 	# back to integer 		
 	arr = arr.apply(str).apply(lambda x: x[:2]).apply(int)
@@ -145,17 +163,17 @@ def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
 	p = arr.value_counts(normalize =True)
 	# crate dataframe from them
 	df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
-	# reindex from 10 to 99 if one of the first two digits are
-	# missing so the Expected frequencies column can later be
-	# joined, and fill NANs with 0
+	# reindex from 10 to 99 in the case one or more of the first
+	# two digits are missing, so the Expected frequencies column
+	# can later be joined; and swap NANs with zeros.
 	if len(df.index) < 90:
 		df = df.reindex(np.arange(10,100)).fillna(0)
 	# join the dataframe with the one of expected Benford's frequencies
 	df = __firstTwo__().join(df)
-	N = len(arr)
 	# create column with absolute differences
 	df['AbsDif'] = np.absolute(df.Found - df.Expected)
-	# calculate the Z-test column
+	# calculate the Z-test column an display the dataframe by descending
+	# Z test
 	if Z_test == True:
 		df['Z_test'] = (df.AbsDif - (1/2*N))/(np.sqrt(df.Expected*\
 		(1-df.Expected)/N))
