@@ -17,7 +17,9 @@ import matplotlib.pyplot as plt
 
 class Benford(pd.DataFrame):
 
-	def __init__(self, ):
+	def __init__(self, data):
+		self.data = _sanitize_(data)
+		self.
 
 		
 
@@ -102,7 +104,7 @@ def __firstTwo__(output_DF=True):
 			'Expected':Expected}).set_index('First_2_Dig')
 
 
-def __sanitize__(arr):
+def _sanitize_(arr):
 	'''
 	Prepares the series to enter the test functions, in case pandas
 	has not inferred the type to be float, especially when parsing
@@ -139,7 +141,7 @@ def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
 	distributions in bars and the expected ones in a line.
 
 	'''
-	arr = __sanitize__(arr)
+	arr = _sanitize_(arr)
 	# Handle numbers < 10
 	if dropLowerTen == False:
 		# Multiply by constant to make all numbers with at least two
