@@ -20,7 +20,7 @@ class Benford(pd.DataFrame):
 	results = {}
 
 	def __init__(self, data):
-		pd.DataFrame.__init__(self, {'Seq': data})
+		pd.DataFrame.__init__(self, {'Seq': _sanitize_(data)})
 		print "Initialized sequence with " + str(len(self)) + " registries."
 
 	def firstTwoDigits(self, dropLowerTen=True, MAD=True, Z_test=True,\
@@ -107,9 +107,12 @@ class Benford(pd.DataFrame):
 		return df
 		
 
-def _Z_test(frame,N):
-	return (frame.AbsDif - (1/2*N))/(np.sqrt(frame.Expected*\
-		(1-frame.Expected)/N))
+	def _Z_test(self,N):
+		return (self.AbsDif - (1/2*N))/(np.sqrt(self.Expected*\
+			(1-self.Expected)/N))
+		print '\nThe 15 highest Z scores are:\n'
+		print self[['Expected','Found','Z_test']].sort('Z_test',\
+			 ascending=False).head(15)
 
 def _mad_(frame):
 	return frame.AbsDif.mean()
