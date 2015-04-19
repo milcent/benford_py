@@ -23,8 +23,16 @@ class Benford(pd.DataFrame):
 		pd.DataFrame.__init__(self, {'Seq': _sanitize_(data)})
 		print "Initialized sequence with " + str(len(self)) + " registries."
 
-	def firstTwoDigits(self, dropLowerTen=True, MAD=True, Z_test=True,\
-		MSE=False, plot=True):
+	def prepare(self):
+		self['FD'] = self.Seq.apply(lambda x: x[:1]).apply(tint)
+		self['SD'] = self.Seq.apply(lambda x: x[1:2]).apply(tint)
+		self['FTD'] = self.Seq.apply(lambda x: x[:2]).apply(tint)
+		self['LTD'] = self.Seq.apply(lambda x: x[-2:])
+		self = self.dropna()
+		self = self[self.FTD>=10]
+
+
+	def firstTwoDigits(self, MAD=True, Z_test=True, top_Z=20, MSE=False, plot=True):
 		'''
 		Performs the Benford First Two Digits test with the series of
 		numbers provided.
@@ -43,39 +51,20 @@ class Benford(pd.DataFrame):
 		distributions in bars and the expected ones in a line.
 
 		'''
-		# Handle numbers < 10
-		if dropLowerTen == False:
-			# Multiply by constant to make all numbers with at least two
-			# digits at the left of the floating point.
-			# Take the second [1] element, should the first be 0, invert it
-			# and use the number of digits at the left to generate the power
-			# to elevate 10
-			p = len(str((1/self.Seq[1:2]).astype(int))) + 1	
-			self *= 10**p
-			print "---The whole sequence was multiplied by " + str(10**p)\
-			+ " to ensure that there is no number lower than ten left.---"
-		else:
-			n = len(self[self.Seq<10])			# number of values < 10
-			p = float(n)/len(self) * 100		# and their proportion
-			self = self[self.Seq>=10]				# Discard all < 10
-			print "---Discarded " + str(n) + " values lower than 10, corresponding to "\
-			+ str(np.round(p,2)) + " percent of the sample.---"
 		N = len(self)
+		x = np.arange(10,100)
 		print "\n---Performing test on " + str(N) + " registries.---\n"
-		# convert into string, take the first two digits, and then convert
-		# back to integer 		
-		self.Seq = self.Seq.apply(str).apply(lambda x: x[:2]).apply(int)
 		# get the number of occurrences of the first two digits
-		v = self.Seq.value_counts()
+		v = self.FTD.value_counts()
 		# get their relative frequencies
-		p = self.Seq.value_counts(normalize =True)
+		p = self.FTD.value_counts(normalize =True)
 		# crate dataframe from them
 		df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
 		# reindex from 10 to 99 in the case one or more of the first
 		# two digits are missing, so the Expected frequencies column
 		# can later be joined; and swap NANs with zeros.
 		if len(df.index) < 90:
-			df = df.reindex(np.arange(10,100)).fillna(0)
+			df = df.reindex(x).fillna(0)
 		# join the dataframe with the one of expected Benford's frequencies
 		df = _firstTwo_().join(df)
 		# create column with absolute differences
@@ -84,9 +73,9 @@ class Benford(pd.DataFrame):
 		# Z test
 		if Z_test == True:
 			df['Z_test'] = _Z_test(df,N)	
-			print '\nThe 15 highest Z scores are:\n'
+			print '\nThe top ' + str(top_Z) + ' Z scores are:\n'
 			print df[['Expected','Found','Z_test']].sort('Z_test',\
-			 ascending=False).head(15)
+			 ascending=False).head(top_Z)
 		# Mean absolute difference
 		if MAD == True:
 			mad = _mad_(df)
@@ -95,14 +84,14 @@ class Benford(pd.DataFrame):
 			- 0.0000 to 0.0012: Close Conformity\n\
 			- 0.0012 to 0.0018: Acceptable Conformity\n\
 			- 0.0018 to 0.0022: Marginally Acceptable Conformity\n\
-			- > 0.0022: Nonconformity'
+			- Above 0.0022: Nonconformity'
 		# Mean Square Error
 		if MSE == True:
 			mse = _mse_(df)
 			print "\nMean Square Error = " + str(mse)
 		# Plotting the expected frequncies (line) against the found ones(bars)
 		if plot == True:
-			_plot_benford_(df, N)
+			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
 
 		return df
 
@@ -124,22 +113,18 @@ class Benford(pd.DataFrame):
 		'''
 
 		N = len(self)
+		x = np.arange(1,10)
 		print "\n---Performing test on " + str(N) + " registries.---\n"
-		# convert into string, take the first two digits, and then convert
-		# back to integer 		
-		self.Seq = self.Seq *100
-		self.Seq.apply(str).apply(lambda x: x[:1]).apply(int)
 		# get the number of occurrences of the first two digits
-		v = self.Seq.value_counts()
+		v = self.FD.value_counts()
 		# get their relative frequencies
-		p = self.Seq.value_counts(normalize =True)
+		p = self.FD.value_counts(normalize =True)
 		# crate dataframe from them
 		df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
 		# reindex from 10 to 99 in the case one or more of the first
 		# two digits are missing, so the Expected frequencies column
 		# can later be joined; and swap NANs with zeros.
-		if len(df.index) < 9:
-			df = df.reindex(np.arange(1,10)).fillna(0)
+
 		# join the dataframe with the one of expected Benford's frequencies
 		df = _first_().join(df)
 		# create column with absolute differences
@@ -147,7 +132,10 @@ class Benford(pd.DataFrame):
 		# calculate the Z-test column an display the dataframe by descending
 		# Z test
 		if Z_test == True:
-			df['Z_test'] = _Z_test(df,N)	
+			df['Z_test'] = _Z_test(df,N)
+			print '\nThe highest Z scores are:\n'
+			print df[['Expected','Found','Z_test']].sort('Z_test',\
+			 ascending=False)
 		# Mean absolute difference
 		if MAD == True:
 			mad = _mad_(df)
@@ -156,23 +144,143 @@ class Benford(pd.DataFrame):
 			- 0.0000 to 0.0006: Close Conformity\n\
 			- 0.0006 to 0.0012: Acceptable Conformity\n\
 			- 0.0012 to 0.0015: Marginally Acceptable Conformity\n\
-			- More than 0.0015: Nonconformity'
+			- Above 0.0015: Nonconformity'
 		# Mean Square Error
 		if MSE == True:
 			mse = _mse_(df)
 			print "\nMean Square Error = " + str(mse)
 		# Plotting the expected frequncies (line) against the found ones(bars)
 		if plot == True:
-			_plot_benford_(df, N)
+			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
 
 		return df
+
+	def secondDigit(self, MAD=True, Z_test=True, MSE=False, plot=True):
+		'''
+		Performs the Benford First Digit test with the series of
+		numbers provided.
+
+		MAD -> calculates the Mean of the Absolute Differences from the respective
+		expected distributions; defaults to True.
+
+		Z_test -> calculates the Z test of the sample; defaluts to True.
+
+		MSE -> calculate the Mean Square Error of the sample; defaluts to False.
+
+		plot -> draws the plot of test for visual comparison, with the found
+		distributions in bars and the expected ones in a line.
+
+		'''
+
+		N = len(self)
+		x = np.arange(0,10)
+		print "\n---Performing test on " + str(N) + " registries.---\n"
+		# get the number of occurrences of the first two digits
+		v = self.SD.value_counts()
+		# get their relative frequencies
+		p = self.SD.value_counts(normalize =True)
+		# crate dataframe from them
+		df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
+		# reindex from 10 to 99 in the case one or more of the first
+		# two digits are missing, so the Expected frequencies column
+		# can later be joined; and swap NANs with zeros.
+
+		# join the dataframe with the one of expected Benford's frequencies
+		df = _second_().join(df)
+		# create column with absolute differences
+		df['AbsDif'] = np.absolute(df.Found - df.Expected)
+		# calculate the Z-test column an display the dataframe by descending
+		# Z test
+		if Z_test == True:
+			df['Z_test'] = _Z_test(df,N)
+			print '\nThe highest Z scores are:\n'
+			print df[['Expected','Found','Z_test']].sort('Z_test',\
+			 ascending=False)
+		# Mean absolute difference
+		if MAD == True:
+			mad = _mad_(df)
+			print "\nThe Mean Absolute Deviation is " + str(mad) + '\n'\
+			+ 'For the Second DigitS:\n\
+			- 0.0000 to 0.0008: Close Conformity\n\
+			- 0.0008 to 0.0010: Acceptable Conformity\n\
+			- 0.0010 to 0.0012: Marginally Acceptable Conformity\n\
+			- Above 0.0012: Nonconformity'
+		# Mean Square Error
+		if MSE == True:
+			mse = _mse_(df)
+			print "\nMean Square Error = " + str(mse)
+		# Plotting the expected frequncies (line) against the found ones(bars)
+
+		if plot == True:
+			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
+
+		return df
+
+	def lastTwoDigits(self, MAD=False, Z_test=True, top_Z=20, MSE=False, plot=True):
+		'''
+		Performs the Benford First Digit test with the series of
+		numbers provided.
+
+		MAD -> calculates the Mean of the Absolute Differences from the respective
+		expected distributions; defaults to True.
+
+		Z_test -> calculates the Z test of the sample; defaluts to True.
+
+		MSE -> calculate the Mean Square Error of the sample; defaluts to False.
+
+		plot -> draws the plot of test for visual comparison, with the found
+		distributions in bars and the expected ones in a line.
+
+		'''
+
+		N = len(self)
+		x = np.arange(0,100)
+		print "\n---Performing test on " + str(N) + " registries.---\n"
+		# get the number of occurrences of the first two digits
+		v = self.LTD.value_counts()
+		# get their relative frequencies
+		p = self.LTD.value_counts(normalize =True)
+		# crate dataframe from them
+		df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
+		# reindex from 10 to 99 in the case one or more of the first
+		# two digits are missing, so the Expected frequencies column
+		# can later be joined; and swap NANs with zeros.
+
+		# join the dataframe with the one of expected Benford's frequencies
+		df = _lastTwo_().join(df)
+		# create column with absolute differences
+		df['AbsDif'] = np.absolute(df.Found - df.Expected)
+		# calculate the Z-test column an display the dataframe by descending
+		# Z test
+		if Z_test == True:
+			df['Z_test'] = _Z_test(df,N)
+			print '\nThe top ' + str(top_Z)' Z scores are:\n'
+			print df[['Expected','Found','Z_test']].sort('Z_test',\
+			 ascending=False).head(top_Z)
+		# Mean absolute difference
+		# if MAD == True:
+		# 	mad = _mad_(df)
+		# 	print "\nThe Mean Absolute Deviation is " + str(mad) + '\n'\
+		# 	+ 'For the Second DigitS:\n\
+		# 	- 0.0000 to 0.0008: Close Conformity\n\
+		# 	- 0.0008 to 0.0010: Acceptable Conformity\n\
+		# 	- 0.0010 to 0.0012: Marginally Acceptable Conformity\n\
+		# 	- Above 0.0012: Nonconformity'
+		# Mean Square Error
+		if MSE == True:
+			mse = _mse_(df)
+			print "\nMean Square Error = " + str(mse)
+		# Plotting the expected frequncies (line) against the found ones(bars)
+
+		if plot == True:
+			_plot_benf_(df, x=_lt_(), y_Exp= df.Expected,y_Found=df.Found, N=N)
+
+		return df	
+
 
 def _Z_test(frame,N):
 	return (frame.AbsDif - (1/2*N))/(np.sqrt(frame.Expected*\
 		(1-frame.Expected)/N))
-	print '\nThe highest Z scores are:\n'
-	print frame[['Expected','Found','Z_test']].sort('Z_test',\
-		 ascending=False).head(10)
 
 def _mad_(frame):
 	return frame.AbsDif.mean()
@@ -226,6 +334,18 @@ def _firstTwo_():
 	return pd.DataFrame({'First_2_Dig':First_2_Dig,\
 			'Expected':Expected}).set_index('First_2_Dig')
 
+def _lastTwo_():
+	exp = np.array([1/99.]*100)
+	return pd.DataFrame({'Last_2_Dig': _lt_(),\
+			'Expected': exp}).set_index('Last_2_Dig')
+def _lt_():
+	l = []
+	d = '0123456789'
+	for i in d:
+		for j in d:
+			t = i+j
+			l.append(t)
+	return np.array(l)
 
 def _sanitize_(arr):
 	'''
@@ -234,34 +354,46 @@ def _sanitize_(arr):
 	from latin datases which use '.' for thousands and ',' for the
 	floating point.
 	'''
-	arr = pd.Series(arr).dropna()
+	return pd.Series(arr).dropna().apply(str).apply(_only_numerics_).apply(_strip_)
 
-	if not isinstance(arr[0:1],float):
-		arr = arr.apply(str).apply(lambda x: x.replace('.','')).apply(lambda x:\
-		 x.replace(',','.')).apply(float)
+	#if not isinstance(arr[0:1],float):
+	#	arr = arr.apply(str).apply(lambda x: x.replace('.','')).apply(lambda x:\
+	#	 x.replace(',','.')).apply(float)
+	#return arr.abs()
 
-	return arr
+def _only_numerics_(seq):
+    return filter(type(seq).isdigit, seq)
 
+def _strip_(st):
+	return st.lstrip('0')
 
+def tint(s):
+	try:
+		return int(s)
+	except:
+		return np.nan
 
-def _plot_benford_(df, N,lowUpBounds = True):		
-	fig = plt.figure(figsize=(15,10))
+def _len2_(st):
+	return len(st) == 2
+
+def _plot_benf_(df, x, y_Exp, y_Found, N,lowUpBounds = True, figsize=(15,10)):		
+	fig = plt.figure(figsize=figsize)
 	ax = fig.add_subplot(111)
 	plt.title('Expected versus Found Distributions')
 	plt.xlabel('First Two Digits')
 	plt.ylabel('Distribution')
-	ax.bar(df.index, df.Found, label='Found')
-	ax.plot(df.index,df.Expected, color='g',linewidth=2.5,\
+	ax.bar(x, y_Found, label='Found')
+	ax.plot(x, y_Exp, color='g',linewidth=2.5,\
 	 label='Expected')
 	ax.legend()
 	# Plotting the Upper and Lower bounds considering p=0.05
 	if lowUpBounds == True:
-		sig_5 = 1.96 * np.sqrt(df.Expected*(1-df.Expected)/N)
-		upper = df.Expected + sig_5 + (1/(2*N))
-		lower = df.Expected - sig_5 - (1/(2*N))
-		ax.plot(df.index, upper, color= 'r')
-		ax.plot(df.index, lower, color= 'r')
-		ax.fill_between(df.index, upper,lower, color='r', alpha=.3)
+		sig_5 = 1.96 * np.sqrt(y_Exp*(1-y_Exp)/N)
+		upper = y_Exp + sig_5 + (1/(2*N))
+		lower = y_Exp - sig_5 - (1/(2*N))
+		ax.plot(x, upper, color= 'r')
+		ax.plot(x, lower, color= 'r')
+		ax.fill_between(x, upper,lower, color='r', alpha=.3)
 	plt.show()
 
 
