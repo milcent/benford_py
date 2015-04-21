@@ -17,33 +17,40 @@ import matplotlib.pyplot as plt
 
 class Benford(pd.DataFrame):
 
-	results = {}
+	maps = {}
 
 	def __init__(self, data):
 		pd.DataFrame.__init__(self, {'Seq': _sanitize_(data)})
 		print "Initialized sequence with " + str(len(self)) + " registries."
 
 	def prepare(self):
+		'''
+		Prepares the DataFrame to be manipulated by the tests, with columns\
+		of the First, Second, First Two and Last Two digits of each number
+		'''
+		# Extracts the digits respective in their respective positions,
+		# converting them to integers
 		self['FD'] = self.Seq.apply(lambda x: x[:1]).apply(tint)
 		self['SD'] = self.Seq.apply(lambda x: x[1:2]).apply(tint)
 		self['FTD'] = self.Seq.apply(lambda x: x[:2]).apply(tint)
+		# Leave the last two digits as strings , so as to be able to\
+		# display '00', '01', ... up to '09', till '99'
 		self['LTD'] = self.Seq.apply(lambda x: x[-2:])
 		self = self.dropna()
 		self = self[self.FTD>=10]
 
 
-	def firstTwoDigits(self, MAD=True, Z_test=True, top_Z=20, MSE=False, plot=True):
+	def firstTwoDigits(self, inform=True, MAD=True, Z_test=True, top_Z=20, MSE=False, plot=True):
 		'''
 		Performs the Benford First Two Digits test with the series of
 		numbers provided.
-
-		dropLowerTen ->  option to discard numbers lower than 10, so as to 
-		keep the tested numbers with two first digits; defaults to True.
 
 		MAD -> calculates the Mean of the Absolute Differences from the respective
 		expected distributions; defaults to True.
 
 		Z_test -> calculates the Z test of the sample; defaluts to True.
+
+		top_Z -> chooses the highest number of Z scores to be displayed
 
 		MSE -> calculate the Mean Square Error of the sample; defaluts to False.
 
@@ -53,7 +60,8 @@ class Benford(pd.DataFrame):
 		'''
 		N = len(self)
 		x = np.arange(10,100)
-		print "\n---Performing test on " + str(N) + " registries.---\n"
+		if inform:
+			print "\n---PTest performed on " + str(N) + " registries.---\n"
 		# get the number of occurrences of the first two digits
 		v = self.FTD.value_counts()
 		# get their relative frequencies
@@ -95,7 +103,7 @@ class Benford(pd.DataFrame):
 
 		return df
 
-	def firstDigit(self, MAD=True, Z_test=True, MSE=False, plot=True):
+	def firstDigit(self, inform=True, MAD=True, Z_test=True, MSE=False, plot=True):
 		'''
 		Performs the Benford First Digit test with the series of
 		numbers provided.
@@ -114,7 +122,8 @@ class Benford(pd.DataFrame):
 
 		N = len(self)
 		x = np.arange(1,10)
-		print "\n---Performing test on " + str(N) + " registries.---\n"
+		if inform:
+			print "\n---Test performed on " + str(N) + " registries.---\n"
 		# get the number of occurrences of the first two digits
 		v = self.FD.value_counts()
 		# get their relative frequencies
@@ -155,9 +164,9 @@ class Benford(pd.DataFrame):
 
 		return df
 
-	def secondDigit(self, MAD=True, Z_test=True, MSE=False, plot=True):
+	def secondDigit(self, inform=True, MAD=True, Z_test=True, MSE=False, plot=True):
 		'''
-		Performs the Benford First Digit test with the series of
+		Performs the Benford Second Digit test with the series of
 		numbers provided.
 
 		MAD -> calculates the Mean of the Absolute Differences from the respective
@@ -174,7 +183,8 @@ class Benford(pd.DataFrame):
 
 		N = len(self)
 		x = np.arange(0,10)
-		print "\n---Performing test on " + str(N) + " registries.---\n"
+		if inform:
+			print "\n---Test performed on " + str(N) + " registries.---\n"
 		# get the number of occurrences of the first two digits
 		v = self.SD.value_counts()
 		# get their relative frequencies
@@ -216,15 +226,17 @@ class Benford(pd.DataFrame):
 
 		return df
 
-	def lastTwoDigits(self, MAD=False, Z_test=True, top_Z=20, MSE=False, plot=True):
+	def lastTwoDigits(self, inform=True, MAD=False, Z_test=True, top_Z=20, MSE=False, plot=True):
 		'''
-		Performs the Benford First Digit test with the series of
+		Performs the Benford Last Two Digits test with the series of
 		numbers provided.
 
 		MAD -> calculates the Mean of the Absolute Differences from the respective
 		expected distributions; defaults to True.
 
 		Z_test -> calculates the Z test of the sample; defaluts to True.
+
+		top_Z -> chooses the highest number of Z scores to be displayed
 
 		MSE -> calculate the Mean Square Error of the sample; defaluts to False.
 
@@ -235,17 +247,14 @@ class Benford(pd.DataFrame):
 
 		N = len(self)
 		x = np.arange(0,100)
-		print "\n---Performing test on " + str(N) + " registries.---\n"
+		if inform:
+			print "\n---Test performed on " + str(N) + " registries.---\n"
 		# get the number of occurrences of the first two digits
 		v = self.LTD.value_counts()
 		# get their relative frequencies
 		p = self.LTD.value_counts(normalize =True)
 		# crate dataframe from them
 		df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
-		# reindex from 10 to 99 in the case one or more of the first
-		# two digits are missing, so the Expected frequencies column
-		# can later be joined; and swap NANs with zeros.
-
 		# join the dataframe with the one of expected Benford's frequencies
 		df = _lastTwo_().join(df)
 		# create column with absolute differences
@@ -254,13 +263,13 @@ class Benford(pd.DataFrame):
 		# Z test
 		if Z_test == True:
 			df['Z_test'] = _Z_test(df,N)
-			print '\nThe top ' + str(top_Z)' Z scores are:\n'
+			print '\nThe top ' + str(top_Z) +' Z scores are:\n'
 			print df[['Expected','Found','Z_test']].sort('Z_test',\
 			 ascending=False).head(top_Z)
 		# Mean absolute difference
-		# if MAD == True:
-		# 	mad = _mad_(df)
-		# 	print "\nThe Mean Absolute Deviation is " + str(mad) + '\n'\
+		if MAD == True:
+			mad = _mad_(df)
+			print "\nThe Mean Absolute Deviation is " + str(mad) + '\n'\
 		# 	+ 'For the Second DigitS:\n\
 		# 	- 0.0000 to 0.0008: Close Conformity\n\
 		# 	- 0.0008 to 0.0010: Acceptable Conformity\n\
@@ -273,10 +282,26 @@ class Benford(pd.DataFrame):
 		# Plotting the expected frequncies (line) against the found ones(bars)
 
 		if plot == True:
-			_plot_benf_(df, x=_lt_(), y_Exp= df.Expected,y_Found=df.Found, N=N)
+			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
 
-		return df	
-
+		return df
+	
+	def duplicities(self, inform=True, top_Dupl=20):
+		# self.Seq = self.Seq.apply(int) / 100.
+		N = len(self)
+		self.Seq = self.Seq.apply(_to_float_)
+		# get the frequencies
+		v = self.Seq.value_counts()
+		# get their relative frequencies
+		p = self.Seq.value_counts(normalize =True)
+		# crate dataframe from them
+		df = pd.DataFrame({'Counts': v, 'Percent': p}).sort('Counts',\
+			ascending=False)
+		if inform:
+			print "\n---Test performed on " + str(N) + " registries.---\n"
+			print '\nThe ' + str(top_Dupl) + ' more commom duplicities are:\n'
+			print df.head(top_Dupl)
+		return df
 
 def _Z_test(frame,N):
 	return (frame.AbsDif - (1/2*N))/(np.sqrt(frame.Expected*\
@@ -287,7 +312,6 @@ def _mad_(frame):
 
 def _mse_(frame):
 	return (frame.AbsDif**2).mean()
-
 
 def _getMantissas_(arr):
 	'''
@@ -346,6 +370,12 @@ def _lt_():
 			t = i+j
 			l.append(t)
 	return np.array(l)
+
+def _to_float_(st):
+	try:
+		return float(st) /100
+	except:
+		return np.nan
 
 def _sanitize_(arr):
 	'''
