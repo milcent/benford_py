@@ -325,17 +325,20 @@ def _getMantissas_(arr):
 	return np.log10(arr) - np.log10(arr).astype(int)
 
 
-def _first_():
+def _first_(plot=False):
 	'''
 	Returns the expected probabilities of the first digits
 	according to Benford's distribution.
 	'''
 	First_Dig = np.arange(1,10)
 	Expected = np.log10(1 + (1. / First_Dig))
-	return pd.DataFrame({'Expected':Expected,\
+	first = pd.DataFrame({'Expected':Expected,\
 			'First_Dig':First_Dig}).set_index('First_Dig')
+	if plot == True:
+		first.plot(kind='bar', grid=False)
+	return first
 
-def _second_():
+def _second_(plot=False):
 	'''
 	Returns the expected probabilities of the second digits
 	according to Benford's distribution.
@@ -345,23 +348,32 @@ def _second_():
 	Sec_Dig = np.array(range(10)*9)
 	d = pd.DataFrame({'Expected': Expected, 'Sec_Dig': Sec_Dig},\
 			index = a)
-	return d.groupby('Sec_Dig').agg(sum)
+	sec = d.groupby('Sec_Dig').agg(sum)
+	if plot == True:
+		sec.plot(kind='bar', grid=False)
+	return sec
 
-
-def _firstTwo_():
+def _firstTwo_(plot=False):
 	'''
 	Returns the expected probabilities of the first two digits
 	according to Benford's distribution.
 	'''
 	First_2_Dig = np.arange(10,100)
 	Expected = np.log10(1 + (1. / First_2_Dig))
-	return pd.DataFrame({'First_2_Dig':First_2_Dig,\
+	ft = pd.DataFrame({'First_2_Dig':First_2_Dig,\
 			'Expected':Expected}).set_index('First_2_Dig')
+	if plot == True:
+		ft.plot(kind='bar', figsize = (15,8),grid=False)
+	return ft
 
-def _lastTwo_():
+def _lastTwo_(plot=False):
 	exp = np.array([1/99.]*100)
-	return pd.DataFrame({'Last_2_Dig': _lt_(),\
+	lt = pd.DataFrame({'Last_2_Dig': _lt_(),\
 			'Expected': exp}).set_index('Last_2_Dig')
+	if plot == True:
+		lt.plot(kind='bar',figsize = (15,8), grid=False,  ylim=(0,.02))
+	return lt
+
 def _lt_():
 	l = []
 	d = '0123456789'
@@ -406,7 +418,7 @@ def tint(s):
 def _len2_(st):
 	return len(st) == 2
 
-def _plot_benf_(df, x, y_Exp, y_Found, N,lowUpBounds = True, figsize=(15,10)):		
+def _plot_benf_(df, x, y_Exp, y_Found, N,lowUpBounds = True, figsize=(15,8)):		
 	fig = plt.figure(figsize=figsize)
 	ax = fig.add_subplot(111)
 	plt.title('Expected versus Found Distributions')
