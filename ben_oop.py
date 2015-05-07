@@ -14,6 +14,23 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+class First(pd.DataFrame):
+ 	"""	Returns the expected probabilities of the first digits
+	according to Benford's distribution."""
+
+ 	def __init__(self, plot = True):
+ 		First_Dig = np.arange(1,10)
+ 		Exp = np.log10(1 + (1. / First_Dig))
+
+ 		pd.DataFrame.__init__(self, {'Expected':\
+ 			Exp}, index = First_Dig)
+ 		self.index.names = ['First_Dig']
+		# self['First_Dig'] = First_Dig
+		# self['Expected'] = np.log10(1 + (1. / First_Dig))
+		# self.set_index('First_Dig')
+		if plot == True:
+			self.plot(kind='bar', grid=False)
+
 
 class Benford(pd.DataFrame):
 
