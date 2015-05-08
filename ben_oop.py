@@ -29,8 +29,50 @@ class First(pd.DataFrame):
 		# self['Expected'] = np.log10(1 + (1. / First_Dig))
 		# self.set_index('First_Dig')
 		if plot == True:
-			self.plot(kind='bar', grid=False)
+			self.plot(kind='bar', color = 'g', grid=False)
 
+class Second(pd.DataFrame):
+	'''
+	Returns the expected probabilities of the second digits
+	according to Benford's distribution.
+	'''
+	def __init__(self, plot = True):
+		a = np.arange(10,100)
+		Expe = np.log10(1 + (1. / a))
+		Sec_Dig = np.array(range(10)*9)
+		pd.DataFrame.__init__(self,{'Expected': Expe, 'Sec_Dig': Sec_Dig},\
+				index = a)
+		self = self.groupby('Sec_Dig').agg(sum)
+		if plot == True:
+			self.plot(kind='bar', color = 'g', grid=False, ylim=(0,.14))
+
+class FirstTwo(pd.DataFrame):
+	'''
+	Returns the expected probabilities of the first two digits
+	according to Benford's distribution.
+	'''
+	def __init__(self, plot=True):
+		First_2_Dig = np.arange(10,100)
+		Expect = np.log10(1 + (1. / First_2_Dig))
+
+		pd.DataFrame.__init__(self,{'Expected':Expect, 'First_2_Dig':\
+			First_2_Dig})
+		self.set_index('First_2_Dig', inplace=True)
+		if plot == True:
+			self.plot(kind='bar', figsize = (15,8), color='g', grid=False)
+
+class LastTwo(pd.DataFrame):
+	'''   
+	Returns the expected probabilities of the last two digits
+	according to Benford's distribution.
+	'''
+	def __init__(self, plot=True):
+		exp = np.array([1/99.]*100)
+		pd.DataFrame.__init__(self,{'Expected': exp,'Last_2_Dig':_lt_()})
+		self.set_index('Last_2_Dig', inplace=True)
+		if plot == True:
+			self.plot(kind='bar',figsize = (15,8), color = 'g',\
+				grid=False,  ylim=(0,.02))
 
 class Benford(pd.DataFrame):
 

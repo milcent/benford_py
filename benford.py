@@ -153,7 +153,7 @@ def firstTwoDigits(arr, dropLowerTen=True, MAD=True, Z_test=True,\
 		print "---Discarded " + str(n) + " values lower than 10, corresponding to "\
 		+ str(np.round(p,2)) + " percent of the sample.---"
 	N = len(arr)
-	print "\n---Performing test on " str(N) + "registries.---\n"
+	print "\n---Performing test on " + str(N) + "registries.---\n"
 	# convert into string, take the first two digits, and then convert
 	# back to integer 		
 	arr = arr.apply(str).apply(lambda x: x[:2]).apply(int)
