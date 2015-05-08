@@ -25,9 +25,7 @@ class First(pd.DataFrame):
  		pd.DataFrame.__init__(self, {'Expected':\
  			Exp}, index = First_Dig)
  		self.index.names = ['First_Dig']
-		# self['First_Dig'] = First_Dig
-		# self['Expected'] = np.log10(1 + (1. / First_Dig))
-		# self.set_index('First_Dig')
+
 		if plot == True:
 			self.plot(kind='bar', color = 'g', grid=False)
 
@@ -40,9 +38,9 @@ class Second(pd.DataFrame):
 		a = np.arange(10,100)
 		Expe = np.log10(1 + (1. / a))
 		Sec_Dig = np.array(range(10)*9)
-		pd.DataFrame.__init__(self,{'Expected': Expe, 'Sec_Dig': Sec_Dig},\
-				index = a)
-		self = self.groupby('Sec_Dig').agg(sum)
+
+		pd.DataFrame.__init__(self,{'Expected': Expe, 'Sec_Dig': Sec_Dig})#index = a)
+		self = self.groupby('Sec_Dig').sum()
 		if plot == True:
 			self.plot(kind='bar', color = 'g', grid=False, ylim=(0,.14))
 
@@ -89,9 +87,9 @@ class Benford(pd.DataFrame):
 		'''
 		# Extracts the digits respective in their respective positions,
 		# converting them to integers
-		self['FD'] = self.Seq.apply(lambda x: x[:1]).apply(tint)
-		self['SD'] = self.Seq.apply(lambda x: x[1:2]).apply(tint)
-		self['FTD'] = self.Seq.apply(lambda x: x[:2]).apply(tint)
+		self['FD'] = self.Seq.apply(lambda x: x[:1]).apply(_tint_)
+		self['SD'] = self.Seq.apply(lambda x: x[1:2]).apply(_tint_)
+		self['FTD'] = self.Seq.apply(lambda x: x[:2]).apply(_tint_)
 		# Leave the last two digits as strings , so as to be able to\
 		# display '00', '01', ... up to '09', till '99'
 		self['LTD'] = self.Seq.apply(lambda x: x[-2:])
@@ -120,7 +118,7 @@ class Benford(pd.DataFrame):
 		N = len(self)
 		x = np.arange(10,100)
 		if inform:
-			print "\n---PTest performed on " + str(N) + " registries.---\n"
+			print "\n---Test performed on " + str(N) + " registries.---\n"
 		# get the number of occurrences of the first two digits
 		v = self.FTD.value_counts()
 		# get their relative frequencies
@@ -133,7 +131,7 @@ class Benford(pd.DataFrame):
 		if len(df.index) < 90:
 			df = df.reindex(x).fillna(0)
 		# join the dataframe with the one of expected Benford's frequencies
-		df = _firstTwo_().join(df)
+		df = FirstTwo(plot=False).join(df)
 		# create column with absolute differences
 		df['AbsDif'] = np.absolute(df.Found - df.Expected)
 		# calculate the Z-test column an display the dataframe by descending
@@ -194,7 +192,7 @@ class Benford(pd.DataFrame):
 		# can later be joined; and swap NANs with zeros.
 
 		# join the dataframe with the one of expected Benford's frequencies
-		df = _first_().join(df)
+		df = First(plot=False).join(df)
 		# create column with absolute differences
 		df['AbsDif'] = np.absolute(df.Found - df.Expected)
 		# calculate the Z-test column an display the dataframe by descending
@@ -249,13 +247,13 @@ class Benford(pd.DataFrame):
 		# get their relative frequencies
 		p = self.SD.value_counts(normalize =True)
 		# crate dataframe from them
-		df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
+		d = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
 		# reindex from 10 to 99 in the case one or more of the first
 		# two digits are missing, so the Expected frequencies column
 		# can later be joined; and swap NANs with zeros.
 
 		# join the dataframe with the one of expected Benford's frequencies
-		df = _second_().join(df)
+		df = Second(plot=False).groupby('Sec_Dig').sum().join(d)
 		# create column with absolute differences
 		df['AbsDif'] = np.absolute(df.Found - df.Expected)
 		# calculate the Z-test column an display the dataframe by descending
@@ -315,7 +313,7 @@ class Benford(pd.DataFrame):
 		# crate dataframe from them
 		df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
 		# join the dataframe with the one of expected Benford's frequencies
-		df = _lastTwo_().join(df)
+		df = LastTwo(plot=False).join(df)
 		# create column with absolute differences
 		df['AbsDif'] = np.absolute(df.Found - df.Expected)
 		# calculate the Z-test column an display the dataframe by descending
@@ -345,20 +343,20 @@ class Benford(pd.DataFrame):
 
 		return df
 	
-	def duplicities(self, inform=True, top_Dupl=20):
+	def repetition(self, inform=True, top_Dupl=20):
 		# self.Seq = self.Seq.apply(int) / 100.
 		N = len(self)
 		self.Seq = self.Seq.apply(_to_float_)
 		# get the frequencies
 		v = self.Seq.value_counts()
 		# get their relative frequencies
-		p = self.Seq.value_counts(normalize =True)
+		p = self.Seq.value_counts(normalize =True) * 100
 		# crate dataframe from them
 		df = pd.DataFrame({'Counts': v, 'Percent': p}).sort('Counts',\
 			ascending=False)
 		if inform:
 			print "\n---Test performed on " + str(N) + " registries.---\n"
-			print '\nThe ' + str(top_Dupl) + ' more commom duplicities are:\n'
+			print '\nThe ' + str(top_Dupl) + ' most frequent numbers are:\n'
 			print df.head(top_Dupl)
 		return df
 
@@ -455,7 +453,7 @@ def _sanitize_(arr):
 	from latin datases which use '.' for thousands and ',' for the
 	floating point.
 	'''
-	return pd.Series(arr).dropna().apply(str).apply(_only_numerics_).apply(_strip_)
+	return pd.Series(arr).dropna().apply(str).apply(_only_numerics_).apply(_l_0_strip_)
 
 	#if not isinstance(arr[0:1],float):
 	#	arr = arr.apply(str).apply(lambda x: x.replace('.','')).apply(lambda x:\
@@ -465,10 +463,10 @@ def _sanitize_(arr):
 def _only_numerics_(seq):
     return filter(type(seq).isdigit, seq)
 
-def _strip_(st):
+def _l_0_strip_(st):
 	return st.lstrip('0')
 
-def tint(s):
+def _tint_(s):
 	try:
 		return int(s)
 	except:
@@ -480,8 +478,8 @@ def _len2_(st):
 def _plot_benf_(df, x, y_Exp, y_Found, N,lowUpBounds = True, figsize=(15,8)):		
 	fig = plt.figure(figsize=figsize)
 	ax = fig.add_subplot(111)
-	plt.title('Expected versus Found Distributions')
-	plt.xlabel('First Two Digits')
+	plt.title('Expected vs. Found Distributions')
+	plt.xlabel('Digits')
 	plt.ylabel('Distribution')
 	ax.bar(x, y_Found, label='Found')
 	ax.plot(x, y_Exp, color='g',linewidth=2.5,\
