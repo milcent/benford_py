@@ -72,7 +72,7 @@ class LastTwo(pd.DataFrame):
 			self.plot(kind='bar',figsize = (15,8), color = 'g',\
 				grid=False,  ylim=(0,.02))
 
-class Benford(pd.DataFrame):
+class Analysis(pd.DataFrame):
 
 	maps = {}
 
@@ -82,7 +82,7 @@ class Benford(pd.DataFrame):
 
 	def prepare(self):
 		'''
-		Prepares the DataFrame to be manipulated by the tests, with columns\
+		Prepares the DataFrame to be manipulated by the tests, with columns
 		of the First, Second, First Two and Last Two digits of each number
 		'''
 		# Extracts the digits respective in their respective positions,
@@ -181,7 +181,7 @@ class Benford(pd.DataFrame):
 		x = np.arange(1,10)
 		if inform:
 			print "\n---Test performed on " + str(N) + " registries.---\n"
-		# get the number of occurrences of the first two digits
+		# get the number of occurrences of each first digit
 		v = self.FD.value_counts()
 		# get their relative frequencies
 		p = self.FD.value_counts(normalize =True)
@@ -242,7 +242,7 @@ class Benford(pd.DataFrame):
 		x = np.arange(0,10)
 		if inform:
 			print "\n---Test performed on " + str(N) + " registries.---\n"
-		# get the number of occurrences of the first two digits
+		# get the number of occurrences of each second digit
 		v = self.SD.value_counts()
 		# get their relative frequencies
 		p = self.SD.value_counts(normalize =True)
@@ -306,7 +306,7 @@ class Benford(pd.DataFrame):
 		x = np.arange(0,100)
 		if inform:
 			print "\n---Test performed on " + str(N) + " registries.---\n"
-		# get the number of occurrences of the first two digits
+		# get the number of occurrences of the last two digits
 		v = self.LTD.value_counts()
 		# get their relative frequencies
 		p = self.LTD.value_counts(normalize =True)
@@ -343,7 +343,7 @@ class Benford(pd.DataFrame):
 
 		return df
 	
-	def repetition(self, inform=True, top_Dupl=20):
+	def repetition(self, inform=True, top_Rep=20):
 		# self.Seq = self.Seq.apply(int) / 100.
 		N = len(self)
 		self.Seq = self.Seq.apply(_to_float_)
@@ -356,8 +356,8 @@ class Benford(pd.DataFrame):
 			ascending=False)
 		if inform:
 			print "\n---Test performed on " + str(N) + " registries.---\n"
-			print '\nThe ' + str(top_Dupl) + ' most frequent numbers are:\n'
-			print df.head(top_Dupl)
+			print '\nThe ' + str(top_Rep) + ' most frequent numbers are:\n'
+			print df.head(top_Rep)
 		return df
 
 def _Z_test(frame,N):
