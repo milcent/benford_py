@@ -77,8 +77,20 @@ class Analysis(pd.DataFrame):
 	maps = {}
 
 	def __init__(self, data):
-		pd.DataFrame.__init__(self, {'Seq': _sanitize_(data)})
+		pd.DataFrame.__init__(self, {'Seq': data})
+		self = self[self.Seq.notnull()]
 		print "Initialized sequence with " + str(len(self)) + " registries."
+
+	def mantissas(self):
+		# if self.Seq.dtype != 'Float64':
+		# 	self.apply(float)
+		self['Mantissas'] = _getMantissas_(self.Seq)
+		self.sort('Mantissas')
+		N = len(self)
+		f = lambda g:g/N
+		x = np.arange(N)
+		plt.plot(x,self.Mantissas,'k--')
+		plt.plot(x,g(x), 'b-')
 
 	def prepare(self):
 		'''
@@ -87,17 +99,18 @@ class Analysis(pd.DataFrame):
 		'''
 		# Extracts the digits respective in their respective positions,
 		# converting them to integers
-		self['FD'] = self.Seq.apply(lambda x: x[:1]).apply(_tint_)
-		self['SD'] = self.Seq.apply(lambda x: x[1:2]).apply(_tint_)
-		self['FTD'] = self.Seq.apply(lambda x: x[:2]).apply(_tint_)
+		self = self.dropna(how='any')
+		self['FD'] = self.Seq.apply(str).apply(lambda x: x[:1]).apply(_tint_)
+		self['SD'] = self.Seq.apply(str).apply(lambda x: x[1:2]).apply(_tint_)
+		self['FTD'] = self.Seq.apply(str).apply(lambda x: x[:2]).apply(_tint_)
 		# Leave the last two digits as strings , so as to be able to\
 		# display '00', '01', ... up to '09', till '99'
-		self['LTD'] = self.Seq.apply(lambda x: x[-2:])
-		self = self.dropna()
+		self['LTD'] = self.Seq.apply(str).apply(strip,'.').apply(lambda x: x[-2:])
 		self = self[self.FTD>=10]
 
 
-	def firstTwoDigits(self, inform=True, MAD=True, Z_test=True, top_Z=20, MSE=False, plot=True):
+	def firstTwoDigits(self, inform=True, MAD=True, Z_test=True, top_Z=20, MSE=False, plot=True,\
+		mantissa = False):
 		'''
 		Performs the Benford First Two Digits test with the series of
 		numbers provided.
@@ -157,6 +170,9 @@ class Analysis(pd.DataFrame):
 		# Plotting the expected frequncies (line) against the found ones(bars)
 		if plot == True:
 			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
+
+		if mantissa == True:
+			df['Mantissas'] = np.log10(g) - np.log10(g).astype(int)
 
 		return df
 
@@ -343,7 +359,7 @@ class Analysis(pd.DataFrame):
 
 		return df
 	
-	def repetition(self, inform=True, top_Rep=20):
+	def duplicates(self, inform=True, top_Rep=20):
 		# self.Seq = self.Seq.apply(int) / 100.
 		N = len(self)
 		self.Seq = self.Seq.apply(_to_float_)
@@ -463,6 +479,19 @@ def _sanitize_(arr):
 def _only_numerics_(seq):
     return filter(type(seq).isdigit, seq)
 
+def _str_to_float_(s):
+	#s = str(s)
+	if '.' in s or ',' in s:
+		s = filter(type(s).isdigit, s)
+		s = s[:-2]+'.'+s[-2:]
+		return float(s)
+	else:
+		if filter(type(s).isdigit, s) == '':
+			return np.nan
+		else:
+			return int(s)
+
+
 def _l_0_strip_(st):
 	return st.lstrip('0')
 
@@ -496,4 +525,35 @@ def _plot_benf_(df, x, y_Exp, y_Found, N,lowUpBounds = True, figsize=(15,8)):
 	plt.show()
 
 
+def _collapse_(num):
+	'''
+	Transforms any positive number to the form XX.yy, with two digits
+	to the left of the floating point
+	'''
+	l=10**int(np.log10(num))
+	if num>=1.:
+		return 10.*num/l
+	else:
+		return 100.*num/l
+
+def _collapse_array_(arr):
+	'''
+
+	'''
+	# arr = abs(arr)
+	ilt = 10**(np.log10(arr).astype(int))
+	arr[arr<1.]*=10
+	return arr*10/ilt
+
+def _sanitize_float_(s):
+	s = str(s)
+	if '.' in s or ',' in s:
+		s = filter(type(s).isdigit, s)
+		s = s[:-2]+'.'+s[-2:]
+		return float(s)
+	else:
+		if filter(type(s).isdigit, s) == '':
+			return np.nan
+		else:
+			return int(s)
 
