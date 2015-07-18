@@ -78,34 +78,44 @@ class Analysis(pd.DataFrame):
 
 	def __init__(self, data):
 		pd.DataFrame.__init__(self, {'Seq': data})
-		self = self[self.Seq.notnull()]
+		self.dropna(inplace=True)
 		print "Initialized sequence with " + str(len(self)) + " registries."
 
-	def mantissas(self):
+	def mantissas(self, plot=True, figsize=(15,8)):
 		# if self.Seq.dtype != 'Float64':
 		# 	self.apply(float)
-		self['Mantissas'] = _getMantissas_(self.Seq)
-		self.sort('Mantissas')
+		self['Mant'] = _getMantissas_(self.Seq)
+		self.sort('Mant', inplace+True)
 		N = len(self)
+
+		
 		f = lambda g:g/N
 		x = np.arange(N)
-		plt.plot(x,self.Mantissas,'k--')
-		plt.plot(x,g(x), 'b-')
+		fig = plt.figure(figsize=figsize)
+		ax = fig.add_subplot(111)
+		ax.plot(x,self.Mant,'k--')
+		ax.plot(x,f(x), 'b-')
 
-	def prepare(self):
+	def prepare(self, dec=2):
 		'''
 		Prepares the DataFrame to be manipulated by the tests, with columns
 		of the First, Second, First Two and Last Two digits of each number
 		'''
-		# Extracts the digits respective in their respective positions,
-		# converting them to integers
-		self = self.dropna(how='any')
-		self['FD'] = self.Seq.apply(str).apply(lambda x: x[:1]).apply(_tint_)
-		self['SD'] = self.Seq.apply(str).apply(lambda x: x[1:2]).apply(_tint_)
-		self['FTD'] = self.Seq.apply(str).apply(lambda x: x[:2]).apply(_tint_)
+		# Extracts the digits in their respective positions,
+		self.Seq = self.Seq * (10**dec)
+		self.Seq = self.Seq.apply(_tint_)
+		self = self[self.Seq!=0]
+		ST = self.Seq.apply(str)
+		self['FD'] = ST.apply(lambda x: x[:1])   # get the first digit
+		self['SD'] = ST.apply(lambda x: x[1:2])  # get the second digit
+		self['FTD'] = ST.apply(lambda x: x[:2])  # get the first two digits
+		
+		self['LTD'] = ST.apply(lambda x: x[-2:]) # get the last two digits
 		# Leave the last two digits as strings , so as to be able to\
 		# display '00', '01', ... up to '09', till '99'
-		self['LTD'] = self.Seq.apply(str).apply(strip,'.').apply(lambda x: x[-2:])
+		# converting the others to integers
+		self[['FD','SD','FTD']].apply(int)
+
 		self = self[self.FTD>=10]
 
 
@@ -499,7 +509,7 @@ def _tint_(s):
 	try:
 		return int(s)
 	except:
-		return np.nan
+		return 0
 
 def _len2_(st):
 	return len(st) == 2
