@@ -85,16 +85,16 @@ class Analysis(pd.DataFrame):
 		# if self.Seq.dtype != 'Float64':
 		# 	self.apply(float)
 		self['Mant'] = _getMantissas_(self.Seq)
-		self.sort('Mant', inplace+True)
-		N = len(self)
-
+		self = self[self.Seq>=1.]
+		p = self.sort('Mant')
+		N = len(p)
 		
-		f = lambda g:g/N
+		#f = lambda g:g/N
 		x = np.arange(N)
 		fig = plt.figure(figsize=figsize)
 		ax = fig.add_subplot(111)
-		ax.plot(x,self.Mant,'k--')
-		ax.plot(x,f(x), 'b-')
+		ax.plot(x,p.Mant,'k--')
+		#ax.plot(x,f(x), 'b-')
 
 	def prepare(self, dec=2):
 		'''
@@ -102,21 +102,23 @@ class Analysis(pd.DataFrame):
 		of the First, Second, First Two and Last Two digits of each number
 		'''
 		# Extracts the digits in their respective positions,
-		self.Seq = self.Seq * (10**dec)
-		self.Seq = self.Seq.apply(_tint_)
-		self = self[self.Seq!=0]
-		ST = self.Seq.apply(str)
-		self['FD'] = ST.apply(lambda x: x[:1])   # get the first digit
-		self['SD'] = ST.apply(lambda x: x[1:2])  # get the second digit
-		self['FTD'] = ST.apply(lambda x: x[:2])  # get the first two digits
-		
-		self['LTD'] = ST.apply(lambda x: x[-2:]) # get the last two digits
+		self['ZN'] = self.Seq * (10**dec)
+		self.ZN = self.ZN.apply(_tint_)
+		#self = self[self.ZN!=0]
+		self['S'] = self.ZN.apply(str)
+		self['FD'] = self.S.apply(lambda x: x[:1])   # get the first digit
+		self['SD'] = self.S.apply(lambda x: x[1:2])  # get the second digit
+		self['FTD'] = self.S.apply(lambda x: x[:2])  # get the first two digits
+		self['LTD'] = self.S.apply(lambda x: x[-2:]) # get the last two digits
 		# Leave the last two digits as strings , so as to be able to\
 		# display '00', '01', ... up to '09', till '99'
 		# converting the others to integers
-		self[['FD','SD','FTD']].apply(int)
-
+		self.FD = self.FD.apply(_tint_).apply(int)
+		self.SD = self.SD.apply(_tint_).apply(int)
+		self.FTD = self.FTD.apply(_tint_).apply(int)
+		del self['S']
 		self = self[self.FTD>=10]
+		
 
 
 	def firstTwoDigits(self, inform=True, MAD=True, Z_test=True, top_Z=20, MSE=False, plot=True,\
@@ -184,7 +186,7 @@ class Analysis(pd.DataFrame):
 		if mantissa == True:
 			df['Mantissas'] = np.log10(g) - np.log10(g).astype(int)
 
-		return df
+		### return df
 
 	def firstDigit(self, inform=True, MAD=True, Z_test=True, MSE=False, plot=True):
 		'''
@@ -245,7 +247,7 @@ class Analysis(pd.DataFrame):
 		if plot == True:
 			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
 
-		return df
+		### return df
 
 	def secondDigit(self, inform=True, MAD=True, Z_test=True, MSE=False, plot=True):
 		'''
@@ -307,7 +309,7 @@ class Analysis(pd.DataFrame):
 		if plot == True:
 			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
 
-		return df
+		### return df
 
 	def lastTwoDigits(self, inform=True, MAD=False, Z_test=True, top_Z=20, MSE=False, plot=True):
 		'''
@@ -367,12 +369,12 @@ class Analysis(pd.DataFrame):
 		if plot == True:
 			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
 
-		return df
+		### return df
 	
 	def duplicates(self, inform=True, top_Rep=20):
 		# self.Seq = self.Seq.apply(int) / 100.
 		N = len(self)
-		self.Seq = self.Seq.apply(_to_float_)
+		### self.Seq = self.Seq.apply(_to_float_)
 		# get the frequencies
 		v = self.Seq.value_counts()
 		# get their relative frequencies
@@ -384,7 +386,7 @@ class Analysis(pd.DataFrame):
 			print "\n---Test performed on " + str(N) + " registries.---\n"
 			print '\nThe ' + str(top_Rep) + ' most frequent numbers are:\n'
 			print df.head(top_Rep)
-		return df
+		### return df
 
 def _Z_test(frame,N):
 	return (frame.AbsDif - (1/2*N))/(np.sqrt(frame.Expected*\
