@@ -121,8 +121,8 @@ class Analysis(pd.DataFrame):
 		
 
 
-	def firstTwoDigits(self, inform=True, MAD=True, Z_test=True, top_Z=20, MSE=False, plot=True,\
-		mantissa = False):
+	def firstTwoDigits(self, inform=True, MAD=True, top_Z=20, MSE=False5,\
+		 plot=True, map_back=True, mantissa = False):
 		'''
 		Performs the Benford First Two Digits test with the series of
 		numbers provided.
@@ -161,11 +161,14 @@ class Analysis(pd.DataFrame):
 		df['AbsDif'] = np.absolute(df.Found - df.Expected)
 		# calculate the Z-test column an display the dataframe by descending
 		# Z test
-		if Z_test == True:
-			df['Z_test'] = _Z_test(df,N)	
-			print '\nThe top ' + str(top_Z) + ' Z scores are:\n'
-			print df[['Expected','Found','Z_test']].sort('Z_test',\
-			 ascending=False).head(top_Z)
+		df['Z_test'] = _Z_test(df,N)
+		df = df.sort('Z_test', ascending=False)
+		print '\nThe top ' + str(top_Z) + ' Z scores are:\n'
+		print df[['Expected','Found','Z_test']].head(top_Z)
+
+		if map_back == True:
+
+			
 		# Mean absolute difference
 		if MAD == True:
 			mad = _mad_(df)
@@ -185,6 +188,7 @@ class Analysis(pd.DataFrame):
 
 		if mantissa == True:
 			df['Mantissas'] = np.log10(g) - np.log10(g).astype(int)
+
 
 		### return df
 
