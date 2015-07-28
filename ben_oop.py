@@ -121,23 +121,30 @@ class Analysis(pd.DataFrame):
 		
 
 
-	def firstTwoDigits(self, inform=True, MAD=True, top_Z=20, MSE=False5,\
-		 plot=True, map_back=True, mantissa = False):
+	def firstTwoDigits(self, inform=True, MAD=True, top_Z=20, only_pos=True,\
+		MSE=False, plot=True, map_back=True, mantissa = False):
 		'''
 		Performs the Benford First Two Digits test with the series of
 		numbers provided.
 
+		inform -> tells the number of registries that are being subjected to
+		the Analysis
+
 		MAD -> calculates the Mean of the Absolute Differences from the respective
 		expected distributions; defaults to True.
 
-		Z_test -> calculates the Z test of the sample; defaluts to True.
-
 		top_Z -> chooses the highest number of Z scores to be displayed
 
-		MSE -> calculate the Mean Square Error of the sample; defaluts to False.
+		only_pos -> will highlight only the values that are higher than the
+		expexted frequencies, discarding the lower ones; defaults to True.
+
+		MSE -> calculates the Mean Square Error of the sample; defaults to False.
 
 		plot -> draws the plot of test for visual comparison, with the found
 		distributions in bars and the expected ones in a line.
+
+		map_back -> records the top differences to the maps dictionary to
+		later index the original sequence; defaults to True.
 
 		'''
 		N = len(self)
@@ -158,17 +165,23 @@ class Analysis(pd.DataFrame):
 		# join the dataframe with the one of expected Benford's frequencies
 		df = FirstTwo(plot=False).join(df)
 		# create column with absolute differences
-		df['AbsDif'] = np.absolute(df.Found - df.Expected)
+		df['Dif'] = df.Found - df.Expected
+		df['AbsDif'] = np.absolute(df.Dif)
 		# calculate the Z-test column an display the dataframe by descending
 		# Z test
 		df['Z_test'] = _Z_test(df,N)
-		df = df.sort('Z_test', ascending=False)
+		if only_pos:
+			dd = df[['Expected','Found','Z_test']][df.Dif>0].sort('Z_test',\
+			 ascending=False).head(top_Z)
+		else:
+			dd = df[['Expected','Found','Z_test']].sort('Z_test',\
+			 ascending=False).head(top_Z)
 		print '\nThe top ' + str(top_Z) + ' Z scores are:\n'
-		print df[['Expected','Found','Z_test']].head(top_Z)
-
+		print dd
+		
 		if map_back == True:
+			self.maps['FTD'] = np.array(dd.index)
 
-			
 		# Mean absolute difference
 		if MAD == True:
 			mad = _mad_(df)
@@ -190,7 +203,7 @@ class Analysis(pd.DataFrame):
 			df['Mantissas'] = np.log10(g) - np.log10(g).astype(int)
 
 
-		### return df
+		return df
 
 	def firstDigit(self, inform=True, MAD=True, Z_test=True, MSE=False, plot=True):
 		'''
