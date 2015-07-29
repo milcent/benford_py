@@ -173,10 +173,11 @@ class Analysis(pd.DataFrame):
 		if only_pos:
 			dd = df[['Expected','Found','Z_test']][df.Dif>0].sort('Z_test',\
 			 ascending=False).head(top_Z)
+		print '\nThe positive deviations` top ' + str(top_Z) + ' Z scores are:\n'
 		else:
 			dd = df[['Expected','Found','Z_test']].sort('Z_test',\
 			 ascending=False).head(top_Z)
-		print '\nThe top ' + str(top_Z) + ' Z scores are:\n'
+			print '\nThe top ' + str(top_Z) + ' Z scores are:\n'
 		print dd
 		
 		if map_back == True:
@@ -205,7 +206,8 @@ class Analysis(pd.DataFrame):
 
 		return df
 
-	def firstDigit(self, inform=True, MAD=True, Z_test=True, MSE=False, plot=True):
+	def firstDigit(self, inform=True, MAD=True, MSE=False, only_pos=True,\
+	map_back=True, plot=True):
 		'''
 		Performs the Benford First Digit test with the series of
 		numbers provided.
@@ -215,7 +217,10 @@ class Analysis(pd.DataFrame):
 
 		Z_test -> calculates the Z test of the sample; defaluts to True.
 
-		MSE -> calculate the Mean Square Error of the sample; defaluts to False.
+		map_back -> records the ordered higher differences to the maps dictionary
+		to later index the original sequence; defaults to True.
+
+		MSE -> calculates the Mean Square Error of the sample; defaluts to False.
 
 		plot -> draws the plot of test for visual comparison, with the found
 		distributions in bars and the expected ones in a line.
@@ -239,14 +244,24 @@ class Analysis(pd.DataFrame):
 		# join the dataframe with the one of expected Benford's frequencies
 		df = First(plot=False).join(df)
 		# create column with absolute differences
-		df['AbsDif'] = np.absolute(df.Found - df.Expected)
+		df['Dif'] = df.Found - df.Expected
+		df['AbsDif'] = np.absolute(df.Dif)
 		# calculate the Z-test column an display the dataframe by descending
 		# Z test
-		if Z_test == True:
-			df['Z_test'] = _Z_test(df,N)
-			print '\nThe highest Z scores are:\n'
-			print df[['Expected','Found','Z_test']].sort('Z_test',\
+		df['Z_test'] = _Z_test(df,N)
+		if only_pos:
+			dd = df[['Expected','Found','Z_test']][df.Dif>0].sort('Z_test',\
 			 ascending=False)
+			print '\nThe descending positive deviations` Z scores are:\n'
+		else:
+			dd = df[['Expected','Found','Z_test']].sort('Z_test',\
+			 ascending=False)
+			print '\nThe descending Z scores are:\n'
+		print dd
+
+		if map_back == True:
+			self.maps['FD'] = np.array(dd.index)
+
 		# Mean absolute difference
 		if MAD == True:
 			mad = _mad_(df)
@@ -266,7 +281,8 @@ class Analysis(pd.DataFrame):
 
 		### return df
 
-	def secondDigit(self, inform=True, MAD=True, Z_test=True, MSE=False, plot=True):
+	def secondDigit(self, inform=True, MAD=True, MSE=False, only_pos=True,\
+	map_back=True, plot=True):
 		'''
 		Performs the Benford Second Digit test with the series of
 		numbers provided.
@@ -275,6 +291,9 @@ class Analysis(pd.DataFrame):
 		expected distributions; defaults to True.
 
 		Z_test -> calculates the Z test of the sample; defaluts to True.
+
+		map_back -> records the ordered higher differences to the maps dictionary
+		to later index the original sequence; defaults to True.
 
 		MSE -> calculate the Mean Square Error of the sample; defaluts to False.
 
@@ -300,14 +319,24 @@ class Analysis(pd.DataFrame):
 		# join the dataframe with the one of expected Benford's frequencies
 		df = Second(plot=False).groupby('Sec_Dig').sum().join(d)
 		# create column with absolute differences
-		df['AbsDif'] = np.absolute(df.Found - df.Expected)
+		df['Dif'] = df.Found - df.Expected
+		df['AbsDif'] = np.absolute(df.Dif)
 		# calculate the Z-test column an display the dataframe by descending
 		# Z test
-		if Z_test == True:
-			df['Z_test'] = _Z_test(df,N)
-			print '\nThe highest Z scores are:\n'
-			print df[['Expected','Found','Z_test']].sort('Z_test',\
+		df['Z_test'] = _Z_test(df,N)
+		if only_pos:
+			dd = df[['Expected','Found','Z_test']][df.Dif>0].sort('Z_test',\
 			 ascending=False)
+			print '\nThe descending positive deviations` Z scores are:\n'
+		else:
+			dd = df[['Expected','Found','Z_test']].sort('Z_test',\
+			 ascending=False)
+			print '\nThe descending Z scores are:\n'
+		print dd
+
+		if map_back == True:
+			self.maps['SD'] = np.array(dd.index)
+
 		# Mean absolute difference
 		if MAD == True:
 			mad = _mad_(df)
@@ -328,7 +357,8 @@ class Analysis(pd.DataFrame):
 
 		### return df
 
-	def lastTwoDigits(self, inform=True, MAD=False, Z_test=True, top_Z=20, MSE=False, plot=True):
+	def lastTwoDigits(self, inform=True, MAD=False, Z_test=True, top_Z=20,\
+	 only_pos=True, map_back=True, MSE=False, plot=True):
 		'''
 		Performs the Benford Last Two Digits test with the series of
 		numbers provided.
@@ -360,14 +390,24 @@ class Analysis(pd.DataFrame):
 		# join the dataframe with the one of expected Benford's frequencies
 		df = LastTwo(plot=False).join(df)
 		# create column with absolute differences
-		df['AbsDif'] = np.absolute(df.Found - df.Expected)
+		df['Dif'] = df.Found - df.Expected
+		df['AbsDif'] = np.absolute(df.Dif)
 		# calculate the Z-test column an display the dataframe by descending
 		# Z test
-		if Z_test == True:
-			df['Z_test'] = _Z_test(df,N)
-			print '\nThe top ' + str(top_Z) +' Z scores are:\n'
-			print df[['Expected','Found','Z_test']].sort('Z_test',\
+		df['Z_test'] = _Z_test(df,N)
+		if only_pos:
+			dd = df[['Expected','Found','Z_test']][df.Dif>0].sort('Z_test',\
 			 ascending=False).head(top_Z)
+			print '\nThe positive deviations` top ' + str(top_Z) + ' Z scores are:\n'
+		else:
+			dd = df[['Expected','Found','Z_test']].sort('Z_test',\
+			 ascending=False).head(top_Z)
+			print '\nThe top ' + str(top_Z) + ' Z scores are:\n'
+		print dd
+		
+		if map_back == True:
+			self.maps['LTD'] = np.array(dd.index)
+
 		# Mean absolute difference
 		if MAD == True:
 			mad = _mad_(df)
