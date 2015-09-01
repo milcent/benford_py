@@ -76,10 +76,27 @@ class Analysis(pd.DataFrame):
 
 	maps = {}
 
-	def __init__(self, data):
+	def __init__(self, data, dec=2):
 		pd.DataFrame.__init__(self, {'Seq': data})
 		self.dropna(inplace=True)
 		print "Initialized sequence with " + str(len(self)) + " registries."
+		# Extracts the digits in their respective positions,
+		self['ZN'] = self.Seq * (10**dec)  # dec - to manage decimals
+		self.ZN = self.ZN.apply(_tint_)
+		#self = self[self.ZN!=0]
+		self['S'] = self.ZN.apply(str)
+		self['FD'] = self.S.str[:1]   # get the first digit
+		self['SD'] = self.S.str[1:2]  # get the second digit
+		self['FTD'] = self.S.str[:2]  # get the first two digits
+		self['LTD'] = self.S.str[-2:] # get the last two digits
+		# Leave the last two digits as strings , so as to be able to\
+		# display '00', '01', ... up to '09', till '99'
+		# converting the others to integers
+		self.FD = self.FD.apply(_tint_)
+		self.SD = self.SD.apply(_tint_)
+		self.FTD = self.FTD.apply(_tint_)
+		del self['S']
+		self = self[self.FTD>=10]
 
 	def mantissas(self, plot=True, figsize=(15,8)):
 		# if self.Seq.dtype != 'Float64':
@@ -96,28 +113,28 @@ class Analysis(pd.DataFrame):
 		ax.plot(x,p.Mant,'k--')
 		#ax.plot(x,f(x), 'b-')
 
-	def prepare(self, dec=2):
-		'''
-		Prepares the DataFrame to be manipulated by the tests, with columns
-		of the First, Second, First Two and Last Two digits of each number
-		'''
-		# Extracts the digits in their respective positions,
-		self['ZN'] = self.Seq * (10**dec)
-		self.ZN = self.ZN.apply(_tint_)
-		#self = self[self.ZN!=0]
-		self['S'] = self.ZN.apply(str)
-		self['FD'] = self.S.apply(lambda x: x[:1])   # get the first digit
-		self['SD'] = self.S.apply(lambda x: x[1:2])  # get the second digit
-		self['FTD'] = self.S.apply(lambda x: x[:2])  # get the first two digits
-		self['LTD'] = self.S.apply(lambda x: x[-2:]) # get the last two digits
-		# Leave the last two digits as strings , so as to be able to\
-		# display '00', '01', ... up to '09', till '99'
-		# converting the others to integers
-		self.FD = self.FD.apply(_tint_).apply(int)
-		self.SD = self.SD.apply(_tint_).apply(int)
-		self.FTD = self.FTD.apply(_tint_).apply(int)
-		del self['S']
-		self = self[self.FTD>=10]
+	# def prepare(self, dec=2):
+	# 	'''
+	# 	Prepares the DataFrame to be manipulated by the tests, with columns
+	# 	of the First, Second, First Two and Last Two digits of each number
+	# 	'''
+	# 	# Extracts the digits in their respective positions,
+	# 	self['ZN'] = self.Seq * (10**dec)
+	# 	self.ZN = self.ZN.apply(_tint_)
+	# 	#self = self[self.ZN!=0]
+	# 	self['S'] = self.ZN.apply(str)
+	# 	self['FD'] = self.S.str[:1]   # get the first digit
+	# 	self['SD'] = self.S.str[1:2]  # get the second digit
+	# 	self['FTD'] = self.S.str[:2]  # get the first two digits
+	# 	self['LTD'] = self.S.str[-2:] # get the last two digits
+	# 	# Leave the last two digits as strings , so as to be able to\
+	# 	# display '00', '01', ... up to '09', till '99'
+	# 	# converting the others to integers
+	# 	self.FD = self.FD.apply(_tint_)
+	# 	self.SD = self.SD.apply(_tint_)
+	# 	self.FTD = self.FTD.apply(_tint_)
+	# 	del self['S']
+	# 	self = self[self.FTD>=10]
 		
 
 
@@ -128,7 +145,7 @@ class Analysis(pd.DataFrame):
 		numbers provided.
 
 		inform -> tells the number of registries that are being subjected to
-		the Analysis
+		the Analysis; defaults to True
 
 		MAD -> calculates the Mean of the Absolute Differences from the respective
 		expected distributions; defaults to True.
@@ -173,7 +190,7 @@ class Analysis(pd.DataFrame):
 		if only_pos:
 			dd = df[['Expected','Found','Z_test']][df.Dif>0].sort('Z_test',\
 			 ascending=False).head(top_Z)
-		print '\nThe positive deviations` top ' + str(top_Z) + ' Z scores are:\n'
+			print '\nThe positive deviations` top ' + str(top_Z) + ' Z scores are:\n'
 		else:
 			dd = df[['Expected','Found','Z_test']].sort('Z_test',\
 			 ascending=False).head(top_Z)
@@ -211,6 +228,9 @@ class Analysis(pd.DataFrame):
 		'''
 		Performs the Benford First Digit test with the series of
 		numbers provided.
+
+		inform -> tells the number of registries that are being subjected to
+		the Analysis; defaults to True
 
 		MAD -> calculates the Mean of the Absolute Differences from the respective
 		expected distributions; defaults to True.
@@ -266,7 +286,7 @@ class Analysis(pd.DataFrame):
 		if MAD == True:
 			mad = _mad_(df)
 			print "\nThe Mean Absolute Deviation is " + str(mad) + '\n'\
-			+ 'For the First DigitS:\n\
+			+ 'For the First Digits:\n\
 			- 0.0000 to 0.0006: Close Conformity\n\
 			- 0.0006 to 0.0012: Acceptable Conformity\n\
 			- 0.0012 to 0.0015: Marginally Acceptable Conformity\n\
@@ -286,6 +306,9 @@ class Analysis(pd.DataFrame):
 		'''
 		Performs the Benford Second Digit test with the series of
 		numbers provided.
+
+		inform -> tells the number of registries that are being subjected to
+		the Analysis; defaults to True
 
 		MAD -> calculates the Mean of the Absolute Differences from the respective
 		expected distributions; defaults to True.
@@ -341,7 +364,7 @@ class Analysis(pd.DataFrame):
 		if MAD == True:
 			mad = _mad_(df)
 			print "\nThe Mean Absolute Deviation is " + str(mad) + '\n'\
-			+ 'For the Second DigitS:\n\
+			+ 'For the Second Digits:\n\
 			- 0.0000 to 0.0008: Close Conformity\n\
 			- 0.0008 to 0.0010: Acceptable Conformity\n\
 			- 0.0010 to 0.0012: Marginally Acceptable Conformity\n\
@@ -362,6 +385,9 @@ class Analysis(pd.DataFrame):
 		'''
 		Performs the Benford Last Two Digits test with the series of
 		numbers provided.
+
+		inform -> tells the number of registries that are being subjected to
+		the Analysis; defaults to True
 
 		MAD -> calculates the Mean of the Absolute Differences from the respective
 		expected distributions; defaults to True.
@@ -412,17 +438,11 @@ class Analysis(pd.DataFrame):
 		if MAD == True:
 			mad = _mad_(df)
 			print "\nThe Mean Absolute Deviation is " + str(mad) + '\n'\
-		# 	+ 'For the Second DigitS:\n\
-		# 	- 0.0000 to 0.0008: Close Conformity\n\
-		# 	- 0.0008 to 0.0010: Acceptable Conformity\n\
-		# 	- 0.0010 to 0.0012: Marginally Acceptable Conformity\n\
-		# 	- Above 0.0012: Nonconformity'
 		# Mean Square Error
 		if MSE == True:
 			mse = _mse_(df)
 			print "\nMean Square Error = " + str(mse)
-		# Plotting the expected frequncies (line) against the found ones(bars)
-
+		# Plotting the expected frequencies (line) against the found ones(bars)
 		if plot == True:
 			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
 
