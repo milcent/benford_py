@@ -73,7 +73,21 @@ class LastTwo(pd.DataFrame):
 				grid=False,  ylim=(0,.02))
 
 class Analysis(pd.DataFrame):
+	'''
+	Initiates the Analysis of the series. pd.DataFrame subclass.
+	Sequence must be of integers or floats.
+	A pandas DataFrame will be constructed, with columns of the original
+	numbers without floating points, of the first, second, first two and
+	last two digits, so the tests that will follow will run properly
 
+	-> data: sequence of numbers to be evaluated. Must be in absolute values,
+			since negative values with minus signs will distort the tests.
+			PONDERAR DEIXAR O COMANDO JÁ DE CONVERTER PARA AbS
+	-> dec: number of decimal places to be accounted for. Especially important
+			for the last two gigits test. The numbers will be multiplied by
+			10 to the power of the dec value. Defaluts to 2, to currency. If 
+			the numbers are integers, assign 0.
+	'''
 	maps = {}
 
 	def __init__(self, data, dec=2):
