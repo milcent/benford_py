@@ -75,25 +75,45 @@ class LastTwo(pd.DataFrame):
 class Analysis(pd.DataFrame):
 	'''
 	Initiates the Analysis of the series. pd.DataFrame subclass.
-	Sequence must be of integers or floats.
-	A pandas DataFrame will be constructed, with columns of the original
-	numbers without floating points, of the first, second, first two and
+	Sequence must be of integers or floats. If not, it will try to convert
+	it. If it does not succeed, a TyprError will be raised.
+	A pandas DataFrame will be constructed, with the columns: original
+	numbers without floating points, first, second, first two and
 	last two digits, so the tests that will follow will run properly
 
 	-> data: sequence of numbers to be evaluated. Must be in absolute values,
 			since negative values with minus signs will distort the tests.
-			PONDERAR DEIXAR O COMANDO JÁ DE CONVERTER PARA AbS
+			PONDERAR DEIXAR O COMANDO DE CONVERTER PARA AbS
 	-> dec: number of decimal places to be accounted for. Especially important
-			for the last two gigits test. The numbers will be multiplied by
+			for the last two digits test. The numbers will be multiplied by
 			10 to the power of the dec value. Defaluts to 2, to currency. If 
 			the numbers are integers, assign 0.
+	-> latin: used for str dtypes representing numbers in latin format, with
+			'.' for thousands and ',' for decimals. Converts to a string with
+			only '.' for decimals one none if int, so it can be later converted
+			to a number format. Defaults to False
 	'''
 	maps = {}
 
-	def __init__(self, data, dec=2):
+	def __init__(self, data, dec=2, latin=False):
 		pd.DataFrame.__init__(self, {'Seq': data})
 		self.dropna(inplace=True)
 		print "Initialized sequence with " + str(len(self)) + " registries."
+		if self.Seq.dtypes != 'int' and self.Seq.dtypes != 'float':
+			print 'Sequence dtype is not int nor float./n\
+			Trying to convert.../n'
+			if latin == True:
+				if dec != 0:
+					self.Seq = self.Seq.apply(_sanitize_latin_float_, dec=dec)
+				else:
+					self.Seq = self.Seq.apply(_sanitize_latin_int_)
+			#Try to convert to numbers
+			self.Seq = self.Seq.convert_objects(convert_numeric=True)
+			self.dropna(inplace=True)
+			if self.Seq.dtypes != 'int' and self.Seq.dtypes != 'float':
+				raise TypeError("The sequence dtype was not int nor float\
+				 and could not be converted./nConvert it to wheather int of float\
+				 and try again.")
 		# Extracts the digits in their respective positions,
 		self['ZN'] = self.Seq * (10**dec)  # dec - to manage decimals
 		self.ZN = self.ZN.apply(_tint_)
@@ -648,15 +668,26 @@ def _collapse_array_(arr):
 	arr[arr<1.]*=10
 	return arr*10/ilt
 
-def _sanitize_float_(s):
+def _sanitize_float_(s, dec):
 	s = str(s)
 	if '.' in s or ',' in s:
 		s = filter(type(s).isdigit, s)
-		s = s[:-2]+'.'+s[-2:]
+		s = s[:-dec]+'.'+s[-dec:]
 		return float(s)
 	else:
 		if filter(type(s).isdigit, s) == '':
 			return np.nan
 		else:
 			return int(s)
+
+def _sanitize_latin_float_(s, dec=2):
+	s = str(s)
+	s = filter(type(s).isdigit, s)
+	return s[:-dec]+'.'+s[-dec:]
+
+def _sanitize_latin_int_(s):
+	s = str(s)
+	s = filter(type(s).isdigit, s)
+	return s
+
 
