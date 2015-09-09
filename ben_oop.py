@@ -88,6 +88,8 @@ class Analysis(pd.DataFrame):
 			for the last two digits test. The numbers will be multiplied by
 			10 to the power of the dec value. Defaluts to 2, to currency. If 
 			the numbers are integers, assign 0.
+	-> inform: tells the number of registries that are being subjected to
+			the Analysis; defaults to True
 	-> latin: used for str dtypes representing numbers in latin format, with
 			'.' for thousands and ',' for decimals. Converts to a string with
 			only '.' for decimals one none if int, so it can be later converted
@@ -95,13 +97,13 @@ class Analysis(pd.DataFrame):
 	'''
 	maps = {}
 
-	def __init__(self, data, dec=2, latin=False):
+	def __init__(self, data, dec=2, inform = True, latin=False):
 		pd.DataFrame.__init__(self, {'Seq': data})
 		self.dropna(inplace=True)
-		print "Initialized sequence with " + str(len(self)) + " registries."
-		if self.Seq.dtypes != 'int' and self.Seq.dtypes != 'float':
-			print 'Sequence dtype is not int nor float./n\
-			Trying to convert.../n'
+		if inform == True:
+			print "Initialized sequence with " + str(len(self)) + " registries." 
+		if self.Seq.dtypes != 'float' and self.Seq.dtypes != 'int':
+			print 'Sequence dtype is not int nor float.\nTrying to convert...\n'
 			if latin == True:
 				if dec != 0:
 					self.Seq = self.Seq.apply(_sanitize_latin_float_, dec=dec)
@@ -110,13 +112,16 @@ class Analysis(pd.DataFrame):
 			#Try to convert to numbers
 			self.Seq = self.Seq.convert_objects(convert_numeric=True)
 			self.dropna(inplace=True)
-			if self.Seq.dtypes != 'int' and self.Seq.dtypes != 'float':
+			if self.Seq.dtypes == 'float' or self.Seq.dtypes == 'int':
+				print 'Conversion successful!'
+			else:
 				raise TypeError("The sequence dtype was not int nor float\
-				 and could not be converted./nConvert it to wheather int of float\
-				 and try again.")
+				 and could not be converted.\nConvert it to wheather int of float,\
+				  or set latin to True, and try again.")
 		# Extracts the digits in their respective positions,
 		self['ZN'] = self.Seq * (10**dec)  # dec - to manage decimals
-		self.ZN = self.ZN.apply(_tint_)
+		if dec != 0:
+			self.ZN = self.ZN.apply(_tint_)
 		#self = self[self.ZN!=0]
 		self['S'] = self.ZN.apply(str)
 		self['FD'] = self.S.str[:1]   # get the first digit
