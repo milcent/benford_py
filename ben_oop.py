@@ -18,6 +18,25 @@ class First(pd.DataFrame):
  	"""	Returns the expected probabilities of the first digits
 	according to Benford's distribution."""
 
+ 	def __init__(self, digs, plot = True):
+ 		if not digs in [1,2,3]:
+ 			raise ValueError("The value assigned to the parameter -digs-\
+ was %s. Value must be 1, 2 or 3." %digs)
+ 		dig_name = 'First_' + str(digs) + '_Dig'
+ 		Dig = np.arange(10**(digs-1),10**digs)
+ 		Exp = np.log10(1 + (1. / Dig))
+
+ 		pd.DataFrame.__init__(self, {'Expected': Exp}, index = Dig)
+ 		self.index.names = [dig_name]
+
+		if plot == True:
+			self.plot(kind='bar', color = 'g', grid=False,\
+			 figsize=(5*(digs+1),4*(digs+.6)))
+
+class FirstDig(pd.DataFrame):
+ 	"""	Returns the expected probabilities of the first digits
+	according to Benford's distribution."""
+
  	def __init__(self, plot = True):
  		First_Dig = np.arange(1,10)
  		Exp = np.log10(1 + (1. / First_Dig))
@@ -139,20 +158,20 @@ class Analysis(pd.DataFrame):
 			self.ZN = self.ZN.apply(_tint_)
 		#self = self[self.ZN!=0]
 		self['S'] = self.ZN.apply(str)
-		self['FD'] = self.S.str[:1]   # get the first digit
+		self['F1D'] = self.S.str[:1]   # get the first digit
 		self['SD'] = self.S.str[1:2]  # get the second digit
-		self['F2D'] = self.S.str[:2]
-		self['F3D'] = self.S.str[:3] # get the first two digits
+		self['F2D'] = self.S.str[:2]  # get the first two digits
+		self['F3D'] = self.S.str[:3]  # get the first three digits
 		self['L2D'] = self.S.str[-2:] # get the last two digits
 		# Leave the last two digits as strings , so as to be able to\
 		# display '00', '01', ... up to '09', till '99'
-		# converting the others to integers
-		self.FD = self.FD.apply(_tint_)
+		# convert the others to integers
+		self.F1D = self.F1D.apply(_tint_)
 		self.SD = self.SD.apply(_tint_)
 		self.F2D = self.F2D.apply(_tint_)
 		self.F3D = self.F3D.apply(_tint_)
 		del self['S']
-		self = self[self.F2D>=10]
+		#self = self[self.F2D>=10]
 
 	def mantissas(self, plot=True, figsize=(15,8)):
 		# if self.Seq.dtype != 'Float64':
@@ -169,193 +188,168 @@ class Analysis(pd.DataFrame):
 		ax.plot(x,p.Mant,'k--')
 		#ax.plot(x,f(x), 'b-')
 
-	# def prepare(self, dec=2):
+	# def firstTwoDigits(self, inform=True, MAD=True, top_Z=20, only_pos=True,\
+	# 	MSE=False, plot=True, map_back=True, mantissa = False):
 	# 	'''
-	# 	Prepares the DataFrame to be manipulated by the tests, with columns
-	# 	of the First, Second, First Two and Last Two digits of each number
+	# 	Performs the Benford First Two Digits test with the series of
+	# 	numbers provided.
+
+	# 	inform -> tells the number of registries that are being subjected to
+	# 	the Analysis; defaults to True
+
+	# 	MAD -> calculates the Mean of the Absolute Differences from the respective
+	# 	expected distributions; defaults to True.
+
+	# 	top_Z -> chooses the highest number of Z scores to be displayed
+
+	# 	only_pos -> will highlight only the values that are higher than the
+	# 	expexted frequencies, discarding the lower ones; defaults to True.
+
+	# 	MSE -> calculates the Mean Square Error of the sample; defaults to False.
+
+	# 	plot -> draws the plot of test for visual comparison, with the found
+	# 	distributions in bars and the expected ones in a line.
+
+	# 	map_back -> records the top differences to the maps dictionary to
+	# 	later index the original sequence; defaults to True.
+
 	# 	'''
-	# 	# Extracts the digits in their respective positions,
-	# 	self['ZN'] = self.Seq * (10**dec)
-	# 	self.ZN = self.ZN.apply(_tint_)
-	# 	#self = self[self.ZN!=0]
-	# 	self['S'] = self.ZN.apply(str)
-	# 	self['FD'] = self.S.str[:1]   # get the first digit
-	# 	self['SD'] = self.S.str[1:2]  # get the second digit
-	# 	self['FTD'] = self.S.str[:2]  # get the first two digits
-	# 	self['LTD'] = self.S.str[-2:] # get the last two digits
-	# 	# Leave the last two digits as strings , so as to be able to\
-	# 	# display '00', '01', ... up to '09', till '99'
-	# 	# converting the others to integers
-	# 	self.FD = self.FD.apply(_tint_)
-	# 	self.SD = self.SD.apply(_tint_)
-	# 	self.FTD = self.FTD.apply(_tint_)
-	# 	del self['S']
-	# 	self = self[self.FTD>=10]
+	# 	N = len(self)
+	# 	x = np.arange(10,100)
+	# 	if inform:
+	# 		print "\n---Test performed on " + str(N) + " registries.---\n"
+	# 	# get the number of occurrences of the first two digits
+	# 	v = self.F2D.value_counts()
+	# 	# get their relative frequencies
+	# 	p = self.F2D.value_counts(normalize =True)
+	# 	# crate dataframe from them
+	# 	df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
+	# 	# reindex from 10 to 99 in the case one or more of the first
+	# 	# two digits are missing, so the Expected frequencies column
+	# 	# can later be joined; and swap NANs with zeros.
+	# 	if len(df.index) < 90:
+	# 		df = df.reindex(x).fillna(0)
+	# 	# join the dataframe with the one of expected Benford's frequencies
+	# 	df = FirstTwo(plot=False).join(df)
+	# 	# create column with absolute differences
+	# 	df['Dif'] = df.Found - df.Expected
+	# 	df['AbsDif'] = np.absolute(df.Dif)
+	# 	# calculate the Z-test column an display the dataframe by descending
+	# 	# Z test
+	# 	df['Z_test'] = _Z_test(df,N)
+	# 	if only_pos:
+	# 		dd = df[['Expected','Found','Z_test']][df.Dif>0].sort('Z_test',\
+	# 		 ascending=False).head(top_Z)
+	# 		print '\nThe positive deviations` top ' + str(top_Z) + ' Z scores are:\n'
+	# 	else:
+	# 		dd = df[['Expected','Found','Z_test']].sort('Z_test',\
+	# 		 ascending=False).head(top_Z)
+	# 		print '\nThe top ' + str(top_Z) + ' Z scores are:\n'
+	# 	print dd
 		
+	# 	if map_back == True:
+	# 		self.maps['FTD'] = np.array(dd.index)
+
+	# 	# Mean absolute difference
+	# 	if MAD == True:
+	# 		mad = _mad_(df)
+	# 		print "\nThe Mean Absolute Deviation is " + str(mad) + '\n'\
+	# 		+ 'For the First Two Digits:\n\
+	# 		- 0.0000 to 0.0012: Close Conformity\n\
+	# 		- 0.0012 to 0.0018: Acceptable Conformity\n\
+	# 		- 0.0018 to 0.0022: Marginally Acceptable Conformity\n\
+	# 		- Above 0.0022: Nonconformity'
+	# 	# Mean Square Error
+	# 	if MSE == True:
+	# 		mse = _mse_(df)
+	# 		print "\nMean Square Error = " + str(mse)
+	# 	# Plotting the expected frequncies (line) against the found ones(bars)
+	# 	if plot == True:
+	# 		_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
+
+	# 	if mantissa == True:
+	# 		df['Mantissas'] = np.log10(g) - np.log10(g).astype(int)
 
 
-	def firstTwoDigits(self, inform=True, MAD=True, top_Z=20, only_pos=True,\
-		MSE=False, plot=True, map_back=True, mantissa = False):
-		'''
-		Performs the Benford First Two Digits test with the series of
-		numbers provided.
+	# 	return df
 
-		inform -> tells the number of registries that are being subjected to
-		the Analysis; defaults to True
+	# def firstDigit(self, inform=True, MAD=True, MSE=False, only_pos=True,\
+	# map_back=True, plot=True):
+	# 	'''
+	# 	Performs the Benford First Digit test with the series of
+	# 	numbers provided.
 
-		MAD -> calculates the Mean of the Absolute Differences from the respective
-		expected distributions; defaults to True.
+	# 	inform -> tells the number of registries that are being subjected to
+	# 	the Analysis; defaults to True
 
-		top_Z -> chooses the highest number of Z scores to be displayed
+	# 	MAD -> calculates the Mean of the Absolute Differences from the respective
+	# 	expected distributions; defaults to True.
 
-		only_pos -> will highlight only the values that are higher than the
-		expexted frequencies, discarding the lower ones; defaults to True.
+	# 	Z_test -> calculates the Z test of the sample; defaluts to True.
 
-		MSE -> calculates the Mean Square Error of the sample; defaults to False.
+	# 	map_back -> records the ordered higher differences to the maps dictionary
+	# 	to later index the original sequence; defaults to True.
 
-		plot -> draws the plot of test for visual comparison, with the found
-		distributions in bars and the expected ones in a line.
+	# 	MSE -> calculates the Mean Square Error of the sample; defaluts to False.
 
-		map_back -> records the top differences to the maps dictionary to
-		later index the original sequence; defaults to True.
+	# 	plot -> draws the plot of test for visual comparison, with the found
+	# 	distributions in bars and the expected ones in a line.
 
-		'''
-		N = len(self)
-		x = np.arange(10,100)
-		if inform:
-			print "\n---Test performed on " + str(N) + " registries.---\n"
-		# get the number of occurrences of the first two digits
-		v = self.F2D.value_counts()
-		# get their relative frequencies
-		p = self.F2D.value_counts(normalize =True)
-		# crate dataframe from them
-		df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
-		# reindex from 10 to 99 in the case one or more of the first
-		# two digits are missing, so the Expected frequencies column
-		# can later be joined; and swap NANs with zeros.
-		if len(df.index) < 90:
-			df = df.reindex(x).fillna(0)
-		# join the dataframe with the one of expected Benford's frequencies
-		df = FirstTwo(plot=False).join(df)
-		# create column with absolute differences
-		df['Dif'] = df.Found - df.Expected
-		df['AbsDif'] = np.absolute(df.Dif)
-		# calculate the Z-test column an display the dataframe by descending
-		# Z test
-		df['Z_test'] = _Z_test(df,N)
-		if only_pos:
-			dd = df[['Expected','Found','Z_test']][df.Dif>0].sort('Z_test',\
-			 ascending=False).head(top_Z)
-			print '\nThe positive deviations` top ' + str(top_Z) + ' Z scores are:\n'
-		else:
-			dd = df[['Expected','Found','Z_test']].sort('Z_test',\
-			 ascending=False).head(top_Z)
-			print '\nThe top ' + str(top_Z) + ' Z scores are:\n'
-		print dd
-		
-		if map_back == True:
-			self.maps['FTD'] = np.array(dd.index)
+	# 	'''
 
-		# Mean absolute difference
-		if MAD == True:
-			mad = _mad_(df)
-			print "\nThe Mean Absolute Deviation is " + str(mad) + '\n'\
-			+ 'For the First Two Digits:\n\
-			- 0.0000 to 0.0012: Close Conformity\n\
-			- 0.0012 to 0.0018: Acceptable Conformity\n\
-			- 0.0018 to 0.0022: Marginally Acceptable Conformity\n\
-			- Above 0.0022: Nonconformity'
-		# Mean Square Error
-		if MSE == True:
-			mse = _mse_(df)
-			print "\nMean Square Error = " + str(mse)
-		# Plotting the expected frequncies (line) against the found ones(bars)
-		if plot == True:
-			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
+	# 	N = len(self)
+	# 	x = np.arange(1,10)
+	# 	if inform:
+	# 		print "\n---Test performed on " + str(N) + " registries.---\n"
+	# 	# get the number of occurrences of each first digit
+	# 	v = self.F1D.value_counts()
+	# 	# get their relative frequencies
+	# 	p = self.F1D.value_counts(normalize =True)
+	# 	# crate dataframe from them
+	# 	df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
+	# 	# reindex from 10 to 99 in the case one or more of the first
+	# 	# two digits are missing, so the Expected frequencies column
+	# 	# can later be joined; and swap NANs with zeros.
 
-		if mantissa == True:
-			df['Mantissas'] = np.log10(g) - np.log10(g).astype(int)
+	# 	# join the dataframe with the one of expected Benford's frequencies
+	# 	df = FirstDig(plot=False).join(df)
+	# 	# create column with absolute differences
+	# 	df['Dif'] = df.Found - df.Expected
+	# 	df['AbsDif'] = np.absolute(df.Dif)
+	# 	# calculate the Z-test column an display the dataframe by descending
+	# 	# Z test
+	# 	df['Z_test'] = _Z_test(df,N)
+	# 	if only_pos:
+	# 		dd = df[['Expected','Found','Z_test']][df.Dif>0].sort('Z_test',\
+	# 		 ascending=False)
+	# 		print '\nThe descending positive deviations` Z scores are:\n'
+	# 	else:
+	# 		dd = df[['Expected','Found','Z_test']].sort('Z_test',\
+	# 		 ascending=False)
+	# 		print '\nThe descending Z scores are:\n'
+	# 	print dd
 
+	# 	if map_back == True:
+	# 		self.maps['FD'] = np.array(dd.index)
 
-		return df
+	# 	# Mean absolute difference
+	# 	if MAD == True:
+	# 		mad = _mad_(df)
+	# 		print "\nThe Mean Absolute Deviation is " + str(mad) + '\n'\
+	# 		+ 'For the First Digits:\n\
+	# 		- 0.0000 to 0.0006: Close Conformity\n\
+	# 		- 0.0006 to 0.0012: Acceptable Conformity\n\
+	# 		- 0.0012 to 0.0015: Marginally Acceptable Conformity\n\
+	# 		- Above 0.0015: Nonconformity'
+	# 	# Mean Square Error
+	# 	if MSE == True:
+	# 		mse = _mse_(df)
+	# 		print "\nMean Square Error = " + str(mse)
+	# 	# Plotting the expected frequncies (line) against the found ones(bars)
+	# 	if plot == True:
+	# 		_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
 
-	def firstDigit(self, inform=True, MAD=True, MSE=False, only_pos=True,\
-	map_back=True, plot=True):
-		'''
-		Performs the Benford First Digit test with the series of
-		numbers provided.
-
-		inform -> tells the number of registries that are being subjected to
-		the Analysis; defaults to True
-
-		MAD -> calculates the Mean of the Absolute Differences from the respective
-		expected distributions; defaults to True.
-
-		Z_test -> calculates the Z test of the sample; defaluts to True.
-
-		map_back -> records the ordered higher differences to the maps dictionary
-		to later index the original sequence; defaults to True.
-
-		MSE -> calculates the Mean Square Error of the sample; defaluts to False.
-
-		plot -> draws the plot of test for visual comparison, with the found
-		distributions in bars and the expected ones in a line.
-
-		'''
-
-		N = len(self)
-		x = np.arange(1,10)
-		if inform:
-			print "\n---Test performed on " + str(N) + " registries.---\n"
-		# get the number of occurrences of each first digit
-		v = self.FD.value_counts()
-		# get their relative frequencies
-		p = self.FD.value_counts(normalize =True)
-		# crate dataframe from them
-		df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
-		# reindex from 10 to 99 in the case one or more of the first
-		# two digits are missing, so the Expected frequencies column
-		# can later be joined; and swap NANs with zeros.
-
-		# join the dataframe with the one of expected Benford's frequencies
-		df = First(plot=False).join(df)
-		# create column with absolute differences
-		df['Dif'] = df.Found - df.Expected
-		df['AbsDif'] = np.absolute(df.Dif)
-		# calculate the Z-test column an display the dataframe by descending
-		# Z test
-		df['Z_test'] = _Z_test(df,N)
-		if only_pos:
-			dd = df[['Expected','Found','Z_test']][df.Dif>0].sort('Z_test',\
-			 ascending=False)
-			print '\nThe descending positive deviations` Z scores are:\n'
-		else:
-			dd = df[['Expected','Found','Z_test']].sort('Z_test',\
-			 ascending=False)
-			print '\nThe descending Z scores are:\n'
-		print dd
-
-		if map_back == True:
-			self.maps['FD'] = np.array(dd.index)
-
-		# Mean absolute difference
-		if MAD == True:
-			mad = _mad_(df)
-			print "\nThe Mean Absolute Deviation is " + str(mad) + '\n'\
-			+ 'For the First Digits:\n\
-			- 0.0000 to 0.0006: Close Conformity\n\
-			- 0.0006 to 0.0012: Acceptable Conformity\n\
-			- 0.0012 to 0.0015: Marginally Acceptable Conformity\n\
-			- Above 0.0015: Nonconformity'
-		# Mean Square Error
-		if MSE == True:
-			mse = _mse_(df)
-			print "\nMean Square Error = " + str(mse)
-		# Plotting the expected frequncies (line) against the found ones(bars)
-		if plot == True:
-			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
-
-		### return df
+	# 	### return df
 
 	def secondDigit(self, inform=True, MAD=True, MSE=False, only_pos=True,\
 	map_back=True, plot=True):
@@ -435,7 +429,105 @@ class Analysis(pd.DataFrame):
 			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
 
 		### return df
+	def firstDigits(self, digs, inform=True, MAD=True, top_Z=20, only_pos=True,\
+		MSE=False, plot=True, map_back=True, mantissa = False):
+		'''
+		Performs the Benford First Two Digits test with the series of
+		numbers provided.
 
+		digs -> number of first digits to consider. Must be 1 (first digit),
+		2 (first two digits) or 3 (first three digits).
+
+		inform -> tells the number of registries that are being subjected to
+		the Analysis; defaults to True
+
+		MAD -> calculates the Mean of the Absolute Differences from the respective
+		expected distributions; defaults to True.
+
+		top_Z -> chooses the highest number of Z scores to be displayed
+
+		only_pos -> will highlight only the values that are higher than the
+		expexted frequencies, discarding the lower ones; defaults to True.
+
+		MSE -> calculates the Mean Square Error of the sample; defaults to False.
+
+		plot -> draws the plot of test for visual comparison, with the found
+		distributions in bars and the expected ones in a line.
+
+		map_back -> records the top differences to the maps dictionary to
+		later index the original sequence; defaults to True.
+
+		'''
+		N = len(self)
+		if not digs in [1,2,3]:
+			raise ValueError("The value assigned to the parameter -digs-\
+ was %s. Value must be 1, 2 or 3." %digs)
+ 		dig_name = 'F' + str(digs) + 'D'
+ 		n,m = 10**(digs-1), 10**(digs)
+		x = np.arange(n,m)
+		if inform:
+			print "\n---Test performed on " + str(N) + " registries.---\n"
+		# get the number of occurrences of the first two digits
+		v = self[dig_name].value_counts()
+		# get their relative frequencies
+		p = self[dig_name].value_counts(normalize =True)
+		# crate dataframe from them
+		df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
+		# reindex from n to m in the case one or more of the first
+		# digits are missing, so the Expected frequencies column
+		# can later be joined; and swap NANs with zeros.
+		if len(df.index) < m-n:
+			df = df.reindex(x).fillna(0)
+		# join the dataframe with the one of expected Benford's frequencies
+		df = First(digs=digs,plot=False).join(df)
+		# create column with absolute differences
+		df['Dif'] = df.Found - df.Expected
+		df['AbsDif'] = np.absolute(df.Dif)
+		# calculate the Z-test column an display the dataframe by descending
+		# Z test
+		df['Z_test'] = _Z_test(df,N)
+		if only_pos:
+			dd = df[['Expected','Found','Z_test']][df.Dif>0].sort('Z_test',\
+			 ascending=False).head(top_Z)
+			print '\nThe positive deviations` top ' + str(top_Z) + ' Z scores are:\n'
+		else:
+			dd = df[['Expected','Found','Z_test']].sort('Z_test',\
+			 ascending=False).head(top_Z)
+			print '\nThe top ' + str(top_Z) + ' Z scores are:\n'
+		print dd
+		
+		if map_back == True:
+			self.maps[dig_name] = np.array(dd.index)
+
+		# Mean absolute difference
+		if MAD == True:
+			mad = df.AbsDif.mean()
+			if digs == 1:
+				margins = ['0.0006','0.0012','0.0015', 'Digit']
+			elif digs == 2:
+				margins = ['0.0012','0.0018','0.0022', 'Two Digits']
+			else:
+				margins = ['0.00036','0.00044','0.00050', 'Three Digits']
+			print "\nThe Mean Absolute Deviation is " + str(mad) + '\n'\
+			+ 'For the First ' + margins[3] + ':\n\
+			- 0.0000 to ' + margins[0] + ': Close Conformity\n\
+			- ' + margins[0] + ' to ' + margins[1] + ': Acceptable Conformity\n\
+			- ' + margins[1] + ' to ' + margins[2] + ': Marginally Acceptable Conformity\n\
+			- Above ' + margins[2] + ': Nonconformity'
+		# Mean Square Error
+		if MSE == True:
+			mse = (df.AbsDif**2).mean()
+			print "\nMean Square Error = " + str(mse)
+		# Plotting the expected frequncies (line) against the found ones(bars)
+		if plot == True:
+			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found,\
+			 N=N, figsize=(5*(digs+1),4*(digs+.6)))
+
+		if mantissa == True:
+			df['Mantissas'] = np.log10(g) - np.log10(g).astype(int)
+
+
+		return df
 	def lastTwoDigits(self, inform=True, MAD=False, Z_test=True, top_Z=20,\
 	 only_pos=True, map_back=True, MSE=False, plot=True):
 		'''
@@ -649,7 +741,7 @@ def _tint_(s):
 def _len2_(st):
 	return len(st) == 2
 
-def _plot_benf_(df, x, y_Exp, y_Found, N,lowUpBounds = True, figsize=(15,8)):		
+def _plot_benf_(df, x, y_Exp, y_Found, N, figsize, lowUpBounds = True):		
 	fig = plt.figure(figsize=figsize)
 	ax = fig.add_subplot(111)
 	plt.title('Expected vs. Found Distributions')
