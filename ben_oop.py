@@ -59,6 +59,21 @@ class FirstTwo(pd.DataFrame):
 		if plot == True:
 			self.plot(kind='bar', figsize = (15,8), color='g', grid=False)
 
+class FirstThree(pd.DataFrame):
+	'''
+	Returns the expected probabilities of the first three digits
+	according to Benford's distribution.
+	'''
+	def __init__(self, plot=True):
+		First_3_Dig = np.arange(100,1000)
+		Expect = np.log10(1 + (1. / First_3_Dig))
+
+		pd.DataFrame.__init__(self,{'Expected':Expect, 'First_3_Dig':\
+			First_3_Dig})
+		self.set_index('First_3_Dig', inplace=True)
+		if plot == True:
+			self.plot(kind='bar', figsize = (20,8), color='g', grid=False)
+
 class LastTwo(pd.DataFrame):
 	'''   
 	Returns the expected probabilities of the last two digits
@@ -74,9 +89,9 @@ class LastTwo(pd.DataFrame):
 
 class Analysis(pd.DataFrame):
 	'''
-	Initiates the Analysis of the series. pd.DataFrame subclass.
+	Initiates the Analysis of the series. pandas DataFrame subclass.
 	Sequence must be of integers or floats. If not, it will try to convert
-	it. If it does not succeed, a TyprError will be raised.
+	it. If it does not succeed, a TypeError will be raised.
 	A pandas DataFrame will be constructed, with the columns: original
 	numbers without floating points, first, second, first two and
 	last two digits, so the tests that will follow will run properly
@@ -92,8 +107,8 @@ class Analysis(pd.DataFrame):
 			the Analysis; defaults to True
 	-> latin: used for str dtypes representing numbers in latin format, with
 			'.' for thousands and ',' for decimals. Converts to a string with
-			only '.' for decimals one none if int, so it can be later converted
-			to a number format. Defaults to False
+			only '.' for decimals and none if int, so it can be later converted
+			to a number format. Defaults to False.
 	'''
 	maps = {}
 
@@ -126,16 +141,18 @@ class Analysis(pd.DataFrame):
 		self['S'] = self.ZN.apply(str)
 		self['FD'] = self.S.str[:1]   # get the first digit
 		self['SD'] = self.S.str[1:2]  # get the second digit
-		self['FTD'] = self.S.str[:2]  # get the first two digits
-		self['LTD'] = self.S.str[-2:] # get the last two digits
+		self['F2D'] = self.S.str[:2]
+		self['F3D'] = self.S.str[:3] # get the first two digits
+		self['L2D'] = self.S.str[-2:] # get the last two digits
 		# Leave the last two digits as strings , so as to be able to\
 		# display '00', '01', ... up to '09', till '99'
 		# converting the others to integers
 		self.FD = self.FD.apply(_tint_)
 		self.SD = self.SD.apply(_tint_)
-		self.FTD = self.FTD.apply(_tint_)
+		self.F2D = self.F2D.apply(_tint_)
+		self.F3D = self.F3D.apply(_tint_)
 		del self['S']
-		self = self[self.FTD>=10]
+		self = self[self.F2D>=10]
 
 	def mantissas(self, plot=True, figsize=(15,8)):
 		# if self.Seq.dtype != 'Float64':
@@ -208,9 +225,9 @@ class Analysis(pd.DataFrame):
 		if inform:
 			print "\n---Test performed on " + str(N) + " registries.---\n"
 		# get the number of occurrences of the first two digits
-		v = self.FTD.value_counts()
+		v = self.F2D.value_counts()
 		# get their relative frequencies
-		p = self.FTD.value_counts(normalize =True)
+		p = self.F2D.value_counts(normalize =True)
 		# crate dataframe from them
 		df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
 		# reindex from 10 to 99 in the case one or more of the first
@@ -447,9 +464,9 @@ class Analysis(pd.DataFrame):
 		if inform:
 			print "\n---Test performed on " + str(N) + " registries.---\n"
 		# get the number of occurrences of the last two digits
-		v = self.LTD.value_counts()
+		v = self.L2D.value_counts()
 		# get their relative frequencies
-		p = self.LTD.value_counts(normalize =True)
+		p = self.L2D.value_counts(normalize =True)
 		# crate dataframe from them
 		df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
 		# join the dataframe with the one of expected Benford's frequencies
