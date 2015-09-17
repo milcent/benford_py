@@ -741,7 +741,7 @@ def _tint_(s):
 def _len2_(st):
 	return len(st) == 2
 
-def _plot_benf_(df, x, y_Exp, y_Found, N, figsize, lowUpBounds = True):		
+def _plot_benf_(df, x, y_Exp, y_Found, N, figsize, conf_interval = True):		
 	fig = plt.figure(figsize=figsize)
 	ax = fig.add_subplot(111)
 	plt.title('Expected vs. Found Distributions')
@@ -752,10 +752,12 @@ def _plot_benf_(df, x, y_Exp, y_Found, N, figsize, lowUpBounds = True):
 	 label='Expected')
 	ax.legend()
 	# Plotting the Upper and Lower bounds considering p=0.05
-	if lowUpBounds == True:
-		sig_5 = 1.96 * np.sqrt(y_Exp*(1-y_Exp)/N)
-		upper = y_Exp + sig_5 + (1/(2*N))
-		lower = y_Exp - sig_5 - (1/(2*N))
+	conf = {'80':1.285,'85':1.435,'90':1.645,'95':1.96,'99':2.575,\
+	'99.99':3.71}
+	if conf_interval == True:
+		sig = 1.96 * np.sqrt(y_Exp*(1-y_Exp)/N) # conf[str(conf_interval)]
+		upper = y_Exp + sig + (1/(2*N))
+		lower = y_Exp - sig - (1/(2*N))
 		ax.plot(x, upper, color= 'r')
 		ax.plot(x, lower, color= 'r')
 		ax.fill_between(x, upper,lower, color='r', alpha=.3)
