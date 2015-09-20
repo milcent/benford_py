@@ -33,20 +33,20 @@ class First(pd.DataFrame):
 			self.plot(kind='bar', color = 'g', grid=False,\
 			 figsize=(5*(digs+1),4*(digs+.6)))
 
-class FirstDig(pd.DataFrame):
- 	"""	Returns the expected probabilities of the first digits
-	according to Benford's distribution."""
+# class FirstDig(pd.DataFrame):
+#  	"""	Returns the expected probabilities of the first digits
+# 	according to Benford's distribution."""
 
- 	def __init__(self, plot = True):
- 		First_Dig = np.arange(1,10)
- 		Exp = np.log10(1 + (1. / First_Dig))
+#  	def __init__(self, plot = True):
+#  		First_Dig = np.arange(1,10)
+#  		Exp = np.log10(1 + (1. / First_Dig))
 
- 		pd.DataFrame.__init__(self, {'Expected':\
- 			Exp}, index = First_Dig)
- 		self.index.names = ['First_Dig']
+#  		pd.DataFrame.__init__(self, {'Expected':\
+#  			Exp}, index = First_Dig)
+#  		self.index.names = ['First_Dig']
 
-		if plot == True:
-			self.plot(kind='bar', color = 'g', grid=False)
+# 		if plot == True:
+# 			self.plot(kind='bar', color = 'g', grid=False)
 
 class Second(pd.DataFrame):
 	'''
@@ -63,35 +63,35 @@ class Second(pd.DataFrame):
 		if plot == True:
 			self.plot(kind='bar', color = 'g', grid=False, ylim=(0,.14))
 
-class FirstTwo(pd.DataFrame):
-	'''
-	Returns the expected probabilities of the first two digits
-	according to Benford's distribution.
-	'''
-	def __init__(self, plot=True):
-		First_2_Dig = np.arange(10,100)
-		Expect = np.log10(1 + (1. / First_2_Dig))
+# class FirstTwo(pd.DataFrame):
+# 	'''
+# 	Returns the expected probabilities of the first two digits
+# 	according to Benford's distribution.
+# 	'''
+# 	def __init__(self, plot=True):
+# 		First_2_Dig = np.arange(10,100)
+# 		Expect = np.log10(1 + (1. / First_2_Dig))
 
-		pd.DataFrame.__init__(self,{'Expected':Expect, 'First_2_Dig':\
-			First_2_Dig})
-		self.set_index('First_2_Dig', inplace=True)
-		if plot == True:
-			self.plot(kind='bar', figsize = (15,8), color='g', grid=False)
+# 		pd.DataFrame.__init__(self,{'Expected':Expect, 'First_2_Dig':\
+# 			First_2_Dig})
+# 		self.set_index('First_2_Dig', inplace=True)
+# 		if plot == True:
+# 			self.plot(kind='bar', figsize = (15,8), color='g', grid=False)
 
-class FirstThree(pd.DataFrame):
-	'''
-	Returns the expected probabilities of the first three digits
-	according to Benford's distribution.
-	'''
-	def __init__(self, plot=True):
-		First_3_Dig = np.arange(100,1000)
-		Expect = np.log10(1 + (1. / First_3_Dig))
+# class FirstThree(pd.DataFrame):
+# 	'''
+# 	Returns the expected probabilities of the first three digits
+# 	according to Benford's distribution.
+# 	'''
+# 	def __init__(self, plot=True):
+# 		First_3_Dig = np.arange(100,1000)
+# 		Expect = np.log10(1 + (1. / First_3_Dig))
 
-		pd.DataFrame.__init__(self,{'Expected':Expect, 'First_3_Dig':\
-			First_3_Dig})
-		self.set_index('First_3_Dig', inplace=True)
-		if plot == True:
-			self.plot(kind='bar', figsize = (20,8), color='g', grid=False)
+# 		pd.DataFrame.__init__(self,{'Expected':Expect, 'First_3_Dig':\
+# 			First_3_Dig})
+# 		self.set_index('First_3_Dig', inplace=True)
+# 		if plot == True:
+# 			self.plot(kind='bar', figsize = (20,8), color='g', grid=False)
 
 class LastTwo(pd.DataFrame):
 	'''   
@@ -130,6 +130,8 @@ class Analysis(pd.DataFrame):
 			to a number format. Defaults to False.
 	'''
 	maps = {}
+	confs = {'80':1.285,'85':1.435,'90':1.645,'95':1.96,'99':2.575,\
+	'99.99':3.71}
 
 	def __init__(self, data, dec=2, inform = True, latin=False):
 		pd.DataFrame.__init__(self, {'Seq': data})
@@ -429,8 +431,8 @@ class Analysis(pd.DataFrame):
 			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
 
 		### return df
-	def firstDigits(self, digs, inform=True, MAD=True, top_Z=20, only_pos=True,\
-		MSE=False, plot=True, map_back=True, mantissa = False):
+	def firstDigits(self, digs, inform=True, MAD=True, conf_level=95, top_Z=20,\
+		only_pos=True, MSE=False, plot=True, map_back=True, mantissa = False):
 		'''
 		Performs the Benford First Two Digits test with the series of
 		numbers provided.
@@ -444,7 +446,12 @@ class Analysis(pd.DataFrame):
 		MAD -> calculates the Mean of the Absolute Differences from the respective
 		expected distributions; defaults to True.
 
-		top_Z -> chooses the highest number of Z scores to be displayed
+		conf_level -> confidence level to draw lower and upper limits when
+		plotting and to limit the mapping of the proportions to only the
+		ones significantly diverging from the expected. Defaults to 95
+
+		top_Z -> chooses the highest number of Z scores to be displayed.Defaluts
+		to 20.
 
 		only_pos -> will highlight only the values that are higher than the
 		expexted frequencies, discarding the lower ones; defaults to True.
@@ -457,14 +464,23 @@ class Analysis(pd.DataFrame):
 		map_back -> records the top differences to the maps dictionary to
 		later index the original sequence; defaults to True.
 
+		
 		'''
 		N = len(self)
+
+		if str(conf_level) not in self.confs.keys():
+			raise ValueError("Value of conf_level must be one of the\
+ following: 80, 85, 90, 95, 99 or 99.99")
+
 		if not digs in [1,2,3]:
 			raise ValueError("The value assigned to the parameter -digs-\
  was %s. Value must be 1, 2 or 3." %digs)
+
  		dig_name = 'F' + str(digs) + 'D'
  		n,m = 10**(digs-1), 10**(digs)
 		x = np.arange(n,m)
+		conf = self.confs[str(conf_level)]
+		
 		if inform:
 			print "\n---Test performed on " + str(N) + " registries.---\n"
 		# get the number of occurrences of the first two digits
@@ -520,8 +536,8 @@ class Analysis(pd.DataFrame):
 			print "\nMean Square Error = " + str(mse)
 		# Plotting the expected frequncies (line) against the found ones(bars)
 		if plot == True:
-			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found,\
-			 N=N, figsize=(5*(digs+1),4*(digs+.6)))
+			_plot_benf_(df, x = x, y_Exp = df.Expected, y_Found = df.Found,\
+			 N = N, figsize = (5*(digs+1),4*(digs+.6)), conf_Z = conf)
 
 		if mantissa == True:
 			df['Mantissas'] = np.log10(g) - np.log10(g).astype(int)
@@ -741,7 +757,7 @@ def _tint_(s):
 def _len2_(st):
 	return len(st) == 2
 
-def _plot_benf_(df, x, y_Exp, y_Found, N, figsize, conf_interval = True):		
+def _plot_benf_(df, x, y_Exp, y_Found, N, figsize, conf_Z):		
 	fig = plt.figure(figsize=figsize)
 	ax = fig.add_subplot(111)
 	plt.title('Expected vs. Found Distributions')
@@ -751,16 +767,14 @@ def _plot_benf_(df, x, y_Exp, y_Found, N, figsize, conf_interval = True):
 	ax.plot(x, y_Exp, color='g',linewidth=2.5,\
 	 label='Expected')
 	ax.legend()
-	# Plotting the Upper and Lower bounds considering p=0.05
-	conf = {'80':1.285,'85':1.435,'90':1.645,'95':1.96,'99':2.575,\
-	'99.99':3.71}
-	if conf_interval == True:
-		sig = 1.96 * np.sqrt(y_Exp*(1-y_Exp)/N) # conf[str(conf_interval)]
-		upper = y_Exp + sig + (1/(2*N))
-		lower = y_Exp - sig - (1/(2*N))
-		ax.plot(x, upper, color= 'r')
-		ax.plot(x, lower, color= 'r')
-		ax.fill_between(x, upper,lower, color='r', alpha=.3)
+	# Plotting the Upper and Lower bounds considering the Z for the
+	# informed confidence level
+	sig = conf_Z * np.sqrt(y_Exp*(1-y_Exp)/N) 
+	upper = y_Exp + sig + (1/(2*N))
+	lower = y_Exp - sig - (1/(2*N))
+	ax.plot(x, upper, color= 'r')
+	ax.plot(x, lower, color= 'r')
+	ax.fill_between(x, upper,lower, color='r', alpha=.3)
 	plt.show()
 
 
