@@ -15,8 +15,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class First(pd.DataFrame):
- 	"""	Returns the expected probabilities of the first digits
-	according to Benford's distribution."""
+ 	'''
+ 	Returns the expected probabilities of the First, First Two, or
+ 	First Three digits according to Benford's distribution.
+
+	-> digs: 1, 2 or 3 - tells which of the first digits to consider:
+			1 for the First Digit, 2 for the First Two Digits and 3 for
+			the First Three Digits.
+	-> plot: option to plot a bar chart of the Expected proportions.
+			Defaults to True.
+	'''
 
  	def __init__(self, digs, plot = True):
  		if not digs in [1,2,3]:
@@ -33,25 +41,13 @@ class First(pd.DataFrame):
 			self.plot(kind='bar', color = 'g', grid=False,\
 			 figsize=(5*(digs+1),4*(digs+.6)))
 
-# class FirstDig(pd.DataFrame):
-#  	"""	Returns the expected probabilities of the first digits
-# 	according to Benford's distribution."""
-
-#  	def __init__(self, plot = True):
-#  		First_Dig = np.arange(1,10)
-#  		Exp = np.log10(1 + (1. / First_Dig))
-
-#  		pd.DataFrame.__init__(self, {'Expected':\
-#  			Exp}, index = First_Dig)
-#  		self.index.names = ['First_Dig']
-
-# 		if plot == True:
-# 			self.plot(kind='bar', color = 'g', grid=False)
-
 class Second(pd.DataFrame):
 	'''
-	Returns the expected probabilities of the second digits
+	Returns the expected probabilities of the Second Digits
 	according to Benford's distribution.
+
+	-> plot: option to plot a bar chart of the Expected proportions.
+			Defaults to True.
 	'''
 	def __init__(self, plot = True):
 		a = np.arange(10,100)
@@ -63,40 +59,13 @@ class Second(pd.DataFrame):
 		if plot == True:
 			self.plot(kind='bar', color = 'g', grid=False, ylim=(0,.14))
 
-# class FirstTwo(pd.DataFrame):
-# 	'''
-# 	Returns the expected probabilities of the first two digits
-# 	according to Benford's distribution.
-# 	'''
-# 	def __init__(self, plot=True):
-# 		First_2_Dig = np.arange(10,100)
-# 		Expect = np.log10(1 + (1. / First_2_Dig))
-
-# 		pd.DataFrame.__init__(self,{'Expected':Expect, 'First_2_Dig':\
-# 			First_2_Dig})
-# 		self.set_index('First_2_Dig', inplace=True)
-# 		if plot == True:
-# 			self.plot(kind='bar', figsize = (15,8), color='g', grid=False)
-
-# class FirstThree(pd.DataFrame):
-# 	'''
-# 	Returns the expected probabilities of the first three digits
-# 	according to Benford's distribution.
-# 	'''
-# 	def __init__(self, plot=True):
-# 		First_3_Dig = np.arange(100,1000)
-# 		Expect = np.log10(1 + (1. / First_3_Dig))
-
-# 		pd.DataFrame.__init__(self,{'Expected':Expect, 'First_3_Dig':\
-# 			First_3_Dig})
-# 		self.set_index('First_3_Dig', inplace=True)
-# 		if plot == True:
-# 			self.plot(kind='bar', figsize = (20,8), color='g', grid=False)
-
 class LastTwo(pd.DataFrame):
 	'''   
-	Returns the expected probabilities of the last two digits
+	Returns the expected probabilities of the Last Two Digits
 	according to Benford's distribution.
+
+	-> plot: option to plot a bar chart of the Expected proportions.
+			Defaults to True.
 	'''
 	def __init__(self, plot=True):
 		exp = np.array([1/99.]*100)
@@ -104,34 +73,35 @@ class LastTwo(pd.DataFrame):
 		self.set_index('Last_2_Dig', inplace=True)
 		if plot == True:
 			self.plot(kind='bar',figsize = (15,8), color = 'g',\
-				grid=False,  ylim=(0,.02))
+				grid=False,  ylim=(0,.015))
 
 class Analysis(pd.DataFrame):
 	'''
 	Initiates the Analysis of the series. pandas DataFrame subclass.
-	Sequence must be of integers or floats. If not, it will try to convert
+	Values must be integers or floats. If not, it will try to convert
 	it. If it does not succeed, a TypeError will be raised.
 	A pandas DataFrame will be constructed, with the columns: original
-	numbers without floating points, first, second, first two and
-	last two digits, so the tests that will follow will run properly
+	numbers without floating points, first, second, first two, first three
+	and	last two digits, so the following tests will run properly.
 
 	-> data: sequence of numbers to be evaluated. Must be in absolute values,
 			since negative values with minus signs will distort the tests.
 			PONDERAR DEIXAR O COMANDO DE CONVERTER PARA AbS
 	-> dec: number of decimal places to be accounted for. Especially important
 			for the last two digits test. The numbers will be multiplied by
-			10 to the power of the dec value. Defaluts to 2, to currency. If 
+			10 to the power of the dec value. Defaluts to 2 (currency). If 
 			the numbers are integers, assign 0.
 	-> inform: tells the number of registries that are being subjected to
 			the Analysis; defaults to True
 	-> latin: used for str dtypes representing numbers in latin format, with
 			'.' for thousands and ',' for decimals. Converts to a string with
-			only '.' for decimals and none if int, so it can be later converted
-			to a number format. Defaults to False.
+			only '.' for decimals if float, and none if int, so it can be later
+			converted to a number format. Defaults to False.
 	'''
-	maps = {}
+	maps = {} # dict for recording the indexes to be mapped back to the
+			  # original series of numbers
 	confs = {'80':1.285,'85':1.435,'90':1.645,'95':1.96,'99':2.575,\
-	'99.99':3.71}
+	'99.99':3.71} # dict of confidence levels for firther use
 
 	def __init__(self, data, dec=2, inform = True, latin=False):
 		pd.DataFrame.__init__(self, {'Seq': data})
@@ -152,7 +122,7 @@ class Analysis(pd.DataFrame):
 				print 'Conversion successful!'
 			else:
 				raise TypeError("The sequence dtype was not int nor float\
-				 and could not be converted.\nConvert it to wheather int of float,\
+				 and could not be converted.\nConvert it to whether int of float,\
 				  or set latin to True, and try again.")
 		# Extracts the digits in their respective positions,
 		self['ZN'] = self.Seq * (10**dec)  # dec - to manage decimals
@@ -176,185 +146,29 @@ class Analysis(pd.DataFrame):
 		#self = self[self.F2D>=10]
 
 	def mantissas(self, plot=True, figsize=(15,8)):
-		# if self.Seq.dtype != 'Float64':
-		# 	self.apply(float)
+		'''
+
+		'''
 		self['Mant'] = _getMantissas_(self.Seq)
-		self = self[self.Seq>=1.]
-		p = self.sort('Mant')
+		p = self[['Seq','Mant']]
+		p = p[p.Seq>0].sort('Mant')
+		print "The Mantissas MEAN is " + str(p.Mant.mean()) + '. Ref: 0.5.'
+		print "The Mantissas VARIANCE is " + str(p.Mant.var()) + '. Ref: 0.83333.'
 		N = len(p)
-		
-		#f = lambda g:g/N
-		x = np.arange(N)
-		fig = plt.figure(figsize=figsize)
-		ax = fig.add_subplot(111)
-		ax.plot(x,p.Mant,'k--')
-		#ax.plot(x,f(x), 'b-')
+		#return p
+		if plot==True:
+			p['x'] = np.arange(1,N+1)
+			n = np.ones(N)/N
+			fig = plt.figure(figsize=figsize)
+			ax = fig.add_subplot(111)
+			ax.plot(p.x,p.Mant,'r-', p.x,n.cumsum(),'b--',\
+			 linewidth=2)
+			plt.ylim((0,1.))
+			plt.xlim((1,N+1))
+			plt.show()
 
-	# def firstTwoDigits(self, inform=True, MAD=True, top_Z=20, only_pos=True,\
-	# 	MSE=False, plot=True, map_back=True, mantissa = False):
-	# 	'''
-	# 	Performs the Benford First Two Digits test with the series of
-	# 	numbers provided.
-
-	# 	inform -> tells the number of registries that are being subjected to
-	# 	the Analysis; defaults to True
-
-	# 	MAD -> calculates the Mean of the Absolute Differences from the respective
-	# 	expected distributions; defaults to True.
-
-	# 	top_Z -> chooses the highest number of Z scores to be displayed
-
-	# 	only_pos -> will highlight only the values that are higher than the
-	# 	expexted frequencies, discarding the lower ones; defaults to True.
-
-	# 	MSE -> calculates the Mean Square Error of the sample; defaults to False.
-
-	# 	plot -> draws the plot of test for visual comparison, with the found
-	# 	distributions in bars and the expected ones in a line.
-
-	# 	map_back -> records the top differences to the maps dictionary to
-	# 	later index the original sequence; defaults to True.
-
-	# 	'''
-	# 	N = len(self)
-	# 	x = np.arange(10,100)
-	# 	if inform:
-	# 		print "\n---Test performed on " + str(N) + " registries.---\n"
-	# 	# get the number of occurrences of the first two digits
-	# 	v = self.F2D.value_counts()
-	# 	# get their relative frequencies
-	# 	p = self.F2D.value_counts(normalize =True)
-	# 	# crate dataframe from them
-	# 	df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
-	# 	# reindex from 10 to 99 in the case one or more of the first
-	# 	# two digits are missing, so the Expected frequencies column
-	# 	# can later be joined; and swap NANs with zeros.
-	# 	if len(df.index) < 90:
-	# 		df = df.reindex(x).fillna(0)
-	# 	# join the dataframe with the one of expected Benford's frequencies
-	# 	df = FirstTwo(plot=False).join(df)
-	# 	# create column with absolute differences
-	# 	df['Dif'] = df.Found - df.Expected
-	# 	df['AbsDif'] = np.absolute(df.Dif)
-	# 	# calculate the Z-test column an display the dataframe by descending
-	# 	# Z test
-	# 	df['Z_test'] = _Z_test(df,N)
-	# 	if only_pos:
-	# 		dd = df[['Expected','Found','Z_test']][df.Dif>0].sort('Z_test',\
-	# 		 ascending=False).head(top_Z)
-	# 		print '\nThe positive deviations` top ' + str(top_Z) + ' Z scores are:\n'
-	# 	else:
-	# 		dd = df[['Expected','Found','Z_test']].sort('Z_test',\
-	# 		 ascending=False).head(top_Z)
-	# 		print '\nThe top ' + str(top_Z) + ' Z scores are:\n'
-	# 	print dd
-		
-	# 	if map_back == True:
-	# 		self.maps['FTD'] = np.array(dd.index)
-
-	# 	# Mean absolute difference
-	# 	if MAD == True:
-	# 		mad = _mad_(df)
-	# 		print "\nThe Mean Absolute Deviation is " + str(mad) + '\n'\
-	# 		+ 'For the First Two Digits:\n\
-	# 		- 0.0000 to 0.0012: Close Conformity\n\
-	# 		- 0.0012 to 0.0018: Acceptable Conformity\n\
-	# 		- 0.0018 to 0.0022: Marginally Acceptable Conformity\n\
-	# 		- Above 0.0022: Nonconformity'
-	# 	# Mean Square Error
-	# 	if MSE == True:
-	# 		mse = _mse_(df)
-	# 		print "\nMean Square Error = " + str(mse)
-	# 	# Plotting the expected frequncies (line) against the found ones(bars)
-	# 	if plot == True:
-	# 		_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
-
-	# 	if mantissa == True:
-	# 		df['Mantissas'] = np.log10(g) - np.log10(g).astype(int)
-
-
-	# 	return df
-
-	# def firstDigit(self, inform=True, MAD=True, MSE=False, only_pos=True,\
-	# map_back=True, plot=True):
-	# 	'''
-	# 	Performs the Benford First Digit test with the series of
-	# 	numbers provided.
-
-	# 	inform -> tells the number of registries that are being subjected to
-	# 	the Analysis; defaults to True
-
-	# 	MAD -> calculates the Mean of the Absolute Differences from the respective
-	# 	expected distributions; defaults to True.
-
-	# 	Z_test -> calculates the Z test of the sample; defaluts to True.
-
-	# 	map_back -> records the ordered higher differences to the maps dictionary
-	# 	to later index the original sequence; defaults to True.
-
-	# 	MSE -> calculates the Mean Square Error of the sample; defaluts to False.
-
-	# 	plot -> draws the plot of test for visual comparison, with the found
-	# 	distributions in bars and the expected ones in a line.
-
-	# 	'''
-
-	# 	N = len(self)
-	# 	x = np.arange(1,10)
-	# 	if inform:
-	# 		print "\n---Test performed on " + str(N) + " registries.---\n"
-	# 	# get the number of occurrences of each first digit
-	# 	v = self.F1D.value_counts()
-	# 	# get their relative frequencies
-	# 	p = self.F1D.value_counts(normalize =True)
-	# 	# crate dataframe from them
-	# 	df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
-	# 	# reindex from 10 to 99 in the case one or more of the first
-	# 	# two digits are missing, so the Expected frequencies column
-	# 	# can later be joined; and swap NANs with zeros.
-
-	# 	# join the dataframe with the one of expected Benford's frequencies
-	# 	df = FirstDig(plot=False).join(df)
-	# 	# create column with absolute differences
-	# 	df['Dif'] = df.Found - df.Expected
-	# 	df['AbsDif'] = np.absolute(df.Dif)
-	# 	# calculate the Z-test column an display the dataframe by descending
-	# 	# Z test
-	# 	df['Z_test'] = _Z_test(df,N)
-	# 	if only_pos:
-	# 		dd = df[['Expected','Found','Z_test']][df.Dif>0].sort('Z_test',\
-	# 		 ascending=False)
-	# 		print '\nThe descending positive deviations` Z scores are:\n'
-	# 	else:
-	# 		dd = df[['Expected','Found','Z_test']].sort('Z_test',\
-	# 		 ascending=False)
-	# 		print '\nThe descending Z scores are:\n'
-	# 	print dd
-
-	# 	if map_back == True:
-	# 		self.maps['FD'] = np.array(dd.index)
-
-	# 	# Mean absolute difference
-	# 	if MAD == True:
-	# 		mad = _mad_(df)
-	# 		print "\nThe Mean Absolute Deviation is " + str(mad) + '\n'\
-	# 		+ 'For the First Digits:\n\
-	# 		- 0.0000 to 0.0006: Close Conformity\n\
-	# 		- 0.0006 to 0.0012: Acceptable Conformity\n\
-	# 		- 0.0012 to 0.0015: Marginally Acceptable Conformity\n\
-	# 		- Above 0.0015: Nonconformity'
-	# 	# Mean Square Error
-	# 	if MSE == True:
-	# 		mse = _mse_(df)
-	# 		print "\nMean Square Error = " + str(mse)
-	# 	# Plotting the expected frequncies (line) against the found ones(bars)
-	# 	if plot == True:
-	# 		_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
-
-	# 	### return df
-
-	def secondDigit(self, inform=True, MAD=True, MSE=False, only_pos=True,\
-	map_back=True, plot=True):
+	def secondDigit(self, inform=True, MAD=True, conf_level=95,\
+		MSE=False, only_pos=True, map_back=True, plot=True):
 		'''
 		Performs the Benford Second Digit test with the series of
 		numbers provided.
@@ -365,7 +179,9 @@ class Analysis(pd.DataFrame):
 		MAD -> calculates the Mean of the Absolute Differences from the respective
 		expected distributions; defaults to True.
 
-		Z_test -> calculates the Z test of the sample; defaluts to True.
+		conf_level -> confidence level to draw lower and upper limits when
+		plotting and to limit the mapping of the proportions to only the
+		ones significantly diverging from the expected. Defaults to 95.
 
 		map_back -> records the ordered higher differences to the maps dictionary
 		to later index the original sequence; defaults to True.
@@ -376,7 +192,10 @@ class Analysis(pd.DataFrame):
 		distributions in bars and the expected ones in a line.
 
 		'''
-
+		if str(conf_level) not in self.confs.keys():
+			raise ValueError("Value of conf_level must be one of the\
+ following: 80, 85, 90, 95, 99 or 99.99")
+		conf = self.confs[str(conf_level)]
 		N = len(self)
 		x = np.arange(0,10)
 		if inform:
@@ -428,7 +247,8 @@ class Analysis(pd.DataFrame):
 		# Plotting the expected frequncies (line) against the found ones(bars)
 
 		if plot == True:
-			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
+			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found,\
+			 N=N, figsize=(10,6), conf_Z=conf)
 
 		### return df
 	def firstDigits(self, digs, inform=True, MAD=True, conf_level=95, top_Z=20,\
@@ -544,7 +364,7 @@ class Analysis(pd.DataFrame):
 
 
 		return df
-	def lastTwoDigits(self, inform=True, MAD=False, Z_test=True, top_Z=20,\
+	def lastTwoDigits(self, inform=True, MAD=False, conf_level=95, top_Z=20,\
 	 only_pos=True, map_back=True, MSE=False, plot=True):
 		'''
 		Performs the Benford Last Two Digits test with the series of
@@ -556,7 +376,9 @@ class Analysis(pd.DataFrame):
 		MAD -> calculates the Mean of the Absolute Differences from the respective
 		expected distributions; defaults to True.
 
-		Z_test -> calculates the Z test of the sample; defaluts to True.
+		conf_level -> confidence level to draw lower and upper limits when
+		plotting and to limit the mapping of the proportions to only the
+		ones significantly diverging from the expected. Defaults to 95
 
 		top_Z -> chooses the highest number of Z scores to be displayed
 
@@ -566,7 +388,10 @@ class Analysis(pd.DataFrame):
 		distributions in bars and the expected ones in a line.
 
 		'''
-
+		if str(conf_level) not in self.confs.keys():
+			raise ValueError("Value of conf_level must be one of the\
+ following: 80, 85, 90, 95, 99 or 99.99")
+		conf = self.confs[str(conf_level)]
 		N = len(self)
 		x = np.arange(0,100)
 		if inform:
@@ -608,7 +433,8 @@ class Analysis(pd.DataFrame):
 			print "\nMean Square Error = " + str(mse)
 		# Plotting the expected frequencies (line) against the found ones(bars)
 		if plot == True:
-			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found, N=N)
+			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found,\
+			 N=N, figsize=(15,8), conf_Z=conf)
 
 		### return df
 	
@@ -648,7 +474,7 @@ def _getMantissas_(arr):
 	arr: np.array of integers or floats ---> np.array of floats
 	'''
 
-	return np.log10(arr) - np.log10(arr).astype(int)
+	return np.abs(np.log10(arr) - np.log10(arr).astype(int))
 
 
 def _first_(plot=False):
