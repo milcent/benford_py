@@ -151,7 +151,7 @@ class Analysis(pd.DataFrame):
 		'''
 		self['Mant'] = _getMantissas_(self.Seq)
 		p = self[['Seq','Mant']]
-		p = p[p.Seq>0].sort('Mant')
+		p = p[p.Seq>0].sort_values('Mant')
 		print "The Mantissas MEAN is " + str(p.Mant.mean()) + '. Ref: 0.5.'
 		print "The Mantissas VARIANCE is " + str(p.Mant.var()) + '. Ref: 0.83333.'
 		N = len(p)
@@ -168,7 +168,7 @@ class Analysis(pd.DataFrame):
 			plt.show()
 
 	def secondDigit(self, inform=True, MAD=True, conf_level=95,\
-		MSE=False, only_pos=True, map_back=True, plot=True):
+		MSE=False, show_high_Z='pos', plot=True):
 		'''
 		Performs the Benford Second Digit test with the series of
 		numbers provided.
@@ -183,8 +183,12 @@ class Analysis(pd.DataFrame):
 		plotting and to limit the mapping of the proportions to only the
 		ones significantly diverging from the expected. Defaults to 95.
 
-		map_back -> records the ordered higher differences to the maps dictionary
-		to later index the original sequence; defaults to True.
+		show_high_Z -> chooses which Z scores to be used when displaying results,
+		according to the confidence level chosen. Defaluts to 'pos', which will
+		highlight only the values that are higher than the expexted frequencies;
+		'all' will highlight both found extremes (positive and negative); and
+		an integer, which will use the first n entries, positive and negative,
+		regardless of whether the Z is higher than the conf_level Z or not
 
 		MSE -> calculate the Mean Square Error of the sample; defaluts to False.
 
@@ -218,28 +222,23 @@ class Analysis(pd.DataFrame):
 		# calculate the Z-test column an display the dataframe by descending
 		# Z test
 		df['Z_test'] = _Z_test(df,N)
-		if only_pos:
-			dd = df[['Expected','Found','Z_test']][df.Dif>0].sort('Z_test',\
-			 ascending=False)
-			print '\nThe descending positive deviations` Z scores are:\n'
-		else:
-			dd = df[['Expected','Found','Z_test']].sort('Z_test',\
-			 ascending=False)
-			print '\nThe descending Z scores are:\n'
-		print dd
+		# if only_pos:
+		# 	dd = df[['Expected','Found','Z_test']][df.Dif>0].sort_values('Z_test',\
+		# 	 ascending=False)
+		# 	print '\nThe descending positive deviations` Z scores are:\n'
+		# else:
+		# 	dd = df[['Expected','Found','Z_test']].sort_values('Z_test',\
+		# 	 ascending=False)
+		# 	print '\nThe descending Z scores are:\n'
+		# print dd
 
-		if map_back == True:
-			self.maps['SD'] = np.array(dd.index)
+		self.maps['SD'] = np.array(_inform_and_map_(df, inform,\
+		 show_high_Z, conf))
 
 		# Mean absolute difference
 		if MAD == True:
-			mad = _mad_(df)
-			print "\nThe Mean Absolute Deviation is " + str(mad) + '\n'\
-			+ 'For the Second Digits:\n\
-			- 0.0000 to 0.0008: Close Conformity\n\
-			- 0.0008 to 0.0010: Acceptable Conformity\n\
-			- 0.0010 to 0.0012: Marginally Acceptable Conformity\n\
-			- Above 0.0012: Nonconformity'
+			_mad_(df,'second')
+			
 		# Mean Square Error
 		if MSE == True:
 			mse = _mse_(df)
@@ -251,11 +250,12 @@ class Analysis(pd.DataFrame):
 			 N=N, figsize=(10,6), conf_Z=conf)
 
 		### return df
-	def firstDigits(self, digs, inform=True, MAD=True, conf_level=95, top_Z=20,\
-		only_pos=True, MSE=False, plot=True, map_back=True, mantissa = False):
+	def firstDigits(self, digs, inform=True, MAD=True, conf_level=95,\
+		show_high_Z = 'pos', MSE=False, plot=True):
 		'''
-		Performs the Benford First Two Digits test with the series of
-		numbers provided.
+		Performs the Benford First Digits test with the series of
+		numbers provided, and populates the mapping dict for future
+		selection of the original series.
 
 		digs -> number of first digits to consider. Must be 1 (first digit),
 		2 (first two digits) or 3 (first three digits).
@@ -270,39 +270,44 @@ class Analysis(pd.DataFrame):
 		plotting and to limit the mapping of the proportions to only the
 		ones significantly diverging from the expected. Defaults to 95
 
-		top_Z -> chooses the highest number of Z scores to be displayed.Defaluts
-		to 20.
-
-		only_pos -> will highlight only the values that are higher than the
-		expexted frequencies, discarding the lower ones; defaults to True.
+		show_high_Z -> chooses which Z scores to be used when displaying results,
+		according to the confidence level chosen. Defaluts to 'pos', which will
+		highlight only the values that are higher than the expexted frequencies;
+		'all' will highlight both found extremes (positive and negative); and
+		an integer, which will use the first n entries, positive and negative,
+		regardless of whether the Z is higher than the conf_level Z or not. 
 
 		MSE -> calculates the Mean Square Error of the sample; defaults to False.
 
 		plot -> draws the plot of test for visual comparison, with the found
 		distributions in bars and the expected ones in a line.
 
-		map_back -> records the top differences to the maps dictionary to
-		later index the original sequence; defaults to True.
-
 		
 		'''
 		N = len(self)
 
 		if str(conf_level) not in self.confs.keys():
-			raise ValueError("Value of conf_level must be one of the\
+			raise ValueError("Value of -conf_level- must be one of the\
  following: 80, 85, 90, 95, 99 or 99.99")
 
 		if not digs in [1,2,3]:
 			raise ValueError("The value assigned to the parameter -digs-\
- was %s. Value must be 1, 2 or 3." %digs)
+ was %s. Value must be 1, 2 or 3." % digs)
 
- 		dig_name = 'F' + str(digs) + 'D'
+	# 	if not show_high_Z in ['pos', 'all'] or not isinstance(show_high_Z, int):
+	# 		raise ValueError("The value of -show_high_Z- must be one of\
+ # the following?: 'pos', 'all' or some integer.")
+		
+		if digs == 1:
+			show_high_Z = 9
+
+ 		dig_name = 'F%sD' % digs
  		n,m = 10**(digs-1), 10**(digs)
 		x = np.arange(n,m)
 		conf = self.confs[str(conf_level)]
 		
 		if inform:
-			print "\n---Test performed on " + str(N) + " registries.---\n"
+			print "\n---Test performed on %s registries.---\n" % N 
 		# get the number of occurrences of the first two digits
 		v = self[dig_name].value_counts()
 		# get their relative frequencies
@@ -322,50 +327,26 @@ class Analysis(pd.DataFrame):
 		# calculate the Z-test column an display the dataframe by descending
 		# Z test
 		df['Z_test'] = _Z_test(df,N)
-		if only_pos:
-			dd = df[['Expected','Found','Z_test']][df.Dif>0].sort('Z_test',\
-			 ascending=False).head(top_Z)
-			print '\nThe positive deviations` top ' + str(top_Z) + ' Z scores are:\n'
-		else:
-			dd = df[['Expected','Found','Z_test']].sort('Z_test',\
-			 ascending=False).head(top_Z)
-			print '\nThe top ' + str(top_Z) + ' Z scores are:\n'
-		print dd
-		
-		if map_back == True:
-			self.maps[dig_name] = np.array(dd.index)
+		# Show the most significant deviations and populate the mapping dict
+		self.maps[dig_name] = np.array(_inform_and_map_(df, inform,\
+		 show_high_Z, conf))
 
 		# Mean absolute difference
 		if MAD == True:
-			mad = df.AbsDif.mean()
-			if digs == 1:
-				margins = ['0.0006','0.0012','0.0015', 'Digit']
-			elif digs == 2:
-				margins = ['0.0012','0.0018','0.0022', 'Two Digits']
-			else:
-				margins = ['0.00036','0.00044','0.00050', 'Three Digits']
-			print "\nThe Mean Absolute Deviation is " + str(mad) + '\n'\
-			+ 'For the First ' + margins[3] + ':\n\
-			- 0.0000 to ' + margins[0] + ': Close Conformity\n\
-			- ' + margins[0] + ' to ' + margins[1] + ': Acceptable Conformity\n\
-			- ' + margins[1] + ' to ' + margins[2] + ': Marginally Acceptable Conformity\n\
-			- Above ' + margins[2] + ': Nonconformity'
+			_mad_(df, test = ['first', digs])
+
 		# Mean Square Error
 		if MSE == True:
 			mse = (df.AbsDif**2).mean()
-			print "\nMean Square Error = " + str(mse)
+			print "\nMean Square Error = {0}".format(mse)
 		# Plotting the expected frequncies (line) against the found ones(bars)
 		if plot == True:
 			_plot_benf_(df, x = x, y_Exp = df.Expected, y_Found = df.Found,\
 			 N = N, figsize = (5*(digs+1),4*(digs+.6)), conf_Z = conf)
 
-		if mantissa == True:
-			df['Mantissas'] = np.log10(g) - np.log10(g).astype(int)
-
-
-		return df
-	def lastTwoDigits(self, inform=True, MAD=False, conf_level=95, top_Z=20,\
-	 only_pos=True, map_back=True, MSE=False, plot=True):
+		#return df
+	def lastTwoDigits(self, inform=True, MAD=False, conf_level=95,\
+	 show_high_Z = 'pos', MSE=False, plot=True):
 		'''
 		Performs the Benford Last Two Digits test with the series of
 		numbers provided.
@@ -376,11 +357,12 @@ class Analysis(pd.DataFrame):
 		MAD -> calculates the Mean of the Absolute Differences from the respective
 		expected distributions; defaults to True.
 
-		conf_level -> confidence level to draw lower and upper limits when
-		plotting and to limit the mapping of the proportions to only the
-		ones significantly diverging from the expected. Defaults to 95
-
-		top_Z -> chooses the highest number of Z scores to be displayed
+		show_high_Z -> chooses which Z scores to be used when displaying results,
+		according to the confidence level chosen. Defaluts to 'pos', which will
+		highlight only the values that are higher than the expexted frequencies;
+		'all' will highlight both found extremes (positive and negative); and
+		an integer, which will use the first n entries, positive and negative,
+		regardless of whether the Z is higher than the conf_level Z or not
 
 		MSE -> calculate the Mean Square Error of the sample; defaluts to False.
 
@@ -410,31 +392,31 @@ class Analysis(pd.DataFrame):
 		# calculate the Z-test column an display the dataframe by descending
 		# Z test
 		df['Z_test'] = _Z_test(df,N)
-		if only_pos:
-			dd = df[['Expected','Found','Z_test']][df.Dif>0].sort('Z_test',\
-			 ascending=False).head(top_Z)
-			print '\nThe positive deviations` top ' + str(top_Z) + ' Z scores are:\n'
-		else:
-			dd = df[['Expected','Found','Z_test']].sort('Z_test',\
-			 ascending=False).head(top_Z)
-			print '\nThe top ' + str(top_Z) + ' Z scores are:\n'
-		print dd
+		# if only_pos:
+		# 	dd = df[['Expected','Found','Z_test']][df.Dif>0].sort_values('Z_test',\
+		# 	 ascending=False).head(top_Z)
+		# 	print '\nThe positive deviations` top ' + str(top_Z) + ' Z scores are:\n'
+		# else:
+		# 	dd = df[['Expected','Found','Z_test']].sort_values('Z_test',\
+		# 	 ascending=False).head(top_Z)
+		# 	print '\nThe top ' + str(top_Z) + ' Z scores are:\n'
+		# print dd
 		
-		if map_back == True:
-			self.maps['LTD'] = np.array(dd.index)
+		self.maps['LTD'] = np.array(_inform_and_map_(df, inform,\
+		 show_high_Z, conf)).astype(int)
 
 		# Mean absolute difference
 		if MAD == True:
-			mad = _mad_(df)
-			print "\nThe Mean Absolute Deviation is " + str(mad) + '\n'\
+			_mad_(df, test='last')
+
 		# Mean Square Error
 		if MSE == True:
 			mse = _mse_(df)
 			print "\nMean Square Error = " + str(mse)
-		# Plotting the expected frequencies (line) against the found ones(bars)
+		# Plotting the expected frequencies (line) against the found ones (bars)
 		if plot == True:
-			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found,\
-			 N=N, figsize=(15,8), conf_Z=conf)
+			_plot_benf_(df, x = x, y_Exp = df.Expected, y_Found =df.Found,\
+			 N=N, figsize=(15,8), conf_Z=conf, text_x=True)
 
 		### return df
 	
@@ -447,7 +429,7 @@ class Analysis(pd.DataFrame):
 		# get their relative frequencies
 		p = self.Seq.value_counts(normalize =True) * 100
 		# crate dataframe from them
-		df = pd.DataFrame({'Counts': v, 'Percent': p}).sort('Counts',\
+		df = pd.DataFrame({'Counts': v, 'Percent': p}).sort_values('Counts',\
 			ascending=False)
 		if inform:
 			print "\n---Test performed on " + str(N) + " registries.---\n"
@@ -459,8 +441,33 @@ def _Z_test(frame,N):
 	return (frame.AbsDif - (1/2*N))/(np.sqrt(frame.Expected*\
 		(1-frame.Expected)/N))
 
-def _mad_(frame):
-	return frame.AbsDif.mean()
+def _mad_(frame, test):
+	mad = frame.AbsDif.mean()
+	if test[0] == 'first':
+		if test[1] == 1:
+			margins = ['0.0006','0.0012','0.0015', 'Digit']
+		elif test[1] == 2:
+			margins = ['0.0012','0.0018','0.0022', 'Two Digits']
+		else:
+			margins = ['0.00036','0.00044','0.00050', 'Three Digits']
+		print "\nThe Mean Absolute Deviation is {0}\n\
+	For the First {1}:\n\
+	- 0.0000 to {2}: Close Conformity\n\
+	- {2} to {3}: Acceptable Conformity\n\
+	- {3} to {4}: Marginally Acceptable Conformity\n\
+	- Above {4}: Nonconformity".format(mad, margins[3], margins[0],\
+	 margins[1], margins[2])
+
+	elif test == 'second':
+		print "\nThe Mean Absolute Deviation is {0}\n\
+	For the Second Digits:\n\
+	- 0.0000 to 0.0008: Close Conformity\n\
+	- 0.0008 to 0.0010: Acceptable Conformity\n\
+	- 0.0010 to 0.0012: Marginally Acceptable Conformity\n\
+	- Above 0.0012: Nonconformity".format(mad)
+
+	else:
+		print "\nThe Mean Absolute Deviation is {0}.\n".format(mad)
 
 def _mse_(frame):
 	return (frame.AbsDif**2).mean()
@@ -580,10 +587,7 @@ def _tint_(s):
 	except:
 		return 0
 
-def _len2_(st):
-	return len(st) == 2
-
-def _plot_benf_(df, x, y_Exp, y_Found, N, figsize, conf_Z):		
+def _plot_benf_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):		
 	fig = plt.figure(figsize=figsize)
 	ax = fig.add_subplot(111)
 	plt.title('Expected vs. Found Distributions')
@@ -593,6 +597,8 @@ def _plot_benf_(df, x, y_Exp, y_Found, N, figsize, conf_Z):
 	ax.plot(x, y_Exp, color='g',linewidth=2.5,\
 	 label='Expected')
 	ax.legend()
+	if text_x:
+		plt.xticks(x,df.index, rotation='vertical')
 	# Plotting the Upper and Lower bounds considering the Z for the
 	# informed confidence level
 	sig = conf_Z * np.sqrt(y_Exp*(1-y_Exp)/N) 
@@ -646,4 +652,34 @@ def _sanitize_latin_int_(s):
 	s = filter(type(s).isdigit, s)
 	return s
 
-
+def _inform_and_map_(df, inform, show_high_Z, conf):
+	if inform:
+		if isinstance(show_high_Z, int):
+			dd = df[['Expected','Found','Z_test']].sort_values('Z_test',\
+			ascending=False).head(show_high_Z)
+			print '\nThe entries with the top %s Z scores are:\n' % show_high_Z
+		else:
+			if show_high_Z == 'pos':
+				m1 = df.Dif > 0
+				m2 = df.Z_test > conf
+				dd = df[['Expected','Found','Z_test']][m1 & m2].sort_values('Z_test',\
+				 ascending=False)
+				print '\nThe entries with the significant positive deviations are:\n'
+			else:
+				dd = df[['Expected','Found','Z_test']][df.Z_test > conf].sort_values('Z_test',\
+				 ascending=False)
+				print '\nThe entries with the significant deviations are:\n'
+		print dd
+		return dd.index
+	else:
+		if isinstance(show_high_Z, int):
+			dd = df[['Expected','Found','Z_test']].sort_values('Z_test',\
+			ascending=False).head(show_high_Z)
+		else:
+			if show_high_Z == 'pos':
+				dd = df[['Expected','Found','Z_test']][df.Dif > 0 and \
+				 df.Z_test > conf].sort_values('Z_test',ascending=False)
+			else:
+				dd = df[['Expected','Found','Z_test']][df.Z_test > conf].sort_values('Z_test',\
+				 ascending=False)
+		return dd.index
