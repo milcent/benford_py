@@ -437,6 +437,28 @@ class Analysis(pd.DataFrame):
 			print df.head(top_Rep)
 		### return df
 
+	def focus(self, frame, digits='F2D'):
+		'''
+		'''
+
+		if not digits in ['F1D','F2D','F3D','SD','LTD']:
+			raise ValueError('The value of -digits- must be one of the following:\
+ F1D (First Digits), F2D (First Two Digits), F3D (First Three Digits), SD (Second \
+Digits) or L2D (Last Two Digits).')
+
+		if not digits in self.maps.keys():
+			raise ValueError('The test chosen to index the Series has not been\
+ performed yet. Run the respective test (F1D = firstDigits(dig=1); SD = secondDigit\
+...) and try again.')
+
+		self['Ord'] = np.nan
+		for n, i in enumerate(self.maps[digits]):
+			self.Ord.loc[self[digits]==i] = n
+		df = self.dropna().copy()
+		df =  df[['Ord','Seq']].sort_values(['Ord','Seq'],\
+			ascending=[True, False])
+		return df.join(frame)
+
 def _Z_test(frame,N):
 	return (frame.AbsDif - (1/2*N))/(np.sqrt(frame.Expected*\
 		(1-frame.Expected)/N))
