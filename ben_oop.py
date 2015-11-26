@@ -298,8 +298,8 @@ class Analysis(pd.DataFrame):
 	# 		raise ValueError("The value of -show_high_Z- must be one of\
  # the following?: 'pos', 'all' or some integer.")
 		
-		if digs == 1:
-			show_high_Z = 9
+		# if digs == 1:
+		# 	show_high_Z = 9
 
  		dig_name = 'F%sD' % digs
  		n,m = 10**(digs-1), 10**(digs)
@@ -402,7 +402,7 @@ class Analysis(pd.DataFrame):
 		# 	print '\nThe top ' + str(top_Z) + ' Z scores are:\n'
 		# print dd
 		
-		self.maps['LTD'] = np.array(_inform_and_map_(df, inform,\
+		self.maps['L2D'] = np.array(_inform_and_map_(df, inform,\
 		 show_high_Z, conf)).astype(int)
 
 		# Mean absolute difference
@@ -441,7 +441,7 @@ class Analysis(pd.DataFrame):
 		'''
 		'''
 
-		if not digits in ['F1D','F2D','F3D','SD','LTD']:
+		if not digits in ['F1D','F2D','F3D','SD','L2D']:
 			raise ValueError('The value of -digits- must be one of the following:\
  F1D (First Digits), F2D (First Two Digits), F3D (First Three Digits), SD (Second \
 Digits) or L2D (Last Two Digits).')
@@ -452,11 +452,14 @@ Digits) or L2D (Last Two Digits).')
 ...) and try again.')
 
 		self['Ord'] = np.nan
+		self['ho'] = np.nan
 		for n, i in enumerate(self.maps[digits]):
-			self.Ord.loc[self[digits]==i] = n
+			self.Ord.loc[self[digits]==i] = i
+			self.ho.loc[self[digits]==i] = n
 		df = self.dropna().copy()
-		df =  df[['Ord','Seq']].sort_values(['Ord','Seq'],\
+		df =  df[['ho','Ord','Seq']].sort_values(['ho','Seq'],\
 			ascending=[True, False])
+		del df['ho']
 		return df.join(frame)
 
 def _Z_test(frame,N):
