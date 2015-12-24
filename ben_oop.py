@@ -79,7 +79,7 @@ class Analysis(pd.DataFrame):
 	'''
 	Initiates the Analysis of the series. pandas DataFrame subclass.
 	Values must be integers or floats. If not, it will try to convert
-	it. If it does not succeed, a TypeError will be raised.
+	them. If it does not succeed, a TypeError will be raised.
 	A pandas DataFrame will be constructed, with the columns: original
 	numbers without floating points, first, second, first two, first three
 	and	last two digits, so the following tests will run properly.
@@ -705,6 +705,6 @@ def _inform_and_map_(df, inform, show_high_Z, conf):
 				dd = df[['Expected','Found','Z_test']][df.Dif > 0 and \
 				 df.Z_test > conf].sort_values('Z_test',ascending=False)
 			else:
-				dd = df[['Expected','Found','Z_test']][df.Z_test > conf].sort_values('Z_test',\
-				 ascending=False)
+				dd = df[['Expected','Found','Z_test']][df.Z_test > \
+				conf].sort_values('Z_test', ascending=False)
 		return dd.index
