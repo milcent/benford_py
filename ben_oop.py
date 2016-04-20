@@ -101,7 +101,8 @@ class Analysis(pd.DataFrame):
 	maps = {} # dict for recording the indexes to be mapped back to the
 			  # original series of numbers
 	confs = {'80':1.285,'85':1.435,'90':1.645,'95':1.96,'99':2.575,\
-	'99.99':3.71} # dict of confidence levels for firther use
+	'99.99':3.71} # dict of confidence levels for further use
+	digs_dict = {'1':'F1D','2':'F2D','3':'F3D'}
 
 	def __init__(self, data, dec=2, inform = True, latin=False):
 		pd.DataFrame.__init__(self, {'Seq': data})
@@ -420,6 +421,28 @@ class Analysis(pd.DataFrame):
 
 		### return df
 	
+	def summation(self, digs=2, top=20, plot=True     ):
+		'''
+		'''
+
+		if not digs in [1,2,3]:
+			raise ValueError("The value assigned to the parameter -digs-\
+ was %s. Value must be 1, 2 or 3." % digs)
+		if digs==1:
+			top = 10
+		d = digs_dict[str(digs)]
+		s = self.groupby(d).sum()
+		s['Percent'] = s.Seq/s.Seq.sum()
+
+		### plot
+		
+		return s.sort_values('Percent', ascending=False)[top]
+
+
+
+
+
+
 	def duplicates(self, inform=True, top_Rep=20):
 		# self.Seq = self.Seq.apply(int) / 100.
 		N = len(self)
