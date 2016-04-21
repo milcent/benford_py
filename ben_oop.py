@@ -423,20 +423,27 @@ class Analysis(pd.DataFrame):
 	
 	def summation(self, digs=2, top=20, plot=True     ):
 		'''
+		Performs the Second Order Summation test.
+		digs -> tells the first digits to use. 1- first; 2- first two;
+		3- first three. Defaults to 2.
+		top -> choses how many top values to show. Defaults to 20.
+		plot -> plots the results.
 		'''
 
 		if not digs in [1,2,3]:
 			raise ValueError("The value assigned to the parameter -digs-\
  was %s. Value must be 1, 2 or 3." % digs)
 		if digs==1:
-			top = 10
+			top = 9
 		d = digs_dict[str(digs)]
 		s = self.groupby(d).sum()
 		s['Percent'] = s.Seq/s.Seq.sum()
+		l = 1./9*(10**(digs-1))
+		
 
 		### plot
 		
-		return s.sort_values('Percent', ascending=False)[top]
+		return s.sort_values('Percent', ascending=False).head(top)
 
 
 
@@ -444,6 +451,9 @@ class Analysis(pd.DataFrame):
 
 
 	def duplicates(self, inform=True, top_Rep=20):
+		'''
+		'''
+
 		# self.Seq = self.Seq.apply(int) / 100.
 		N = len(self)
 		### self.Seq = self.Seq.apply(_to_float_)
