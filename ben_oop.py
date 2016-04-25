@@ -175,26 +175,26 @@ class Analysis(pd.DataFrame):
 		numbers provided.
 
 		inform -> tells the number of registries that are being subjected to
-		the Analysis; defaults to True
+			the Analysis; defaults to True
 
-		MAD -> calculates the Mean of the Absolute Differences from the respective
-		expected distributions; defaults to True.
+		MAD -> calculates the Mean of the Absolute Differences between the found
+			and the expected distributions; defaults to True.
 
 		conf_level -> confidence level to draw lower and upper limits when
-		plotting and to limit the mapping of the proportions to only the
-		ones significantly diverging from the expected. Defaults to 95.
+			plotting and to limit the mapping of the proportions to only the
+			ones significantly diverging from the expected. Defaults to 95.
 
 		show_high_Z -> chooses which Z scores to be used when displaying results,
-		according to the confidence level chosen. Defaluts to 'pos', which will
-		highlight only the values that are higher than the expexted frequencies;
-		'all' will highlight both found extremes (positive and negative); and
-		an integer, which will use the first n entries, positive and negative,
-		regardless of whether the Z is higher than the conf_level Z or not
+			according to the confidence level chosen. Defaluts to 'pos', which will
+			highlight only the values that are higher than the expexted frequencies;
+			'all' will highlight both found extremes (positive and negative); and
+			an integer, which will use the first n entries, positive and negative,
+			regardless of whether the Z is higher than the conf_level Z or not
 
 		MSE -> calculate the Mean Square Error of the sample; defaluts to False.
 
 		plot -> draws the plot of test for visual comparison, with the found
-		distributions in bars and the expected ones in a line.
+			distributions in bars and the expected ones in a line.
 
 		'''
 		if str(conf_level) not in self.confs.keys():
@@ -237,17 +237,17 @@ class Analysis(pd.DataFrame):
 		 show_high_Z, conf))
 
 		# Mean absolute difference
-		if MAD == True:
+		if MAD:
 			_mad_(df,'second')
 			
 		# Mean Square Error
-		if MSE == True:
+		if MSE:
 			mse = _mse_(df)
 			print "\nMean Square Error = " + str(mse)
 		# Plotting the expected frequncies (line) against the found ones(bars)
 
-		if plot == True:
-			_plot_benf_(df, x=x, y_Exp= df.Expected,y_Found=df.Found,\
+		if plot:
+			_plot_dig_(df, x=x, y_Exp= df.Expected,y_Found=df.Found,\
 			 N=N, figsize=(10,6), conf_Z=conf)
 
 		### return df
@@ -259,29 +259,29 @@ class Analysis(pd.DataFrame):
 		selection of the original series.
 
 		digs -> number of first digits to consider. Must be 1 (first digit),
-		2 (first two digits) or 3 (first three digits).
+			2 (first two digits) or 3 (first three digits).
 
 		inform -> tells the number of registries that are being subjected to
-		the Analysis; defaults to True
+			the Analysis; defaults to True
 
-		MAD -> calculates the Mean of the Absolute Differences from the respective
-		expected distributions; defaults to True.
+		MAD -> calculates the Mean of the Absolute Differences between the found
+			and the expected distributions; defaults to True.
 
 		conf_level -> confidence level to draw lower and upper limits when
-		plotting and to limit the mapping of the proportions to only the
-		ones significantly diverging from the expected. Defaults to 95
+			plotting and to limit the mapping of the proportions to only the
+			ones significantly diverging from the expected. Defaults to 95
 
 		show_high_Z -> chooses which Z scores to be used when displaying results,
-		according to the confidence level chosen. Defaluts to 'pos', which will
-		highlight only the values that are higher than the expexted frequencies;
-		'all' will highlight both found extremes (positive and negative); and
-		an integer, which will use the first n entries, positive and negative,
-		regardless of whether the Z is higher than the conf_level Z or not. 
+			according to the confidence level chosen. Defaluts to 'pos', which will
+			highlight only the values that are higher than the expexted frequencies;
+			'all' will highlight both found extremes (positive and negative); and
+			an integer, which will use the first n entries, positive and negative,
+			regardless of whether the Z is higher than the conf_level Z or not. 
 
 		MSE -> calculates the Mean Square Error of the sample; defaults to False.
 
-		plot -> draws the plot of test for visual comparison, with the found
-		distributions in bars and the expected ones in a line.
+		plot -> draws the test plot for visual comparison, with the found
+			distributions in bars and the expected ones in a line.
 
 		
 		'''
@@ -342,7 +342,7 @@ class Analysis(pd.DataFrame):
 			print "\nMean Square Error = {0}".format(mse)
 		# Plotting the expected frequncies (line) against the found ones(bars)
 		if plot == True:
-			_plot_benf_(df, x = x, y_Exp = df.Expected, y_Found = df.Found,\
+			_plot_dig_(df, x = x, y_Exp = df.Expected, y_Found = df.Found,\
 			 N = N, figsize = (5*(digs+1),4*(digs+.6)), conf_Z = conf)
 
 		#return df
@@ -353,22 +353,22 @@ class Analysis(pd.DataFrame):
 		numbers provided.
 
 		inform -> tells the number of registries that are being subjected to
-		the Analysis; defaults to True
+			the Analysis; defaults to True
 
-		MAD -> calculates the Mean of the Absolute Differences from the respective
-		expected distributions; defaults to True.
+		MAD -> calculates the Mean of the Absolute Differences between the found
+			and the expected distributions; defaults to True.
 
 		show_high_Z -> chooses which Z scores to be used when displaying results,
-		according to the confidence level chosen. Defaluts to 'pos', which will
-		highlight only the values that are higher than the expexted frequencies;
-		'all' will highlight both found extremes (positive and negative); and
-		an integer, which will use the first n entries, positive and negative,
-		regardless of whether the Z is higher than the conf_level Z or not
+			according to the confidence level chosen. Defaluts to 'pos', which will
+			highlight only the values that are higher than the expexted frequencies;
+			'all' will highlight both found extremes (positive and negative); and
+			an integer, which will use the first n entries, positive and negative,
+			regardless of whether the Z is higher than the conf_level Z or not
 
-		MSE -> calculate the Mean Square Error of the sample; defaluts to False.
+		MSE -> calculates the Mean Square Error of the sample; defaluts to False.
 
-		plot -> draws the plot of test for visual comparison, with the found
-		distributions in bars and the expected ones in a line.
+		plot -> draws the test plot for visual comparison, with the found
+			distributions in bars and the expected ones in a line.
 
 		'''
 		if str(conf_level) not in self.confs.keys():
@@ -403,47 +403,68 @@ class Analysis(pd.DataFrame):
 		# 	print '\nThe top ' + str(top_Z) + ' Z scores are:\n'
 		# print dd
 		
+		#Populate dict with the most relevant entries
 		self.maps['L2D'] = np.array(_inform_and_map_(df, inform,\
 		 show_high_Z, conf)).astype(int)
 
 		# Mean absolute difference
-		if MAD == True:
+		if MAD:
 			_mad_(df, test='last')
 
 		# Mean Square Error
-		if MSE == True:
+		if MSE:
 			mse = _mse_(df)
 			print "\nMean Square Error = " + str(mse)
 		# Plotting the expected frequencies (line) against the found ones (bars)
-		if plot == True:
-			_plot_benf_(df, x = x, y_Exp = df.Expected, y_Found =df.Found,\
+		if plot:
+			_plot_dig_(df, x = x, y_Exp = df.Expected, y_Found =df.Found,\
 			 N=N, figsize=(15,8), conf_Z=conf, text_x=True)
 
 		### return df
 	
-	def summation(self, digs=2, top=20, plot=True     ):
+	def summation(self, digs=2, top=20, inform=True, plot=True):
 		'''
-		Performs the Second Order Summation test.
+		Performs the Summation test. In a Benford series, the sums of the entries
+		begining with the same digits tends to be the same.
+
 		digs -> tells the first digits to use. 1- first; 2- first two;
-		3- first three. Defaults to 2.
+				3- first three. Defaults to 2.
+
 		top -> choses how many top values to show. Defaults to 20.
-		plot -> plots the results.
+
+		plot -> plots the results. Defaults to True.
 		'''
 
 		if not digs in [1,2,3]:
 			raise ValueError("The value assigned to the parameter -digs-\
- was %s. Value must be 1, 2 or 3." % digs)
-		if digs==1:
+ was {0}. Value must be 1, 2 or 3.".format(digs))
+		#Set the future dict key
+		if inform:
+			N = len(self)
+			print "\n---Test performed on " + str(N) + " registries.---\n"
+		dig_name = 'SUM{0}'.format(digs)
+		if digs == 1:
 			top = 9
-		d = digs_dict[str(digs)]
+		#Call the dict for F1D, F2D, F3D
+		d = self.digs_dict[str(digs)]
+		#Call the expected proportion according to digs
+		l = 1./(9*(10**(digs-1)))
+
 		s = self.groupby(d).sum()
 		s['Percent'] = s.Seq/s.Seq.sum()
-		l = 1./9*(10**(digs-1))
-		
+		s.columns.values[0] = 'Sum'
+		s = s[['Sum','Percent']]
+		s['AbsDif'] = np.absolute(s.Percent-l)
 
-		### plot
+		#Populate dict with the most relevant entries
+		self.maps[dig_name] = np.array(_inform_and_map_(s, inform,\
+		 show_high_Z=top, conf=None)).astype(int)
+
+		if plot:
+			f = {'1':(8,5), '2':(13,8), '3':(21,13)}
+			_plot_sum_(s, figsize=f[str(digs)], l=l)
 		
-		return s.sort_values('Percent', ascending=False).head(top)
+		#return 
 
 
 
@@ -454,23 +475,10 @@ class Analysis(pd.DataFrame):
 		'''
 		'''
 
-		# self.Seq = self.Seq.apply(int) / 100.
-		N = len(self)
-		### self.Seq = self.Seq.apply(_to_float_)
-		# get the frequencies
-		v = self.Seq.value_counts()
-		# get their relative frequencies
-		p = self.Seq.value_counts(normalize =True) * 100
-		# crate dataframe from them
-		df = pd.DataFrame({'Counts': v, 'Percent': p}).sort_values('Counts',\
-			ascending=False)
-		if inform:
-			print "\n---Test performed on " + str(N) + " registries.---\n"
-			print '\nThe ' + str(top_Rep) + ' most frequent numbers are:\n'
-			print df.head(top_Rep)
-		### return df
+		
 
-	def focus(self, frame, digits='F2D'):
+
+	def map_back(self, frame, digits='F2D'):
 		'''
 		'''
 
@@ -645,7 +653,7 @@ def _tint_(s):
 	except:
 		return 0
 
-def _plot_benf_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):		
+def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):		
 	fig = plt.figure(figsize=figsize)
 	ax = fig.add_subplot(111)
 	plt.title('Expected vs. Found Distributions')
@@ -666,6 +674,18 @@ def _plot_benf_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
 	ax.plot(x, lower, color= 'r')
 	ax.fill_between(x, upper,lower, color='r', alpha=.3)
 	plt.show()
+
+
+def _plot_sum_(df, figsize, l):
+	fig = plt.figure(figsize=figsize)
+	ax = fig.add_subplot(111)
+	plt.title('Expected vs. Found Sums')
+	plt.xlabel('Digits')
+	plt.ylabel('Sums')
+	ax.bar(df.index, df.Percent, label='Found Sums')
+	ax.axhline(l, color='r', linewidth=2)
+	ax.legend()
+
 
 
 def _collapse_(num):
@@ -713,9 +733,14 @@ def _sanitize_latin_int_(s):
 def _inform_and_map_(df, inform, show_high_Z, conf):
 	if inform:
 		if isinstance(show_high_Z, int):
-			dd = df[['Expected','Found','Z_test']].sort_values('Z_test',\
-			ascending=False).head(show_high_Z)
-			print '\nThe entries with the top %s Z scores are:\n' % show_high_Z
+			if conf != None:
+				dd = df[['Expected','Found','Z_test']].sort_values('Z_test',\
+				ascending=False).head(show_high_Z)
+				print '\nThe entries with the top %s Z scores are:\n' % show_high_Z
+			# Summation Test
+			else:
+				dd = df.sort_values('AbsDif', ascending=False).head(show_high_Z)
+				print '\nThe entries with the top %s absolute deviations are:\n' % show_high_Z
 		else:
 			if show_high_Z == 'pos':
 				m1 = df.Dif > 0
@@ -723,6 +748,12 @@ def _inform_and_map_(df, inform, show_high_Z, conf):
 				dd = df[['Expected','Found','Z_test']][m1 & m2].sort_values('Z_test',\
 				 ascending=False)
 				print '\nThe entries with the significant positive deviations are:\n'
+			elif show_high_Z == 'neg':
+				m1 = df.Dif < 0
+				m2 = df.Z_test > conf
+				dd = df[['Expected','Found','Z_test']][m1 & m2].sort_values('Z_test',\
+				 ascending=False)
+				print '\nThe entries with the significant negative deviations are:\n'
 			else:
 				dd = df[['Expected','Found','Z_test']][df.Z_test > conf].sort_values('Z_test',\
 				 ascending=False)
@@ -731,13 +762,21 @@ def _inform_and_map_(df, inform, show_high_Z, conf):
 		return dd.index
 	else:
 		if isinstance(show_high_Z, int):
-			dd = df[['Expected','Found','Z_test']].sort_values('Z_test',\
-			ascending=False).head(show_high_Z)
+			if conf != None:
+				dd = df[['Expected','Found','Z_test']].sort_values('Z_test',\
+				ascending=False).head(show_high_Z)
+			#Summation Test
+			else:
+				dd = df.sort_values('AbsDif', ascending=False).head(show_high_Z)
 		else:
 			if show_high_Z == 'pos':
 				dd = df[['Expected','Found','Z_test']][df.Dif > 0 and \
+				 df.Z_test > conf].sort_values('Z_test',ascending=False)
+			elif show_high_Z == 'neg':
+				dd = df[['Expected','Found','Z_test']][df.Dif < 0 and \
 				 df.Z_test > conf].sort_values('Z_test',ascending=False)
 			else:
 				dd = df[['Expected','Found','Z_test']][df.Z_test > \
 				conf].sort_values('Z_test', ascending=False)
 		return dd.index
+
