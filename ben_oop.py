@@ -91,6 +91,8 @@ class Analysis(pd.DataFrame):
 			for the last two digits test. The numbers will be multiplied by
 			10 to the power of the dec value. Defaluts to 2 (currency). If 
 			the numbers are integers, assign 0.
+	-> sec_order: choice for the Second Order Test, which cumputes the differences
+			between the ordered entries before running the Tests.
 	-> inform: tells the number of registries that are being subjected to
 			the Analysis; defaults to True
 	-> latin: used for str dtypes representing numbers in latin format, with
@@ -104,10 +106,10 @@ class Analysis(pd.DataFrame):
 	'99.99':3.71} # dict of confidence levels for further use
 	digs_dict = {'1':'F1D','2':'F2D','3':'F3D'}
 
-	def __init__(self, data, dec=2, inform = True, latin=False):
+	def __init__(self, data, dec=2, sec_order=False, inform = True, latin=False):
 		pd.DataFrame.__init__(self, {'Seq': data})
 		self.dropna(inplace=True)
-		if inform == True:
+		if inform:
 			print "Initialized sequence with " + str(len(self)) + " registries." 
 		if self.Seq.dtypes != 'float' and self.Seq.dtypes != 'int':
 			print 'Sequence dtype is not int nor float.\nTrying to convert...\n'
@@ -125,6 +127,13 @@ class Analysis(pd.DataFrame):
 				raise TypeError("The sequence dtype was not int nor float\
 				 and could not be converted.\nConvert it to whether int of float,\
 				  or set latin to True, and try again.")
+		if sec_order:
+			self.sort_values('Seq', inplace=True)
+			self.Seq = self.Seq - self.Seq.shift(1)
+			self = self[self.Seq!=0].dropna()
+			if inform:
+				print 'Second Order Test. Initial series reduced to {0} \
+entries.'.format(len(self))
 		# Extracts the digits in their respective positions,
 		self['ZN'] = self.Seq * (10**dec)  # dec - to manage decimals
 		if dec != 0:
