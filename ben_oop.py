@@ -112,7 +112,7 @@ class Analysis(pd.DataFrame):
 		if inform:
 			print "Initialized sequence with " + str(len(self)) + " registries." 
 		if self.Seq.dtypes != 'float' and self.Seq.dtypes != 'int':
-			print 'Sequence dtype is not int nor float.\nTrying to convert...\n'
+				print 'Sequence dtype is not int nor float.\nTrying to convert...\n'
 			if latin == True:
 				if dec != 0:
 					self.Seq = self.Seq.apply(_sanitize_latin_float_, dec=dec)
@@ -696,26 +696,65 @@ def _plot_sum_(df, figsize, l):
 	ax.legend()
 
 
+def _collapse_scalar_(num, orders=2, dec=2):
+	'''
+	Collapses any number to a form defined by the user, with the chosen
+	number of digits at the left of the floating point, with the chosen
+	number of decimal digits or an int.
+	num -> number to be collapsed
+	orders -> orders of magnitude chosen (how many digts to the left of
+		the floating point). Defaults to 2.
+	dec -> number of decimal places. Defaults to 2. If 0 is chosen, returns
+		an int.
+	'''
+	# Set n to 1 if the number is less than 1, since when num is less than 1
+	# 10 must be raised to a smaller power   
+    if num < 1.:
+        n = 1
+    # Set n to 2 otherwise
+    else:
+        n = 2
+    # Set the dividend l, which is 10 raised to the
+    # integer part of the number's log
+    l = 10 ** int(np.log10(num))
+    # If dec is different than 0, use dec to round to the decimal
+    # places chosen
+    if dec != 0:
+        return round(10. ** (orders + 1 - n) * num / l, dec)
+    # If dec == 0, return integer
+    else:
+        return int(10. ** (orders + 1 - n) * num / l)
 
-def _collapse_(num):
-	'''
-	Transforms any positive number to the form XX.yy, with two digits
-	to the left of the floating point
-	'''
-	l=10**int(np.log10(num))
-	if num>=1.:
-		return 10.*num/l
-	else:
-		return 100.*num/l
 
-def _collapse_array_(arr):
+def _collapse_array_(arr, orders=2, dec=2):
 	'''
+	Collapses an array of numbers, each to a form defined by the user,
+	with the chosen	number of digits at the left of the floating point,
+	with the chosen	number of decimal digits or as ints.
+	arr -> array of numbers to be collapsed
+	orders -> orders of magnitude chosen (how many digts to the left of
+		the floating point). Defaults to 2.
+	dec -> number of decimal places. Defaults to 2. If 0 is chosen, returns
+		integers.
+	'''	
+	# Create a array of ones with the lenght of the array to be collapsed,
+	# for numberss less than 1, since when the number is less than 1
+	# 10 must be raised to a smaller power 
+    n = np.ones(len(arr))
+    # Set the ones to two in the places where the array numbers are greater
+    # or equal to one 
+    n[arr>=1]=2
+	# Set the dividend array l, composed of numbers 10 raised to the
+    # integer part of the numbers' logs
+    l = 10. ** (np.log10(arr).astype(int, copy=False))
+	# If dec is different than 0, use dec to round to the decimal
+    # places chosen
+    if dec != 0:
+        return 10. ** (orders + 1 - n) * arr / l
+    # If dec == 0, return array of integers
+    else:
+        return (10. ** (orders + 1 - n) * arr / l).astype(int)
 
-	'''
-	# arr = abs(arr)
-	ilt = 10**(np.log10(arr).astype(int))
-	arr[arr<1.]*=10
-	return arr*10/ilt
 
 def _sanitize_float_(s, dec):
 	s = str(s)
