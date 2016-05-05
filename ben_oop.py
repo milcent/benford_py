@@ -102,18 +102,19 @@ class Analysis(pd.DataFrame):
 	'''
 	maps = {} # dict for recording the indexes to be mapped back to the
 			  # original series of numbers
-	confs = {'80':1.285,'85':1.435,'90':1.645,'95':1.96,'99':2.575,\
-	'99.99':3.71} # dict of confidence levels for further use
+	# dict of confidence levels for further use
+	confs = {'80':1.285,'85':1.435,'90':1.645,'95':1.96,'99':2.576,'99.9':3.29,\
+	'99.99':3.89, '99.999':4.417, '99.9999':4.892, '99.99999':5.327} 
 	digs_dict = {'1':'F1D','2':'F2D','3':'F3D'}
 
 	def __init__(self, data, dec=2, sec_order=False, inform = True, latin=False):
 		pd.DataFrame.__init__(self, {'Seq': data})
 		self.dropna(inplace=True)
 		if inform:
-			print "Initialized sequence with " + str(len(self)) + " registries." 
+			print "Initialized sequence with {0} registries.".format(len(self)) 
 		if self.Seq.dtypes != 'float' and self.Seq.dtypes != 'int':
-				print 'Sequence dtype is not int nor float.\nTrying to convert...\n'
-			if latin == True:
+			print 'Sequence dtype is not int nor float.\nTrying to convert...\n'
+			if latin:
 				if dec != 0:
 					self.Seq = self.Seq.apply(_sanitize_latin_float_, dec=dec)
 				else:
@@ -129,8 +130,9 @@ class Analysis(pd.DataFrame):
 				  or set latin to True, and try again.")
 		if sec_order:
 			self.sort_values('Seq', inplace=True)
+			self.drop_duplicates(inplace=True)
 			self.Seq = self.Seq - self.Seq.shift(1)
-			self = self[self.Seq!=0].dropna()
+			self.dropna(inplace=True)
 			if inform:
 				print 'Second Order Test. Initial series reduced to {0} \
 entries.'.format(len(self))
@@ -207,13 +209,13 @@ entries.'.format(len(self))
 
 		'''
 		if str(conf_level) not in self.confs.keys():
-			raise ValueError("Value of conf_level must be one of the\
- following: 80, 85, 90, 95, 99 or 99.99")
+			raise ValueError("Value of -conf_level- must be one of the\
+ following: {0}".format(self.confs.keys()))
 		conf = self.confs[str(conf_level)]
 		N = len(self)
 		x = np.arange(0,10)
 		if inform:
-			print "\n---Test performed on " + str(N) + " registries.---\n"
+			print "\n---Test performed on {0} registries.---\n".format(N)
 		# get the number of occurrences of each second digit
 		v = self.SD.value_counts()
 		# get their relative frequencies
@@ -298,11 +300,11 @@ entries.'.format(len(self))
 
 		if str(conf_level) not in self.confs.keys():
 			raise ValueError("Value of -conf_level- must be one of the\
- following: 80, 85, 90, 95, 99 or 99.99")
+ following: {0}".format(self.confs.keys()))
 
 		if not digs in [1,2,3]:
 			raise ValueError("The value assigned to the parameter -digs-\
- was %s. Value must be 1, 2 or 3." % digs)
+ was {0}. Value must be 1, 2 or 3.".format(digs))
 
 	# 	if not show_high_Z in ['pos', 'all'] or not isinstance(show_high_Z, int):
 	# 		raise ValueError("The value of -show_high_Z- must be one of\
@@ -381,8 +383,8 @@ entries.'.format(len(self))
 
 		'''
 		if str(conf_level) not in self.confs.keys():
-			raise ValueError("Value of conf_level must be one of the\
- following: 80, 85, 90, 95, 99 or 99.99")
+			raise ValueError("Value of -conf_level- must be one of the\
+ following: {0}".format(self.confs.keys()))
 		conf = self.confs[str(conf_level)]
 		N = len(self)
 		x = np.arange(0,100)
@@ -558,56 +560,6 @@ def _getMantissas_(arr):
 
 	return np.abs(np.log10(arr) - np.log10(arr).astype(int))
 
-
-def _first_(plot=False):
-	'''
-	Returns the expected probabilities of the first digits
-	according to Benford's distribution.
-	'''
-	First_Dig = np.arange(1,10)
-	Expected = np.log10(1 + (1. / First_Dig))
-	first = pd.DataFrame({'Expected':Expected,\
-			'First_Dig':First_Dig}).set_index('First_Dig')
-	if plot == True:
-		first.plot(kind='bar', grid=False)
-	return first
-
-def _second_(plot=False):
-	'''
-	Returns the expected probabilities of the second digits
-	according to Benford's distribution.
-	'''
-	a = np.arange(10,100)
-	Expected = np.log10(1 + (1. / a))
-	Sec_Dig = np.array(range(10)*9)
-	d = pd.DataFrame({'Expected': Expected, 'Sec_Dig': Sec_Dig},\
-			index = a)
-	sec = d.groupby('Sec_Dig').agg(sum)
-	if plot == True:
-		sec.plot(kind='bar', grid=False)
-	return sec
-
-def _firstTwo_(plot=False):
-	'''
-	Returns the expected probabilities of the first two digits
-	according to Benford's distribution.
-	'''
-	First_2_Dig = np.arange(10,100)
-	Expected = np.log10(1 + (1. / First_2_Dig))
-	ft = pd.DataFrame({'First_2_Dig':First_2_Dig,\
-			'Expected':Expected}).set_index('First_2_Dig')
-	if plot == True:
-		ft.plot(kind='bar', figsize = (15,8),grid=False)
-	return ft
-
-def _lastTwo_(plot=False):
-	exp = np.array([1/99.]*100)
-	lt = pd.DataFrame({'Last_2_Dig': _lt_(),\
-			'Expected': exp}).set_index('Last_2_Dig')
-	if plot == True:
-		lt.plot(kind='bar',figsize = (15,8), grid=False,  ylim=(0,.02))
-	return lt
-
 def _lt_():
 	l = []
 	d = '0123456789'
@@ -709,21 +661,21 @@ def _collapse_scalar_(num, orders=2, dec=2):
 	'''
 	# Set n to 1 if the number is less than 1, since when num is less than 1
 	# 10 must be raised to a smaller power   
-    if num < 1.:
-        n = 1
+	if num < 1:
+		n = 1
     # Set n to 2 otherwise
-    else:
-        n = 2
+	else:
+		n = 2
     # Set the dividend l, which is 10 raised to the
     # integer part of the number's log
-    l = 10 ** int(np.log10(num))
+	l = 10 ** int(np.log10(num))
     # If dec is different than 0, use dec to round to the decimal
     # places chosen
-    if dec != 0:
-        return round(10. ** (orders + 1 - n) * num / l, dec)
+	if dec != 0:
+		return round(10. ** (orders + 1 - n) * num / l, dec)
     # If dec == 0, return integer
-    else:
-        return int(10. ** (orders + 1 - n) * num / l)
+	else:
+		return int(10. ** (orders + 1 - n) * num / l)
 
 
 def _collapse_array_(arr, orders=2, dec=2):
@@ -735,25 +687,25 @@ def _collapse_array_(arr, orders=2, dec=2):
 	orders -> orders of magnitude chosen (how many digts to the left of
 		the floating point). Defaults to 2.
 	dec -> number of decimal places. Defaults to 2. If 0 is chosen, returns
-		integers.
+		array of integers.
 	'''	
 	# Create a array of ones with the lenght of the array to be collapsed,
 	# for numberss less than 1, since when the number is less than 1
 	# 10 must be raised to a smaller power 
-    n = np.ones(len(arr))
+	n = np.ones(len(arr))
     # Set the ones to two in the places where the array numbers are greater
     # or equal to one 
-    n[arr>=1]=2
+	n[arr>=1]=2
 	# Set the dividend array l, composed of numbers 10 raised to the
     # integer part of the numbers' logs
-    l = 10. ** (np.log10(arr).astype(int, copy=False))
+	l = 10. ** (np.log10(arr).astype(int, copy=False))
 	# If dec is different than 0, use dec to round to the decimal
     # places chosen
-    if dec != 0:
-        return 10. ** (orders + 1 - n) * arr / l
+	if dec != 0:
+		return 10. ** (orders + 1 - n) * arr / l
     # If dec == 0, return array of integers
-    else:
-        return (10. ** (orders + 1 - n) * arr / l).astype(int)
+	else:
+		return (10. ** (orders + 1 - n) * arr / l).astype(int)
 
 
 def _sanitize_float_(s, dec):
