@@ -29,7 +29,7 @@ class First(pd.DataFrame):
  	def __init__(self, digs, plot = True):
  		if not digs in [1,2,3]:
  			raise ValueError("The value assigned to the parameter -digs-\
- was %s. Value must be 1, 2 or 3." %digs)
+ was {0}. Value must be 1, 2 or 3.".format(digs))
  		dig_name = 'First_' + str(digs) + '_Dig'
  		Dig = np.arange(10**(digs-1),10**digs)
  		Exp = np.log10(1 + (1. / Dig))
@@ -75,7 +75,7 @@ class LastTwo(pd.DataFrame):
 			self.plot(kind='bar',figsize = (15,8), color = 'g',\
 				grid=False,  ylim=(0,.015))
 
-class Analysis(pd.DataFrame):
+class Audit(pd.DataFrame):
 	'''
 	Initiates the Analysis of the series. pandas DataFrame subclass.
 	Values must be integers or floats. If not, it will try to convert
@@ -103,7 +103,7 @@ class Analysis(pd.DataFrame):
 	maps = {} # dict for recording the indexes to be mapped back to the
 			  # original series of numbers
 	# dict of confidence levels for further use
-	confs = {'80':1.285,'85':1.435,'90':1.645,'95':1.96,'99':2.576,'99.9':3.29,\
+	confs = {'None':None,'80':1.285,'85':1.435,'90':1.645,'95':1.96,'99':2.576,'99.9':3.29,\
 	'99.99':3.89, '99.999':4.417, '99.9999':4.892, '99.99999':5.327} 
 	digs_dict = {'1':'F1D','2':'F2D','3':'F3D'}
 
@@ -134,14 +134,14 @@ class Analysis(pd.DataFrame):
 			self.Seq = self.Seq - self.Seq.shift(1)
 			self.dropna(inplace=True)
 			if inform:
-				print 'Second Order Test. Initial series reduced to {0} \
-entries.'.format(len(self))
+				print 'Second Order Test. Initial series reduced to {0}\
+ entries.'.format(len(self))
 		# Extracts the digits in their respective positions,
 		self['ZN'] = self.Seq * (10**dec)  # dec - to manage decimals
 		if dec != 0:
 			self.ZN = self.ZN.apply(_tint_)
 		#self = self[self.ZN!=0]
-		self['S'] = self.ZN.apply(str)
+		self['S'] = self.ZN.astype(str)
 		self['F1D'] = self.S.str[:1]   # get the first digit
 		self['SD'] = self.S.str[1:2]  # get the second digit
 		self['F2D'] = self.S.str[:2]  # get the first two digits
@@ -164,11 +164,11 @@ entries.'.format(len(self))
 		self['Mant'] = _getMantissas_(self.Seq)
 		p = self[['Seq','Mant']]
 		p = p[p.Seq>0].sort_values('Mant')
-		print "The Mantissas MEAN is " + str(p.Mant.mean()) + '. Ref: 0.5.'
-		print "The Mantissas VARIANCE is " + str(p.Mant.var()) + '. Ref: 0.83333.'
+		print "The Mantissas MEAN is {0}. Ref: 0.5.".format(p.Mant.mean())
+		print "The Mantissas VARIANCE is {0}. Ref: 0.83333.".format(p.Mant.var())
 		N = len(p)
 		#return p
-		if plot==True:
+		if plot:
 			p['x'] = np.arange(1,N+1)
 			n = np.ones(N)/N
 			fig = plt.figure(figsize=figsize)
@@ -194,6 +194,7 @@ entries.'.format(len(self))
 		conf_level -> confidence level to draw lower and upper limits when
 			plotting and to limit the mapping of the proportions to only the
 			ones significantly diverging from the expected. Defaults to 95.
+			If None, no boundaries will be drawn.
 
 		show_high_Z -> chooses which Z scores to be used when displaying results,
 			according to the confidence level chosen. Defaluts to 'pos', which will
@@ -249,7 +250,7 @@ entries.'.format(len(self))
 
 		# Mean absolute difference
 		if MAD:
-			_mad_(df,'second')
+			_mad_(df,'SD')
 			
 		# Mean Square Error
 		if MSE:
@@ -280,7 +281,8 @@ entries.'.format(len(self))
 
 		conf_level -> confidence level to draw lower and upper limits when
 			plotting and to limit the mapping of the proportions to only the
-			ones significantly diverging from the expected. Defaults to 95
+			ones significantly diverging from the expected. Defaults to 95.
+			If None, no boundaries will be drawn.
 
 		show_high_Z -> chooses which Z scores to be used when displaying results,
 			according to the confidence level chosen. Defaluts to 'pos', which will
@@ -299,8 +301,8 @@ entries.'.format(len(self))
 		N = len(self)
 
 		if str(conf_level) not in self.confs.keys():
-			raise ValueError("Value of -conf_level- must be one of the\
- following: {0}".format(self.confs.keys()))
+			raise ValueError("Value of parameter -conf_level- must be one\
+ of the following: {0}".format(self.confs.keys()))
 
 		if not digs in [1,2,3]:
 			raise ValueError("The value assigned to the parameter -digs-\
@@ -313,13 +315,13 @@ entries.'.format(len(self))
 		# if digs == 1:
 		# 	show_high_Z = 9
 
- 		dig_name = 'F%sD' % digs
+ 		dig_name = 'F{0}D'.format(digs)
  		n,m = 10**(digs-1), 10**(digs)
 		x = np.arange(n,m)
 		conf = self.confs[str(conf_level)]
 		
 		if inform:
-			print "\n---Test performed on %s registries.---\n" % N 
+			print "\n---Test performed on {0} registries.---\n".format(N)
 		# get the number of occurrences of the first two digits
 		v = self[dig_name].value_counts()
 		# get their relative frequencies
@@ -344,21 +346,21 @@ entries.'.format(len(self))
 		 show_high_Z, conf))
 
 		# Mean absolute difference
-		if MAD == True:
-			_mad_(df, test = ['first', digs])
+		if MAD:
+			_mad_(df, test = dig_name)
 
 		# Mean Square Error
-		if MSE == True:
+		if MSE:
 			mse = (df.AbsDif**2).mean()
 			print "\nMean Square Error = {0}".format(mse)
 		# Plotting the expected frequncies (line) against the found ones(bars)
-		if plot == True:
+		if plot:
 			_plot_dig_(df, x = x, y_Exp = df.Expected, y_Found = df.Found,\
 			 N = N, figsize = (5*(digs+1),4*(digs+.6)), conf_Z = conf)
 
 		#return df
 	def lastTwoDigits(self, inform=True, MAD=False, conf_level=95,\
-	 show_high_Z = 'pos', MSE=False, plot=True):
+	 	show_high_Z = 'pos', MSE=False, plot=True):
 		'''
 		Performs the Benford Last Two Digits test with the series of
 		numbers provided.
@@ -368,6 +370,11 @@ entries.'.format(len(self))
 
 		MAD -> calculates the Mean of the Absolute Differences between the found
 			and the expected distributions; defaults to True.
+
+		conf_level -> confidence level to draw lower and upper limits when
+			plotting and to limit the mapping of the proportions to only the
+			ones significantly diverging from the expected. Defaults to 95.
+			If None, no boundaries will be drawn.
 
 		show_high_Z -> chooses which Z scores to be used when displaying results,
 			according to the confidence level chosen. Defaluts to 'pos', which will
@@ -420,12 +427,12 @@ entries.'.format(len(self))
 
 		# Mean absolute difference
 		if MAD:
-			_mad_(df, test='last')
+			_mad_(df, test='L2D')
 
 		# Mean Square Error
 		if MSE:
 			mse = _mse_(df)
-			print "\nMean Square Error = " + str(mse)
+			print "\nMean Square Error = {0}".format(mse)
 		# Plotting the expected frequencies (line) against the found ones (bars)
 		if plot:
 			_plot_dig_(df, x = x, y_Exp = df.Expected, y_Found =df.Found,\
@@ -452,7 +459,7 @@ entries.'.format(len(self))
 		#Set the future dict key
 		if inform:
 			N = len(self)
-			print "\n---Test performed on " + str(N) + " registries.---\n"
+			print "\n---Test performed on {0} registries.---\n".format(N)
 		dig_name = 'SUM{0}'.format(digs)
 		if digs == 1:
 			top = 9
@@ -519,11 +526,14 @@ def _Z_test(frame,N):
 		(1-frame.Expected)/N))
 
 def _mad_(frame, test):
+	'''
+	
+	'''
 	mad = frame.AbsDif.mean()
-	if test[0] == 'first':
-		if test[1] == 1:
+	if test[0] == 'F':
+		if test == 'F1D':
 			margins = ['0.0006','0.0012','0.0015', 'Digit']
-		elif test[1] == 2:
+		elif test == 'F2D':
 			margins = ['0.0012','0.0018','0.0022', 'Two Digits']
 		else:
 			margins = ['0.00036','0.00044','0.00050', 'Three Digits']
@@ -535,7 +545,7 @@ def _mad_(frame, test):
 	- Above {4}: Nonconformity".format(mad, margins[3], margins[0],\
 	 margins[1], margins[2])
 
-	elif test == 'second':
+	elif test == 'SD':
 		print "\nThe Mean Absolute Deviation is {0}\n\
 	For the Second Digits:\n\
 	- 0.0000 to 0.0008: Close Conformity\n\
@@ -557,8 +567,20 @@ def _getMantissas_(arr):
 
 	arr: np.array of integers or floats ---> np.array of floats
 	'''
+	log_a = np.log10(arr)
+	return np.abs(log_a) - log_a.astype(int) # the number - its integer part
 
-	return np.abs(np.log10(arr) - np.log10(arr).astype(int))
+
+def _getMantissas2_(arr):
+	'''
+	The mantissa is the non-integer part of the log of a number.
+	This fuction uses the element-wise array operations of numpy
+	to get the mantissas of each number's log.
+
+	arr: np.array of integers or floats ---> np.array of floats
+	'''
+
+	return np.abs(np.log10(arr)) % 1.0
 
 def _lt_():
 	l = []
@@ -615,6 +637,8 @@ def _tint_(s):
 		return 0
 
 def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):		
+	'''
+	'''
 	fig = plt.figure(figsize=figsize)
 	ax = fig.add_subplot(111)
 	plt.title('Expected vs. Found Distributions')
@@ -628,12 +652,13 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
 		plt.xticks(x,df.index, rotation='vertical')
 	# Plotting the Upper and Lower bounds considering the Z for the
 	# informed confidence level
-	sig = conf_Z * np.sqrt(y_Exp*(1-y_Exp)/N) 
-	upper = y_Exp + sig + (1/(2*N))
-	lower = y_Exp - sig - (1/(2*N))
-	ax.plot(x, upper, color= 'r')
-	ax.plot(x, lower, color= 'r')
-	ax.fill_between(x, upper,lower, color='r', alpha=.3)
+	if conf_Z != None:
+		sig = conf_Z * np.sqrt(y_Exp*(1-y_Exp)/N) 
+		upper = y_Exp + sig + (1/(2*N))
+		lower = y_Exp - sig - (1/(2*N))
+		ax.plot(x, upper, color= 'r')
+		ax.plot(x, lower, color= 'r')
+		ax.fill_between(x, upper,lower, color='r', alpha=.3)
 	plt.show()
 
 
