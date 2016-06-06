@@ -14,6 +14,16 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+'''
+class Benford(pd.DataFrame):
+	"""docstring for Benford"""
+	def __init__(self, digs=1, plot = True):
+
+		pd.DataFrame.__init__(self, )
+		self.arg = arg
+'''
+
+		
 class First(pd.DataFrame):
  	'''
  	Returns the expected probabilities of the First, First Two, or
@@ -30,7 +40,7 @@ class First(pd.DataFrame):
  		if not digs in [1,2,3]:
  			raise ValueError("The value assigned to the parameter -digs-\
  was {0}. Value must be 1, 2 or 3.".format(digs))
- 		dig_name = 'First_' + str(digs) + '_Dig'
+ 		dig_name = 'First_{0}_Dig'.format(digs)
  		Dig = np.arange(10**(digs-1),10**digs)
  		Exp = np.log10(1 + (1. / Dig))
 
@@ -54,10 +64,12 @@ class Second(pd.DataFrame):
 		Expe = np.log10(1 + (1. / a))
 		Sec_Dig = np.array(range(10)*9)
 
-		pd.DataFrame.__init__(self,{'Expected': Expe, 'Sec_Dig': Sec_Dig})#index = a)
+		pd.DataFrame.__init__(self,{'Expected': Expe, 'Sec_Dig': Sec_Dig},\
+		 index = a)
 		self = self.groupby('Sec_Dig').sum()
 		if plot == True:
-			self.plot(kind='bar', color = 'g', grid=False, ylim=(0,.14))
+			self.plot(kind='bar', color = 'g', grid=False,\
+			figsize=(10,6.4), ylim=(0,.14))
 
 class LastTwo(pd.DataFrame):
 	'''   
@@ -179,7 +191,7 @@ class Analysis(pd.DataFrame):
 			plt.xlim((1,N+1))
 			plt.show()
 
-	def secondDigit(self, inform=True, MAD=True, conf_level=95,\
+	def second_digit(self, inform=True, MAD=True, conf_level=95,\
 		MSE=False, show_high_Z='pos', plot=True):
 		'''
 		Performs the Benford Second Digit test with the series of
@@ -247,15 +259,15 @@ class Analysis(pd.DataFrame):
 		# Mean Square Error
 		if MSE:
 			mse = _mse_(df)
-			print "\nMean Square Error = " + str(mse)
-		# Plotting the expected frequncies (line) against the found ones(bars)
+			print "\nMean Square Error = {0}".format(mse)
 
+		# Plotting the expected frequncies (line) against the found ones(bars)
 		if plot:
 			_plot_dig_(df, x=x, y_Exp= df.Expected,y_Found=df.Found,\
 			 N=N, figsize=(10,6), conf_Z=conf)
 
 		### return df
-	def firstDigits(self, digs, inform=True, MAD=True, conf_level=95,\
+	def first_digits(self, digs, inform=True, MAD=True, conf_level=95,\
 		show_high_Z = 'pos', MSE=False, plot=True):
 		'''
 		Performs the Benford First Digits test with the series of
@@ -351,7 +363,7 @@ class Analysis(pd.DataFrame):
 			 N = N, figsize = (5*(digs+1),4*(digs+.6)), conf_Z = conf)
 
 		#return df
-	def lastTwoDigits(self, inform=True, MAD=False, conf_level=95,\
+	def last_two_digits(self, inform=True, MAD=False, conf_level=95,\
 	 	show_high_Z = 'pos', MSE=False, plot=True):
 		'''
 		Performs the Benford Last Two Digits test with the series of
@@ -452,7 +464,7 @@ class Analysis(pd.DataFrame):
 		l = 1./(9*(10**(digs-1)))
 
 		s = self.groupby(d).sum()
-		s['Percent'] = s.Seq/s.Seq.sum()
+		s['Percent'] = s.Seq.value_counts(normalize=True)
 		s.columns.values[0] = 'Sum'
 		s = s[['Sum','Percent']]
 		s['AbsDif'] = np.absolute(s.Percent-l)
@@ -483,7 +495,7 @@ class Analysis(pd.DataFrame):
 		'''
 		'''
 
-		if not digits in ['F1D','F2D','F3D','SD','L2D']:
+		if not digits in ['F1D','F2D','F3D','SD','L2D']: # Inserir Summation
 			raise ValueError('The value of -digits- must be one of the following:\
  F1D (First Digits), F2D (First Two Digits), F3D (First Three Digits), SD (Second \
 Digits) or L2D (Last Two Digits).')
