@@ -14,15 +14,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-'''
-class Benford(pd.DataFrame):
-	"""docstring for Benford"""
-	def __init__(self, digs=1, plot = True):
-
-		pd.DataFrame.__init__(self, )
-		self.arg = arg
-'''
-
 		
 class First(pd.DataFrame):
  	'''
@@ -98,7 +89,7 @@ class Analysis(pd.DataFrame):
 
 	-> data: sequence of numbers to be evaluated. Must be in absolute values,
 			since negative values with minus signs will distort the tests.
-			PONDERAR DEIXAR O COMANDO DE CONVERTER PARA AbS
+			XXXXXX---PONDERAR DEIXAR O COMANDO DE CONVERTER PARA AbS------XXXXXX
 	-> dec: number of decimal places to be accounted for. Especially important
 			for the last two digits test. The numbers will be multiplied by
 			10 to the power of the dec value. Defaluts to 2 (currency). If 
@@ -120,7 +111,11 @@ class Analysis(pd.DataFrame):
 	digs_dict = {'1':'F1D','2':'F2D','3':'F3D'}
 
 	def __init__(self, data, dec=2, sec_order=False, inform = True, latin=False):
-		pd.DataFrame.__init__(self, {'Seq': data})
+		#if latin:
+		#	thousands, decimals = '.', ','
+		#else:
+		#	thousands, decimals = ',', '.'
+		pd.DataFrame.__init__(self, {'Seq': data}) #thousands = thousands, decimals = decimals
 		self.dropna(inplace=True)
 		if inform:
 			print "Initialized sequence with {0} registries.".format(len(self)) 
@@ -171,7 +166,13 @@ class Analysis(pd.DataFrame):
 
 	def mantissas(self, plot=True, figsize=(15,8)):
 		'''
-
+		Calculates the logs base 10 of the numbers in the sequence and Extracts
+		the mantissae, which are the decimal parts of the logarithms. It them
+		calculates the mean and variance of the mantissae, and compares them with
+		the mean and variance of a Benford's sequence.
+		plot -> plots the ordered mantissae and a line with the expected
+				inclination. Defaults to True.
+		figsize -> tuple that give sthe size of the figure when plotting
 		'''
 		self['Mant'] = _getMantissas_(self.Seq)
 		p = self[['Seq','Mant']]
@@ -480,10 +481,6 @@ class Analysis(pd.DataFrame):
 		#return 
 
 
-
-
-
-
 	def duplicates(self, inform=True, top_Rep=20):
 		'''
 		'''
@@ -491,38 +488,26 @@ class Analysis(pd.DataFrame):
 		
 
 
-	def map_back(self, frame, digits='F2D'):
-		'''
-		'''
-
-		if not digits in ['F1D','F2D','F3D','SD','L2D']: # Inserir Summation
-			raise ValueError('The value of -digits- must be one of the following:\
- F1D (First Digits), F2D (First Two Digits), F3D (First Three Digits), SD (Second \
-Digits) or L2D (Last Two Digits).')
-
-		if not digits in self.maps.keys():
-			raise ValueError('The test chosen to index the Series has not been\
- performed yet. Run the respective test (F1D = firstDigits(dig=1); SD = secondDigit\
-...) and try again.')
-
-		self['Ord'] = np.nan
-		self['ho'] = np.nan
-		for n, i in enumerate(self.maps[digits]):
-			self.Ord.loc[self[digits]==i] = i
-			self.ho.loc[self[digits]==i] = n
-		df = self.dropna().copy()
-		df =  df[['ho','Ord','Seq']].sort_values(['ho','Seq'],\
-			ascending=[True, False])
-		del df['ho']
-		return df.join(frame)
 
 def _Z_test(frame,N):
+	'''
+	Return the Z statistics for the proportions assessed
+
+	frame -> DataFrame with the expected proportions and the already calculated
+			Absolute Diferences between the found and expeccted proportions
+	N -> sample size
+	'''
 	return (frame.AbsDif - (1/2*N))/(np.sqrt(frame.Expected*\
 		(1-frame.Expected)/N))
 
 def _mad_(frame, test):
 	'''
-	
+	Returns the Mean Absolute Deviation (MAD) of the found proportions from the
+	expected proportions. Then, it compares the found MAD with the accepted ranges 
+	of the respective test.
+
+	frame -> DataFrame with the Absolute Deviations already calculated.
+	test -> Teste applied (F1D, SD, F2D...)
 	'''
 	mad = frame.AbsDif.mean()
 	if test[0] == 'F':
@@ -552,6 +537,12 @@ def _mad_(frame, test):
 		print "\nThe Mean Absolute Deviation is {0}.\n".format(mad)
 
 def _mse_(frame):
+	'''
+	Returns the test's Mean Square Error
+
+	frane -> DataFrame with the already computed Absolute Deviations between
+			the found and expected proportions
+	'''
 	return (frame.AbsDif**2).mean()
 
 def _getMantissas_(arr):
@@ -607,6 +598,11 @@ def _sanitize_(arr):
 	#return arr.abs()
 
 def _only_numerics_(seq):
+	'''
+	From a str sequence, return the characters that represent numbers
+
+	seq -> string sequence
+	'''
     return filter(type(seq).isdigit, seq)
 
 def _str_to_float_(s):
@@ -633,6 +629,16 @@ def _tint_(s):
 
 def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):		
 	'''
+	Plots the digits tests results
+
+	df -> DataFrame with the data to be plotted
+	x -> sequence to be used in the x axis
+	y_Exp -> sequence of the expected proportions to be used in the y axis (line)
+	y_Found -> sequence of the found proportions to be used in the y axis (bars)
+	N -> lenght of sequence, to be used when plotting the confidence levels
+	figsize - > tuple to state the size of the plot figure
+	conf_Z -> Confidence level
+	text_x -> Forces to show all x ticks labels. Defaluts to True.
 	'''
 	fig = plt.figure(figsize=figsize)
 	ax = fig.add_subplot(111)
@@ -658,6 +664,13 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
 
 
 def _plot_sum_(df, figsize, l):
+	'''
+	Plotss the summation test results
+
+	df -> DataFrame with the data to be plotted
+	figsize - > tuple to state the size of the plot figure
+	l -> values with which to draw the horizontal line
+	'''
 	fig = plt.figure(figsize=figsize)
 	ax = fig.add_subplot(111)
 	plt.title('Expected vs. Found Sums')
@@ -751,6 +764,10 @@ def _sanitize_latin_int_(s):
 	return s
 
 def _inform_and_map_(df, inform, show_high_Z, conf):
+	'''
+	
+	'''
+
 	if inform:
 		if isinstance(show_high_Z, int):
 			if conf != None:
