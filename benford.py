@@ -603,7 +603,8 @@ def _only_numerics_(seq):
 
 	seq -> string sequence
 	'''
-    return filter(type(seq).isdigit, seq)
+	return filter(type(seq).isdigit, seq)
+
 
 def _str_to_float_(s):
 	#s = str(s)
