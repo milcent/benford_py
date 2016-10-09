@@ -193,7 +193,7 @@ class Analysis(pd.DataFrame):
 			plt.show()
 
 	def second_digit(self, inform=True, MAD=True, conf_level=95,\
-		MSE=False, show_high_Z='pos', plot=True):
+		MSE=False, show_high_Z='pos', limit_N = None, plot=True):
 		'''
 		Performs the Benford Second Digit test with the series of
 		numbers provided.
@@ -216,6 +216,10 @@ class Analysis(pd.DataFrame):
 			an integer, which will use the first n entries, positive and negative,
 			regardless of whether the Z is higher than the conf_level Z or not
 
+		limit_N -> sets a limit to N for the calculation of the Z statistic, which
+			suffers from the power problem when the sampl is too large. Usually, the N
+			is set to a maximum 2,500. Defaults to None.
+
 		MSE -> calculate the Mean Square Error of the sample; defaluts to False.
 
 		plot -> draws the plot of test for visual comparison, with the found
@@ -225,9 +229,20 @@ class Analysis(pd.DataFrame):
 		if str(conf_level) not in self.confs.keys():
 			raise ValueError("Value of -conf_level- must be one of the\
  following: {0}".format(self.confs.keys()))
+
+		#Check on limit_N being a positive integer
+		if limit_N < 0 | not isinstance(limit_N,int):
+			raise ValueError("limit_N must be None or a positive integer.")
+		#Assigning to N the superior limit or the lenght of the series
+		if limit_N == None | limit_N > len(self):
+			N = len(self)
+		else:
+			N = limit_N
+
 		conf = self.confs[str(conf_level)]
-		N = len(self)
+
 		x = np.arange(0,10)
+
 		if inform:
 			print "\n---Test performed on {0} registries.---\n".format(N)
 		# get the number of occurrences of each second digit
@@ -269,7 +284,7 @@ class Analysis(pd.DataFrame):
 
 		### return df
 	def first_digits(self, digs, inform=True, MAD=True, conf_level=95,\
-		show_high_Z = 'pos', MSE=False, plot=True):
+		show_high_Z = 'pos', limit_N=None, MSE=False, plot=True):
 		'''
 		Performs the Benford First Digits test with the series of
 		numbers provided, and populates the mapping dict for future
@@ -294,7 +309,11 @@ class Analysis(pd.DataFrame):
 			highlight only the values that are higher than the expexted frequencies;
 			'all' will highlight both found extremes (positive and negative); and
 			an integer, which will use the first n entries, positive and negative,
-			regardless of whether the Z is higher than the conf_level Z or not. 
+			regardless of whether the Z is higher than the conf_level Z or not.
+
+		limit_N -> sets a limit to N for the calculation of the Z statistic, which
+			suffers from the power problem when the sampl is too large. Usually, the N
+			is set to a maximum 2,500. Defaults to None.
 
 		MSE -> calculates the Mean Square Error of the sample; defaults to False.
 
@@ -303,22 +322,24 @@ class Analysis(pd.DataFrame):
 
 		
 		'''
-		N = len(self)
-
+		#Check on the possible values for confidence lavels
 		if str(conf_level) not in self.confs.keys():
 			raise ValueError("Value of parameter -conf_level- must be one\
  of the following: {0}".format(self.confs.keys()))
-
+		#Check on possible digits
 		if not digs in [1,2,3]:
 			raise ValueError("The value assigned to the parameter -digs-\
  was {0}. Value must be 1, 2 or 3.".format(digs))
 
-	# 	if not show_high_Z in ['pos', 'all'] or not isinstance(show_high_Z, int):
-	# 		raise ValueError("The value of -show_high_Z- must be one of\
- # the following?: 'pos', 'all' or some integer.")
-		
-		# if digs == 1:
-		# 	show_high_Z = 9
+		#Check on limit_N being a positive integer
+		if limit_N < 0 | not isinstance(limit_N,int):
+			raise ValueError("limit_N must be None or a positive integer.")
+		#Assigning to N the superior limit or the lenght of the series
+		if limit_N == None | limit_N > len(self):
+			N = len(self)
+		else:
+			N = limit_N
+
 
  		dig_name = 'F{0}D'.format(digs)
  		n,m = 10**(digs-1), 10**(digs)
@@ -326,7 +347,7 @@ class Analysis(pd.DataFrame):
 		conf = self.confs[str(conf_level)]
 		
 		if inform:
-			print "\n---Test performed on {0} registries.---\n".format(N)
+			print "\n---Test performed on {0} registries.---\n".format(len(self))
 		# get the number of occurrences of the first two digits
 		v = self[dig_name].value_counts()
 		# get their relative frequencies
@@ -365,7 +386,7 @@ class Analysis(pd.DataFrame):
 
 		#return df
 	def last_two_digits(self, inform=True, MAD=False, conf_level=95,\
-	 	show_high_Z = 'pos', MSE=False, plot=True):
+	 	show_high_Z = 'pos', limit_n=None, MSE=False, plot=True):
 		'''
 		Performs the Benford Last Two Digits test with the series of
 		numbers provided.
@@ -388,6 +409,10 @@ class Analysis(pd.DataFrame):
 			an integer, which will use the first n entries, positive and negative,
 			regardless of whether the Z is higher than the conf_level Z or not
 
+		limit_N -> sets a limit to N for the calculation of the Z statistic, which
+			suffers from the power problem when the sampl is too large. Usually, the N
+			is set to a maximum 2,500. Defaults to None.
+
 		MSE -> calculates the Mean Square Error of the sample; defaluts to False.
 
 		plot -> draws the test plot for visual comparison, with the found
@@ -397,8 +422,18 @@ class Analysis(pd.DataFrame):
 		if str(conf_level) not in self.confs.keys():
 			raise ValueError("Value of -conf_level- must be one of the\
  following: {0}".format(self.confs.keys()))
+
+		#Check on limit_N being a positive integer
+		if limit_N < 0 | not isinstance(limit_N,int):
+			raise ValueError("limit_N must be None or a positive integer.")
+		#Assigning to N the superior limit or the lenght of the series
+		if limit_N == None | limit_N > len(self):
+			N = len(self)
+		else:
+			N = limit_N
+		
 		conf = self.confs[str(conf_level)]
-		N = len(self)
+		
 		x = np.arange(0,100)
 		if inform:
 			print "\n---Test performed on " + str(N) + " registries.---\n"
@@ -641,26 +676,34 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
 	conf_Z -> Confidence level
 	text_x -> Forces to show all x ticks labels. Defaluts to True.
 	'''
-	fig = plt.figure(figsize=figsize)
-	ax = fig.add_subplot(111)
-	plt.title('Expected vs. Found Distributions')
-	plt.xlabel('Digits')
-	plt.ylabel('Distribution')
-	ax.bar(x, y_Found, label='Found')
-	ax.plot(x, y_Exp, color='g',linewidth=2.5,\
-	 label='Expected')
+	# y_Exp *= 100.
+	# y_Found *= 100.
+	fig, ax = plt.subplots(figsize=figsize)
+	plt.title('Expected vs. Found Distributions', size ='xx-large')
+	plt.xlabel('Digits', size ='x-large')
+	plt.ylabel('Distribution (%)', size ='x-large')
+	ax.bar(x, y_Found * 100., color='#466346',label='Found')
+	# if len(x) > 10:
+	# 	ax.set_xticks(x + 4)
+	# else:
+	ax.set_xticks(x + .4)
+	ax.set_xticklabels(x)
+	ax.plot(x, y_Exp * 100., color='#720923',linewidth=2.5,\
+	 label='Benford')
 	ax.legend()
 	if text_x:
 		plt.xticks(x,df.index, rotation='vertical')
 	# Plotting the Upper and Lower bounds considering the Z for the
 	# informed confidence level
 	if conf_Z != None:
-		sig = conf_Z * np.sqrt(y_Exp*(1-y_Exp)/N) 
+		sig = conf_Z * np.sqrt(y_Exp*(1-y_Exp)/N)
 		upper = y_Exp + sig + (1/(2*N))
 		lower = y_Exp - sig - (1/(2*N))
-		ax.plot(x, upper, color= 'r')
-		ax.plot(x, lower, color= 'r')
-		ax.fill_between(x, upper,lower, color='r', alpha=.3)
+		upper *=100.
+		lower *=100.
+		ax.plot(x, upper, color= '#51331a')
+		ax.plot(x, lower, color= '#51331a')
+		ax.fill_between(x, upper,lower, color= '#51331a',alpha=.3)
 	plt.show()
 
 
@@ -774,11 +817,11 @@ def _inform_and_map_(df, inform, show_high_Z, conf):
 			if conf != None:
 				dd = df[['Expected','Found','Z_test']].sort_values('Z_test',\
 				ascending=False).head(show_high_Z)
-				print '\nThe entries with the top %s Z scores are:\n' % show_high_Z
+				print '\nThe entries with the top {0} Z scores are:\n'.format(show_high_Z)
 			# Summation Test
 			else:
 				dd = df.sort_values('AbsDif', ascending=False).head(show_high_Z)
-				print '\nThe entries with the top %s absolute deviations are:\n' % show_high_Z
+				print '\nThe entries with the top {0} absolute deviations are:\n'.format(show_high_Z)
 		else:
 			if show_high_Z == 'pos':
 				m1 = df.Dif > 0
