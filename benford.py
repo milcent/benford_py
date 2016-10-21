@@ -560,7 +560,7 @@ def _mad_(frame, test):
 	mad = frame.AbsDif.mean()
 	if test[0] == 'F':
 		if test == 'F1D':
-			margins = ['0.0006','0.0012','0.0015', 'Digit']
+			margins = ['0.006','0.012','0.015', 'Digit']
 		elif test == 'F2D':
 			margins = ['0.0012','0.0018','0.0022', 'Two Digits']
 		else:
@@ -576,10 +576,10 @@ def _mad_(frame, test):
 	elif test == 'SD':
 		print "\nThe Mean Absolute Deviation is {0}\n\
 	For the Second Digits:\n\
-	- 0.0000 to 0.0008: Close Conformity\n\
-	- 0.0008 to 0.0010: Acceptable Conformity\n\
-	- 0.0010 to 0.0012: Marginally Acceptable Conformity\n\
-	- Above 0.0012: Nonconformity".format(mad)
+	- 0.000 to 0.008: Close Conformity\n\
+	- 0.008 to 0.010: Acceptable Conformity\n\
+	- 0.010 to 0.012: Marginally Acceptable Conformity\n\
+	- Above 0.012: Nonconformity".format(mad)
 
 	else:
 		print "\nThe Mean Absolute Deviation is {0}.\n".format(mad)
