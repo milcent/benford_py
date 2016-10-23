@@ -40,18 +40,19 @@ class First(pd.DataFrame):
             Defaults to True.
     '''
 
-    def __init__(self, digs, plot = True):
-        if not digs in [1,2,3]:
+    def __init__(self, digs, plot=True):
+        if digs not in [1, 2, 3]:
             raise ValueError("The value assigned to the parameter -digs- was {0}. Value must be 1, 2 or 3.".format(digs))
         dig_name = 'First_{0}_Dig'.format(digs)
-        Dig = np.arange(10**(digs-1),10**digs)
+        Dig = np.arange(10**(digs-1), 10**digs)
         Exp = np.log10(1 + (1. / Dig))
 
-        pd.DataFrame.__init__(self, {'Expected': Exp}, index = Dig)
+        pd.DataFrame.__init__(self, {'Expected': Exp}, index=Dig)
         self.index.names = [dig_name]
 
         if plot:
-            self.plot(kind='bar', color = 'g', grid=False, figsize=(5*(digs+1),4*(digs+.6)))
+            self.plot(kind='bar', color='g', grid=False, figsize=(5 * (digs + 1), 4 * (digs + 0.6)))
+
 
 class Second(pd.DataFrame):
     '''
@@ -61,17 +62,16 @@ class Second(pd.DataFrame):
     -> plot: option to plot a bar chart of the Expected proportions.
             Defaults to True.
     '''
-    def __init__(self, plot = True):
+    def __init__(self, plot=True):
         a = np.arange(10,100)
         Expe = np.log10(1 + (1. / a))
         Sec_Dig = np.array(list(range(10))*9)
 
-        pd.DataFrame.__init__(self,{'Expected': Expe, 'Sec_Dig': Sec_Dig},\
-         index = a)
+        pd.DataFrame.__init__(self,{'Expected': Expe, 'Sec_Dig': Sec_Dig}, index=a)
         self = self.groupby('Sec_Dig').sum()
-        if plot == True:
-            self.plot(kind='bar', color = 'g', grid=False,\
-            figsize=(10,6.4), ylim=(0,.14))
+        if plot:
+            self.plot(kind='bar', color = 'g', grid=False, figsize=(10,6.4), ylim=(0,.14))
+
 
 class LastTwo(pd.DataFrame):
     '''   
@@ -82,12 +82,12 @@ class LastTwo(pd.DataFrame):
             Defaults to True.
     '''
     def __init__(self, plot=True):
-        exp = np.array([1/99.]*100)
-        pd.DataFrame.__init__(self,{'Expected': exp,'Last_2_Dig':_lt_()})
+        exp = np.array([1 / 99.] * 100)
+        pd.DataFrame.__init__(self, {'Expected': exp, 'Last_2_Dig':_lt_()})
         self.set_index('Last_2_Dig', inplace=True)
-        if plot == True:
-            self.plot(kind='bar',figsize = (15,8), color = 'g',\
-                grid=False,  ylim=(0,.015))
+        if plot:
+            self.plot(kind='bar', figsize=(15,8), color='g', grid=False, ylim=(0,.015))
+
 
 class Analysis(pd.DataFrame):
     '''
@@ -245,7 +245,7 @@ class Analysis(pd.DataFrame):
         if limit_N < 0 or not isinstance(limit_N, int):
             raise ValueError("limit_N must be None or a positive integer.")
         #Assigning to N the superior limit or the lenght of the series
-        if limit_N == None or limit_N > len(self):
+        if limit_N is None or limit_N > len(self):
             N = len(self)
         else:
             N = limit_N
@@ -259,7 +259,7 @@ class Analysis(pd.DataFrame):
         # get the number of occurrences of each second digit
         v = self.SD.value_counts()
         # get their relative frequencies
-        p = self.SD.value_counts(normalize =True)
+        p = self.SD.value_counts(normalize=True)
         # crate dataframe from them
         d = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
         # reindex from 10 to 99 in the case one or more of the first
@@ -341,10 +341,10 @@ class Analysis(pd.DataFrame):
             raise ValueError("The value assigned to the parameter -digs- was {0}. Value must be 1, 2 or 3.".format(digs))
 
         #Check on limit_N being a positive integer
-        if limit_N < 0 or not isinstance(limit_N,int):
+        if limit_N < 0 or not isinstance(limit_N, int):
             raise ValueError("limit_N must be None or a positive integer.")
         #Assigning to N the superior limit or the lenght of the series
-        if limit_N == None or limit_N > len(self):
+        if limit_N is None or limit_N > len(self):
             N = len(self)
         else:
             N = limit_N
@@ -432,7 +432,7 @@ class Analysis(pd.DataFrame):
         if limit_N < 0 or not isinstance(limit_N,int):
             raise ValueError("limit_N must be None or a positive integer.")
         #Assigning to N the superior limit or the lenght of the series
-        if limit_N == None or limit_N > len(self):
+        if limit_N is None or limit_N > len(self):
             N = len(self)
         else:
             N = limit_N
@@ -470,8 +470,7 @@ class Analysis(pd.DataFrame):
             print("\nMean Square Error = {0}".format(mse))
         # Plotting the expected frequencies (line) against the found ones (bars)
         if plot:
-            _plot_dig_(df, x = x, y_Exp = df.Expected, y_Found =df.Found,\
-             N=N, figsize=(15,8), conf_Z=conf, text_x=True)
+            _plot_dig_(df, x=x, y_Exp=df.Expected, y_Found=df.Found, N=N, figsize=(15, 8), conf_Z=conf, text_x=True)
 
         ### return df
     
@@ -488,7 +487,7 @@ class Analysis(pd.DataFrame):
         plot -> plots the results. Defaults to True.
         '''
 
-        if not digs in [1,2,3]:
+        if digs not in [1, 2, 3]:
             raise ValueError("The value assigned to the parameter -digs-\
  was {0}. Value must be 1, 2 or 3.".format(digs))
         #Set the future dict key
@@ -699,7 +698,7 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
         plt.xticks(x,df.index, rotation='vertical')
     # Plotting the Upper and Lower bounds considering the Z for the
     # informed confidence level
-    if conf_Z != None:
+    if conf_Z is not None:
         sig = conf_Z * np.sqrt(y_Exp*(1-y_Exp)/N)
         upper = y_Exp + sig + (1/(2*N))
         lower = y_Exp - sig - (1/(2*N))
@@ -818,7 +817,7 @@ def _inform_and_map_(df, inform, show_high_Z, conf):
 
     if inform:
         if isinstance(show_high_Z, int):
-            if conf != None:
+            if conf is not None:
                 dd = df[['Expected','Found','Z_test']].sort_values('Z_test',\
                 ascending=False).head(show_high_Z)
                 print('\nThe entries with the top {0} Z scores are:\n'.format(show_high_Z))
@@ -847,7 +846,7 @@ def _inform_and_map_(df, inform, show_high_Z, conf):
         return dd.index
     else:
         if isinstance(show_high_Z, int):
-            if conf != None:
+            if conf is not None:
                 dd = df[['Expected','Found','Z_test']].sort_values('Z_test',\
                 ascending=False).head(show_high_Z)
             #Summation Test
@@ -864,4 +863,3 @@ def _inform_and_map_(df, inform, show_high_Z, conf):
                 dd = df[['Expected','Found','Z_test']][df.Z_test > \
                 conf].sort_values('Z_test', ascending=False)
         return dd.index
-
