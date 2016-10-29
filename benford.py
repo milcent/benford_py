@@ -23,6 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 # Imports
+from __future__ import print_function
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -241,14 +243,15 @@ class Analysis(pd.DataFrame):
             raise ValueError("Value of -conf_level- must be one of the\
  following: {0}".format(list(self.confs.keys())))
 
-        #Check on limit_N being a positive integer
-        if limit_N < 0 or not isinstance(limit_N, int):
-            raise ValueError("limit_N must be None or a positive integer.")
         #Assigning to N the superior limit or the lenght of the series
         if limit_N is None or limit_N > len(self):
             N = len(self)
+        #Check on limit_N being a positive integer
         else:
-            N = limit_N
+            if limit_N < 0 or not isinstance(limit_N, int):
+                raise ValueError("-limit_N- must be None or a positive integer.")
+            else:
+                N = limit_N
 
         conf = self.confs[str(conf_level)]
 
@@ -340,14 +343,15 @@ class Analysis(pd.DataFrame):
         if digs not in [1,2,3]:
             raise ValueError("The value assigned to the parameter -digs- was {0}. Value must be 1, 2 or 3.".format(digs))
 
-        #Check on limit_N being a positive integer
-        if limit_N < 0 or not isinstance(limit_N, int):
-            raise ValueError("limit_N must be None or a positive integer.")
         #Assigning to N the superior limit or the lenght of the series
         if limit_N is None or limit_N > len(self):
             N = len(self)
+        #Check on limit_N being a positive integer
         else:
-            N = limit_N
+            if limit_N < 0 or not isinstance(limit_N, int):
+                raise ValueError("-limit_N- must be None or a positive integer.")
+            else:
+                N = limit_N
 
 
         dig_name = 'F{0}D'.format(digs)
@@ -428,14 +432,15 @@ class Analysis(pd.DataFrame):
         if str(conf_level) not in list(self.confs.keys()):
             raise ValueError("Value of -conf_level- must be one of the following: {0}".format(list(self.confs.keys())))
 
-        #Check on limit_N being a positive integer
-        if limit_N < 0 or not isinstance(limit_N,int):
-            raise ValueError("limit_N must be None or a positive integer.")
         #Assigning to N the superior limit or the lenght of the series
         if limit_N is None or limit_N > len(self):
             N = len(self)
+        #Check on limit_N being a positive integer
         else:
-            N = limit_N
+            if limit_N < 0 or not isinstance(limit_N, int):
+                raise ValueError("-limit_N- must be None or a positive integer.")
+            else:
+                N = limit_N
         
         conf = self.confs[str(conf_level)]
         
