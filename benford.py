@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Imports
 from __future__ import print_function
+from __future__ import division
 
 import pandas as pd
 import numpy as np
@@ -297,6 +298,7 @@ class Analysis(pd.DataFrame):
              N=N, figsize=(10,6), conf_Z=conf)
 
         ### return df
+
     def first_digits(self, digs, inform=True, MAD=True, conf_level=95,\
         show_high_Z = 'pos', limit_N=None, MSE=False, plot=True):
         '''
@@ -353,7 +355,6 @@ class Analysis(pd.DataFrame):
             else:
                 N = limit_N
 
-
         dig_name = 'F{0}D'.format(digs)
         n, m = 10**(digs-1), 10**(digs)
         x = np.arange(n,m)
@@ -396,6 +397,7 @@ class Analysis(pd.DataFrame):
             _plot_dig_(df, x = x, y_Exp = df.Expected, y_Found = df.Found, N = N, figsize = (5*(digs+1),4*(digs+.6)), conf_Z = conf)
 
         #return df
+
     def last_two_digits(self, inform=True, MAD=False, conf_level=95, show_high_Z = 'pos', limit_n=None, MSE=False, plot=True):
         '''
         Performs the Benford Last Two Digits test with the series of
@@ -540,8 +542,8 @@ def _Z_test(frame,N):
             Absolute Diferences between the found and expeccted proportions
     N -> sample size
     '''
-    return (frame.AbsDif - (1/2*N))/(np.sqrt(frame.Expected*\
-        (1-frame.Expected)/N))
+    return (frame.AbsDif - (1/(2*N))) / \
+           np.sqrt((frame.Expected*(1.-frame.Expected))/N)
 
 def _mad_(frame, test):
     '''
