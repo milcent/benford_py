@@ -54,7 +54,7 @@ class First(pd.DataFrame):
         self.index.names = [dig_name]
 
         if plot:
-            self.plot(kind='bar', color='g', grid=False, figsize=(5 * (digs + 1), 4 * (digs + 0.6)))
+            self.plot(kind='bar', color='#720923', grid=False, figsize=(2*(digs**2+5),1.5*(digs**2+5)))
 
 
 class Second(pd.DataFrame):
@@ -73,7 +73,8 @@ class Second(pd.DataFrame):
         pd.DataFrame.__init__(self,{'Expected': Expe, 'Sec_Dig': Sec_Dig}, index=a)
         self = self.groupby('Sec_Dig').sum()
         if plot:
-            self.plot(kind='bar', color = 'g', grid=False, figsize=(10,6.4), ylim=(0,.14))
+            self.plot(kind='bar', color = '#720923', grid=False, figsize=(10,6.4),\
+                     ylim=(0,.14))
 
 
 class LastTwo(pd.DataFrame):
@@ -89,7 +90,7 @@ class LastTwo(pd.DataFrame):
         pd.DataFrame.__init__(self, {'Expected': exp, 'Last_2_Dig':_lt_()})
         self.set_index('Last_2_Dig', inplace=True)
         if plot:
-            self.plot(kind='bar', figsize=(15,8), color='g', grid=False, ylim=(0,.015))
+            self.plot(kind='bar', figsize=(15,8), color='#720923', grid=False, ylim=(0,.015))
 
 
 class Analysis(pd.DataFrame):
@@ -120,8 +121,8 @@ class Analysis(pd.DataFrame):
     maps = {} # dict for recording the indexes to be mapped back to the
               # original series of numbers
     # dict of confidence levels for further use
-    confs = {'None':None,'80':1.285,'85':1.435,'90':1.645,'95':1.96,'99':2.576,'99.9':3.29,\
-    '99.99':3.89, '99.999':4.417, '99.9999':4.892, '99.99999':5.327} 
+    confs = {'None':None,'80':1.285,'85':1.435,'90':1.645,'95':1.96,'99':2.576,\
+            '99.9':3.29,'99.99':3.89, '99.999':4.417, '99.9999':4.892, '99.99999':5.327} 
     digs_dict = {'1':'F1D','2':'F2D','3':'F3D'}
 
     def __init__(self, data, dec=2, sec_order=False, inform = True, latin=False):
@@ -146,9 +147,9 @@ class Analysis(pd.DataFrame):
             if self.Seq.dtypes == 'float' or self.Seq.dtypes == 'int':
                 print('Conversion successful!')
             else:
-                raise TypeError("The sequence dtype was not int nor float\
-                 and could not be converted.\nConvert it to whether int of float,\
-                  or set latin to True, and try again.")
+                raise TypeError("The sequence dtype was not int nor float and\
+ could not be converted.\nConvert it to whether int of float, or set latin to\
+ True, and try again.")
         if sec_order:
             self.sort_values('Seq', inplace=True)
             self.drop_duplicates(inplace=True)
@@ -207,7 +208,7 @@ class Analysis(pd.DataFrame):
             plt.show()
 
     def second_digit(self, inform=True, MAD=True, conf_level=95,\
-        MSE=False, show_high_Z='pos', limit_N = None, plot=True):
+                    MSE=False, show_high_Z='pos', limit_N = None, plot=True):
         '''
         Performs the Benford Second Digit test with the series of
         numbers provided.
@@ -300,7 +301,7 @@ class Analysis(pd.DataFrame):
         ### return df
 
     def first_digits(self, digs, inform=True, MAD=True, conf_level=95,\
-        show_high_Z = 'pos', limit_N=None, MSE=False, plot=True):
+                    show_high_Z = 'pos', limit_N=None, MSE=False, plot=True):
         '''
         Performs the Benford First Digits test with the series of
         numbers provided, and populates the mapping dict for future
@@ -394,11 +395,13 @@ class Analysis(pd.DataFrame):
             print("\nMean Square Error = {0}".format(mse))
         # Plotting the expected frequncies (line) against the found ones(bars)
         if plot:
-            _plot_dig_(df, x = x, y_Exp = df.Expected, y_Found = df.Found, N = N, figsize = (5*(digs+1),4*(digs+.6)), conf_Z = conf)
+            _plot_dig_(df, x = x, y_Exp = df.Expected, y_Found = df.Found, N = N,\
+                      figsize = (2*(digs**2+5),1.5*(digs**2+5)), conf_Z = conf)
 
         #return df
 
-    def last_two_digits(self, inform=True, MAD=False, conf_level=95, show_high_Z = 'pos', limit_n=None, MSE=False, plot=True):
+    def last_two_digits(self, inform=True, MAD=False, conf_level=95,\
+                       show_high_Z = 'pos', limit_n=None, MSE=False, plot=True):
         '''
         Performs the Benford Last Two Digits test with the series of
         numbers provided.
@@ -740,12 +743,14 @@ def _collapse_scalar_(num, orders=2, dec=2):
     Collapses any number to a form defined by the user, with the chosen
     number of digits at the left of the floating point, with the chosen
     number of decimal digits or an int.
+
     num -> number to be collapsed
     orders -> orders of magnitude chosen (how many digts to the left of
         the floating point). Defaults to 2.
     dec -> number of decimal places. Defaults to 2. If 0 is chosen, returns
         an int.
     '''
+
     # Set n to 1 if the number is less than 1, since when num is less than 1
     # 10 must be raised to a smaller power   
     if num < 1:
@@ -768,14 +773,16 @@ def _collapse_scalar_(num, orders=2, dec=2):
 def _collapse_array_(arr, orders=2, dec=2):
     '''
     Collapses an array of numbers, each to a form defined by the user,
-    with the chosen    number of digits at the left of the floating point,
-    with the chosen    number of decimal digits or as ints.
+    with the chosen number of digits at the left of the floating point,
+    with the chosen number of decimal digits or as ints.
+
     arr -> array of numbers to be collapsed
     orders -> orders of magnitude chosen (how many digts to the left of
         the floating point). Defaults to 2.
     dec -> number of decimal places. Defaults to 2. If 0 is chosen, returns
         array of integers.
-    '''    
+    '''
+
     # Create a array of ones with the lenght of the array to be collapsed,
     # for numberss less than 1, since when the number is less than 1
     # 10 must be raised to a smaller power 
@@ -819,7 +826,8 @@ def _sanitize_latin_int_(s):
 
 def _inform_and_map_(df, inform, show_high_Z, conf):
     '''
-    
+    Selects and sorts by the Z_stats chosen to be considered, informing or not,
+    and populating the maps dict for further back analysis of the entries.
     '''
 
     if inform:
