@@ -22,6 +22,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
+# Color pallete Island Jungle by Shy_violet
+# http://www.colourlovers.com/palette/4348209/Island_Jungle
+
 # Imports
 from __future__ import print_function
 from __future__ import division
@@ -54,8 +57,9 @@ class First(pd.DataFrame):
         self.index.names = [dig_name]
 
         if plot:
-            self.plot(kind='bar', color='#720923', grid=False, figsize=(2*(digs**2+5),1.5*(digs**2+5)))
-
+            p = self.plot(kind='bar', color='#51702C', grid=True,\
+                         figsize=(2*(digs**2+5),1.5*(digs**2+5)))
+            p.set_axis_bgcolor('#DDDFD2')
 
 class Second(pd.DataFrame):
     '''
@@ -73,8 +77,9 @@ class Second(pd.DataFrame):
         pd.DataFrame.__init__(self,{'Expected': Expe, 'Sec_Dig': Sec_Dig}, index=a)
         self = self.groupby('Sec_Dig').sum()
         if plot:
-            self.plot(kind='bar', color = '#720923', grid=False, figsize=(10,6.4),\
-                     ylim=(0,.14))
+            p = self.plot(kind='bar', color = '#51702C', grid=True,\
+                         figsize=(10,6.4), ylim=(0,.14))
+            p.set_axis_bgcolor('#DDDFD2')
 
 
 class LastTwo(pd.DataFrame):
@@ -90,7 +95,9 @@ class LastTwo(pd.DataFrame):
         pd.DataFrame.__init__(self, {'Expected': exp, 'Last_2_Dig':_lt_()})
         self.set_index('Last_2_Dig', inplace=True)
         if plot:
-            self.plot(kind='bar', figsize=(15,8), color='#720923', grid=False, ylim=(0,.015))
+            p = self.plot(kind='bar', figsize=(15,8), color='#51702C', grid=True,\
+                         ylim=(0,.015))
+            p.set_axis_bgcolor('#DDDFD2')
 
 
 class Analysis(pd.DataFrame):
@@ -695,14 +702,15 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     plt.title('Expected vs. Found Distributions', size ='xx-large')
     plt.xlabel('Digits', size ='x-large')
     plt.ylabel('Distribution (%)', size ='x-large')
-    ax.bar(x, y_Found * 100., color='#466346',label='Found')
+    ax.bar(x, y_Found * 100., color='#3D959F',label='Found')
     # if len(x) > 10:
     #     ax.set_xticks(x + 4)
     # else:
     ax.set_xticks(x + .4)
     ax.set_xticklabels(x)
-    ax.plot(x, y_Exp * 100., color='#720923',linewidth=2.5,\
+    ax.plot(x, y_Exp * 100., color='#51702C',linewidth=2.5,\
      label='Benford')
+    ax.set_axis_bgcolor('#DDDFD2')
     ax.legend()
     if text_x:
         plt.xticks(x,df.index, rotation='vertical')
@@ -714,9 +722,9 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
         lower = y_Exp - sig - (1/(2*N))
         upper *=100.
         lower *=100.
-        ax.plot(x, upper, color= '#51331a')
-        ax.plot(x, lower, color= '#51331a')
-        ax.fill_between(x, upper,lower, color= '#51331a',alpha=.3)
+        ax.plot(x, upper, color= '#51702C')
+        ax.plot(x, lower, color= '#51702C')
+        ax.fill_between(x, upper,lower, color= '#51702C',alpha=.3)
     plt.show()
 
 
@@ -733,8 +741,9 @@ def _plot_sum_(df, figsize, l):
     plt.title('Expected vs. Found Sums')
     plt.xlabel('Digits')
     plt.ylabel('Sums')
-    ax.bar(df.index, df.Percent, label='Found Sums')
-    ax.axhline(l, color='r', linewidth=2)
+    ax.bar(df.index, df.Percent, color='#3D959F',label='Found Sums')
+    ax.axhline(l, color='#51702C', linewidth=2)
+    ax.set_axis_bgcolor('#DDDFD2')
     ax.legend()
 
 
