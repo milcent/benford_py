@@ -59,8 +59,8 @@ class First(pd.DataFrame):
         self.index.names = [dig_name]
 
         if plot:
-            p = self.plot(kind='bar', color='#51702C', grid=True,
-                          figsize=((2 * digs ** 2 + 5), 1.5 * (digs ** 2 + 5)))
+            p = self.plot(kind='bar', color='#51702C',
+                          figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)))
             p.set_axis_bgcolor('#DDDFD2')
 
 
@@ -81,8 +81,8 @@ class Second(pd.DataFrame):
                               index=a)
         self = self.groupby('Sec_Dig').sum()
         if plot:
-            p = self.plot(kind='bar', color='#51702C', grid=True,
-                          figsize=(10, 6.4), ylim=(0, .14))
+            p = self.plot(kind='bar', color='#51702C',
+                          figsize=(14, 10.5), ylim=(0, .14))
             p.set_axis_bgcolor('#DDDFD2')
 
 
@@ -100,7 +100,7 @@ class LastTwo(pd.DataFrame):
         self.set_index('Last_2_Dig', inplace=True)
         if plot:
             p = self.plot(kind='bar', figsize=(15, 8), color='#51702C',
-                          grid=True, ylim=(0, 0.013))
+                          ylim=(0, 0.013))
             p.set_axis_bgcolor('#DDDFD2')
 
 
@@ -115,13 +115,13 @@ class Analysis(pd.DataFrame):
 
     -> data: sequence of numbers to be evaluated. Must be in absolute values,
             since negative values with minus signs will distort the tests.
-            XXXXXX---PONDERAR DEIXAR O COMANDO DE CONVERTER PARA AbS------XXXXXX
+            XXXXXX---PONDERAR DEIXAR O COMANDO DE CONVERTER PARA AbS
     -> dec: number of decimal places to be accounted for. Especially important
             for the last two digits test. The numbers will be multiplied by
             10 to the power of the dec value. Defaluts to 2 (currency). If
             the numbers are integers, assign 0.
-    -> sec_order: choice for the Second Order Test, which cumputes the differences
-            between the ordered entries before running the Tests.
+    -> sec_order: choice for the Second Order Test, which cumputes the
+            differences between the ordered entries before running the Tests.
     -> inform: tells the number of registries that are being subjected to
             the Analysis; defaults to True
     -> latin: used for str dtypes representing numbers in latin format, with
@@ -136,17 +136,15 @@ class Analysis(pd.DataFrame):
              '99.9999': 4.892, '99.99999': 5.327}
     digs_dict = {'1': 'F1D', '2': 'F2D', '3': 'F3D'}
 
-    def __init__(self, data, dec=2, sec_order=False, inform=True,
+    def __init__(self, data, sign='all', dec=2, sec_order=False, inform=True,
                  latin=False):
-        # if latin:
-        #    thousands, decimals = '.', ','
-        # else:
-        #    thousands, decimals = ',', '.'
-        pd.DataFrame.__init__(self, {'Seq': data})  # thousands, decimals
+        if sign not in ['all', 'pos', 'neg']:
+            raise ValueError("The -sign- argument must be 'all','pos'\
+ or 'neg'.")
+
+        pd.DataFrame.__init__(self, {'Seq': data})
         self.dropna(inplace=True)
-        if inform:
-            print("Initialized sequence with {0} registries.".format(
-                  len(self)))
+
         if self.Seq.dtypes != 'float' and self.Seq.dtypes != 'int':
             print('Sequence dtype is not int nor float.\nTrying \
 to convert...\n')
@@ -164,6 +162,19 @@ to convert...\n')
                 raise TypeError("The sequence dtype was not int nor float and\
  could not be converted.\nConvert it to whether int of float, or set latin to\
  True, and try again.")
+
+        if sign == 'pos':
+            self.Seq = self.Seq[self.Seq > 0]
+        elif sign == 'neg':
+            self.Seq = self.Seq[self.Seq < 0]
+        else:
+            self.Seq = self.Seq[self.Seq != 0]
+
+        self.dropna(inplace=True)
+
+        if inform:
+            print("Initialized sequence with {0} registries.".format(
+                  len(self)))
         if sec_order:
             self.sort_values('Seq', inplace=True)
             self.drop_duplicates(inplace=True)
@@ -173,10 +184,11 @@ to convert...\n')
                 print('Second Order Test. Initial series reduced to {0}\
  entries.'.format(len(self)))
         # Extracts the digits in their respective positions,
-        self['ZN'] = self.Seq * (10**dec)  # dec - to manage decimals
+        self['ZN'] = np.abs(self.Seq * (10**dec))  # dec - to manage decimals
+
         if dec != 0:
             self.ZN = self.ZN.apply(_tint_)
-        # self = self[self.ZN!=0]
+
         self['S'] = self.ZN.astype(str)
         self['F1D'] = self.S.str[:1]   # get the first digit
         self['SD'] = self.S.str[1:2]  # get the second digit
@@ -319,7 +331,7 @@ to convert...\n')
         # return df
 
     def first_digits(self, digs, inform=True, MAD=True, conf_level=95,
-                     show_high_Z = 'pos', limit_N=None, MSE=False, plot=True):
+                     show_high_Z='pos', limit_N=None, MSE=False, plot=True):
         '''
         Performs the Benford First Digits test with the series of
         numbers provided, and populates the mapping dict for future
@@ -545,9 +557,9 @@ integer.")
         li = 1. / (9 * (10 ** (digs - 1)))
 
         s = self.groupby(d).sum()
-        s.drop(0, inplace=True)
-        s['Percent'] = s.Seq / s.Seq.sum()
-        s.columns.values[0] = 'Sum'
+        # s.drop(0, inplace=True)
+        s['Percent'] = s.ZN / s.ZN.sum()
+        s.columns.values[1] = 'Sum'
         s = s[['Sum', 'Percent']]
         s['AbsDif'] = np.absolute(s.Percent - li)
 
@@ -638,18 +650,6 @@ def _getMantissas_(arr):
     return np.abs(log_a) - log_a.astype(int)  # the number - its integer part
 
 
-def _getMantissas2_(arr):
-    '''
-    The mantissa is the non-integer part of the log of a number.
-    This fuction uses the element-wise array operations of numpy
-    to get the mantissas of each number's log.
-
-    arr: np.array of integers or floats ---> np.array of floats
-    '''
-
-    return np.abs(np.log10(arr)) % 1.0
-
-
 def _lt_():
     li = []
     d = '0123456789'
@@ -731,11 +731,12 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     plt.title('Expected vs. Found Distributions', size='xx-large')
     plt.xlabel('Digits', size='x-large')
     plt.ylabel('Distribution (%)', size='x-large')
-    ax.bar(x, y_Found * 100., color='#3D959F', label='Found')
+    ax.bar(x, y_Found * 100., color='#3D959F', label='Found', zorder=3)
     ax.set_xticks(x + .4)
     ax.set_xticklabels(x)
     ax.plot(x, y_Exp * 100., color='#284324', linewidth=2.5,
-            label='Benford')
+            label='Benford', zorder=4)
+    # ax.grid(axis='y', color='w', linestyle='-', zorder=0)
     ax.set_axis_bgcolor('#DDDFD2')
     ax.legend()
     if text_x:
@@ -748,8 +749,8 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
         lower = y_Exp - sig - (1 / (2 * N))
         upper *= 100.
         lower *= 100.
-        ax.plot(x, upper, color='#284324')
-        ax.plot(x, lower, color='#284324')
+        ax.plot(x, upper, color='#284324', zorder=5)
+        ax.plot(x, lower, color='#284324', zorder=5)
         ax.fill_between(x, upper, lower, color='#284324', alpha=.3)
     plt.show()
 
@@ -767,87 +768,11 @@ def _plot_sum_(df, figsize, li):
     plt.title('Expected vs. Found Sums')
     plt.xlabel('Digits')
     plt.ylabel('Sums')
-    ax.bar(df.index, df.Percent, color='#3D959F', label='Found Sums')
-    ax.axhline(li, color='#284324', linewidth=2, label='Expected')
+    ax.bar(df.index, df.Percent, color='#3D959F', label='Found Sums', zorder=3)
+    ax.axhline(li, color='#284324', linewidth=2, label='Expected', zorder=4)
     ax.set_axis_bgcolor('#DDDFD2')
+    # ax.grid(axis='y', color='w', linestyle='-', zorder=0)
     ax.legend()
-
-
-def _collapse_scalar_(num, orders=2, dec=2):
-    '''
-    Collapses any number to a form defined by the user, with the chosen
-    number of digits at the left of the floating point, with the chosen
-    number of decimal digits or an int.
-
-    num -> number to be collapsed
-    orders -> orders of magnitude chosen (how many digts to the left of
-        the floating point). Defaults to 2.
-    dec -> number of decimal places. Defaults to 2. If 0 is chosen, returns
-        an int.
-    '''
-
-    # Set n to 1 if the number is less than 1, since when num is less than 1
-    # 10 must be raised to a smaller power
-    if num < 1:
-        n = 1
-    # Set n to 2 otherwise
-    else:
-        n = 2
-    # Set the dividend l, which is 10 raised to the
-    # integer part of the number's log
-    li = 10 ** int(np.log10(num))
-    # If dec is different than 0, use dec to round to the decimal
-    # places chosen
-    if dec != 0:
-        return round(10. ** (orders + 1 - n) * num / li, dec)
-    # If dec == 0, return integer
-    else:
-        return int(10. ** (orders + 1 - n) * num / li)
-
-
-def _collapse_array_(arr, orders=2, dec=2):
-    '''
-    Collapses an array of numbers, each to a form defined by the user,
-    with the chosen number of digits at the left of the floating point,
-    with the chosen number of decimal digits or as ints.
-
-    arr -> array of numbers to be collapsed
-    orders -> orders of magnitude chosen (how many digts to the left of
-        the floating point). Defaults to 2.
-    dec -> number of decimal places. Defaults to 2. If 0 is chosen, returns
-        array of integers.
-    '''
-
-    # Create a array of ones with the lenght of the array to be collapsed,
-    # for numberss less than 1, since when the number is less than 1
-    # 10 must be raised to a smaller power
-    n = np.ones(len(arr))
-    # Set the ones to two in the places where the array numbers are greater
-    # or equal to one
-    n[arr >= 1] = 2
-    # Set the dividend array l, composed of numbers 10 raised to the
-    # integer part of the numbers' logs
-    li = 10. ** (np.log10(arr).astype(int, copy=False))
-    # If dec is different than 0, use dec to round to the decimal
-    # places chosen
-    if dec != 0:
-        return 10. ** (orders + 1 - n) * arr / li
-    # If dec == 0, return array of integers
-    else:
-        return (10. ** (orders + 1 - n) * arr / li).astype(int)
-
-
-def _sanitize_float_(s, dec):
-    s = str(s)
-    if '.' in s or ',' in s:
-        s = list(filter(type(s).isdigit, s))
-        s = s[:-dec] + '.' + s[-dec:]
-        return float(s)
-    else:
-        if list(filter(type(s).isdigit, s)) == '':
-            return np.nan
-        else:
-            return int(s)
 
 
 def _sanitize_latin_float_(s, dec=2):
