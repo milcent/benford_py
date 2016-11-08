@@ -143,7 +143,7 @@ class Analysis(pd.DataFrame):
  or 'neg'.")
 
         pd.DataFrame.__init__(self, {'Seq': data})
-        self.dropna(inplace=True)
+        # self.dropna(inplace=True)
 
         if self.Seq.dtypes != 'float' and self.Seq.dtypes != 'int':
             print('Sequence dtype is not int nor float.\nTrying \
@@ -183,12 +183,13 @@ to convert...\n')
             if inform:
                 print('Second Order Test. Initial series reduced to {0}\
  entries.'.format(len(self)))
-        # Extracts the digits in their respective positions,
+
         self['ZN'] = np.abs(self.Seq * (10**dec))  # dec - to manage decimals
 
         if dec != 0:
             self.ZN = self.ZN.apply(_tint_)
 
+        # Extracts the digits in their respective positions,
         self['S'] = self.ZN.astype(str)
         self['F1D'] = self.S.str[:1]   # get the first digit
         self['SD'] = self.S.str[1:2]  # get the second digit
@@ -274,9 +275,11 @@ to convert...\n')
             raise ValueError("Value of -conf_level- must be one of the\
  following: {0}".format(list(self.confs.keys())))
 
+        temp = self.loc[self.ZN >= 10]
+
         # Assigning to N the superior limit or the lenght of the series
-        if limit_N is None or limit_N > len(self):
-            N = len(self)
+        if limit_N is None or limit_N > len(temp):
+            N = len(temp)
         # Check on limit_N being a positive integer
         else:
             if limit_N < 0 or not isinstance(limit_N, int):
@@ -290,11 +293,12 @@ to convert...\n')
         x = np.arange(0, 10)
 
         if inform:
-            print("\n---Test performed on {0} registries.---\n".format(N))
+            print("\nTest performed on {0} registries.\nDiscarded \
+{1} records < 10 after preparation.".format(N, N - len(temp)))
         # get the number of occurrences of each second digit
-        v = self.SD.value_counts()
+        v = temp.SD.value_counts()
         # get their relative frequencies
-        p = self.SD.value_counts(normalize=True)
+        p = temp.SD.value_counts(normalize=True)
         # crate dataframe from them
         d = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
         # reindex from 10 to 99 in the case one or more of the first
@@ -380,9 +384,11 @@ to convert...\n')
             raise ValueError("The value assigned to the parameter -digs-\
  was {0}. Value must be 1, 2 or 3.".format(digs))
 
+        temp = self.loc[self.ZN >= 10 ** (digs - 1)]
+
         # Assigning to N the superior limit or the lenght of the series
-        if limit_N is None or limit_N > len(self):
-            N = len(self)
+        if limit_N is None or limit_N > len(temp):
+            N = len(temp)
         # Check on limit_N being a positive integer
         else:
             if limit_N < 0 or not isinstance(limit_N, int):
@@ -397,12 +403,13 @@ to convert...\n')
         conf = self.confs[str(conf_level)]
 
         if inform:
-            print("\n---Test performed on {0} registries.---\n".format(
-                  len(self)))
+            print("\nTest performed on {0} registries.\nDiscarded {1} \
+records < {2} after preparation.".format(len(self), len(self) - len(temp),
+                                         10 ** (digs - 1)))
         # get the number of occurrences of the first two digits
-        v = self[dig_name].value_counts()
+        v = temp[dig_name].value_counts()
         # get their relative frequencies
-        p = self[dig_name].value_counts(normalize=True)
+        p = temp[dig_name].value_counts(normalize=True)
         # crate dataframe from them
         df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
         # reindex from n to m in the case one or more of the first
@@ -478,9 +485,11 @@ to convert...\n')
             raise ValueError("Value of -conf_level- must be one of the \
 following: {0}".format(list(self.confs.keys())))
 
+        temp = self.loc[self.ZN >= 1000]
+
         # Assigning to N the superior limit or the lenght of the series
-        if limit_N is None or limit_N > len(self):
-            N = len(self)
+        if limit_N is None or limit_N > len(temp):
+            N = len(temp)
         # Check on limit_N being a positive integer
         else:
             if limit_N < 0 or not isinstance(limit_N, int):
@@ -493,11 +502,12 @@ integer.")
 
         x = np.arange(0, 100)
         if inform:
-            print("\n---Test performed on " + str(N) + " registries.---\n")
+            print("\nTest performed on {0} registries.\nDiscarded {1} \
+records < 1000 after preparation".format(len(self), len(self) - len(temp)))
         # get the number of occurrences of the last two digits
-        v = self.L2D.value_counts()
+        v = temp.L2D.value_counts()
         # get their relative frequencies
-        p = self.L2D.value_counts(normalize=True)
+        p = temp.L2D.value_counts(normalize=True)
         # crate dataframe from them
         df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
         # join the dataframe with the one of expected Benford's frequencies
