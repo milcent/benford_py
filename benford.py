@@ -131,6 +131,7 @@ class Analysis(pd.DataFrame):
     '''
     maps = {}  # dict for recording the indexes to be mapped back to the
     # dict of confidence levels for further use
+    stats = {}
     confs = {'None': None, '80': 1.285, '85': 1.435, '90': 1.645, '95': 1.96,
              '99': 2.576, '99.9': 3.29, '99.99': 3.89, '99.999': 4.417,
              '99.9999': 4.892, '99.99999': 5.327}
@@ -320,12 +321,11 @@ to convert...\n')
 
         # Mean absolute difference
         if MAD:
-            _mad_(df, 'SD')
+            self.stats['SD_MAD'] = _mad_(df, 'SD', inform=inform)
 
         # Mean Square Error
         if MSE:
-            mse = _mse_(df)
-            print("\nMean Square Error = {0}".format(mse))
+            self.stats['SD_MSE'] = _mse_(df, inform=inform)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
         if plot:
@@ -431,12 +431,13 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
 
         # Mean absolute difference
         if MAD:
-            _mad_(df, test=dig_name)
+            self.stats['{0}_MAD'.format(dig_name)] = _mad_(df, test=dig_name,
+                                                           inform=inform)
 
         # Mean Square Error
         if MSE:
-            mse = (df.AbsDif**2).mean()
-            print("\nMean Square Error = {0}".format(mse))
+            self.stats['{0}_MSE'.format(dig_name)] = _mse_(df, inform=inform)
+
         # Plotting the expected frequncies (line) against the found ones(bars)
         if plot:
             _plot_dig_(df, x=x, y_Exp=df.Expected, y_Found=df.Found, N=N,
@@ -455,7 +456,7 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
             the Analysis; defaults to True
 
         MAD -> calculates the Mean of the Absolute Differences between the
-            found and the expected distributions; defaults to True.
+            found and the expected distributions; defaults to False.
 
         conf_level -> confidence level to draw lower and upper limits when
             plotting and to limit the mapping of the proportions to only the
@@ -525,12 +526,12 @@ records < 1000 after preparation".format(len(self), len(self) - len(temp)))
 
         # Mean absolute difference
         if MAD:
-            _mad_(df, test='L2D')
+            self.stats['L2D_MAD'] = _mad_(df, test='L2D', inform=inform)
 
         # Mean Square Error
         if MSE:
-            mse = _mse_(df)
-            print("\nMean Square Error = {0}".format(mse))
+            self.stats['L2D_MSE'] = _mse_(df, inform=inform)
+
         # Plotting expected frequencies (line) versus found ones (bars)
         if plot:
             _plot_dig_(df, x=x, y_Exp=df.Expected, y_Found=df.Found, N=N,
@@ -630,7 +631,7 @@ def _Z_test(frame, N):
            (frame.Expected * (1. - frame.Expected)) / N)
 
 
-def _mad_(frame, test):
+def _mad_(frame, test, inform=True):
     '''
     Returns the Mean Absolute Deviation (MAD) of the found proportions from the
     expected proportions. Then, it compares the found MAD with the accepted
@@ -638,43 +639,55 @@ def _mad_(frame, test):
 
     frame -> DataFrame with the Absolute Deviations already calculated.
     test -> Teste applied (F1D, SD, F2D...)
+    inform -> prints the MAD result and compares to limit values of
+        conformity. Defaults to True. If False, returns the value.
     '''
     mad = frame.AbsDif.mean()
-    if test[0] == 'F':
-        if test == 'F1D':
-            margins = ['0.006', '0.012', '0.015', 'Digit']
-        elif test == 'F2D':
-            margins = ['0.0012', '0.0018', '0.0022', 'Two Digits']
+
+    if inform:
+        if test[0] == 'F':
+            if test == 'F1D':
+                margins = ['0.006', '0.012', '0.015', 'Digit']
+            elif test == 'F2D':
+                margins = ['0.0012', '0.0018', '0.0022', 'Two Digits']
+            else:
+                margins = ['0.00036', '0.00044', '0.00050', 'Three Digits']
+            print("\nThe Mean Absolute Deviation is {0}\n\
+        For the First {1}:\n\
+        - 0.0000 to {2}: Close Conformity\n\
+        - {2} to {3}: Acceptable Conformity\n\
+        - {3} to {4}: Marginally Acceptable Conformity\n\
+        - Above {4}: Nonconformity".format(mad, margins[3], margins[0],
+                                           margins[1], margins[2]))
+
+        elif test == 'SD':
+            print("\nThe Mean Absolute Deviation is {0}\n\
+        For the Second Digits:\n\
+        - 0.000 to 0.008: Close Conformity\n\
+        - 0.008 to 0.010: Acceptable Conformity\n\
+        - 0.010 to 0.012: Marginally Acceptable Conformity\n\
+        - Above 0.012: Nonconformity".format(mad))
+
         else:
-            margins = ['0.00036', '0.00044', '0.00050', 'Three Digits']
-        print("\nThe Mean Absolute Deviation is {0}\n\
-For the First {1}:\n\
-    - 0.0000 to {2}: Close Conformity\n\
-    - {2} to {3}: Acceptable Conformity\n\
-    - {3} to {4}: Marginally Acceptable Conformity\n\
-    - Above {4}: Nonconformity".format(mad, margins[3], margins[0],
-                                       margins[1], margins[2]))
+            print("\nThe Mean Absolute Deviation is {0}.\n".format(mad))
 
-    elif test == 'SD':
-        print("\nThe Mean Absolute Deviation is {0}\n\
-    For the Second Digits:\n\
-    - 0.000 to 0.008: Close Conformity\n\
-    - 0.008 to 0.010: Acceptable Conformity\n\
-    - 0.010 to 0.012: Marginally Acceptable Conformity\n\
-    - Above 0.012: Nonconformity".format(mad))
-
-    else:
-        print("\nThe Mean Absolute Deviation is {0}.\n".format(mad))
+    return mad
 
 
-def _mse_(frame):
+def _mse_(frame, inform=True):
     '''
     Returns the test's Mean Square Error
 
-    frane -> DataFrame with the already computed Absolute Deviations between
+    frame -> DataFrame with the already computed Absolute Deviations between
             the found and expected proportions
+    inform -> Prints the MSE. Defaults to True. If False, returns MSE.
     '''
-    return (frame.AbsDif ** 2).mean()
+    mse = (frame.AbsDif ** 2).mean()
+
+    if inform:
+        print("\nMean Square Error = {0}".format(mse))
+
+    return mse
 
 
 def _getMantissas_(arr):
