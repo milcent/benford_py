@@ -586,12 +586,41 @@ records < 1000 after preparation".format(len(self), len(self) - len(temp)))
 
     def duplicates(self, inform=True, top_Rep=20):
         '''
+        Performs a duplicates test and maps the duplicates count in descending
+        order.
+
+        inform -> tells how many duplicated entries were found and prints the
+            top numbers according to the top_Rep parameter. Defaluts to True.
+
+        top_Rep -> int or None. Chooses how many duplicated entries will be
+            shown withe the top repititions. Defaluts to 20. If None, returns
+            al the ordered repetitions.
         '''
+        if top_Rep is not None and not isinstance(top_Rep, int):
+            raise ValueError('The top_Rep parameter must be an int or None.')
+
+        dup = self[['Seq']][self.Seq.duplicated(keep=False)]
+        dup_count = dup.groupby(self.Seq).count()
+
+        dup_count.index.names = ['Entries']
+        dup_count.rename(columns={'Seq': 'Count'}, inplace=True)
+
+        dup_count.sort_values('Count', ascending=False, inplace=True)
+
+        self.maps['dup'] = dup_count.index[:top_Rep].values  # np.array
+
+        if inform:
+            print('Found {0} duplicated entries'.format(len(dup_count)))
+            print('The entries with the {0} highest repitition counts are:'
+                  .format(top_Rep))
+            print(dup_count.head(top_Rep))
+        else:
+            return dup_count(top_Rep)
 
 
 def _Z_test(frame, N):
     '''
-    Return the Z statistics for the proportions assessed
+    Returns the Z statistics for the proportions assessed
 
     frame -> DataFrame with the expected proportions and the already calculated
             Absolute Diferences between the found and expeccted proportions
