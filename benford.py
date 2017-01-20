@@ -77,8 +77,7 @@ class Second(pd.DataFrame):
         Expe = np.log10(1 + (1. / a))
         Sec_Dig = np.array(list(range(10)) * 9)
 
-        pd.DataFrame.__init__(self, {'Expected': Expe, 'Sec_Dig': Sec_Dig},
-                              index=a)
+        pd.DataFrame.__init__(self, {'Expected': Expe, 'Sec_Dig': Sec_Dig})
         self = self.groupby('Sec_Dig').sum()
         if plot:
             p = self.plot(kind='bar', color='#51702C',
