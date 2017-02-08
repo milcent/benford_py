@@ -782,7 +782,7 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     plt.title('Expected vs. Found Distributions', size='xx-large')
     plt.xlabel('Digits', size='x-large')
     plt.ylabel('Distribution (%)', size='x-large')
-    ax.bar(x, y_Found * 100., color='#3D959F', label='Found', zorder=3)
+    bars = plt.bar(x, y_Found * 100., color='#3D959F', label='Found', zorder=3)
     ax.set_xticks(x + .4)
     ax.set_xticklabels(x)
     ax.plot(x, y_Exp * 100., color='#284324', linewidth=2.5,
@@ -798,8 +798,12 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
         sig = conf_Z * np.sqrt(y_Exp * (1 - y_Exp) / N)
         upper = y_Exp + sig + (1 / (2 * N))
         lower = y_Exp - sig - (1 / (2 * N))
-        upper *= 100.
+        u = (y_Found < lower) | (y_Found > upper)
+        for i, b in enumerate(bars):
+            if u.iloc[i]:
+                b.set_color('#990007')
         lower *= 100.
+        upper *= 100.
         ax.plot(x, upper, color='#284324', zorder=5)
         ax.plot(x, lower, color='#284324', zorder=5)
         ax.fill_between(x, upper, lower, color='#284324', alpha=.3)
