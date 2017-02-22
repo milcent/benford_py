@@ -236,7 +236,7 @@ to convert...\n')
             plt.show()
 
     def second_digit(self, inform=True, MAD=True, conf_level=95,
-                     MSE=False, show_high_Z='pos', limit_N=None, plot=True):
+                     MSE=False, high_Z='pos', limit_N=None, plot=True):
         '''
         Performs the Benford Second Digit test with the series of
         numbers provided.
@@ -252,7 +252,7 @@ to convert...\n')
             ones significantly diverging from the expected. Defaults to 95.
             If None, no boundaries will be drawn.
 
-        show_high_Z -> chooses which Z scores to be used when displaying
+        high_Z -> chooses which Z scores to be used when displaying
             results, according to the confidence level chosen. Defaluts to
             'pos', which will highlight only the values that are higher than
             the expexted frequencies; 'all' will highlight both found
@@ -316,7 +316,7 @@ to convert...\n')
 
         # Populate dict with the most relevant entries
         self.maps['SD'] = np.array(_inform_and_map_(df, inform,
-                                   show_high_Z, conf))
+                                   high_Z, conf))
 
         # Mean absolute difference
         if MAD:
@@ -334,7 +334,7 @@ to convert...\n')
         # return df
 
     def first_digits(self, digs, inform=True, MAD=True, conf_level=95,
-                     show_high_Z='pos', limit_N=None, MSE=False, plot=True):
+                     high_Z='pos', limit_N=None, MSE=False, plot=True):
         '''
         Performs the Benford First Digits test with the series of
         numbers provided, and populates the mapping dict for future
@@ -354,7 +354,7 @@ to convert...\n')
             ones significantly diverging from the expected. Defaults to 95.
             If None, no boundaries will be drawn.
 
-        show_high_Z -> chooses which Z scores to be used when displaying
+        high_Z -> chooses which Z scores to be used when displaying
             results, according to the confidence level chosen. Defaluts to
             'pos', which will highlight only the values that are higher than
             the expexted frequencies; 'all' will highlight both found
@@ -426,7 +426,7 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
         df['Z_test'] = _Z_test(df, N)
         # Populate dict with the most relevant entries
         self.maps[dig_name] = np.array(_inform_and_map_(df, inform,
-                                       show_high_Z, conf))
+                                       high_Z, conf))
 
         # Mean absolute difference
         if MAD:
@@ -443,10 +443,121 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
                        figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)),
                        conf_Z=conf)
 
-        # return df
+    def first_digs(self, digs, inform=True, MAD=True, conf_level=95,
+                   high_Z='pos', limit_N=None, MSE=False, show_plot=True,
+                   ret_df=False):
+        '''
+        Performs the Benford First Digits test with the series of
+        numbers provided, and populates the mapping dict for future
+        selection of the original series.
+
+        digs -> number of first digits to consider. Must be 1 (first digit),
+            2 (first two digits) or 3 (first three digits).
+
+        inform -> tells the number of registries that are being subjected to
+            the Analysis; defaults to True
+
+        MAD -> calculates the Mean of the Absolute Differences between the
+            found and the expected distributions; defaults to True.
+
+        conf_level -> confidence level to draw lower and upper limits when
+            plotting and to limit the mapping of the proportions to only the
+            ones significantly diverging from the expected. Defaults to 95.
+            If None, no boundaries will be drawn.
+
+        high_Z -> chooses which Z scores to be used when displaying
+            results, according to the confidence level chosen. Defaluts to
+            'pos', which will highlight only the values that are higher than
+            the expexted frequencies; 'all' will highlight both found
+            extremes (positive and negative); and an integer, which will use
+            the first n entries, positive and negative, regardless of whether
+            Z is higher than the conf_level Z or not.
+
+        limit_N -> sets a limit to N for the calculation of the Z statistic,
+            which suffers from the power problem when the sampl is too large.
+            Usually, N is set to a maximum 2,500. Defaults to None.
+
+        MSE -> calculates the Mean Square Error of the sample; defaults to
+            False.
+
+        plot -> draws the test plot for visual comparison, with the found
+            distributions in bars and the expected ones in a line.
+
+
+        '''
+        # Check on the possible values for confidence lavels
+        if str(conf_level) not in list(self.confs.keys()):
+            raise ValueError("Value of parameter -conf_level- must be one\
+ of the following: {0}".format(list(self.confs.keys())))
+        # Check on possible digits
+        if digs not in [1, 2, 3]:
+            raise ValueError("The value assigned to the parameter -digs-\
+ was {0}. Value must be 1, 2 or 3.".format(digs))
+
+        temp = self.loc[self.ZN >= 10 ** (digs - 1)]
+
+        # Assigning to N the superior limit or the lenght of the series
+        if limit_N is None or limit_N > len(temp):
+            N = len(temp)
+        # Check on limit_N being a positive integer
+        else:
+            if limit_N < 0 or not isinstance(limit_N, int):
+                raise ValueError("-limit_N- must be None or a positive\
+ integer.")
+            else:
+                N = limit_N
+
+        dig_name = 'F{0}D'.format(digs)
+        n, m = 10 ** (digs - 1), 10 ** (digs)
+        x = np.arange(n, m)
+        conf = self.confs[str(conf_level)]
+
+        if inform:
+            print("\nTest performed on {0} registries.\nDiscarded {1} \
+records < {2} after preparation.".format(len(self), len(self) - len(temp),
+                                         10 ** (digs - 1)))
+        # get the number of occurrences of the first two digits
+        v = temp[dig_name].value_counts()
+        # get their relative frequencies
+        p = temp[dig_name].value_counts(normalize=True)
+        # crate dataframe from them
+        df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
+        # reindex from n to m in the case one or more of the first
+        # digits are missing, so the Expected frequencies column
+        # can later be joined; and swap NANs with zeros.
+        if len(df.index) < m - n:
+            df = df.reindex(x).fillna(0)
+        # join the dataframe with the one of expected Benford's frequencies
+        df = First(digs=digs, plot=False).join(df)
+        # create column with absolute differences
+        df['Dif'] = df.Found - df.Expected
+        df['AbsDif'] = np.absolute(df.Dif)
+        # calculate the Z-test column an display the dataframe by descending
+        # Z test
+        df['Z_test'] = _Z_test(df, N)
+        # Populate dict with the most relevant entries
+        if inform:
+            _inform_(df, high_Z, conf)
+
+        # Mean absolute difference
+        if MAD:
+            self.stats['{0}_MAD'.format(dig_name)] = _mad_(df, test=dig_name,
+                                                           inform=inform)
+
+        # Mean Square Error
+        if MSE:
+            self.stats['{0}_MSE'.format(dig_name)] = _mse_(df, inform=inform)
+
+        # Plotting the expected frequncies (line) against the found ones(bars)
+        if show_plot:
+            _plot_dig_(df, x=x, y_Exp=df.Expected, y_Found=df.Found, N=N,
+                       figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)),
+                       conf_Z=conf)
+        if ret_df:
+            return df
 
     def last_two_digits(self, inform=True, MAD=False, conf_level=95,
-                        show_high_Z='pos', limit_N=None, MSE=False, plot=True):
+                        high_Z='pos', limit_N=None, MSE=False, plot=True):
         '''
         Performs the Benford Last Two Digits test with the series of
         numbers provided.
@@ -462,7 +573,7 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
             ones significantly diverging from the expected. Defaults to 95.
             If None, no boundaries will be drawn.
 
-        show_high_Z -> chooses which Z scores to be used when displaying
+        high_Z -> chooses which Z scores to be used when displaying
             results, according to the confidence level chosen. Defaluts to
             'pos', which will highlight only the values that are higher than
             the expexted frequencies; 'all' will highlight both found extremes
@@ -521,7 +632,7 @@ records < 1000 after preparation".format(len(self), len(self) - len(temp)))
 
         # Populate dict with the most relevant entries
         self.maps['L2D'] = np.array(_inform_and_map_(df, inform,
-                                    show_high_Z, conf)).astype(int)
+                                    high_Z, conf)).astype(int)
 
         # Mean absolute difference
         if MAD:
@@ -575,7 +686,7 @@ records < 1000 after preparation".format(len(self), len(self) - len(temp)))
 
         # Populate dict with the most relevant entries
         self.maps[dig_name] = np.array(_inform_and_map_(s, inform,
-                                       show_high_Z=top, conf=None)).astype(int)
+                                       high_Z=top, conf=None)).astype(int)
 
         if plot:
             # f = {'1': (8, 5), '2': (13, 8), '3': (21, 13)}
@@ -842,69 +953,127 @@ def _sanitize_latin_int_(s):
     return s
 
 
-def _inform_and_map_(df, inform, show_high_Z, conf):
+def _inform_and_map_(df, inform, high_Z, conf):
     '''
     Selects and sorts by the Z_stats chosen to be considered, informing or not,
     and populating the maps dict for further back analysis of the entries.
     '''
 
     if inform:
-        if isinstance(show_high_Z, int):
+        if isinstance(high_Z, int):
             if conf is not None:
                 dd = df[['Expected', 'Found', 'Z_test'
                          ]].sort_values('Z_test', ascending=False
-                                        ).head(show_high_Z)
+                                        ).head(high_Z)
                 print('\nThe entries with the top {0} Z scores are\
-:\n'.format(show_high_Z))
+:\n'.format(high_Z))
             # Summation Test
             else:
                 dd = df.sort_values('AbsDif', ascending=False
-                                    ).head(show_high_Z)
+                                    ).head(high_Z)
                 print('\nThe entries with the top {0} absolute deviations\
- are:\n'.format(show_high_Z))
+ are:\n'.format(high_Z))
         else:
-            if show_high_Z == 'pos':
+            if high_Z == 'pos':
                 m1 = df.Dif > 0
                 m2 = df.Z_test > conf
                 dd = df[['Expected', 'Found', 'Z_test'
-                         ]][m1 & m2].sort_values('Z_test', ascending=False)
+                         ]].loc[m1 & m2].sort_values('Z_test', ascending=False)
                 print('\nThe entries with the significant positive deviations\
  are:\n')
-            elif show_high_Z == 'neg':
+            elif high_Z == 'neg':
                 m1 = df.Dif < 0
                 m2 = df.Z_test > conf
                 dd = df[['Expected', 'Found', 'Z_test'
-                         ]][m1 & m2].sort_values('Z_test', ascending=False)
+                         ]].loc[m1 & m2].sort_values('Z_test', ascending=False)
                 print('\nThe entries with the significant negative deviations\
  are:\n')
             else:
                 dd = df[['Expected', 'Found', 'Z_test'
-                         ]][df.Z_test > conf].sort_values('Z_test',
-                                                          ascending=False)
+                         ]].loc[df.Z_test > conf].sort_values('Z_test',
+                                                              ascending=False)
                 print('\nThe entries with the significant deviations are:\n')
         print(dd)
         return dd.index
     else:
-        if isinstance(show_high_Z, int):
+        if isinstance(high_Z, int):
             if conf is not None:
                 dd = df[['Expected', 'Found', 'Z_test'
                          ]].sort_values('Z_test', ascending=False
-                                        ).head(show_high_Z)
+                                        ).head(high_Z)
             # Summation Test
             else:
                 dd = df.sort_values('AbsDif', ascending=False
-                                    ).head(show_high_Z)
+                                    ).head(high_Z)
         else:
-            if show_high_Z == 'pos':
+            if high_Z == 'pos':
                 dd = df[['Expected', 'Found', 'Z_test'
-                         ]][df.Dif > 0 and df.Z_test > conf
-                            ].sort_values('Z_test', ascending=False)
-            elif show_high_Z == 'neg':
+                         ]].loc[(df.Dif > 0) & (df.Z_test > conf)
+                                ].sort_values('Z_test', ascending=False)
+            elif high_Z == 'neg':
                 dd = df[['Expected', 'Found', 'Z_test'
-                         ]][df.Dif < 0 and df.Z_test > conf
-                            ].sort_values('Z_test', ascending=False)
+                         ]].loc[(df.Dif < 0) & (df.Z_test > conf)
+                                ].sort_values('Z_test', ascending=False)
             else:
                 dd = df[['Expected', 'Found', 'Z_test'
-                         ]][df.Z_test > conf
-                            ].sort_values('Z_test', ascending=False)
+                         ]].loc[df.Z_test > conf
+                                ].sort_values('Z_test', ascending=False)
         return dd.index
+
+
+def first_digits(data, digs, sign='all', dec=2, inform=True,
+                 latin=False, MAD=True, conf_level=95, high_Z='pos',
+                 limit_N=None, MSE=False, show_plot=True):
+
+    data = Analysis(data, sign=sign, dec=dec, inform=inform, latin=latin)
+
+    data = data.first_digs(digs, inform=inform, MAD=MAD,
+                           conf_level=conf_level, high_Z=high_Z,
+                           limit_N=limit_N, MSE=MSE,
+                           show_plot=show_plot, ret_df=True)
+    if inform:
+        return data.sort_values('Z_test', ascending=False)
+    else:
+        return data
+
+
+def _inform_(df, high_Z, conf):
+    '''
+    Selects and sorts by the Z_stats chosen to be considered, informing or not,
+    and populating the maps dict for further back analysis of the entries.
+    '''
+
+    if isinstance(high_Z, int):
+        if conf is not None:
+            dd = df[['Expected', 'Found', 'Z_test'
+                     ]].sort_values('Z_test', ascending=False
+                                    ).head(high_Z)
+            print('\nThe entries with the top {0} Z scores are\
+:\n'.format(high_Z))
+        # Summation Test
+        else:
+            dd = df.sort_values('AbsDif', ascending=False
+                                ).head(high_Z)
+            print('\nThe entries with the top {0} absolute deviations \
+are:\n'.format(high_Z))
+    else:
+        if high_Z == 'pos':
+            m1 = df.Dif > 0
+            m2 = df.Z_test > conf
+            dd = df[['Expected', 'Found', 'Z_test'
+                     ]].loc[m1 & m2].sort_values('Z_test', ascending=False)
+            print('\nThe entries with the significant positive deviations \
+are:\n')
+        elif high_Z == 'neg':
+            m1 = df.Dif < 0
+            m2 = df.Z_test > conf
+            dd = df[['Expected', 'Found', 'Z_test'
+                     ]].loc[m1 & m2].sort_values('Z_test', ascending=False)
+            print('\nThe entries with the significant negative deviations \
+are:\n')
+        else:
+            dd = df[['Expected', 'Found', 'Z_test'
+                     ]].loc[df.Z_test > conf].sort_values('Z_test',
+                                                          ascending=False)
+            print('\nThe entries with the significant deviations are:\n')
+    print(dd)
