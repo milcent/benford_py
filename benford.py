@@ -180,21 +180,21 @@ Convert it to whether int of float, and try again.")
             self.ZN = self.ZN.apply(_tint_)
 
         # Extracts the digits in their respective positions,
-        self['S'] = self.ZN.astype(str)
-        self['F1D'] = self.S.str[:1]   # get the first digit
-        self['SD'] = self.S.str[1:2]  # get the second digit
-        self['F2D'] = self.S.str[:2]  # get the first two digits
-        self['F3D'] = self.S.str[:3]  # get the first three digits
-        self['L2D'] = self.S.str[-2:]  # get the last two digits
-        # Leave the last two digits as strings , so as to be able to\
-        # display '00', '01', ... up to '09', till '99'
-        # convert the others to integers
-        self.F1D = self.F1D.apply(_tint_)
-        self.SD = self.SD.apply(_tint_)
-        self.F2D = self.F2D.apply(_tint_)
-        self.F3D = self.F3D.apply(_tint_)
-        del self['S']
-        # self = self[self.F2D>=10]
+        # self['S'] = self.ZN.astype(str)
+        # self['F1D'] = self.S.str[:1]   # get the first digit
+        # self['SD'] = self.S.str[1:2]  # get the second digit
+        # self['F2D'] = self.S.str[:2]  # get the first two digits
+        # self['F3D'] = self.S.str[:3]  # get the first three digits
+        # self['L2D'] = self.S.str[-2:]  # get the last two digits
+        # # Leave the last two digits as strings , so as to be able to\
+        # # display '00', '01', ... up to '09', till '99'
+        # # convert the others to integers
+        # self.F1D = self.F1D.apply(_tint_)
+        # self.SD = self.SD.apply(_tint_)
+        # self.F2D = self.F2D.apply(_tint_)
+        # self.F3D = self.F3D.apply(_tint_)
+        # del self['S']
+        # # self = self[self.F2D>=10]
 
     def mantissas(self, plot=True, figsize=(15, 8)):
         '''
@@ -376,9 +376,10 @@ Convert it to whether int of float, and try again.")
 
         conf = self.confs[str(conf_level)]
 
+        self[digs_dict[digs]] = _create_dig_col_(self, digs)
+
         temp = self.loc[self.ZN >= 10 ** (digs - 1)]
 
-        dig_name = digs_dict[digs]
         n, m = 10 ** (digs - 1), 10 ** (digs)
         x = np.arange(n, m)
 
@@ -392,7 +393,7 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
 
         # Mean absolute difference
         if MAD:
-            _mad_(df, test=dig_name, inform=inform)
+            _mad_(df, test=digs_dict[digs], inform=inform)
 
         # Mean Square Error
         if MSE:
@@ -448,6 +449,8 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
  following: {0}".format(list(self.confs.keys())))
 
         conf = self.confs[str(conf_level)]
+
+        self['SD'] = _create_dig_col_(self, 22)
 
         temp = self.loc[self.ZN >= 10]
 
@@ -515,6 +518,8 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
 following: {0}".format(list(self.confs.keys())))
 
         conf = self.confs[str(conf_level)]
+
+        self['L2D'] = _create_dig_col_(self, -2)
 
         temp = self.loc[self.ZN >= 1000]
 
@@ -1171,6 +1176,10 @@ integer.")
 
 
 def _base_(digs):
+    '''
+    Returns the base instance for the proper test to be performed
+    depending on the digit
+    '''
     if digs == 1:
         return First(1, plot=False)
     elif digs == 2:
@@ -1184,7 +1193,11 @@ def _base_(digs):
 
 
 def _prep_(df, digs, limit_N):
-
+    '''
+    Transforms the original number sequence into a DataFrame reduced
+    by the ocurrences of the chosen digits, creating other computed
+    columns
+    '''
     N = _set_N_(len(df), limit_N=limit_N)
 
     col = digs_dict[digs]
@@ -1204,6 +1217,16 @@ def _prep_(df, digs, limit_N):
     # Z test
     dd['Z_test'] = _Z_test(dd, N)
     return N, dd
+
+
+def _create_dig_col_(df, digs):
+    df['S'] = df.ZN.astype(str)
+    if digs in [1, 2, 3]:
+        return df.S.str[:digs].astype(int)
+    elif digs == 22:
+        return df.S.str[1:2].astype(int)
+    else:
+        return df.S.str[-2:]
 
 
 def first_digits(data, digs, sign='all', dec=2, inform=True,
