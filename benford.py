@@ -210,7 +210,7 @@ Convert it to whether int of float, and try again.")
         p = self[['Seq', 'Mant']]
         p = p[p.Seq > 0].sort_values('Mant')
         print("The Mantissas MEAN is {0}. Ref: 0.5.".format(p.Mant.mean()))
-        print("The Mantissas VARIANCE is {0}. Ref: 0.83333.".format(
+        print("The Mantissas VARIANCE is {0}. Ref: 0.083333.".format(
               p.Mant.var()))
         N = len(p)
         # eturn p
@@ -824,6 +824,42 @@ records < 1000 after preparation".format(len(self), len(self) - len(temp)))
             return dup_count(top_Rep)
 
 
+class Mantissas(pd.Series):
+    '''
+    '''
+    def __init__(self, data):
+        if isinstance(data, np.ndarray):
+            data = pd.Series(data)
+        elif isinstance(data, pd.Series):
+            pass
+        else:
+            raise ValueError('input must be a numpy array or a pandas Series')
+        data.dropna(inplace=True)
+        data = data.loc[data != 0]
+        pd.Series.__init__(self, _getMantissas_(np.abs(data)))
+        self.m = self.mean()
+        self.v = self.var()
+        self.s = self.skew()
+        self.k = self.kurt()
+
+    def inform(self):
+        print("The Mantissas MEAN is {0}. \t\tRef: 0.5.".format(self.m))
+        print("The Mantissas VARIANCE is {0}. \tRef: 0.083333.".format(self.v))
+        print("The Mantissas SKEWNESS is {0}. \tRef: 0.".format(self.s))
+        print("The Mantissas KURTOSIS is {0}. \tRef: -1.2.".format(self.k))
+
+    def showplot(self):
+        self.sort_values(inplace=True)
+        x = np.arange(1, len(self) + 1)
+        n = np.ones(len(self)) / len(self)
+        fig = plt.figure(figsize=(15, 8))
+        ax = fig.add_subplot(111)
+        ax.plot(x, self, 'r-', x, n.cumsum(), 'b--', linewidth=2)
+        plt.ylim((0, 1.))
+        plt.xlim((1, len(self) + 1))
+        plt.show()
+
+
 def _Z_test(frame, N):
     '''
     Returns the Z statistics for the proportions assessed
@@ -903,8 +939,8 @@ def _getMantissas_(arr):
 
     arr: np.array of integers or floats ---> np.array of floats
     '''
-    log_a = np.log10(arr)
-    return np.abs(log_a) - log_a.astype(int)  # the number - its integer part
+    log_a = np.abs(np.log10(arr))
+    return log_a - log_a.astype(int)  # the number - its integer part
 
 
 def _lt_():
@@ -915,6 +951,10 @@ def _lt_():
             t = i + j
             li.append(t)
     return np.array(li)
+
+
+def _lt_2():
+    return np.arange(0, 100).astype(str)
 
 
 def _to_float_(st):
@@ -1156,7 +1196,7 @@ def _prep_(df, digs, limit_N):
     # crate dataframe from them
     dd = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
     # join the dataframe with the one of expected Benford's frequencies
-    dd = _base_.join(dd)
+    dd = _base_(digs).join(dd)
     # create column with absolute differences
     dd['Dif'] = dd.Found - dd.Expected
     dd['AbsDif'] = np.absolute(dd.Dif)
@@ -1213,6 +1253,17 @@ def last_two_digits(data, sign='all', dec=2, inform=True,
         return data.sort_values('Z_test', ascending=False)
     else:
         return data
+
+
+def mantissas(data, inform=True, showplot=True):
+    '''
+    '''
+    data = Mantissas(data)
+    if inform:
+        data.inform()
+    if showplot:
+        data.showplot()
+    return data
 
 
 def _inform_(df, high_Z, conf):
