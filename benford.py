@@ -22,9 +22,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-# Color pallete Island Jungle by Shy_violet
-# http://www.colourlovers.com/palette/4348209/Island_Jungle
-
 # Imports
 from __future__ import print_function
 from __future__ import division
@@ -36,6 +33,10 @@ import matplotlib.pyplot as plt
 
 
 digs_dict = {1: 'F1D', 2: 'F2D', 3: 'F3D', 22: 'SD', -2: 'L2D'}
+
+colors = {'m': '#00798c', 'b': '#E2DCD8', 's': '#9c3848',
+          'af': '#edae49', 'ab': '#33658a', 'h': '#d1495b',
+          'h2': '#f64740'}
 
 
 class First(pd.DataFrame):
@@ -154,11 +155,11 @@ class Analysis(pd.DataFrame):
 Convert it to whether int of float, and try again.")
 
         if sign == 'pos':
-            self.Seq = self.Seq[self.Seq > 0]
+            self.Seq = self.Seq.loc[self.Seq > 0]
         elif sign == 'neg':
-            self.Seq = self.Seq[self.Seq < 0]
+            self.Seq = self.Seq.loc[self.Seq < 0]
         else:
-            self.Seq = self.Seq[self.Seq != 0]
+            self.Seq = self.Seq.loc[self.Seq != 0]
 
         self.dropna(inplace=True)
 
@@ -174,27 +175,7 @@ Convert it to whether int of float, and try again.")
                 print('Second Order Test. Initial series reduced to {0}\
  entries.'.format(len(self)))
 
-        self['ZN'] = np.abs(self.Seq * (10**dec))  # dec - to manage decimals
-
-        if dec != 0:
-            self.ZN = self.ZN.apply(_tint_)
-
-        # Extracts the digits in their respective positions,
-        # self['S'] = self.ZN.astype(str)
-        # self['F1D'] = self.S.str[:1]   # get the first digit
-        # self['SD'] = self.S.str[1:2]  # get the second digit
-        # self['F2D'] = self.S.str[:2]  # get the first two digits
-        # self['F3D'] = self.S.str[:3]  # get the first three digits
-        # self['L2D'] = self.S.str[-2:]  # get the last two digits
-        # # Leave the last two digits as strings , so as to be able to\
-        # # display '00', '01', ... up to '09', till '99'
-        # # convert the others to integers
-        # self.F1D = self.F1D.apply(_tint_)
-        # self.SD = self.SD.apply(_tint_)
-        # self.F2D = self.F2D.apply(_tint_)
-        # self.F3D = self.F3D.apply(_tint_)
-        # del self['S']
-        # # self = self[self.F2D>=10]
+        self['ZN'] = np.abs(self.Seq * (10**dec)).astype(int)  # dec - decimals
 
     def mantissas(self, plot=True, figsize=(15, 8)):
         '''
@@ -225,107 +206,9 @@ Convert it to whether int of float, and try again.")
             plt.xlim((1, N + 1))
             plt.show()
 
-    def second_digit(self, inform=True, MAD=True, conf_level=95,
-                     MSE=False, high_Z='pos', limit_N=None, plot=True):
-        '''
-        Performs the Benford Second Digit test with the series of
-        numbers provided.
-
-        inform -> tells the number of registries that are being subjected to
-            the Analysis; defaults to True
-
-        MAD -> calculates the Mean of the Absolute Differences between the
-        found and the expected distributions; defaults to True.
-
-        conf_level -> confidence level to draw lower and upper limits when
-            plotting and to limit the mapping of the proportions to only the
-            ones significantly diverging from the expected. Defaults to 95.
-            If None, no boundaries will be drawn.
-
-        high_Z -> chooses which Z scores to be used when displaying
-            results, according to the confidence level chosen. Defaluts to
-            'pos', which will highlight only the values that are higher than
-            the expexted frequencies; 'all' will highlight both found
-            extremes (positive and negative); and an integer, which will use
-            the first n entries, positive and negative, regardless of whether
-            Z is higher than the conf_level Z or not
-
-        limit_N -> sets a limit to N for the calculation of the Z statistic,
-            which suffers from the power problem when the sampl is too large.
-            Usually, the N is set to a maximum 2,500. Defaults to None.
-
-        MSE -> calculate the Mean Square Error of the sample; defaluts to
-            False.
-
-        plot -> draws the plot of test for visual comparison, with the found
-            distributions in bars and the expected ones in a line.
-
-        '''
-        if str(conf_level) not in list(self.confs.keys()):
-            raise ValueError("Value of -conf_level- must be one of the\
- following: {0}".format(list(self.confs.keys())))
-
-        temp = self.loc[self.ZN >= 10]
-
-        # Assigning to N the superior limit or the lenght of the series
-        if limit_N is None or limit_N > len(temp):
-            N = len(temp)
-        # Check on limit_N being a positive integer
-        else:
-            if limit_N < 0 or not isinstance(limit_N, int):
-                raise ValueError("-limit_N- must be None or a positive\
- integer.")
-            else:
-                N = limit_N
-
-        conf = self.confs[str(conf_level)]
-
-        x = np.arange(0, 10)
-
-        if inform:
-            print("\nTest performed on {0} registries.\nDiscarded \
-{1} records < 10 after preparation.".format(N, N - len(temp)))
-        # get the number of occurrences of each second digit
-        v = temp.SD.value_counts()
-        # get their relative frequencies
-        p = temp.SD.value_counts(normalize=True)
-        # crate dataframe from them
-        d = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
-        # reindex from 10 to 99 in the case one or more of the first
-        # two digits are missing, so the Expected frequencies column
-        # can later be joined; and swap NANs with zeros.
-
-        # join the dataframe with the one of expected Benford's frequencies
-        df = Second(plot=False).groupby('Sec_Dig').sum().join(d)
-        # create column with absolute differences
-        df['Dif'] = df.Found - df.Expected
-        df['AbsDif'] = np.absolute(df.Dif)
-        # calculate the Z-test column an display the dataframe by descending
-        # Z test
-        df['Z_test'] = _Z_test(df, N)
-
-        # Populate dict with the most relevant entries
-        self.maps['SD'] = np.array(_inform_and_map_(df, inform,
-                                   high_Z, conf))
-
-        # Mean absolute difference
-        if MAD:
-            self.stats['SD_MAD'] = _mad_(df, 'SD', inform=inform)
-
-        # Mean Square Error
-        if MSE:
-            self.stats['SD_MSE'] = _mse_(df, inform=inform)
-
-        # Plotting the expected frequncies (line) against the found ones(bars)
-        if plot:
-            _plot_dig_(df, x=x, y_Exp=df.Expected, y_Found=df.Found,
-                       N=N, figsize=(10, 6), conf_Z=conf)
-
-        # return df
-
-    def first_digs(self, digs, inform=True, MAD=True, conf_level=95,
-                   high_Z='pos', limit_N=None, MSE=False, show_plot=True,
-                   ret_df=False):
+    def first_digits(self, digs, inform=True, MAD=True, conf_level=95,
+                     high_Z='pos', limit_N=None, MSE=False, show_plot=True,
+                     ret_df=False):
         '''
         Performs the Benford First Digits test with the series of
         numbers provided, and populates the mapping dict for future
@@ -376,7 +259,7 @@ Convert it to whether int of float, and try again.")
 
         conf = self.confs[str(conf_level)]
 
-        self[digs_dict[digs]] = _create_dig_col_(self, digs)
+        self[digs_dict[digs]] = self.ZN.astype(str).str[:digs].astype(int)
 
         temp = self.loc[self.ZN >= 10 ** (digs - 1)]
 
@@ -407,9 +290,9 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
         if ret_df:
             return df
 
-    def second_dig(self, inform=True, MAD=True, conf_level=95,
-                   MSE=False, high_Z='pos', limit_N=None,
-                   show_plot=True, ret_df=False):
+    def second_digit(self, inform=True, MAD=True, conf_level=95,
+                     MSE=False, high_Z='pos', limit_N=None,
+                     show_plot=True, ret_df=False):
         '''
         Performs the Benford Second Digit test with the series of
         numbers provided.
@@ -450,7 +333,8 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
 
         conf = self.confs[str(conf_level)]
 
-        self['SD'] = _create_dig_col_(self, 22)
+        self['SD'] = self.ZN.astype(str).str[1:2].astype(int)
+        # self['SD'] = _create_dig_col_(self.ZN, 22)
 
         temp = self.loc[self.ZN >= 10]
 
@@ -476,9 +360,9 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
         if ret_df:
             return df
 
-    def last_two_digs(self, inform=True, MAD=False, conf_level=95,
-                      high_Z='pos', limit_N=None, MSE=False,
-                      show_plot=True, ret_df=False):
+    def last_two_digits(self, inform=True, MAD=False, conf_level=95,
+                        high_Z='pos', limit_N=None, MSE=False,
+                        show_plot=True, ret_df=False):
         '''
         Performs the Benford Last Two Digits test with the series of
         numbers provided.
@@ -519,7 +403,7 @@ following: {0}".format(list(self.confs.keys())))
 
         conf = self.confs[str(conf_level)]
 
-        self['L2D'] = _create_dig_col_(self, -2)
+        self['L2D'] = self.ZN.astype(str).str[-2:]
 
         temp = self.loc[self.ZN >= 1000]
 
@@ -546,209 +430,6 @@ records < 1000 after preparation".format(len(self), len(self) - len(temp)))
         if ret_df:
             return df
 
-    def first_digits(self, digs, inform=True, MAD=True, conf_level=95,
-                     high_Z='pos', limit_N=None, MSE=False, plot=True):
-        '''
-        Performs the Benford First Digits test with the series of
-        numbers provided, and populates the mapping dict for future
-        selection of the original series.
-
-        digs -> number of first digits to consider. Must be 1 (first digit),
-            2 (first two digits) or 3 (first three digits).
-
-        inform -> tells the number of registries that are being subjected to
-            the Analysis; defaults to True
-
-        MAD -> calculates the Mean of the Absolute Differences between the
-            found and the expected distributions; defaults to True.
-
-        conf_level -> confidence level to draw lower and upper limits when
-            plotting and to limit the mapping of the proportions to only the
-            ones significantly diverging from the expected. Defaults to 95.
-            If None, no boundaries will be drawn.
-
-        high_Z -> chooses which Z scores to be used when displaying
-            results, according to the confidence level chosen. Defaluts to
-            'pos', which will highlight only the values that are higher than
-            the expexted frequencies; 'all' will highlight both found
-            extremes (positive and negative); and an integer, which will use
-            the first n entries, positive and negative, regardless of whether
-            Z is higher than the conf_level Z or not.
-
-        limit_N -> sets a limit to N for the calculation of the Z statistic,
-            which suffers from the power problem when the sampl is too large.
-            Usually, N is set to a maximum 2,500. Defaults to None.
-
-        MSE -> calculates the Mean Square Error of the sample; defaults to
-            False.
-
-        plot -> draws the test plot for visual comparison, with the found
-            distributions in bars and the expected ones in a line.
-
-
-        '''
-        # Check on the possible values for confidence lavels
-        if str(conf_level) not in list(self.confs.keys()):
-            raise ValueError("Value of parameter -conf_level- must be one\
- of the following: {0}".format(list(self.confs.keys())))
-        # Check on possible digits
-        if digs not in [1, 2, 3]:
-            raise ValueError("The value assigned to the parameter -digs-\
- was {0}. Value must be 1, 2 or 3.".format(digs))
-
-        temp = self.loc[self.ZN >= 10 ** (digs - 1)]
-
-        # Assigning to N the superior limit or the lenght of the series
-        if limit_N is None or limit_N > len(temp):
-            N = len(temp)
-        # Check on limit_N being a positive integer
-        else:
-            if limit_N < 0 or not isinstance(limit_N, int):
-                raise ValueError("-limit_N- must be None or a positive\
- integer.")
-            else:
-                N = limit_N
-
-        dig_name = 'F{0}D'.format(digs)
-        n, m = 10 ** (digs - 1), 10 ** (digs)
-        x = np.arange(n, m)
-        conf = self.confs[str(conf_level)]
-
-        if inform:
-            print("\nTest performed on {0} registries.\nDiscarded {1} \
-records < {2} after preparation.".format(len(self), len(self) - len(temp),
-                                         10 ** (digs - 1)))
-        # get the number of occurrences of the first two digits
-        v = temp[dig_name].value_counts()
-        # get their relative frequencies
-        p = temp[dig_name].value_counts(normalize=True)
-        # crate dataframe from them
-        df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
-        # reindex from n to m in the case one or more of the first
-        # digits are missing, so the Expected frequencies column
-        # can later be joined; and swap NANs with zeros.
-        if len(df.index) < m - n:
-            df = df.reindex(x).fillna(0)
-        # join the dataframe with the one of expected Benford's frequencies
-        df = First(digs=digs, plot=False).join(df)
-        # create column with absolute differences
-        df['Dif'] = df.Found - df.Expected
-        df['AbsDif'] = np.absolute(df.Dif)
-        # calculate the Z-test column an display the dataframe by descending
-        # Z test
-        df['Z_test'] = _Z_test(df, N)
-        # Populate dict with the most relevant entries
-        self.maps[dig_name] = np.array(_inform_and_map_(df, inform,
-                                       high_Z, conf))
-
-        # Mean absolute difference
-        if MAD:
-            self.stats['{0}_MAD'.format(dig_name)] = _mad_(df, test=dig_name,
-                                                           inform=inform)
-
-        # Mean Square Error
-        if MSE:
-            self.stats['{0}_MSE'.format(dig_name)] = _mse_(df, inform=inform)
-
-        # Plotting the expected frequncies (line) against the found ones(bars)
-        if plot:
-            _plot_dig_(df, x=x, y_Exp=df.Expected, y_Found=df.Found, N=N,
-                       figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)),
-                       conf_Z=conf)
-
-    def last_two_digits(self, inform=True, MAD=False, conf_level=95,
-                        high_Z='pos', limit_N=None, MSE=False, plot=True):
-        '''
-        Performs the Benford Last Two Digits test with the series of
-        numbers provided.
-
-        inform -> tells the number of registries that are being subjected to
-            the Analysis; defaults to True
-
-        MAD -> calculates the Mean of the Absolute Differences between the
-            found and the expected distributions; defaults to False.
-
-        conf_level -> confidence level to draw lower and upper limits when
-            plotting and to limit the mapping of the proportions to only the
-            ones significantly diverging from the expected. Defaults to 95.
-            If None, no boundaries will be drawn.
-
-        high_Z -> chooses which Z scores to be used when displaying
-            results, according to the confidence level chosen. Defaluts to
-            'pos', which will highlight only the values that are higher than
-            the expexted frequencies; 'all' will highlight both found extremes
-            (positive and negative); and an integer, which will use the first
-            n entries, positive and negative,regardless of whether the Z is
-            higher than the conf_level Z or not
-
-        limit_N -> sets a limit to N for the calculation of the Z statistic,
-            which suffers from the power problem when the sampl is too large.
-            Usually, the Nis set to a maximum 2,500. Defaults to None.
-
-        MSE -> calculates the Mean Square Error of the sample; defaluts to
-            False.
-
-        plot -> draws the test plot for visual comparison, with the found
-            distributions in bars and the expected ones in a line.
-
-        '''
-        if str(conf_level) not in list(self.confs.keys()):
-            raise ValueError("Value of -conf_level- must be one of the \
-following: {0}".format(list(self.confs.keys())))
-
-        temp = self.loc[self.ZN >= 1000]
-
-        # Assigning to N the superior limit or the lenght of the series
-        if limit_N is None or limit_N > len(temp):
-            N = len(temp)
-        # Check on limit_N being a positive integer
-        else:
-            if limit_N < 0 or not isinstance(limit_N, int):
-                raise ValueError("-limit_N- must be None or a positive \
-integer.")
-            else:
-                N = limit_N
-
-        conf = self.confs[str(conf_level)]
-
-        x = np.arange(0, 100)
-        if inform:
-            print("\nTest performed on {0} registries.\nDiscarded {1} \
-records < 1000 after preparation".format(len(self), len(self) - len(temp)))
-        # get the number of occurrences of the last two digits
-        v = temp.L2D.value_counts()
-        # get their relative frequencies
-        p = temp.L2D.value_counts(normalize=True)
-        # crate dataframe from them
-        df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
-        # join the dataframe with the one of expected Benford's frequencies
-        df = LastTwo(plot=False).join(df)
-        # create column with absolute differences
-        df['Dif'] = df.Found - df.Expected
-        df['AbsDif'] = np.absolute(df.Dif)
-        # calculate the Z-test column an display the dataframe by descending
-        # Z test
-        df['Z_test'] = _Z_test(df, N)
-
-        # Populate dict with the most relevant entries
-        self.maps['L2D'] = np.array(_inform_and_map_(df, inform,
-                                    high_Z, conf)).astype(int)
-
-        # Mean absolute difference
-        if MAD:
-            self.stats['L2D_MAD'] = _mad_(df, test='L2D', inform=inform)
-
-        # Mean Square Error
-        if MSE:
-            self.stats['L2D_MSE'] = _mse_(df, inform=inform)
-
-        # Plotting expected frequencies (line) versus found ones (bars)
-        if plot:
-            _plot_dig_(df, x=x, y_Exp=df.Expected, y_Found=df.Found, N=N,
-                       figsize=(15, 8), conf_Z=conf, text_x=True)
-
-        # return df
-
     def summation(self, digs=2, top=20, inform=True, plot=True):
         '''
         Performs the Summation test. In a Benford series, the sums of the
@@ -769,7 +450,7 @@ records < 1000 after preparation".format(len(self), len(self) - len(temp)))
         if inform:
             # N = len(self)
             print("\nTest performed on {0} registries.\n".format(len(self)))
-        dig_name = 'SUM{0}'.format(digs)
+        # dig_name = 'SUM{0}'.format(digs)
         if digs == 1:
             top = 9
         # Call the dict for F1D, F2D, F3D
@@ -785,8 +466,8 @@ records < 1000 after preparation".format(len(self), len(self) - len(temp)))
         s['AbsDif'] = np.absolute(s.Percent - li)
 
         # Populate dict with the most relevant entries
-        self.maps[dig_name] = np.array(_inform_and_map_(s, inform,
-                                       high_Z=top, conf=None)).astype(int)
+        # self.maps[dig_name] = np.array(_inform_and_map_(s, inform,
+        #                                high_Z=top, conf=None)).astype(int)
 
         if plot:
             # f = {'1': (8, 5), '2': (13, 8), '3': (21, 13)}
@@ -949,67 +630,13 @@ def _getMantissas_(arr):
 
 
 def _lt_():
-    li = []
-    d = '0123456789'
-    for i in d:
-        for j in d:
-            t = i + j
-            li.append(t)
-    return np.array(li)
-
-
-def _lt_2():
-    return np.arange(0, 100).astype(str)
-
-
-def _to_float_(st):
-    try:
-        return float(st) / 100
-    except:
-        return np.nan
-
-
-def _sanitize_(arr):
     '''
-    Prepares the series to enter the test functions, in case pandas
-    has not inferred the type to be float, especially when parsing
-    from latin datases which use '.' for thousands and ',' for the
-    floating point.
+    Creates an array with strings of the possible last two digits
     '''
-    return pd.Series(arr).dropna().apply(str).apply(
-        _only_numerics_).apply(_l_0_strip_)
-
-
-def _only_numerics_(seq):
-    '''
-    From a str sequence, return the characters that represent numbers
-
-    seq -> string sequence
-    '''
-    return list(filter(type(seq).isdigit, seq))
-
-
-def _str_to_float_(s):
-    if '.' in s or ',' in s:
-        s = list(filter(type(s).isdigit, s))
-        s = s[:-2] + '.' + s[-2:]
-        return float(s)
-    else:
-        if list(filter(type(s).isdigit, s)) == '':
-            return np.nan
-        else:
-            return int(s)
-
-
-def _l_0_strip_(st):
-    return st.lstrip('0')
-
-
-def _tint_(s):
-    try:
-        return int(s)
-    except:
-        return 0
+    n = np.arange(0, 100).astype(str)
+    n[:10] = np.array(['00', '01', '02', '03', '04', '05',
+                       '06', '07', '08', '09'])
+    return n
 
 
 def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
@@ -1033,18 +660,19 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     plt.title('Expected vs. Found Distributions', size='xx-large')
     plt.xlabel('Digits', size='x-large')
     plt.ylabel('Distribution (%)', size='x-large')
-    bars = plt.bar(x, y_Found * 100., color='#3D959F', label='Found', zorder=3)
+    bars = plt.bar(x, y_Found * 100., color=colors['m'],
+                   label='Found', zorder=3)
     ax.set_xticks(x + .4)
     ax.set_xticklabels(x)
-    ax.plot(x, y_Exp * 100., color='#284324', linewidth=2.5,
+    ax.plot(x, y_Exp * 100., color=colors['s'], linewidth=2.5,
             label='Benford', zorder=4)
     # ax.grid(axis='y', color='w', linestyle='-', zorder=0)
-    ax.set_axis_bgcolor('#DDDFD2')
-    ax.legend()
+    ax.set_axis_bgcolor(colors['b'])
     if text_x:
         plt.xticks(x, df.index, rotation='vertical')
     # Plotting the Upper and Lower bounds considering the Z for the
     # informed confidence level
+    ax.legend()
     if conf_Z is not None:
         sig = conf_Z * np.sqrt(y_Exp * (1 - y_Exp) / N)
         upper = y_Exp + sig + (1 / (2 * N))
@@ -1052,12 +680,13 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
         u = (y_Found < lower) | (y_Found > upper)
         for i, b in enumerate(bars):
             if u.iloc[i]:
-                b.set_color('#990007')
+                b.set_color(colors['af'])
         lower *= 100.
         upper *= 100.
-        ax.plot(x, upper, color='#284324', zorder=5)
-        ax.plot(x, lower, color='#284324', zorder=5)
-        ax.fill_between(x, upper, lower, color='#284324', alpha=.3)
+        ax.plot(x, upper, color=colors['s'], zorder=5)
+        ax.plot(x, lower, color=colors['s'], zorder=5)
+        ax.fill_between(x, upper, lower, color=colors['s'],
+                        alpha=.3, label='Conf')
     plt.show()
 
 
@@ -1079,86 +708,6 @@ def _plot_sum_(df, figsize, li):
     ax.set_axis_bgcolor('#DDDFD2')
     # ax.grid(axis='y', color='w', linestyle='-', zorder=0)
     ax.legend()
-
-
-def _sanitize_latin_float_(s, dec=2):
-    s = str(s)
-    s = list(filter(type(s).isdigit, s))
-    return s[:-dec] + '.' + s[-dec:]
-
-
-def _sanitize_latin_int_(s):
-    s = str(s)
-    s = list(filter(type(s).isdigit, s))
-    return s
-
-
-def _inform_and_map_(df, inform, high_Z, conf):
-    '''
-    Selects and sorts by the Z_stats chosen to be considered, informing or not,
-    and populating the maps dict for further back analysis of the entries.
-    '''
-
-    if inform:
-        if isinstance(high_Z, int):
-            if conf is not None:
-                dd = df[['Expected', 'Found', 'Z_test'
-                         ]].sort_values('Z_test', ascending=False
-                                        ).head(high_Z)
-                print('\nThe entries with the top {0} Z scores are\
-:\n'.format(high_Z))
-            # Summation Test
-            else:
-                dd = df.sort_values('AbsDif', ascending=False
-                                    ).head(high_Z)
-                print('\nThe entries with the top {0} absolute deviations\
- are:\n'.format(high_Z))
-        else:
-            if high_Z == 'pos':
-                m1 = df.Dif > 0
-                m2 = df.Z_test > conf
-                dd = df[['Expected', 'Found', 'Z_test'
-                         ]].loc[m1 & m2].sort_values('Z_test', ascending=False)
-                print('\nThe entries with the significant positive deviations\
- are:\n')
-            elif high_Z == 'neg':
-                m1 = df.Dif < 0
-                m2 = df.Z_test > conf
-                dd = df[['Expected', 'Found', 'Z_test'
-                         ]].loc[m1 & m2].sort_values('Z_test', ascending=False)
-                print('\nThe entries with the significant negative deviations\
- are:\n')
-            else:
-                dd = df[['Expected', 'Found', 'Z_test'
-                         ]].loc[df.Z_test > conf].sort_values('Z_test',
-                                                              ascending=False)
-                print('\nThe entries with the significant deviations are:\n')
-        print(dd)
-        return dd.index
-    else:
-        if isinstance(high_Z, int):
-            if conf is not None:
-                dd = df[['Expected', 'Found', 'Z_test'
-                         ]].sort_values('Z_test', ascending=False
-                                        ).head(high_Z)
-            # Summation Test
-            else:
-                dd = df.sort_values('AbsDif', ascending=False
-                                    ).head(high_Z)
-        else:
-            if high_Z == 'pos':
-                dd = df[['Expected', 'Found', 'Z_test'
-                         ]].loc[(df.Dif > 0) & (df.Z_test > conf)
-                                ].sort_values('Z_test', ascending=False)
-            elif high_Z == 'neg':
-                dd = df[['Expected', 'Found', 'Z_test'
-                         ]].loc[(df.Dif < 0) & (df.Z_test > conf)
-                                ].sort_values('Z_test', ascending=False)
-            else:
-                dd = df[['Expected', 'Found', 'Z_test'
-                         ]].loc[df.Z_test > conf
-                                ].sort_values('Z_test', ascending=False)
-        return dd.index
 
 
 def _set_N_(len_df, limit_N):
@@ -1219,16 +768,6 @@ def _prep_(df, digs, limit_N):
     return N, dd
 
 
-def _create_dig_col_(df, digs):
-    df['S'] = df.ZN.astype(str)
-    if digs in [1, 2, 3]:
-        return df.S.str[:digs].astype(int)
-    elif digs == 22:
-        return df.S.str[1:2].astype(int)
-    else:
-        return df.S.str[-2:]
-
-
 def first_digits(data, digs, sign='all', dec=2, inform=True,
                  MAD=True, conf_level=95, high_Z='pos',
                  limit_N=None, MSE=False, show_plot=True):
@@ -1236,10 +775,10 @@ def first_digits(data, digs, sign='all', dec=2, inform=True,
     if not isinstance(data, Analysis):
         data = Analysis(data, sign=sign, dec=dec, inform=inform)
 
-    data = data.first_digs(digs, inform=inform, MAD=MAD,
-                           conf_level=conf_level, high_Z=high_Z,
-                           limit_N=limit_N, MSE=MSE,
-                           show_plot=show_plot, ret_df=True)
+    data = data.first_digits(digs, inform=inform, MAD=MAD,
+                             conf_level=conf_level, high_Z=high_Z,
+                             limit_N=limit_N, MSE=MSE,
+                             show_plot=show_plot, ret_df=True)
     if inform:
         return data.sort_values('Z_test', ascending=False)
     else:
@@ -1253,9 +792,9 @@ def second_digit(data, sign='all', dec=2, inform=True,
     if not isinstance(data, Analysis):
         data = Analysis(data, sign=sign, dec=dec, inform=inform)
 
-    data = data.second_dig(inform=inform, MAD=MAD, conf_level=conf_level,
-                           high_Z=high_Z, limit_N=limit_N, MSE=MSE,
-                           show_plot=show_plot, ret_df=True)
+    data = data.second_digit(inform=inform, MAD=MAD, conf_level=conf_level,
+                             high_Z=high_Z, limit_N=limit_N, MSE=MSE,
+                             show_plot=show_plot, ret_df=True)
     if inform:
         return data.sort_values('Z_test', ascending=False)
     else:
@@ -1269,9 +808,9 @@ def last_two_digits(data, sign='all', dec=2, inform=True,
     if not isinstance(data, Analysis):
         data = Analysis(data, sign=sign, dec=dec, inform=inform)
 
-    data = data.last_two_digs(inform=inform, MAD=MAD, conf_level=conf_level,
-                              high_Z=high_Z, limit_N=limit_N, MSE=MSE,
-                              show_plot=show_plot, ret_df=True)
+    data = data.last_two_digits(inform=inform, MAD=MAD, conf_level=conf_level,
+                                high_Z=high_Z, limit_N=limit_N, MSE=MSE,
+                                show_plot=show_plot, ret_df=True)
     if inform:
         return data.sort_values('Z_test', ascending=False)
     else:
