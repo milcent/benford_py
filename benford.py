@@ -1,4 +1,10 @@
 '''
+
+XXXXXXX CORES MANTISSAS XXXXXXX
+
+XXXXXXX SUMMATION FUNCTION XXXXXXX
+
+
 Benford_py for Python is a module for application of Benford's Law
 to a sequence of numbers.
 
@@ -36,7 +42,7 @@ digs_dict = {1: 'F1D', 2: 'F2D', 3: 'F3D', 22: 'SD', -2: 'L2D'}
 
 colors = {'m': '#00798c', 'b': '#E2DCD8', 's': '#9c3848',
           'af': '#edae49', 'ab': '#33658a', 'h': '#d1495b',
-          'h2': '#f64740'}
+          'h2': '#f64740', 't': '#16DB93'}
 
 
 class First(pd.DataFrame):
@@ -63,9 +69,9 @@ class First(pd.DataFrame):
         self.index.names = [dig_name]
 
         if plot:
-            p = self.plot(kind='bar', color='#51702C',
+            p = self.plot(kind='bar', color=colors['t'],
                           figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)))
-            p.set_axis_bgcolor('#DDDFD2')
+            p.set_axis_bgcolor(colors['b'])
 
 
 class Second(pd.DataFrame):
@@ -86,9 +92,9 @@ class Second(pd.DataFrame):
         pd.DataFrame.__init__(self, df.groupby('Sec_Dig').sum())
 
         if plot:
-            p = self.plot(kind='bar', color='#51702C',
+            p = self.plot(kind='bar', color=colors['t'],
                           figsize=(14, 10.5), ylim=(0, .14))
-            p.set_axis_bgcolor('#DDDFD2')
+            p.set_axis_bgcolor(colors['b'])
 
 
 class LastTwo(pd.DataFrame):
@@ -104,9 +110,9 @@ class LastTwo(pd.DataFrame):
         pd.DataFrame.__init__(self, {'Expected': exp, 'Last_2_Dig': _lt_()})
         self.set_index('Last_2_Dig', inplace=True)
         if plot:
-            p = self.plot(kind='bar', figsize=(15, 8), color='#51702C',
+            p = self.plot(kind='bar', figsize=(15, 8), color=colors['t'],
                           ylim=(0, 0.013))
-            p.set_axis_bgcolor('#DDDFD2')
+            p.set_axis_bgcolor(colors['b'])
 
 
 class Analysis(pd.DataFrame):
@@ -430,7 +436,7 @@ records < 1000 after preparation".format(len(self), len(self) - len(temp)))
         if ret_df:
             return df
 
-    def summation(self, digs=2, top=20, inform=True, plot=True):
+    def summation(self, digs=2, top=20, inform=True, show_plot=True, ret_df=False):
         '''
         Performs the Summation test. In a Benford series, the sums of the
         entries begining with the same digits tends to be the same.
@@ -440,41 +446,45 @@ records < 1000 after preparation".format(len(self), len(self) - len(temp)))
 
         top -> choses how many top values to show. Defaults to 20.
 
-        plot -> plots the results. Defaults to True.
+        show_plot -> plots the results. Defaults to True.
         '''
 
         if digs not in [1, 2, 3]:
             raise ValueError("The value assigned to the parameter -digs-\
  was {0}. Value must be 1, 2 or 3.".format(digs))
         # Set the future dict key
-        if inform:
-            # N = len(self)
-            print("\nTest performed on {0} registries.\n".format(len(self)))
         # dig_name = 'SUM{0}'.format(digs)
         if digs == 1:
             top = 9
         # Call the dict for F1D, F2D, F3D
-        d = self.digs_dict[digs]
+        d = digs_dict[digs]
+        if d not in self.columns:
+            self[d] = self.ZN.astype(str).str[:digs].astype(int)
         # Call the expected proportion according to digs
         li = 1. / (9 * (10 ** (digs - 1)))
 
-        s = self.groupby(d).sum()
+        df = self.groupby(d).sum()
         # s.drop(0, inplace=True)
-        s['Percent'] = s.ZN / s.ZN.sum()
-        s.columns.values[1] = 'Sum'
-        s = s[['Sum', 'Percent']]
-        s['AbsDif'] = np.absolute(s.Percent - li)
+        df['Percent'] = df.ZN / df.ZN.sum()
+        df.columns.values[1] = 'Sum'
+        df = df[['Sum', 'Percent']]
+        df['AbsDif'] = np.absolute(df.Percent - li)
 
         # Populate dict with the most relevant entries
         # self.maps[dig_name] = np.array(_inform_and_map_(s, inform,
         #                                high_Z=top, conf=None)).astype(int)
+        if inform:
+            # N = len(self)
+            print("\nTest performed on {0} registries.\n".format(len(self)))
+            print("The top {0} diferences are:\n")
+            print(df[:top])
 
-        if plot:
-            # f = {'1': (8, 5), '2': (13, 8), '3': (21, 13)}
-            _plot_sum_(s, figsize=(
+        if show_plot:
+            _plot_sum_(df, figsize=(
                        2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)), li=li)
 
-        # return
+        if ret_df:
+            return df
 
     def duplicates(self, inform=True, top_Rep=20):
         '''
@@ -534,7 +544,7 @@ class Mantissas(pd.Series):
         print("The Mantissas SKEWNESS is {0}. \tRef: 0.".format(self.s))
         print("The Mantissas KURTOSIS is {0}. \tRef: -1.2.".format(self.k))
 
-    def showplot(self):
+    def show_plot(self):
         self.sort_values(inplace=True)
         x = np.arange(1, len(self) + 1)
         n = np.ones(len(self)) / len(self)
@@ -703,9 +713,10 @@ def _plot_sum_(df, figsize, li):
     plt.title('Expected vs. Found Sums')
     plt.xlabel('Digits')
     plt.ylabel('Sums')
-    ax.bar(df.index, df.Percent, color='#3D959F', label='Found Sums', zorder=3)
-    ax.axhline(li, color='#284324', linewidth=2, label='Expected', zorder=4)
-    ax.set_axis_bgcolor('#DDDFD2')
+    ax.bar(df.index, df.Percent, color=colors['m'],
+           label='Found Sums', zorder=3)
+    ax.axhline(li, color=colors['s'], linewidth=2, label='Expected', zorder=4)
+    ax.set_axis_bgcolor(colors['b'])
     # ax.grid(axis='y', color='w', linestyle='-', zorder=0)
     ax.legend()
 
@@ -817,15 +828,21 @@ def last_two_digits(data, sign='all', dec=2, inform=True,
         return data
 
 
-def mantissas(data, inform=True, showplot=True):
+def mantissas(data, inform=True, show_plot=True):
     '''
     '''
     data = Mantissas(data)
     if inform:
         data.inform()
-    if showplot:
-        data.showplot()
+    if show_plot:
+        data.show_plot()
     return data
+
+
+def summation():
+    '''
+    '''
+    pass
 
 
 def _inform_(df, high_Z, conf):
