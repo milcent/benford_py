@@ -1,14 +1,12 @@
 '''
 
-XXXXXXX CORES MANTISSAS XXXXXXX
-
 XXXXXXX SUMMATION FUNCTION XXXXXXX
 
 
 Benford_py for Python is a module for application of Benford's Law
 to a sequence of numbers.
 
-Dependent on pandas and numpy, using matplotlib for visualization
+Dependent on pandas, numpy and matplotlib
 
 All logarithms ar in base 10: "np.log10"
 
@@ -436,7 +434,8 @@ records < 1000 after preparation".format(len(self), len(self) - len(temp)))
         if ret_df:
             return df
 
-    def summation(self, digs=2, top=20, inform=True, show_plot=True, ret_df=False):
+    def summation(self, digs=2, top=20, inform=True, show_plot=True,
+                  ret_df=False):
         '''
         Performs the Summation test. In a Benford series, the sums of the
         entries begining with the same digits tends to be the same.
@@ -476,7 +475,7 @@ records < 1000 after preparation".format(len(self), len(self) - len(temp)))
         if inform:
             # N = len(self)
             print("\nTest performed on {0} registries.\n".format(len(self)))
-            print("The top {0} diferences are:\n")
+            print("The top {0} diferences are:\n".format(top))
             print(df[:top])
 
         if show_plot:
@@ -550,10 +549,21 @@ class Mantissas(pd.Series):
         n = np.ones(len(self)) / len(self)
         fig = plt.figure(figsize=(15, 8))
         ax = fig.add_subplot(111)
-        ax.plot(x, self, 'r-', x, n.cumsum(), 'b--', linewidth=2)
+        ax.plot(x, self, linestyle='--', color=colors['s'], linewidth=3)
+        ax.plot(x, n.cumsum(), color=colors['m'], linewidth=2)
         plt.ylim((0, 1.))
         plt.xlim((1, len(self) + 1))
+        ax.set_axis_bgcolor(colors['b'])
         plt.show()
+
+
+def _homogenize_array_(arr, orders=2):
+    '''
+    '''
+    n = np.ones(len(arr))
+    n[arr >= 1] = 2
+    li = 10. ** (np.log10(arr).astype(int, copy=False))
+    return (10. ** (orders + 1 - n) * arr / li).astype(int)
 
 
 def _Z_test(frame, N):
@@ -839,10 +849,19 @@ def mantissas(data, inform=True, show_plot=True):
     return data
 
 
-def summation():
+def summation(data, digs, sign='all', dec=2, top=20, inform=True,
+              show_plot=True):
     '''
     '''
-    pass
+    if not isinstance(data, Analysis):
+        data = Analysis(data, sign=sign, dec=dec, inform=inform)
+
+    data = data.summation(digs=digs, top=top, inform=inform,
+                          show_plot=show_plot, ret_df=True)
+    if inform:
+        return data.sort_values('AbsDif', ascending=False)
+    else:
+        return data
 
 
 def _inform_(df, high_Z, conf):
