@@ -1,8 +1,4 @@
 '''
-
-XXXXXXX SUMMATION FUNCTION XXXXXXX
-
-
 Benford_py for Python is a module for application of Benford's Law
 to a sequence of numbers.
 
@@ -48,9 +44,13 @@ class First(pd.DataFrame):
      Returns the expected probabilities of the First, First Two, or
      First Three digits according to Benford's distribution.
 
+    Parameters
+    ----------
+
     -> digs: 1, 2 or 3 - tells which of the first digits to consider:
             1 for the First Digit, 2 for the First Two Digits and 3 for
             the First Three Digits.
+
     -> plot: option to plot a bar chart of the Expected proportions.
             Defaults to True.
     '''
@@ -115,28 +115,23 @@ class LastTwo(pd.DataFrame):
 
 class Analysis(pd.DataFrame):
     '''
-    Initiates the Analysis of the series. pandas DataFrame subclass.
-    Values must be integers or floats. If not, it will try to convert
-    them. If it does not succeed, a TypeError will be raised.
-    A pandas DataFrame will be constructed, with the columns: original
-    numbers without floating points, first, second, first two, first three
-    and    last two digits, so the following tests will run properly.
+    Prepares the data for Analysis. pandas DataFrame subclass.
 
-    -> data: sequence of numbers to be evaluated. Must be in absolute values,
-            since negative values with minus signs will distort the tests.
-            XXXXXX---PONDERAR DEIXAR O COMANDO DE CONVERTER PARA AbS
-    -> dec: number of decimal places to be accounted for. Especially important
-            for the last two digits test. The numbers will be multiplied by
-            10 to the power of the dec value. Defaluts to 2 (currency). If
-            the numbers are integers, assign 0.
+    Parameters
+    ----------
+
+    -> data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+            a pandas Series or a pandas DataFrame column, with values being
+            integers or floats.
+
+    -> dec: number of decimal places to consider. Defaluts to 2.
+            If integers, set to 0.
+
     -> sec_order: choice for the Second Order Test, which cumputes the
             differences between the ordered entries before running the Tests.
+
     -> inform: tells the number of registries that are being subjected to
             the Analysis; defaults to True
-    -> latin: used for str dtypes representing numbers in latin format, with
-            '.' for thousands and ',' for decimals. Converts to a string with
-            only '.' for decimals if float, and none if int, so it can be later
-            converted to a number format. Defaults to False.
     '''
     maps = {}  # dict for recording the indexes to be mapped back to the
     # dict of confidence levels for further use
@@ -183,13 +178,16 @@ Convert it to whether int of float, and try again.")
 
     def mantissas(self, plot=True, figsize=(15, 8)):
         '''
-        Calculates the logs base 10 of the numbers in the sequence and Extracts
-        the mantissae, which are the decimal parts of the logarithms. It them
-        calculates the mean and variance of the mantissae, and compares them
+        Calculates the mantissas, their mean and variance, and compares them
         with the mean and variance of a Benford's sequence.
-        plot -> plots the ordered mantissae and a line with the expected
+
+        Parameters
+        ----------
+
+        plot -> plots the ordered mantissas and a line with the expected
                 inclination. Defaults to True.
-        figsize -> tuple that give sthe size of the figure when plotting
+
+        figsize -> tuple that sets the figure size
         '''
         self['Mant'] = _getMantissas_(self.Seq)
         p = self[['Seq', 'Mant']]
@@ -197,6 +195,9 @@ Convert it to whether int of float, and try again.")
         print("The Mantissas MEAN is {0}. Ref: 0.5.".format(p.Mant.mean()))
         print("The Mantissas VARIANCE is {0}. Ref: 0.083333.".format(
               p.Mant.var()))
+        print("The Mantissas SKEWNESS is {0}. \tRef: 0.".format(p.Mant.skew()))
+        print("The Mantissas KURTOSIS is {0}. \tRef: -1.2.".
+              format(p.Mant.kurt()))
         N = len(p)
         # eturn p
         if plot:
@@ -521,6 +522,12 @@ records < 1000 after preparation".format(len(self), len(self) - len(temp)))
 
 class Mantissas(pd.Series):
     '''
+    Returns a Series with the data mantissas,
+
+    Parameters
+    ----------
+    data: sequence to compute mantissas from, numpy 1D array, pandas
+        Series of pandas DataFrame column.
     '''
     def __init__(self, data):
         if isinstance(data, np.ndarray):
@@ -532,22 +539,38 @@ class Mantissas(pd.Series):
         data.dropna(inplace=True)
         data = data.loc[data != 0]
         pd.Series.__init__(self, _getMantissas_(np.abs(data)))
-        self.m = self.mean()
-        self.v = self.var()
-        self.s = self.skew()
-        self.k = self.kurt()
+
+    def mean(self):
+        self.mean()
+
+    def var(self):
+        self.var()
+
+    def skew(self):
+        self.skew()
+
+    def kurt(self):
+        self.kurt()
 
     def inform(self):
-        print("The Mantissas MEAN is {0}. \t\tRef: 0.5.".format(self.m))
-        print("The Mantissas VARIANCE is {0}. \tRef: 0.083333.".format(self.v))
-        print("The Mantissas SKEWNESS is {0}. \tRef: 0.".format(self.s))
-        print("The Mantissas KURTOSIS is {0}. \tRef: -1.2.".format(self.k))
+        print("The Mantissas MEAN is {0}. \t\tRef: 0.5.".format(self.mean()))
+        print("The Mantissas VARIANCE is {0}. \tRef: 0.083333.".
+              format(self.var()))
+        print("The Mantissas SKEWNESS is {0}. \tRef: 0.".format(self.skew()))
+        print("The Mantissas KURTOSIS is {0}. \tRef: -1.2.".
+              format(self.kurt()))
 
-    def show_plot(self):
+    def show_plot(self, figsize=(15, 8)):
+        '''
+        plots the ordered mantissas and a line with the expected
+                inclination. Defaults to True.
+
+        figsize -> tuple that sets the figure size
+        '''
         self.sort_values(inplace=True)
         x = np.arange(1, len(self) + 1)
         n = np.ones(len(self)) / len(self)
-        fig = plt.figure(figsize=(15, 8))
+        fig = plt.figure(figsize=figsize)
         ax = fig.add_subplot(111)
         ax.plot(x, self, linestyle='--', color=colors['s'], linewidth=3)
         ax.plot(x, n.cumsum(), color=colors['m'], linewidth=2)
@@ -555,15 +578,6 @@ class Mantissas(pd.Series):
         plt.xlim((1, len(self) + 1))
         ax.set_axis_bgcolor(colors['b'])
         plt.show()
-
-
-def _homogenize_array_(arr, orders=2):
-    '''
-    '''
-    n = np.ones(len(arr))
-    n[arr >= 1] = 2
-    li = 10. ** (np.log10(arr).astype(int, copy=False))
-    return (10. ** (orders + 1 - n) * arr / li).astype(int)
 
 
 def _Z_test(frame, N):
@@ -580,13 +594,16 @@ def _Z_test(frame, N):
 
 def _mad_(frame, test, inform=True):
     '''
-    Returns the Mean Absolute Deviation (MAD) of the found proportions from the
-    expected proportions. Then, it compares the found MAD with the accepted
-    ranges of the respective test.
+    Returns the Mean Absolute Deviation (MAD) between the found and the
+    expected proportions.
+    
+    Parameters
+    ----------
 
-    frame -> DataFrame with the Absolute Deviations already calculated.
-    test -> Teste applied (F1D, SD, F2D...)
-    inform -> prints the MAD result and compares to limit values of
+    frame: DataFrame with the Absolute Deviations already calculated.
+    test: Teste applied (F1D, SD, F2D...)
+
+    inform: prints the MAD result and compares to limit values of
         conformity. Defaults to True. If False, returns the value.
     '''
     mad = frame.AbsDif.mean()
@@ -792,7 +809,54 @@ def _prep_(df, digs, limit_N):
 def first_digits(data, digs, sign='all', dec=2, inform=True,
                  MAD=True, conf_level=95, high_Z='pos',
                  limit_N=None, MSE=False, show_plot=True):
+    '''
+    Performs the Benford First Digits test on the series of
+    numbers provided.
 
+    Parameters
+    ----------
+
+    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+        a pandas Series or a pandas DataFrame column, with values being
+        integers or floats.
+
+    dec: number of decimal places to consider. Defaluts to 2.
+        If integers, set to 0.
+
+    inform: tells the number of registries that are being subjected to
+        the Analysis; defaults to True
+
+    digs: number of first digits to consider. Must be 1 (first digit),
+        2 (first two digits) or 3 (first three digits).
+
+    inform: tells the number of registries that are being subjected to
+        the Analysis and returns tha analysis DataFrame sorted by the
+        highest Z score down. Defaults to True.
+
+    MAD: calculates the Mean Absolute Difference between the
+        found and the expected distributions; defaults to True.
+
+    conf_level: confidence level to draw lower and upper limits when
+        plotting and to limit the top deviations to show. Defaults to 95.
+        If None, no boundaries will be drawn.
+
+    high_Z: chooses which Z scores to be used when displaying results,
+        according to the confidence level chosen. Defaluts to 'pos',
+        which will highlight only values higher than the expexted
+        frequencies; 'all' will highlight both extremes (positive and
+        negative); and an integer, which will use the first n entries,
+        positive and negative, regardless of whether Z is higher than
+        the conf_level or not.
+
+    limit_N: sets a limit to N for the calculation of the Z score
+        if the sample is too big. Defaults to None.
+
+    MSE: calculates the Mean Square Error of the sample; defaults to
+        False.
+
+    show_plot: draws the test plot.
+
+    '''
     if not isinstance(data, Analysis):
         data = Analysis(data, sign=sign, dec=dec, inform=inform)
 
@@ -809,7 +873,51 @@ def first_digits(data, digs, sign='all', dec=2, inform=True,
 def second_digit(data, sign='all', dec=2, inform=True,
                  MAD=True, conf_level=95, high_Z='pos', limit_N=None,
                  MSE=False, show_plot=True):
+    '''
+    Performs the Benford Second Digits test on the series of
+    numbers provided.
 
+    Parameters
+    ----------
+
+    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+        a pandas Series or a pandas DataFrame column, with values being
+        integers or floats.
+
+    dec: number of decimal places to consider. Defaluts to 2.
+        If integers, set to 0.
+
+    inform: tells the number of registries that are being subjected to
+        the Analysis; defaults to True
+
+    inform: tells the number of registries that are being subjected to
+        the Analysis and returns tha analysis DataFrame sorted by the
+        highest Z score down. Defaults to True.
+
+    MAD: calculates the Mean Absolute Difference between the
+        found and the expected distributions; defaults to True.
+
+    conf_level: confidence level to draw lower and upper limits when
+        plotting and to limit the top deviations to show. Defaults to 95.
+        If None, no boundaries will be drawn.
+
+    high_Z: chooses which Z scores to be used when displaying results,
+        according to the confidence level chosen. Defaluts to 'pos',
+        which will highlight only values higher than the expexted
+        frequencies; 'all' will highlight both extremes (positive and
+        negative); and an integer, which will use the first n entries,
+        positive and negative, regardless of whether Z is higher than
+        the conf_level or not.
+
+    limit_N: sets a limit to N for the calculation of the Z score
+        if the sample is too big. Defaults to None.
+
+    MSE: calculates the Mean Square Error of the sample; defaults to
+        False.
+
+    show_plot: draws the test plot.
+
+    '''
     if not isinstance(data, Analysis):
         data = Analysis(data, sign=sign, dec=dec, inform=inform)
 
@@ -825,7 +933,51 @@ def second_digit(data, sign='all', dec=2, inform=True,
 def last_two_digits(data, sign='all', dec=2, inform=True,
                     MAD=True, conf_level=95, high_Z='pos', limit_N=None,
                     MSE=False, show_plot=True):
+    '''
+    Performs the Last Two Digits test on the series of
+    numbers provided.
 
+    Parameters
+    ----------
+
+    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+        a pandas Series or a pandas DataFrame column,with values being
+        integers or floats.
+
+    dec: number of decimal places to consider. Defaluts to 2.
+        If integers, set to 0.
+
+    inform: tells the number of registries that are being subjected to
+        the Analysis; defaults to True.
+
+    inform: tells the number of registries that are being subjected to
+        the Analysis and returns tha analysis DataFrame sorted by the
+        highest Z score down. Defaults to True.
+
+    MAD: calculates the Mean Absolute Difference between the
+        found and the expected distributions; defaults to True.
+
+    conf_level: confidence level to draw lower and upper limits when
+        plotting and to limit the top deviations to show. Defaults to 95.
+        If None, no boundaries will be drawn.
+
+    high_Z: chooses which Z scores to be used when displaying results,
+        according to the confidence level chosen. Defaluts to 'pos',
+        which will highlight only values higher than the expexted
+        frequencies; 'all' will highlight both extremes (positive and
+        negative); and an integer, which will use the first n entries,
+        positive and negative, regardless of whether Z is higher than
+        the conf_level or not.
+
+    limit_N: sets a limit to N for the calculation of the Z score
+        if the sample is too big. Defaults to None.
+
+    MSE: calculates the Mean Square Error of the sample; defaults to
+        False.
+
+    show_plot: draws the test plot.
+
+    '''
     if not isinstance(data, Analysis):
         data = Analysis(data, sign=sign, dec=dec, inform=inform)
 
@@ -904,3 +1056,11 @@ are:\n')
                                                           ascending=False)
             print('\nThe entries with the significant deviations are:\n')
     print(dd)
+
+# to do:
+
+# XXXXXXX MAD GENERAL FUNCTION XXXXXX
+
+# XXXXXXX SECOND ORDER GENERAL FUNCTION XXXXXXX
+
+# XXXXXXX MAPPING BACK XXXXXXX
