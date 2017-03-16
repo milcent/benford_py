@@ -274,7 +274,7 @@ Convert it to whether int of float, and try again.")
         if simple:
             inform = False
             show_plot = False
-            N, df = _simple_prep_(temp, digs, limit_N=limit_N)
+            df = _simple_prep_(temp, digs, limit_N=limit_N)
         else:
             N, df = _prep_(temp, digs, limit_N=limit_N)
 
@@ -350,7 +350,7 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
         if simple:
             inform = False
             show_plot = False
-            N, df = _simple_prep_(temp, 22, limit_N=limit_N)
+            df = _simple_prep_(temp, 22, limit_N=limit_N)
         else:
             N, df = _prep_(temp, 22, limit_N=limit_N)
 
@@ -421,7 +421,7 @@ following: {0}".format(list(self.confs.keys())))
         if simple:
             inform = False
             show_plot = False
-            N, df = _simple_prep_(temp, -2, limit_N=limit_N)
+            df = _simple_prep_(temp, -2, limit_N=limit_N)
         else:
             N, df = _prep_(temp, -2, limit_N=limit_N)
 
@@ -823,8 +823,6 @@ def _simple_prep_(df, digs, limit_N):
     by the ocurrences of the chosen digits, creating other computed
     columns
     '''
-    N = _set_N_(len(df), limit_N=limit_N)
-
     col = digs_dict[digs]
 
     # get the number of occurrences of the last two digits
@@ -837,7 +835,7 @@ def _simple_prep_(df, digs, limit_N):
     dd = _base_(digs).join(dd)
     # create column with absolute differences
     dd['AbsDif'] = np.absolute(dd.Found - dd.Expected)
-    return N, dd
+    return dd
 
 
 def first_digits(data, digs, sign='all', dec=2, inform=True,
@@ -1070,9 +1068,7 @@ def summation(data, digs=2, sign='all', dec=2, top=20, inform=True,
 def mad(data, test, sign='all', dec=2):
     '''
     '''
-    if test not in [1, 2, 3, 22, -2]:
-        raise ValueError('test was set to {0}. Should be 1, 2, 3, 22 or -2'.
-                         format(test))
+    _check_test_(test)
     start = Analysis(data, sign=sign, dec=dec, inform=False)
     if test in [1, 2, 3]:
         start.first_digits(digs=test, inform=False, MAD=True, simple=True)
@@ -1086,9 +1082,7 @@ def mad(data, test, sign='all', dec=2):
 def mse(data, test, sign='all', dec=2):
     '''
     '''
-    if test not in [1, 2, 3, 22, -2]:
-        raise ValueError('test was set to {0}. Should be 1, 2, 3, 22 or -2'.
-                         format(test))
+    _check_test_(test)
     start = Analysis(data, sign=sign, dec=dec, inform=False)
     if test in [1, 2, 3]:
         start.first_digits(digs=test, MAD=False, MSE=True, simple=True)
@@ -1097,6 +1091,35 @@ def mse(data, test, sign='all', dec=2):
     else:
         start.last_two_digits(MAD=False, MSE=True, simple=True)
     return start.MSE
+
+
+def rolling_mad(data, test, window, sign='all', dec=2):
+    '''
+    '''
+    _check_test_(test)
+
+    if not isinstance(data, Analysis):
+        start = Analysis(data, sign=sign, dec=dec, inform=False)
+
+    start[digs_dict[test]] = start.ZN.astype(str).str[:test].astype(int)
+
+    start = start.loc[start.ZN >= 10 ** (test - 1)]
+
+    ind = np.arange(10 ** (test - 1), 10 ** test)
+    Exp = np.log10(1 + (1. / ind))
+
+    return start[digs_dict[test]].rolling(
+        window=window).apply(_rol_mad2_, args=(Exp, ind))
+
+
+def _rol_mad2_(arr, Exp, ind, square=False):
+    prop = pd.Series(arr)
+    temp = prop.value_counts(normalize=True).sort_index()
+    if len(temp) < len(Exp):
+        temp = temp.reindex(ind)
+    # if square:
+    #     return ((temp - Exp) ** 2).mean()
+    return np.absolute(temp - Exp).mean()
 
 
 def duplicates():
@@ -1109,6 +1132,14 @@ def second_order():
 
 def map_back():
     pass
+
+
+def _check_test_(test):
+    if test not in [1, 2, 3, 22, -2]:
+        raise ValueError('test was set to {0}. Should be 1, 2, 3, 22 or -2'.
+                         format(test))
+    else:
+        pass
 
 
 def _inform_(df, high_Z, conf):
