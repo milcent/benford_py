@@ -34,6 +34,11 @@ import matplotlib.pyplot as plt
 
 digs_dict = {1: 'F1D', 2: 'F2D', 3: 'F3D', 22: 'SD', -2: 'L2D'}
 
+mad_dict = {1: [0.006, 0.012, 0.015], 2: [0.0012, 0.0018, 0.0022],
+            3: [0.00036, 0.00044, 0.00050], 22: [0.008, 0.01, 0.012],
+            'F1D': 'First Digit', 'F2D': 'First Two Digits',
+            'F3D': 'First Three Digits', 'SD': 'Second Digits'}
+
 colors = {'m': '#00798c', 'b': '#E2DCD8', 's': '#9c3848',
           'af': '#edae49', 'ab': '#33658a', 'h': '#d1495b',
           'h2': '#f64740', 't': '#16DB93'}
@@ -106,9 +111,10 @@ class LastTwo(pd.DataFrame):
     plot: option to plot a bar chart of the Expected proportions.
         Defaults to True.
     '''
-    def __init__(self, plot=True):
+    def __init__(self, num=False, plot=True):
         exp = np.array([1 / 99.] * 100)
-        pd.DataFrame.__init__(self, {'Expected': exp, 'Last_2_Dig': _lt_()})
+        pd.DataFrame.__init__(self, {'Expected': exp,
+                              'Last_2_Dig': _lt_(num=num)})
         self.set_index('Last_2_Dig', inplace=True)
         if plot:
             p = self.plot(kind='bar', figsize=(15, 8), color=colors['t'],
@@ -264,7 +270,9 @@ Convert it to whether int of float, and try again.")
             raise ValueError("The value assigned to the parameter -digs-\
  was {0}. Value must be 1, 2 or 3.".format(digs))
 
-        self[digs_dict[digs]] = self.ZN.astype(str).str[:digs].astype(int)
+        # self[digs_dict[digs]] = self.ZN.astype(str).str[:digs].astype(int)
+        self[digs_dict[digs]] = self.ZN // 10 ** ((np.log10(self.ZN).astype(
+                                                  int)) - (digs - 1))
 
         temp = self.loc[self.ZN >= 10 ** (digs - 1)]
 
@@ -342,8 +350,9 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
 
         conf = self.confs[str(conf_level)]
 
-        self['SD'] = self.ZN.astype(str).str[1:2].astype(int)
-        # self['SD'] = _create_dig_col_(self.ZN, 22)
+        # self['SD'] = self.ZN.astype(str).str[1:2].astype(int)
+        self['SD'] = (self.ZN // 10**((np.log10(self.ZN)).astype(
+                      int) - 1)) % 10
 
         temp = self.loc[self.ZN >= 10]
 
@@ -414,7 +423,8 @@ following: {0}".format(list(self.confs.keys())))
 
         conf = self.confs[str(conf_level)]
 
-        self['L2D'] = self.ZN.astype(str).str[-2:]
+        # self['L2D'] = self.ZN.astype(str).str[-2:]
+        self['L2D'] = self.ZN % 100
 
         temp = self.loc[self.ZN >= 1000]
 
@@ -591,7 +601,35 @@ class Mantissas(pd.Series):
         plt.show()
 
 
-def _Z_test(frame, N):
+class Roll_mad(pd.Series):
+    '''
+    '''
+    def __init__(self, data, test, window, sign='all', dec=2):
+
+        _check_test_(test)
+
+        if not isinstance(data, Analysis):
+            start = Analysis(data, sign=sign, dec=dec, inform=False)
+
+        Exp, ind = _prep_to_roll_(start, test)
+
+        pd.Series.__init__(self, start[digs_dict[test]].rolling(
+            window=window).apply(_mad_to_roll_, args=(Exp, ind)))
+
+        self.dropna(inplace=True)
+        
+        self.test=test
+
+    def show_plot(self, test=test, figsize=(15,8)):
+        fig, ax = plt.subplots(figsize=figsize)
+        ax.plot(self, color=colors['m'])
+        ax.set_axis_bgcolor(colors['b'])
+        ax.hlines(mad_dict[test], self[0], self[-1],
+            colors=[colors['h2'], colors['af'], colors['s']], linewidth=3)
+
+
+
+def _Z_score(frame, N):
     '''
     Returns the Z statistics for the proportions assessed
 
@@ -620,32 +658,19 @@ def _mad_(frame, test, inform=True):
     mad = frame.AbsDif.mean()
 
     if inform:
-        if test[0] == 'F':
-            if test == 'F1D':
-                margins = ['0.006', '0.012', '0.015', 'Digit']
-            elif test == 'F2D':
-                margins = ['0.0012', '0.0018', '0.0022', 'Two Digits']
-            else:
-                margins = ['0.00036', '0.00044', '0.00050', 'Three Digits']
-            print("\nThe Mean Absolute Deviation is {0}\n\
-        For the First {1}:\n\
-        - 0.0000 to {2}: Close Conformity\n\
-        - {2} to {3}: Acceptable Conformity\n\
-        - {3} to {4}: Marginally Acceptable Conformity\n\
-        - Above {4}: Nonconformity".format(mad, margins[3], margins[0],
-                                           margins[1], margins[2]))
+        print("\nThe Mean Absolute Deviation is {0}".format(mad))
 
-        elif test == 'SD':
-            print("\nThe Mean Absolute Deviation is {0}\n\
-        For the Second Digits:\n\
-        - 0.000 to 0.008: Close Conformity\n\
-        - 0.008 to 0.010: Acceptable Conformity\n\
-        - 0.010 to 0.012: Marginally Acceptable Conformity\n\
-        - Above 0.012: Nonconformity".format(mad))
-
+        if test != -2:
+            print("For the {0}:\n\
+            - 0.0000 to {1}: Close Conformity\n\
+            - {1} to {2}: Acceptable Conformity\n\
+            - {2} to {3}: Marginally Acceptable Conformity\n\
+            - Above {3}: Nonconformity".format(mad_dict[digs_dict[test]],
+                                               mad_dict[test][0],
+                                               mad_dict[test][1],
+                                               mad_dict[test][2]))
         else:
-            print("\nThe Mean Absolute Deviation is {0}.\n".format(mad))
-
+            pass
     return mad
 
 
@@ -677,13 +702,21 @@ def _getMantissas_(arr):
     return log_a - log_a.astype(int)  # the number - its integer part
 
 
-def _lt_():
+def _lt_(num=False):
     '''
-    Creates an array with strings of the possible last two digits
+    Creates an array with the possible last two digits
+
+    Parameters
+    ----------
+    num: returns numeric (ints) values. Defaluts to False,
+        which returns strings.
     '''
-    n = np.arange(0, 100).astype(str)
-    n[:10] = np.array(['00', '01', '02', '03', '04', '05',
-                       '06', '07', '08', '09'])
+    if num:
+        n = np.arange(0, 100)
+    else:
+        n = np.arange(0, 100).astype(str)
+        n[:10] = np.array(['00', '01', '02', '03', '04', '05',
+                           '06', '07', '08', '09'])
     return n
 
 
@@ -717,7 +750,10 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     # ax.grid(axis='y', color='w', linestyle='-', zorder=0)
     ax.set_axis_bgcolor(colors['b'])
     if text_x:
-        plt.xticks(x, df.index, rotation='vertical')
+        ind = np.array(df.index).astype(str)
+        ind[:10] = np.array(['00', '01', '02', '03', '04', '05',
+                             '06', '07', '08', '09'])
+        plt.xticks(x, ind, rotation='vertical')
     # Plotting the Upper and Lower bounds considering the Z for the
     # informed confidence level
     ax.legend()
@@ -787,7 +823,7 @@ def _base_(digs):
     elif digs == 22:
         return Second(plot=False)
     else:
-        return LastTwo(plot=False)
+        return LastTwo(num=True, plot=False)
 
 
 def _prep_(df, digs, limit_N):
@@ -813,7 +849,7 @@ def _prep_(df, digs, limit_N):
     dd['AbsDif'] = np.absolute(dd.Dif)
     # calculate the Z-test column an display the dataframe by descending
     # Z test
-    dd['Z_test'] = _Z_test(dd, N)
+    dd['Z_score'] = _Z_score(dd, N)
     return N, dd
 
 
@@ -897,7 +933,7 @@ def first_digits(data, digs, sign='all', dec=2, inform=True,
                              limit_N=limit_N, MSE=MSE,
                              show_plot=show_plot, ret_df=True)
     if inform:
-        return data.sort_values('Z_test', ascending=False)
+        return data.sort_values('Z_score', ascending=False)
     else:
         return data
 
@@ -954,7 +990,7 @@ def second_digit(data, sign='all', dec=2, inform=True,
                              high_Z=high_Z, limit_N=limit_N, MSE=MSE,
                              show_plot=show_plot, ret_df=True)
     if inform:
-        return data.sort_values('Z_test', ascending=False)
+        return data.sort_values('Z_score', ascending=False)
     else:
         return data
 
@@ -1011,7 +1047,7 @@ def last_two_digits(data, sign='all', dec=2, inform=True,
                                 high_Z=high_Z, limit_N=limit_N, MSE=MSE,
                                 show_plot=show_plot, ret_df=True)
     if inform:
-        return data.sort_values('Z_test', ascending=False)
+        return data.sort_values('Z_score', ascending=False)
     else:
         return data
 
@@ -1093,7 +1129,54 @@ def mse(data, test, sign='all', dec=2):
     return start.MSE
 
 
-def rolling_mad(data, test, window, sign='all', dec=2):
+def _prep_to_roll_(start, test):
+    '''
+    '''
+    if test in [1, 2, 3]:
+        start[digs_dict[test]] = start.ZN // 10 ** ((
+            np.log10(start.ZN).astype(int)) - (test - 1))
+        start = start.loc[start.ZN >= 10 ** (test - 1)]
+
+        ind = np.arange(10 ** (test - 1), 10 ** test)
+        Exp = np.log10(1 + (1. / ind))
+
+    elif test == 22:
+        start[digs_dict[test]] = (start.ZN // 10 ** ((
+            np.log10(start.ZN)).astype(int) - 1)) % 10
+        start = start.loc[start.ZN >= 10]
+
+        Expec = np.log10(1 + (1. / np.arange(10, 100)))
+        temp = pd.DataFrame({'Expected': Expec, 'Sec_Dig':
+                            np.array(list(range(10)) * 9)})
+        Exp = temp.groupby('Sec_Dig').sum().values.reshape(10,)
+        ind = np.arange(0, 10)
+
+    else:
+        start[digs_dict[test]] = start.ZN % 100
+        start = start.loc[start.ZN >= 1000]
+
+        ind = np.arange(0, 100)
+        Exp = np.array([1 / 99.] * 100)
+
+    return Exp, ind
+
+def rolling_mad(data, test, window, sign='all', dec=2, plot=False):
+    '''
+    '''
+    return Roll_mad(data, test, window, sign, dec)
+
+
+def _mad_to_roll_(arr, Exp, ind):
+    prop = pd.Series(arr)
+    prop = prop.value_counts(normalize=True).sort_index()
+
+    if len(prop) < len(Exp):
+        prop = prop.reindex(ind).fillna(0)
+
+    return np.absolute(prop - Exp).mean()
+
+
+def rolling_mse(data, test, window, sign='all', dec=2):
     '''
     '''
     _check_test_(test)
@@ -1109,17 +1192,17 @@ def rolling_mad(data, test, window, sign='all', dec=2):
     Exp = np.log10(1 + (1. / ind))
 
     return start[digs_dict[test]].rolling(
-        window=window).apply(_rol_mad2_, args=(Exp, ind))
+        window=window).apply(_mse_to_roll_, args=(Exp, ind))
 
 
-def _rol_mad2_(arr, Exp, ind, square=False):
+def _mse_to_roll_(arr, Exp, ind):
     prop = pd.Series(arr)
     temp = prop.value_counts(normalize=True).sort_index()
     if len(temp) < len(Exp):
         temp = temp.reindex(ind)
     # if square:
     #     return ((temp - Exp) ** 2).mean()
-    return np.absolute(temp - Exp).mean()
+    return ((temp - Exp) ** 2).mean()
 
 
 def duplicates():
@@ -1150,8 +1233,8 @@ def _inform_(df, high_Z, conf):
 
     if isinstance(high_Z, int):
         if conf is not None:
-            dd = df[['Expected', 'Found', 'Z_test'
-                     ]].sort_values('Z_test', ascending=False
+            dd = df[['Expected', 'Found', 'Z_score'
+                     ]].sort_values('Z_score', ascending=False
                                     ).head(high_Z)
             print('\nThe entries with the top {0} Z scores are\
 :\n'.format(high_Z))
@@ -1164,21 +1247,21 @@ are:\n'.format(high_Z))
     else:
         if high_Z == 'pos':
             m1 = df.Dif > 0
-            m2 = df.Z_test > conf
-            dd = df[['Expected', 'Found', 'Z_test'
-                     ]].loc[m1 & m2].sort_values('Z_test', ascending=False)
+            m2 = df.Z_score > conf
+            dd = df[['Expected', 'Found', 'Z_score'
+                     ]].loc[m1 & m2].sort_values('Z_score', ascending=False)
             print('\nThe entries with the significant positive deviations \
 are:\n')
         elif high_Z == 'neg':
             m1 = df.Dif < 0
-            m2 = df.Z_test > conf
-            dd = df[['Expected', 'Found', 'Z_test'
-                     ]].loc[m1 & m2].sort_values('Z_test', ascending=False)
+            m2 = df.Z_score > conf
+            dd = df[['Expected', 'Found', 'Z_score'
+                     ]].loc[m1 & m2].sort_values('Z_score', ascending=False)
             print('\nThe entries with the significant negative deviations \
 are:\n')
         else:
-            dd = df[['Expected', 'Found', 'Z_test'
-                     ]].loc[df.Z_test > conf].sort_values('Z_test',
+            dd = df[['Expected', 'Found', 'Z_score'
+                     ]].loc[df.Z_score > conf].sort_values('Z_score',
                                                           ascending=False)
             print('\nThe entries with the significant deviations are:\n')
     print(dd)
