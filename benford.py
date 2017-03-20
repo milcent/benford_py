@@ -34,6 +34,8 @@ import matplotlib.pyplot as plt
 
 digs_dict = {1: 'F1D', 2: 'F2D', 3: 'F3D', 22: 'SD', -2: 'L2D'}
 
+rev_digs = {'F1D': 1, 'F2D': 2, 'F3D': 3, 'SD': 22, 'L2D': -2}
+
 mad_dict = {1: [0.006, 0.012, 0.015], 2: [0.0012, 0.0018, 0.0022],
             3: [0.00036, 0.00044, 0.00050], 22: [0.008, 0.01, 0.012],
             'F1D': 'First Digit', 'F2D': 'First Two Digits',
@@ -131,10 +133,14 @@ class Analysis(pd.DataFrame):
 
     data: sequence of numbers to be evaluated. Must be a numpy 1D array,
         a pandas Series or a pandas DataFrame column, with values being
-            integers or floats.
+        integers or floats.
 
     dec: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
+
+    sign: tells which portion of the data to cinsider. pos: only the positive
+        entries; neg: only negative entries; all: all entries but zeros.
+        Defaults to all.`
 
     sec_order: choice for the Second Order Test, which cumputes the
         differences between the ordered entries before running the Tests.
@@ -149,7 +155,8 @@ class Analysis(pd.DataFrame):
              '99': 2.576, '99.9': 3.29, '99.99': 3.89, '99.999': 4.417,
              '99.9999': 4.892, '99.99999': 5.327}
 
-    def __init__(self, data, sign='all', dec=2, sec_order=False, inform=True):
+    def __init__(self, data, dec=2, sign='all', sec_order=False, inform=True):
+
         if sign not in ['all', 'pos', 'neg']:
             raise ValueError("The -sign- argument must be 'all','pos'\
  or 'neg'.")
@@ -603,10 +610,31 @@ class Mantissas(pd.Series):
 
 class Roll_mad(pd.Series):
     '''
-    '''
-    def __init__(self, data, test, window, sign='all', dec=2):
+    Applies the MAD to sequential subsets of the Series, returning another
+    Series.
 
-        _check_test_(test)
+    Parameters
+    ----------
+
+    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+        a pandas Series or a pandas DataFrame column, with values being
+        integers or floats.
+
+    test: tells which test to use. 1: Fisrt Digits; 2: First Two Digits;
+        3: First Three Digits; 22: Second Digit; and -2: Last Two Digits.
+
+    window: size of the subset to be used.
+
+    dec: number of decimal places to consider. Defaluts to 2.
+        If integers, set to 0.
+
+    sign: tells which portion of the data to cinsider. pos: only the positive
+        entries; neg: only negative entries; all: all entries but zeros.
+        Defaults to all.
+    '''
+    def __init__(self, data, test, window, dec=2, sign='all'):
+
+        test = _check_test_(test)
 
         if not isinstance(data, Analysis):
             start = Analysis(data, sign=sign, dec=dec, inform=False)
@@ -625,14 +653,54 @@ class Roll_mad(pd.Series):
         ax.set_axis_bgcolor(colors['b'])
         ax.plot(self, color=colors['m'])
         if test != -2:
-            # ar = np.array([self.min(), self.max(), mad_dict[test][0],
-            #               mad_dict[test][1], mad_dict[test][2]])
-            # lines = np.array(mad_dict[test])
-            # col = np.array([colors['h2'], colors['af'], colors['s']])
-            # ax.set_ylim((ar.min(), ar.max()))
             plt.axhline(y=mad_dict[test][0], color=colors['af'], linewidth=3)
             plt.axhline(y=mad_dict[test][1], color=colors['h2'], linewidth=3)
             plt.axhline(y=mad_dict[test][2], color=colors['s'], linewidth=3)
+        plt.show()
+
+
+class Roll_mse(pd.Series):
+    '''
+    Applies the MSE to sequential subsets of the Series, returning another
+    Series.
+
+    Parameters
+    ----------
+
+    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+        a pandas Series or a pandas DataFrame column, with values being
+        integers or floats.
+
+    test: tells which test to use. 1: Fisrt Digits; 2: First Two Digits;
+        3: First Three Digits; 22: Second Digit; and -2: Last Two Digits.
+
+    window: size of the subset to be used.
+
+    dec: number of decimal places to consider. Defaluts to 2.
+        If integers, set to 0.
+
+    sign: tells which portion of the data to cinsider. pos: only the positive
+        entries; neg: only negative entries; all: all entries but zeros.
+        Defaults to all.
+    '''
+    def __init__(self, data, test, window, dec=2, sign='all'):
+
+        test = _check_test_(test)
+
+        if not isinstance(data, Analysis):
+            start = Analysis(data, sign=sign, dec=dec, inform=False)
+
+        Exp, ind = _prep_to_roll_(start, test)
+
+        pd.Series.__init__(self, start[digs_dict[test]].rolling(
+            window=window).apply(_mse_to_roll_, args=(Exp, ind)))
+
+        self.dropna(inplace=True)
+
+    def show_plot(self, figsize=(15, 8)):
+        fig, ax = plt.subplots(figsize=figsize)
+        ax.set_axis_bgcolor(colors['b'])
+        ax.plot(self, color=colors['m'])
         plt.show()
 
 
@@ -881,7 +949,7 @@ def _simple_prep_(df, digs, limit_N):
     return dd
 
 
-def first_digits(data, digs, sign='all', dec=2, inform=True,
+def first_digits(data, digs, dec=2, sign='all', inform=True,
                  MAD=True, conf_level=95, high_Z='pos',
                  limit_N=None, MSE=False, show_plot=True):
     '''
@@ -897,6 +965,10 @@ def first_digits(data, digs, sign='all', dec=2, inform=True,
 
     dec: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
+
+    sign: tells which portion of the data to cinsider. pos: only the positive
+        entries; neg: only negative entries; all: all entries but zeros.
+        Defaults to all.`
 
     inform: tells the number of registries that are being subjected to
         the Analysis; defaults to True
@@ -930,7 +1002,6 @@ def first_digits(data, digs, sign='all', dec=2, inform=True,
         False.
 
     show_plot: draws the test plot.
-
     '''
     if not isinstance(data, Analysis):
         data = Analysis(data, sign=sign, dec=dec, inform=inform)
@@ -945,7 +1016,7 @@ def first_digits(data, digs, sign='all', dec=2, inform=True,
         return data
 
 
-def second_digit(data, sign='all', dec=2, inform=True,
+def second_digit(data, dec=2, sign='all', inform=True,
                  MAD=True, conf_level=95, high_Z='pos', limit_N=None,
                  MSE=False, show_plot=True):
     '''
@@ -961,6 +1032,10 @@ def second_digit(data, sign='all', dec=2, inform=True,
 
     dec: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
+
+    sign: tells which portion of the data to cinsider. pos: only the positive
+        entries; neg: only negative entries; all: all entries but zeros.
+        Defaults to all.`
 
     inform: tells the number of registries that are being subjected to
         the Analysis and returns tha analysis DataFrame sorted by the
@@ -1002,7 +1077,7 @@ def second_digit(data, sign='all', dec=2, inform=True,
         return data
 
 
-def last_two_digits(data, sign='all', dec=2, inform=True,
+def last_two_digits(data, dec=2, sign='all', inform=True,
                     MAD=True, conf_level=95, high_Z='pos', limit_N=None,
                     MSE=False, show_plot=True):
     '''
@@ -1018,6 +1093,10 @@ def last_two_digits(data, sign='all', dec=2, inform=True,
 
     dec: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
+
+    sign: tells which portion of the data to cinsider. pos: only the positive
+        entries; neg: only negative entries; all: all entries but zeros.
+        Defaults to all.`
 
     inform: tells the number of registries that are being subjected to
         the Analysis and returns tha analysis DataFrame sorted by the
@@ -1079,7 +1158,7 @@ def mantissas(data, inform=True, show_plot=True):
     return mant
 
 
-def summation(data, digs=2, sign='all', dec=2, top=20, inform=True,
+def summation(data, digs=2, dec=2, sign='all', top=20, inform=True,
               show_plot=True):
     '''
     Performs the Summation test. In a Benford series, the sums of the
@@ -1108,10 +1187,11 @@ def summation(data, digs=2, sign='all', dec=2, top=20, inform=True,
         return data
 
 
-def mad(data, test, sign='all', dec=2):
+def mad(data, test, dec=2, sign='all'):
     '''
+    Returns the Mean Absolute Deviation of the Series
     '''
-    _check_test_(test)
+    test = _check_test_(test)
 
     start = Analysis(data, sign=sign, dec=dec, inform=False)
 
@@ -1125,10 +1205,11 @@ def mad(data, test, sign='all', dec=2):
     return start.MAD
 
 
-def mse(data, test, sign='all', dec=2):
+def mse(data, test, dec=2, sign='all'):
     '''
+    Returns the Mean Squared Error of the Series
     '''
-    _check_test_(test)
+    test = _check_test_(test)
     start = Analysis(data, sign=sign, dec=dec, inform=False)
     if test in [1, 2, 3]:
         start.first_digits(digs=test, MAD=False, MSE=True, simple=True)
@@ -1141,6 +1222,8 @@ def mse(data, test, sign='all', dec=2):
 
 def _prep_to_roll_(start, test):
     '''
+    Used by the rolling mad and rolling mean, prepares each test and
+    respective expected proportions for later application to the Series subset
     '''
     if test in [1, 2, 3]:
         start[digs_dict[test]] = start.ZN // 10 ** ((
@@ -1171,13 +1254,42 @@ def _prep_to_roll_(start, test):
     return Exp, ind
 
 
-def rolling_mad(data, test, window, sign='all', dec=2, plot=False):
+def rolling_mad(data, test, window, dec=2, sign='all', show_plot=False):
     '''
+    Applies the MAD to sequential subsets of the Series, returning another
+    Series.
+
+    Parameters
+    ----------
+
+    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+        a pandas Series or a pandas DataFrame column, with values being
+        integers or floats.
+
+    test: tells which test to use. 1: Fisrt Digits; 2: First Two Digits;
+        3: First Three Digits; 22: Second Digit; and -2: Last Two Digits.
+
+    window: size of the subset to be used.
+
+    dec: number of decimal places to consider. Defaluts to 2.
+        If integers, set to 0.
+
+    sign: tells which portion of the data to cinsider. pos: only the positive
+        entries; neg: only negative entries; all: all entries but zeros.
+        Defaults to all.
+
+    show_plot: draws the test plot.
     '''
-    return Roll_mad(data, test, window, sign, dec)
+    test = _check_test_(test)
+    r_mad = Roll_mad(data, test, window, dec, sign)
+    if show_plot:
+        r_mad.show_plot(test)
+    return r_mad
 
 
 def _mad_to_roll_(arr, Exp, ind):
+    '''
+    '''
     prop = pd.Series(arr)
     prop = prop.value_counts(normalize=True).sort_index()
 
@@ -1187,32 +1299,47 @@ def _mad_to_roll_(arr, Exp, ind):
     return np.absolute(prop - Exp).mean()
 
 
-def rolling_mse(data, test, window, sign='all', dec=2):
+def rolling_mse(data, test, window, dec=2, sign='all', show_plot=False):
     '''
+    Applies the MSE to sequential subsets of the Series, returning another
+    Series.
+
+    Parameters
+    ----------
+
+    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+        a pandas Series or a pandas DataFrame column, with values being
+        integers or floats.
+
+    test: tells which test to use. 1: Fisrt Digits; 2: First Two Digits;
+        3: First Three Digits; 22: Second Digit; and -2: Last Two Digits.
+
+    window: size of the subset to be used.
+
+    dec: number of decimal places to consider. Defaluts to 2.
+        If integers, set to 0.
+
+    sign: tells which portion of the data to cinsider. pos: only the positive
+        entries; neg: only negative entries; all: all entries but zeros.
+        Defaults to all.
+
+    show_plot: draws the test plot.
     '''
-    _check_test_(test)
-
-    if not isinstance(data, Analysis):
-        start = Analysis(data, sign=sign, dec=dec, inform=False)
-
-    start[digs_dict[test]] = start.ZN.astype(str).str[:test].astype(int)
-
-    start = start.loc[start.ZN >= 10 ** (test - 1)]
-
-    ind = np.arange(10 ** (test - 1), 10 ** test)
-    Exp = np.log10(1 + (1. / ind))
-
-    return start[digs_dict[test]].rolling(
-        window=window).apply(_mse_to_roll_, args=(Exp, ind))
+    r_mse = Roll_mse(data, test, window, dec, sign)
+    if show_plot:
+        r_mse.show_plot()
+    return r_mse
 
 
 def _mse_to_roll_(arr, Exp, ind):
+    '''
+    '''
     prop = pd.Series(arr)
     temp = prop.value_counts(normalize=True).sort_index()
+
     if len(temp) < len(Exp):
-        temp = temp.reindex(ind)
-    # if square:
-    #     return ((temp - Exp) ** 2).mean()
+        temp = temp.reindex(ind).fillna(0)
+
     return ((temp - Exp) ** 2).mean()
 
 
@@ -1229,11 +1356,23 @@ def map_back():
 
 
 def _check_test_(test):
-    if test not in [1, 2, 3, 22, -2]:
-        raise ValueError('test was set to {0}. Should be 1, 2, 3, 22 or -2'.
-                         format(test))
+    '''
+    '''
+    if isinstance(test, int):
+        if test in digs_dict.keys():
+            return test
+        else:
+            raise ValueError('test was set to {0}. Should be one of {1}'
+                             .format(test, digs_dict.keys()))
+    elif isinstance(test, str):
+        if test in rev_digs.keys():
+            return rev_digs[test]
+        else:
+            raise ValueError('test was set to {0}. Should be one of {1}'
+                             .format(test, rev_digs.keys()))
     else:
-        pass
+        raise ValueError('Wrong value chosen for test parameter. \
+Please, refer to docs.')
 
 
 def _inform_(df, high_Z, conf):
@@ -1273,16 +1412,16 @@ are:\n')
         else:
             dd = df[['Expected', 'Found', 'Z_score'
                      ]].loc[df.Z_score > conf].sort_values('Z_score',
-                                                          ascending=False)
+                                                           ascending=False)
             print('\nThe entries with the significant deviations are:\n')
     print(dd)
 
 # to do:
 
-# XXXXXXX MAD GENERAL FUNCTION XXXXXX
 
 # XXXXXXX SECOND ORDER GENERAL FUNCTION XXXXXXX
 
 # XXXXXXX MAPPING BACK XXXXXXX
 
-# XXXXXX DUPLICATES XXXXXX
+# XXXXXX DUPLICATES  FUNCTION XXXXXX
+
