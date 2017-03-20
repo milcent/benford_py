@@ -617,16 +617,23 @@ class Roll_mad(pd.Series):
             window=window).apply(_mad_to_roll_, args=(Exp, ind)))
 
         self.dropna(inplace=True)
-        
-        self.test=test
 
-    def show_plot(self, test=test, figsize=(15,8)):
+        self.test = test
+
+    def show_plot(self, test, figsize=(15, 8)):
         fig, ax = plt.subplots(figsize=figsize)
-        ax.plot(self, color=colors['m'])
         ax.set_axis_bgcolor(colors['b'])
-        ax.hlines(mad_dict[test], self[0], self[-1],
-            colors=[colors['h2'], colors['af'], colors['s']], linewidth=3)
-
+        ax.plot(self, color=colors['m'])
+        if test != -2:
+            # ar = np.array([self.min(), self.max(), mad_dict[test][0],
+            #               mad_dict[test][1], mad_dict[test][2]])
+            # lines = np.array(mad_dict[test])
+            # col = np.array([colors['h2'], colors['af'], colors['s']])
+            # ax.set_ylim((ar.min(), ar.max()))
+            plt.axhline(y=mad_dict[test][0], color=colors['af'], linewidth=3)
+            plt.axhline(y=mad_dict[test][1], color=colors['h2'], linewidth=3)
+            plt.axhline(y=mad_dict[test][2], color=colors['s'], linewidth=3)
+        plt.show()
 
 
 def _Z_score(frame, N):
@@ -1105,13 +1112,16 @@ def mad(data, test, sign='all', dec=2):
     '''
     '''
     _check_test_(test)
+
     start = Analysis(data, sign=sign, dec=dec, inform=False)
+
     if test in [1, 2, 3]:
         start.first_digits(digs=test, inform=False, MAD=True, simple=True)
     elif test == 22:
         start.second_digit(inform=False, MAD=True, simple=True)
     else:
         start.last_two_digits(inform=False, MAD=True, simple=True)
+
     return start.MAD
 
 
@@ -1159,6 +1169,7 @@ def _prep_to_roll_(start, test):
         Exp = np.array([1 / 99.] * 100)
 
     return Exp, ind
+
 
 def rolling_mad(data, test, window, sign='all', dec=2, plot=False):
     '''
