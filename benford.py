@@ -180,15 +180,14 @@ Convert it to whether int of float, and try again.")
             print("Initialized sequence with {0} registries.".format(
                   len(self)))
         if sec_order:
-            self.sort_values('Seq', inplace=True)
-            self.drop_duplicates(inplace=True)
-            self.Seq = self.Seq - self.Seq.shift(1)
+            self.Seq = _subtract_sorted_(self.Seq.copy())
             self.dropna(inplace=True)
+            self.reset_index(inplace=True)
             if inform:
                 print('Second Order Test. Initial series reduced to {0}\
- entries.'.format(len(self)))
+ entries.'.format(len(self.Seq)))
 
-        self['ZN'] = np.abs(self.Seq * (10**dec)).astype(int)  # dec - decimals
+        self['ZN'] = np.abs(self.Seq * (10**dec)).astype(int)
 
     def mantissas(self, plot=True, figsize=(15, 8)):
         '''
@@ -278,9 +277,9 @@ Convert it to whether int of float, and try again.")
  was {0}. Value must be 1, 2 or 3.".format(digs))
 
         # self[digs_dict[digs]] = self.ZN.astype(str).str[:digs].astype(int)
-        self[digs_dict[digs]] = self.ZN // 10 ** ((np.log10(self.ZN).astype(
-                                                  int)) - (digs - 1))
-
+        self[digs_dict[digs]] = (self.ZN // 10 ** ((np.log10(self.ZN).astype(
+                                                   int)) - (digs - 1))).astype(
+                                                       int)
         temp = self.loc[self.ZN >= 10 ** (digs - 1)]
 
         n, m = 10 ** (digs - 1), 10 ** (digs)
@@ -301,7 +300,7 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
 
         # Mean absolute difference
         if MAD:
-            self.MAD = _mad_(df, test=digs_dict[digs], inform=inform)
+            self.MAD = _mad_(df, test=digs, inform=inform)
 
         # Mean Square Error
         if MSE:
@@ -377,7 +376,7 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
 
         # Mean absolute difference
         if MAD:
-            self.MAD = _mad_(df, 'SD', inform=inform)
+            self.MAD = _mad_(df, test=22, inform=inform)
 
         # Mean Square Error
         if MSE:
@@ -449,7 +448,7 @@ records < 1000 after preparation".format(len(self), len(self) - len(temp)))
 
         # Mean absolute difference
         if MAD:
-            self.MAD = _mad_(df, test='L2D', inform=inform)
+            self.MAD = _mad_(df, test=-2, inform=inform)
 
         # Mean Square Error
         if MSE:
@@ -1343,12 +1342,77 @@ def _mse_to_roll_(arr, Exp, ind):
     return ((temp - Exp) ** 2).mean()
 
 
-def duplicates():
-    pass
+def duplicates(data, top_Rep=20, inform=True):
+    '''
+    Performs a duplicates test and maps the duplicates count in descending
+    order.
+
+    Parameters
+    ----------
+    data: sequence to take the duplicates from. pandas Series or
+        numpy Ndarray.
+
+    inform: tells how many duplicated entries were found and prints the
+        top numbers according to the top_Rep parameter. Defaluts to True.
+
+    top_Rep: chooses how many duplicated entries will be
+        shown withe the top repititions. int or None. Defaluts to 20.
+        If None, returns al the ordered repetitions.
+    '''
+    if top_Rep is not None and not isinstance(top_Rep, int):
+        raise ValueError('The top_Rep parameter must be an int or None.')
+
+    if not isinstance(data, pd.Series):
+        try:
+            data = pd.Series(data)
+        except ValueError:
+            print('data must be a numpy Ndarray or a pandas Series.')
+
+    dup = data.loc[data.duplicated(keep=False)]
+    dup_count = dup.value_counts()
+
+    dup_count.index.names = ['Entries']
+    dup_count.name = 'Count'
+
+    if inform:
+        print('Found {0} duplicated entries'.format(len(dup_count)))
+        print('The entries with the {0} highest repitition counts are:'
+              .format(top_Rep))
+        print(dup_count.head(top_Rep))
+
+    return dup_count
 
 
-def second_order():
-    pass
+def _subtract_sorted_(data):
+    data.sort_values(inplace=True)
+    data = data - data.shift(1)
+    data = data.loc[data != 0]
+    return data
+
+
+def second_order(data, test, dec=2, sign='all', inform=True, MAD=True,
+                 conf_level=95, high_Z='pos', limit_N=None, MSE=False,
+                 show_plot=True):
+    '''
+    '''
+    test = _check_test_(test)
+
+    # if not isinstance(data, Analysis):
+    data = Analysis(data, dec=dec, sign=sign,
+                    sec_order=True, inform=inform)
+    if test in [1, 2, 3]:
+        data.first_digits(digs=test, inform=inform, MAD=MAD,
+                          conf_level=conf_level, high_Z=high_Z,
+                          limit_N=limit_N, MSE=MSE, show_plot=show_plot)
+    elif test == 22:
+        data.second_digit(inform=inform, MAD=MAD, conf_level=conf_level,
+                          high_Z=high_Z, limit_N=limit_N, MSE=MSE,
+                          show_plot=show_plot)
+    else:
+        data.last_two_digits(inform=inform, MAD=MAD,
+                             conf_level=conf_level, high_Z=high_Z,
+                             limit_N=limit_N, MSE=MSE, show_plot=show_plot)
+    return data
 
 
 def map_back():
@@ -1418,10 +1482,7 @@ are:\n')
 
 # to do:
 
-
-# XXXXXXX SECOND ORDER GENERAL FUNCTION XXXXXXX
-
 # XXXXXXX MAPPING BACK XXXXXXX
 
-# XXXXXX DUPLICATES  FUNCTION XXXXXX
+# XXXXXX DUPLICATES FUNCTION XXXXXX
 
