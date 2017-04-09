@@ -969,9 +969,6 @@ def first_digits(data, digs, dec=2, sign='all', inform=True,
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.`
 
-    inform: tells the number of registries that are being subjected to
-        the Analysis; defaults to True
-
     digs: number of first digits to consider. Must be 1 (first digit),
         2 (first two digits) or 3 (first three digits).
 
@@ -1384,6 +1381,8 @@ def duplicates(data, top_Rep=20, inform=True):
 
 
 def _subtract_sorted_(data):
+    '''
+    '''
     data.sort_values(inplace=True)
     data = data - data.shift(1)
     data = data.loc[data != 0]
@@ -1394,6 +1393,53 @@ def second_order(data, test, dec=2, sign='all', inform=True, MAD=True,
                  conf_level=95, high_Z='pos', limit_N=None, MSE=False,
                  show_plot=True):
     '''
+    Performs the chosen test after subtracting the ordered sequence by itself.
+    Hence Second Order.
+
+    Parameters
+    ----------
+
+    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+        a pandas Series or a pandas DataFrame column, with values being
+        integers or floats.
+
+    test: the test to be performed - 1 or 'F1D': First Digit; 2 or 'F2D':
+        First Two Digits; 3 or 'F3D': First three Digits; 22 or 'SD':
+        Second Digits; -2 or 'L2D': Last Two Digits.
+
+    dec: number of decimal places to consider. Defaluts to 2.
+        If integers, set to 0.
+
+    sign: tells which portion of the data to cinsider. pos: only the positive
+        entries; neg: only negative entries; all: all entries but zeros.
+        Defaults to all.`
+
+    inform: tells the number of registries that are being subjected to
+        the Analysis and returns tha analysis DataFrame sorted by the
+        highest Z score down. Defaults to True.
+
+    MAD: calculates the Mean Absolute Difference between the
+        found and the expected distributions; defaults to True.
+
+    conf_level: confidence level to draw lower and upper limits when
+        plotting and to limit the top deviations to show. Defaults to 95.
+        If None, no boundaries will be drawn.
+
+    high_Z: chooses which Z scores to be used when displaying results,
+        according to the confidence level chosen. Defaluts to 'pos',
+        which will highlight only values higher than the expexted
+        frequencies; 'all' will highlight both extremes (positive and
+        negative); and an integer, which will use the first n entries,
+        positive and negative, regardless of whether Z is higher than
+        the conf_level or not.
+
+    limit_N: sets a limit to N for the calculation of the Z score
+        if the sample is too big. Defaults to None.
+
+    MSE: calculates the Mean Square Error of the sample; defaults to
+        False.
+
+    show_plot: draws the test plot.
     '''
     test = _check_test_(test)
 
@@ -1485,4 +1531,3 @@ are:\n')
 # XXXXXXX MAPPING BACK XXXXXXX
 
 # XXXXXX DUPLICATES FUNCTION XXXXXX
-
