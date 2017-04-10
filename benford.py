@@ -138,7 +138,7 @@ class Analysis(pd.DataFrame):
     dec: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
-    sign: tells which portion of the data to cinsider. pos: only the positive
+    sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.`
 
@@ -627,7 +627,7 @@ class Roll_mad(pd.Series):
     dec: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
-    sign: tells which portion of the data to cinsider. pos: only the positive
+    sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.
     '''
@@ -678,7 +678,7 @@ class Roll_mse(pd.Series):
     dec: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
-    sign: tells which portion of the data to cinsider. pos: only the positive
+    sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.
     '''
@@ -965,7 +965,7 @@ def first_digits(data, digs, dec=2, sign='all', inform=True,
     dec: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
-    sign: tells which portion of the data to cinsider. pos: only the positive
+    sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.`
 
@@ -1006,7 +1006,8 @@ def first_digits(data, digs, dec=2, sign='all', inform=True,
                              conf_level=conf_level, high_Z=high_Z,
                              limit_N=limit_N, MSE=MSE,
                              show_plot=show_plot, ret_df=True)
-    if inform:
+    data = data[['Counts', 'Found', 'Expected', 'Z_score']]
+    if conf_level is not None:
         return data.sort_values('Z_score', ascending=False)
     else:
         return data
@@ -1029,7 +1030,7 @@ def second_digit(data, dec=2, sign='all', inform=True,
     dec: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
-    sign: tells which portion of the data to cinsider. pos: only the positive
+    sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.`
 
@@ -1067,7 +1068,8 @@ def second_digit(data, dec=2, sign='all', inform=True,
     data = data.second_digit(inform=inform, MAD=MAD, conf_level=conf_level,
                              high_Z=high_Z, limit_N=limit_N, MSE=MSE,
                              show_plot=show_plot, ret_df=True)
-    if inform:
+    data = data[['Counts', 'Found', 'Expected', 'Z_score']]
+    if conf_level is not None:
         return data.sort_values('Z_score', ascending=False)
     else:
         return data
@@ -1090,7 +1092,7 @@ def last_two_digits(data, dec=2, sign='all', inform=True,
     dec: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
-    sign: tells which portion of the data to cinsider. pos: only the positive
+    sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.`
 
@@ -1128,7 +1130,8 @@ def last_two_digits(data, dec=2, sign='all', inform=True,
     data = data.last_two_digits(inform=inform, MAD=MAD, conf_level=conf_level,
                                 high_Z=high_Z, limit_N=limit_N, MSE=MSE,
                                 show_plot=show_plot, ret_df=True)
-    if inform:
+    data = data[['Counts', 'Found', 'Expected', 'Z_score']]
+    if conf_level is not None:
         return data.sort_values('Z_score', ascending=False)
     else:
         return data
@@ -1270,7 +1273,7 @@ def rolling_mad(data, test, window, dec=2, sign='all', show_plot=False):
     dec: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
-    sign: tells which portion of the data to cinsider. pos: only the positive
+    sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.
 
@@ -1315,7 +1318,7 @@ def rolling_mse(data, test, window, dec=2, sign='all', show_plot=False):
     dec: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
-    sign: tells which portion of the data to cinsider. pos: only the positive
+    sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.
 
@@ -1410,7 +1413,7 @@ def second_order(data, test, dec=2, sign='all', inform=True, MAD=True,
     dec: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
-    sign: tells which portion of the data to cinsider. pos: only the positive
+    sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.`
 
@@ -1529,5 +1532,3 @@ are:\n')
 # to do:
 
 # XXXXXXX MAPPING BACK XXXXXXX
-
-# XXXXXX DUPLICATES FUNCTION XXXXXX
