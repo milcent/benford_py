@@ -224,7 +224,7 @@ Convert it to whether int of float, and try again.")
             plt.xlim((1, N + 1))
             plt.show()
 
-    def first_digits(self, digs, inform=True, MAD=True, conf_level=95,
+    def first_digits(self, digs, inform=True, MAD=False, conf_level=None,
                      high_Z='pos', limit_N=None, MSE=False, show_plot=True,
                      simple=False, ret_df=False):
         '''
@@ -245,8 +245,7 @@ Convert it to whether int of float, and try again.")
             found and the expected distributions; defaults to True.
 
         conf_level: confidence level to draw lower and upper limits when
-            plotting and to limit the top deviations to show. Defaults to 95.
-            If None, no boundaries will be drawn.
+            plotting and to limit the top deviations to show. Defaults to None
 
         high_Z: chooses which Z scores to be used when displaying results,
             according to the confidence level chosen. Defaluts to 'pos',
@@ -288,15 +287,18 @@ Convert it to whether int of float, and try again.")
         if simple:
             inform = False
             show_plot = False
-            df = _simple_prep_(temp, digs, limit_N=limit_N)
+            df = _prep_(temp, digs, limit_N=limit_N, simple=True,
+                        conf_level=None)
         else:
-            N, df = _prep_(temp, digs, limit_N=limit_N)
+            N, df = _prep_(temp, digs, limit_N=limit_N, simple=False,
+                           conf_level=conf_level)
 
         if inform:
             print("\nTest performed on {0} registries.\nDiscarded {1} \
 records < {2} after preparation.".format(len(self), len(self) - len(temp),
                                          10 ** (digs - 1)))
-            _inform_(df, high_Z=high_Z, conf=self.confs[str(conf_level)])
+            if conf_level is not None:
+                _inform_(df, high_Z=high_Z, conf=self.confs[str(conf_level)])
 
         # Mean absolute difference
         if MAD:
@@ -314,7 +316,7 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
         if ret_df:
             return df
 
-    def second_digit(self, inform=True, MAD=True, conf_level=95,
+    def second_digit(self, inform=True, MAD=False, conf_level=None,
                      MSE=False, high_Z='pos', limit_N=None,
                      show_plot=True, simple=False, ret_df=False):
         '''
@@ -328,8 +330,7 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
             found and the expected distributions; defaults to True.
 
         conf_level: confidence level to draw lower and upper limits when
-            plotting and to limit the top deviations to show. Defaults to 95.
-            If None, no boundaries will be drawn.
+            plotting and to limit the top deviations to show. Defaults to None
 
         high_Z: chooses which Z scores to be used when displaying results,
             according to the confidence level chosen. Defaluts to 'pos',
@@ -365,14 +366,17 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
         if simple:
             inform = False
             show_plot = False
-            df = _simple_prep_(temp, 22, limit_N=limit_N)
+            df = _prep_(temp, 22, limit_N=limit_N, simple=True,
+                        conf_level=None)
         else:
-            N, df = _prep_(temp, 22, limit_N=limit_N)
+            N, df = _prep_(temp, 22, limit_N=limit_N, simple=False,
+                           conf_level=conf_level)
 
         if inform:
             print("\nTest performed on {0} registries.\nDiscarded \
 {1} records < 10 after preparation.".format(N, N - len(temp)))
-            _inform_(df, high_Z, conf)
+            if conf_level is not None:
+                _inform_(df, high_Z, conf)
 
         # Mean absolute difference
         if MAD:
@@ -389,7 +393,7 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
         if ret_df:
             return df
 
-    def last_two_digits(self, inform=True, MAD=False, conf_level=95,
+    def last_two_digits(self, inform=True, MAD=False, conf_level=None,
                         high_Z='pos', limit_N=None, MSE=False,
                         show_plot=True, simple=False, ret_df=False):
         '''
@@ -403,8 +407,7 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
             found and the expected distributions; defaults to True.
 
         conf_level: confidence level to draw lower and upper limits when
-            plotting and to limit the top deviations to show. Defaults to 95.
-            If None, no boundaries will be drawn.
+            plotting and to limit the top deviations to show. Defaults to None
 
         high_Z: chooses which Z scores to be used when displaying results,
             according to the confidence level chosen. Defaluts to 'pos',
@@ -437,14 +440,17 @@ following: {0}".format(list(self.confs.keys())))
         if simple:
             inform = False
             show_plot = False
-            df = _simple_prep_(temp, -2, limit_N=limit_N)
+            df = _prep_(temp, -2, limit_N=limit_N, simple=True,
+                        conf_level=None)
         else:
-            N, df = _prep_(temp, -2, limit_N=limit_N)
+            N, df = _prep_(temp, -2, limit_N=limit_N, simple=False,
+                           conf_level=conf_level)
 
         if inform:
             print("\nTest performed on {0} registries.\nDiscarded {1} \
 records < 1000 after preparation".format(len(self), len(self) - len(temp)))
-            _inform_(df, high_Z, conf)
+            if conf_level is not None:
+                _inform_(df, high_Z, conf)
 
         # Mean absolute difference
         if MAD:
@@ -900,7 +906,7 @@ def _base_(digs):
         return LastTwo(num=True, plot=False)
 
 
-def _prep_(df, digs, limit_N):
+def _prep_(df, digs, limit_N, simple=False, conf_level=None):
     '''
     Transforms the original number sequence into a DataFrame reduced
     by the ocurrences of the chosen digits, creating other computed
@@ -919,12 +925,19 @@ def _prep_(df, digs, limit_N):
     # join the dataframe with the one of expected Benford's frequencies
     dd = _base_(digs).join(dd)
     # create column with absolute differences
-    dd['Dif'] = dd.Found - dd.Expected
-    dd['AbsDif'] = np.absolute(dd.Dif)
+    if simple:
+        dd['AbsDif'] = np.absolute(dd.Found - dd.Expected)
+        return dd
+    else:
+        if conf_level is not None:
+            dd['Dif'] = dd.Found - dd.Expected
+            dd['AbsDif'] = np.absolute(dd.Dif)
     # calculate the Z-test column an display the dataframe by descending
     # Z test
-    dd['Z_score'] = _Z_score(dd, N)
-    return N, dd
+            dd['Z_score'] = _Z_score(dd, N)
+        else:
+            dd['AbsDif'] = np.absolute(dd.Found - dd.Expected)
+        return N, dd
 
 
 def _simple_prep_(df, digs, limit_N):
@@ -949,7 +962,7 @@ def _simple_prep_(df, digs, limit_N):
 
 
 def first_digits(data, digs, dec=2, sign='all', inform=True,
-                 MAD=True, conf_level=95, high_Z='pos',
+                 MAD=True, conf_level=None, high_Z='pos',
                  limit_N=None, MSE=False, show_plot=True):
     '''
     Performs the Benford First Digits test on the series of
@@ -980,8 +993,7 @@ def first_digits(data, digs, dec=2, sign='all', inform=True,
         found and the expected distributions; defaults to True.
 
     conf_level: confidence level to draw lower and upper limits when
-        plotting and to limit the top deviations to show. Defaults to 95.
-        If None, no boundaries will be drawn.
+        plotting and to limit the top deviations to show. Defaults to None
 
     high_Z: chooses which Z scores to be used when displaying results,
         according to the confidence level chosen. Defaluts to 'pos',
@@ -1006,15 +1018,15 @@ def first_digits(data, digs, dec=2, sign='all', inform=True,
                              conf_level=conf_level, high_Z=high_Z,
                              limit_N=limit_N, MSE=MSE,
                              show_plot=show_plot, ret_df=True)
-    data = data[['Counts', 'Found', 'Expected', 'Z_score']]
     if conf_level is not None:
+        data = data[['Counts', 'Found', 'Expected', 'Z_score']]
         return data.sort_values('Z_score', ascending=False)
     else:
         return data
 
 
 def second_digit(data, dec=2, sign='all', inform=True,
-                 MAD=True, conf_level=95, high_Z='pos', limit_N=None,
+                 MAD=True, conf_level=None, high_Z='pos', limit_N=None,
                  MSE=False, show_plot=True):
     '''
     Performs the Benford Second Digits test on the series of
@@ -1042,8 +1054,7 @@ def second_digit(data, dec=2, sign='all', inform=True,
         found and the expected distributions; defaults to True.
 
     conf_level: confidence level to draw lower and upper limits when
-        plotting and to limit the top deviations to show. Defaults to 95.
-        If None, no boundaries will be drawn.
+        plotting and to limit the top deviations to show. Defaults to None
 
     high_Z: chooses which Z scores to be used when displaying results,
         according to the confidence level chosen. Defaluts to 'pos',
@@ -1068,15 +1079,15 @@ def second_digit(data, dec=2, sign='all', inform=True,
     data = data.second_digit(inform=inform, MAD=MAD, conf_level=conf_level,
                              high_Z=high_Z, limit_N=limit_N, MSE=MSE,
                              show_plot=show_plot, ret_df=True)
-    data = data[['Counts', 'Found', 'Expected', 'Z_score']]
     if conf_level is not None:
+        data = data[['Counts', 'Found', 'Expected', 'Z_score']]
         return data.sort_values('Z_score', ascending=False)
     else:
         return data
 
 
 def last_two_digits(data, dec=2, sign='all', inform=True,
-                    MAD=True, conf_level=95, high_Z='pos', limit_N=None,
+                    MAD=True, conf_level=None, high_Z='pos', limit_N=None,
                     MSE=False, show_plot=True):
     '''
     Performs the Last Two Digits test on the series of
@@ -1104,8 +1115,7 @@ def last_two_digits(data, dec=2, sign='all', inform=True,
         found and the expected distributions; defaults to True.
 
     conf_level: confidence level to draw lower and upper limits when
-        plotting and to limit the top deviations to show. Defaults to 95.
-        If None, no boundaries will be drawn.
+        plotting and to limit the top deviations to show. Defaults to None
 
     high_Z: chooses which Z scores to be used when displaying results,
         according to the confidence level chosen. Defaluts to 'pos',
@@ -1130,8 +1140,8 @@ def last_two_digits(data, dec=2, sign='all', inform=True,
     data = data.last_two_digits(inform=inform, MAD=MAD, conf_level=conf_level,
                                 high_Z=high_Z, limit_N=limit_N, MSE=MSE,
                                 show_plot=show_plot, ret_df=True)
-    data = data[['Counts', 'Found', 'Expected', 'Z_score']]
     if conf_level is not None:
+        data = data[['Counts', 'Found', 'Expected', 'Z_score']]
         return data.sort_values('Z_score', ascending=False)
     else:
         return data
@@ -1393,7 +1403,7 @@ def _subtract_sorted_(data):
 
 
 def second_order(data, test, dec=2, sign='all', inform=True, MAD=True,
-                 conf_level=95, high_Z='pos', limit_N=None, MSE=False,
+                 conf_level=None, high_Z='pos', limit_N=None, MSE=False,
                  show_plot=True):
     '''
     Performs the chosen test after subtracting the ordered sequence by itself.
@@ -1425,8 +1435,7 @@ def second_order(data, test, dec=2, sign='all', inform=True, MAD=True,
         found and the expected distributions; defaults to True.
 
     conf_level: confidence level to draw lower and upper limits when
-        plotting and to limit the top deviations to show. Defaults to 95.
-        If None, no boundaries will be drawn.
+        plotting and to limit the top deviations to show. Defaults to None
 
     high_Z: chooses which Z scores to be used when displaying results,
         according to the confidence level chosen. Defaluts to 'pos',
