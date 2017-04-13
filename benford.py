@@ -925,40 +925,15 @@ def _prep_(df, digs, limit_N, simple=False, conf_level=None):
     # join the dataframe with the one of expected Benford's frequencies
     dd = _base_(digs).join(dd)
     # create column with absolute differences
+    dd['Dif'] = dd.Found - dd.Expected
+    dd['AbsDif'] = np.absolute(dd.Dif)
     if simple:
-        dd['AbsDif'] = np.absolute(dd.Found - dd.Expected)
+        del dd['Dif']
         return dd
     else:
         if conf_level is not None:
-            dd['Dif'] = dd.Found - dd.Expected
-            dd['AbsDif'] = np.absolute(dd.Dif)
-    # calculate the Z-test column an display the dataframe by descending
-    # Z test
             dd['Z_score'] = _Z_score(dd, N)
-        else:
-            dd['AbsDif'] = np.absolute(dd.Found - dd.Expected)
         return N, dd
-
-
-def _simple_prep_(df, digs, limit_N):
-    '''
-    Transforms the original number sequence into a DataFrame reduced
-    by the ocurrences of the chosen digits, creating other computed
-    columns
-    '''
-    col = digs_dict[digs]
-
-    # get the number of occurrences of the last two digits
-    v = df[col].value_counts()
-    # get their relative frequencies
-    p = df[col].value_counts(normalize=True)
-    # crate dataframe from them
-    dd = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
-    # join the dataframe with the one of expected Benford's frequencies
-    dd = _base_(digs).join(dd)
-    # create column with absolute differences
-    dd['AbsDif'] = np.absolute(dd.Found - dd.Expected)
-    return dd
 
 
 def first_digits(data, digs, dec=2, sign='all', inform=True,
