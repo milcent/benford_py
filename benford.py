@@ -135,7 +135,7 @@ class Analysis(pd.DataFrame):
         a pandas Series or a pandas DataFrame column, with values being
         integers or floats.
 
-    dec: number of decimal places to consider. Defaluts to 2.
+    decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
     sign: tells which portion of the data to consider. pos: only the positive
@@ -155,7 +155,7 @@ class Analysis(pd.DataFrame):
              '99': 2.576, '99.9': 3.29, '99.99': 3.89, '99.999': 4.417,
              '99.9999': 4.892, '99.99999': 5.327}
 
-    def __init__(self, data, dec=2, sign='all', sec_order=False, inform=True):
+    def __init__(self, data, decimals=2, sign='all', sec_order=False, inform=True):
 
         if sign not in ['all', 'pos', 'neg']:
             raise ValueError("The -sign- argument must be 'all','pos'\
@@ -187,7 +187,7 @@ Convert it to whether int of float, and try again.")
                 print('Second Order Test. Initial series reduced to {0}\
  entries.'.format(len(self.Seq)))
 
-        self['ZN'] = np.abs(self.Seq * (10**dec)).astype(int)
+        self['ZN'] = np.abs(self.Seq * (10**decimals)).astype(int)
 
     def mantissas(self, plot=True, figsize=(15, 8)):
         '''
@@ -630,19 +630,19 @@ class Roll_mad(pd.Series):
 
     window: size of the subset to be used.
 
-    dec: number of decimal places to consider. Defaluts to 2.
+    decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.
     '''
-    def __init__(self, data, test, window, dec=2, sign='all'):
+    def __init__(self, data, test, window, decimals=2, sign='all'):
 
         test = _check_test_(test)
 
         if not isinstance(data, Analysis):
-            start = Analysis(data, sign=sign, dec=dec, inform=False)
+            start = Analysis(data, sign=sign, decimals=decimals, inform=False)
 
         Exp, ind = _prep_to_roll_(start, test)
 
@@ -681,19 +681,19 @@ class Roll_mse(pd.Series):
 
     window: size of the subset to be used.
 
-    dec: number of decimal places to consider. Defaluts to 2.
+    decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.
     '''
-    def __init__(self, data, test, window, dec=2, sign='all'):
+    def __init__(self, data, test, window, decimals=2, sign='all'):
 
         test = _check_test_(test)
 
         if not isinstance(data, Analysis):
-            start = Analysis(data, sign=sign, dec=dec, inform=False)
+            start = Analysis(data, sign=sign, decimals=decimals, inform=False)
 
         Exp, ind = _prep_to_roll_(start, test)
 
@@ -936,8 +936,8 @@ def _prep_(df, digs, limit_N, simple=False, conf_level=None):
         return N, dd
 
 
-def first_digits(data, digs, dec=2, sign='all', inform=True,
-                 MAD=True, conf_level=None, high_Z='pos',
+def first_digits(data, digs, decimals=2, sign='all', inform=True,
+                 MAD=False, conf_level=None, high_Z='pos',
                  limit_N=None, MSE=False, show_plot=True):
     '''
     Performs the Benford First Digits test on the series of
@@ -950,7 +950,7 @@ def first_digits(data, digs, dec=2, sign='all', inform=True,
         a pandas Series or a pandas DataFrame column, with values being
         integers or floats.
 
-    dec: number of decimal places to consider. Defaluts to 2.
+    decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
     sign: tells which portion of the data to consider. pos: only the positive
@@ -987,7 +987,7 @@ def first_digits(data, digs, dec=2, sign='all', inform=True,
     show_plot: draws the test plot.
     '''
     if not isinstance(data, Analysis):
-        data = Analysis(data, sign=sign, dec=dec, inform=inform)
+        data = Analysis(data, sign=sign, decimals=decimals, inform=inform)
 
     data = data.first_digits(digs, inform=inform, MAD=MAD,
                              conf_level=conf_level, high_Z=high_Z,
@@ -997,11 +997,11 @@ def first_digits(data, digs, dec=2, sign='all', inform=True,
         data = data[['Counts', 'Found', 'Expected', 'Z_score']]
         return data.sort_values('Z_score', ascending=False)
     else:
-        return data
+        return data[['Counts', 'Found', 'Expected']]
 
 
-def second_digit(data, dec=2, sign='all', inform=True,
-                 MAD=True, conf_level=None, high_Z='pos', limit_N=None,
+def second_digit(data, decimals=2, sign='all', inform=True,
+                 MAD=False, conf_level=None, high_Z='pos', limit_N=None,
                  MSE=False, show_plot=True):
     '''
     Performs the Benford Second Digits test on the series of
@@ -1014,7 +1014,7 @@ def second_digit(data, dec=2, sign='all', inform=True,
         a pandas Series or a pandas DataFrame column, with values being
         integers or floats.
 
-    dec: number of decimal places to consider. Defaluts to 2.
+    decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
     sign: tells which portion of the data to consider. pos: only the positive
@@ -1049,7 +1049,7 @@ def second_digit(data, dec=2, sign='all', inform=True,
 
     '''
     if not isinstance(data, Analysis):
-        data = Analysis(data, sign=sign, dec=dec, inform=inform)
+        data = Analysis(data, sign=sign, decimals=decimals, inform=inform)
 
     data = data.second_digit(inform=inform, MAD=MAD, conf_level=conf_level,
                              high_Z=high_Z, limit_N=limit_N, MSE=MSE,
@@ -1058,11 +1058,11 @@ def second_digit(data, dec=2, sign='all', inform=True,
         data = data[['Counts', 'Found', 'Expected', 'Z_score']]
         return data.sort_values('Z_score', ascending=False)
     else:
-        return data
+        return data[['Counts', 'Found', 'Expected']]
 
 
-def last_two_digits(data, dec=2, sign='all', inform=True,
-                    MAD=True, conf_level=None, high_Z='pos', limit_N=None,
+def last_two_digits(data, decimals=2, sign='all', inform=True,
+                    MAD=False, conf_level=None, high_Z='pos', limit_N=None,
                     MSE=False, show_plot=True):
     '''
     Performs the Last Two Digits test on the series of
@@ -1075,7 +1075,7 @@ def last_two_digits(data, dec=2, sign='all', inform=True,
         a pandas Series or a pandas DataFrame column,with values being
         integers or floats.
 
-    dec: number of decimal places to consider. Defaluts to 2.
+    decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
     sign: tells which portion of the data to consider. pos: only the positive
@@ -1110,7 +1110,7 @@ def last_two_digits(data, dec=2, sign='all', inform=True,
 
     '''
     if not isinstance(data, Analysis):
-        data = Analysis(data, sign=sign, dec=dec, inform=inform)
+        data = Analysis(data, sign=sign, decimals=decimals, inform=inform)
 
     data = data.last_two_digits(inform=inform, MAD=MAD, conf_level=conf_level,
                                 high_Z=high_Z, limit_N=limit_N, MSE=MSE,
@@ -1119,7 +1119,7 @@ def last_two_digits(data, dec=2, sign='all', inform=True,
         data = data[['Counts', 'Found', 'Expected', 'Z_score']]
         return data.sort_values('Z_score', ascending=False)
     else:
-        return data
+        return data[['Counts', 'Found', 'Expected']]
 
 
 def mantissas(data, inform=True, show_plot=True):
@@ -1142,7 +1142,7 @@ def mantissas(data, inform=True, show_plot=True):
     return mant
 
 
-def summation(data, digs=2, dec=2, sign='all', top=20, inform=True,
+def summation(data, digs=2, decimals=2, sign='all', top=20, inform=True,
               show_plot=True):
     '''
     Performs the Summation test. In a Benford series, the sums of the
@@ -1161,7 +1161,7 @@ def summation(data, digs=2, dec=2, sign='all', top=20, inform=True,
 
     '''
     if not isinstance(data, Analysis):
-        data = Analysis(data, sign=sign, dec=dec, inform=inform)
+        data = Analysis(data, sign=sign, decimals=decimals, inform=inform)
 
     data = data.summation(digs=digs, top=top, inform=inform,
                           show_plot=show_plot, ret_df=True)
@@ -1171,13 +1171,13 @@ def summation(data, digs=2, dec=2, sign='all', top=20, inform=True,
         return data
 
 
-def mad(data, test, dec=2, sign='all'):
+def mad(data, test, decimals=2, sign='all'):
     '''
     Returns the Mean Absolute Deviation of the Series
     '''
     test = _check_test_(test)
 
-    start = Analysis(data, sign=sign, dec=dec, inform=False)
+    start = Analysis(data, sign=sign, decimals=decimals, inform=False)
 
     if test in [1, 2, 3]:
         start.first_digits(digs=test, inform=False, MAD=True, simple=True)
@@ -1189,12 +1189,12 @@ def mad(data, test, dec=2, sign='all'):
     return start.MAD
 
 
-def mse(data, test, dec=2, sign='all'):
+def mse(data, test, decimals=2, sign='all'):
     '''
     Returns the Mean Squared Error of the Series
     '''
     test = _check_test_(test)
-    start = Analysis(data, sign=sign, dec=dec, inform=False)
+    start = Analysis(data, sign=sign, decimals=decimals, inform=False)
     if test in [1, 2, 3]:
         start.first_digits(digs=test, MAD=False, MSE=True, simple=True)
     elif test == 22:
@@ -1238,7 +1238,7 @@ def _prep_to_roll_(start, test):
     return Exp, ind
 
 
-def rolling_mad(data, test, window, dec=2, sign='all', show_plot=False):
+def rolling_mad(data, test, window, decimals=2, sign='all', show_plot=False):
     '''
     Applies the MAD to sequential subsets of the Series, returning another
     Series.
@@ -1255,7 +1255,7 @@ def rolling_mad(data, test, window, dec=2, sign='all', show_plot=False):
 
     window: size of the subset to be used.
 
-    dec: number of decimal places to consider. Defaluts to 2.
+    decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
     sign: tells which portion of the data to consider. pos: only the positive
@@ -1265,7 +1265,7 @@ def rolling_mad(data, test, window, dec=2, sign='all', show_plot=False):
     show_plot: draws the test plot.
     '''
     test = _check_test_(test)
-    r_mad = Roll_mad(data, test, window, dec, sign)
+    r_mad = Roll_mad(data, test, window, decimals, sign)
     if show_plot:
         r_mad.show_plot(test)
     return r_mad
@@ -1283,7 +1283,7 @@ def _mad_to_roll_(arr, Exp, ind):
     return np.absolute(prop - Exp).mean()
 
 
-def rolling_mse(data, test, window, dec=2, sign='all', show_plot=False):
+def rolling_mse(data, test, window, decimals=2, sign='all', show_plot=False):
     '''
     Applies the MSE to sequential subsets of the Series, returning another
     Series.
@@ -1300,7 +1300,7 @@ def rolling_mse(data, test, window, dec=2, sign='all', show_plot=False):
 
     window: size of the subset to be used.
 
-    dec: number of decimal places to consider. Defaluts to 2.
+    decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
     sign: tells which portion of the data to consider. pos: only the positive
@@ -1309,7 +1309,7 @@ def rolling_mse(data, test, window, dec=2, sign='all', show_plot=False):
 
     show_plot: draws the test plot.
     '''
-    r_mse = Roll_mse(data, test, window, dec, sign)
+    r_mse = Roll_mse(data, test, window, decimals, sign)
     if show_plot:
         r_mse.show_plot()
     return r_mse
@@ -1377,7 +1377,7 @@ def _subtract_sorted_(data):
     return data
 
 
-def second_order(data, test, dec=2, sign='all', inform=True, MAD=True,
+def second_order(data, test, decimals=2, sign='all', inform=True, MAD=False,
                  conf_level=None, high_Z='pos', limit_N=None, MSE=False,
                  show_plot=True):
     '''
@@ -1395,7 +1395,7 @@ def second_order(data, test, dec=2, sign='all', inform=True, MAD=True,
         First Two Digits; 3 or 'F3D': First three Digits; 22 or 'SD':
         Second Digits; -2 or 'L2D': Last Two Digits.
 
-    dec: number of decimal places to consider. Defaluts to 2.
+    decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0.
 
     sign: tells which portion of the data to consider. pos: only the positive
@@ -1431,7 +1431,7 @@ def second_order(data, test, dec=2, sign='all', inform=True, MAD=True,
     test = _check_test_(test)
 
     # if not isinstance(data, Analysis):
-    data = Analysis(data, dec=dec, sign=sign,
+    data = Analysis(data, decimals=decimals, sign=sign,
                     sec_order=True, inform=inform)
     if test in [1, 2, 3]:
         data.first_digits(digs=test, inform=inform, MAD=MAD,
