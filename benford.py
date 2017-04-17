@@ -230,8 +230,8 @@ Convert it to whether int of float, and try again.")
             plt.xlim((1, N + 1))
             plt.show()
 
-    def first_digits(self, digs, inform=True, MAD=False, Z_conf_level=None,
-                     high_Z='pos', limit_N=None, MSE=False, show_plot=True,
+    def first_digits(self, digs, inform=True, Z_conf_level=None, high_Z='pos',
+                     limit_N=None, MAD=False, MSE=False, show_plot=True,
                      simple=False, ret_df=False):
         '''
         Performs the Benford First Digits test with the series of
@@ -247,9 +247,6 @@ Convert it to whether int of float, and try again.")
         digs: number of first digits to consider. Must be 1 (first digit),
             2 (first two digits) or 3 (first three digits).
 
-        MAD: calculates the Mean Absolute Difference between the
-            found and the expected distributions; defaults to True.
-
         Z_conf_level: confidence level to draw lower and upper limits when
             plotting and to limit the top deviations to show. Defaults to None.
 
@@ -263,6 +260,9 @@ Convert it to whether int of float, and try again.")
 
         limit_N: sets a limit to N for the calculation of the Z score
             if the sample is too big. Defaults to None.
+
+        MAD: calculates the Mean Absolute Difference between the
+            found and the expected distributions; defaults to False.
 
         MSE: calculates the Mean Square Error of the sample; defaults to
             False.
@@ -322,9 +322,9 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
         if ret_df:
             return df
 
-    def second_digit(self, inform=True, MAD=False, Z_conf_level=None,
-                     MSE=False, high_Z='pos', limit_N=None,
-                     show_plot=True, simple=False, ret_df=False):
+    def second_digit(self, inform=True, Z_conf_level=None, high_Z='pos',
+                     limit_N=None, MAD=False, MSE=False, show_plot=True,
+                     simple=False, ret_df=False):
         '''
         Performs the Benford Second Digit test with the series of
         numbers provided.
@@ -333,7 +333,7 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
             the Analysis; defaults to True
 
         MAD: calculates the Mean Absolute Difference between the
-            found and the expected distributions; defaults to True.
+            found and the expected distributions; defaults to False.
 
         Z_conf_level: confidence level to draw lower and upper limits when
             plotting and to limit the top deviations to show. Defaults to None.
@@ -399,9 +399,9 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
         if ret_df:
             return df
 
-    def last_two_digits(self, inform=True, MAD=False, Z_conf_level=None,
-                        high_Z='pos', limit_N=None, MSE=False,
-                        show_plot=True, simple=False, ret_df=False):
+    def last_two_digits(self, inform=True, Z_conf_level=None, high_Z='pos',
+                        limit_N=None, MAD=False, MSE=False, show_plot=True,
+                        simple=False, ret_df=False):
         '''
         Performs the Benford Last Two Digits test with the series of
         numbers provided.
@@ -410,7 +410,7 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
             the Analysis; defaults to True
 
         MAD: calculates the Mean Absolute Difference between the
-            found and the expected distributions; defaults to True.
+            found and the expected distributions; defaults to False.
 
         Z_conf_level: confidence level to draw lower and upper limits when
             plotting and to limit the top deviations to show. Defaults to None.
@@ -943,8 +943,8 @@ def _prep_(df, digs, limit_N, simple=False, Z_conf_level=None):
 
 
 def first_digits(data, digs, decimals=2, sign='all', inform=True,
-                 MAD=False, Z_conf_level=None, high_Z='pos',
-                 limit_N=None, MSE=False, show_plot=True):
+                 Z_conf_level=None, high_Z='pos', limit_N=None,
+                 MAD=False, MSE=False, show_plot=True):
     '''
     Performs the Benford First Digits test on the series of
     numbers provided.
@@ -971,7 +971,7 @@ def first_digits(data, digs, decimals=2, sign='all', inform=True,
         highest Z score down. Defaults to True.
 
     MAD: calculates the Mean Absolute Difference between the
-        found and the expected distributions; defaults to True.
+        found and the expected distributions; defaults to False.
 
     Z_conf_level: confidence level to draw lower and upper limits when
         plotting and to limit the top deviations to show. Defaults to None.
@@ -993,12 +993,12 @@ def first_digits(data, digs, decimals=2, sign='all', inform=True,
     show_plot: draws the test plot.
     '''
     if not isinstance(data, Analysis):
-        data = Analysis(data, sign=sign, decimals=decimals, inform=inform)
+        data = Analysis(data, decimals=decimals, sign=sign, inform=inform)
 
-    data = data.first_digits(digs, inform=inform, MAD=MAD,
-                             Z_conf_level=Z_conf_level, high_Z=high_Z,
-                             limit_N=limit_N, MSE=MSE,
+    data = data.first_digits(digs, inform=inform, Z_conf_level=Z_conf_level,
+                             high_Z=high_Z, limit_N=limit_N, MAD=MAD, MSE=MSE,
                              show_plot=show_plot, ret_df=True)
+
     if Z_conf_level is not None:
         data = data[['Counts', 'Found', 'Expected', 'Z_score']]
         return data.sort_values('Z_score', ascending=False)
@@ -1007,8 +1007,8 @@ def first_digits(data, digs, decimals=2, sign='all', inform=True,
 
 
 def second_digit(data, decimals=2, sign='all', inform=True,
-                 MAD=False, Z_conf_level=None, high_Z='pos', limit_N=None,
-                 MSE=False, show_plot=True):
+                 Z_conf_level=None, high_Z='pos', limit_N=None,
+                 MAD=False, MSE=False, show_plot=True):
     '''
     Performs the Benford Second Digits test on the series of
     numbers provided.
@@ -1032,7 +1032,7 @@ def second_digit(data, decimals=2, sign='all', inform=True,
         highest Z score down. Defaults to True.
 
     MAD: calculates the Mean Absolute Difference between the
-        found and the expected distributions; defaults to True.
+        found and the expected distributions; defaults to False.
 
     Z_conf_level: confidence level to draw lower and upper limits when
         plotting and to limit the top deviations to show. Defaults to None.
@@ -1057,8 +1057,8 @@ def second_digit(data, decimals=2, sign='all', inform=True,
     if not isinstance(data, Analysis):
         data = Analysis(data, sign=sign, decimals=decimals, inform=inform)
 
-    data = data.second_digit(inform=inform, MAD=MAD, Z_conf_level=Z_conf_level,
-                             high_Z=high_Z, limit_N=limit_N, MSE=MSE,
+    data = data.second_digit(inform=inform, Z_conf_level=Z_conf_level,
+                             high_Z=high_Z, limit_N=limit_N, MAD=MAD, MSE=MSE,
                              show_plot=show_plot, ret_df=True)
     if Z_conf_level is not None:
         data = data[['Counts', 'Found', 'Expected', 'Z_score']]
@@ -1068,8 +1068,8 @@ def second_digit(data, decimals=2, sign='all', inform=True,
 
 
 def last_two_digits(data, decimals=2, sign='all', inform=True,
-                    MAD=False, Z_conf_level=None, high_Z='pos', limit_N=None,
-                    MSE=False, show_plot=True):
+                    Z_conf_level=None, high_Z='pos', limit_N=None,
+                    MAD=False, MSE=False, show_plot=True):
     '''
     Performs the Last Two Digits test on the series of
     numbers provided.
@@ -1092,9 +1092,6 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
         the Analysis and returns tha analysis DataFrame sorted by the
         highest Z score down. Defaults to True.
 
-    MAD: calculates the Mean Absolute Difference between the
-        found and the expected distributions; defaults to True.
-
     Z_conf_level: confidence level to draw lower and upper limits when
         plotting and to limit the top deviations to show. Defaults to None.
 
@@ -1109,6 +1106,9 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
     limit_N: sets a limit to N for the calculation of the Z score
         if the sample is too big. Defaults to None.
 
+    MAD: calculates the Mean Absolute Difference between the
+        found and the expected distributions; defaults to False.
+
     MSE: calculates the Mean Square Error of the sample; defaults to
         False.
 
@@ -1116,11 +1116,12 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
 
     '''
     if not isinstance(data, Analysis):
-        data = Analysis(data, sign=sign, decimals=decimals, inform=inform)
+        data = Analysis(data, decimals=decimals, sign=sign, inform=inform)
 
-    data = data.last_two_digits(inform=inform, MAD=MAD, Z_conf_level=Z_conf_level,
-                                high_Z=high_Z, limit_N=limit_N, MSE=MSE,
-                                show_plot=show_plot, ret_df=True)
+    data = data.last_two_digits(inform=inform, Z_conf_level=Z_conf_level,
+                                high_Z=high_Z, limit_N=limit_N, MAD=MAD,
+                                MSE=MSE, show_plot=show_plot, ret_df=True)
+
     if Z_conf_level is not None:
         data = data[['Counts', 'Found', 'Expected', 'Z_score']]
         return data.sort_values('Z_score', ascending=False)
@@ -1413,7 +1414,7 @@ def second_order(data, test, decimals=2, sign='all', inform=True, MAD=False,
         highest Z score down. Defaults to True.
 
     MAD: calculates the Mean Absolute Difference between the
-        found and the expected distributions; defaults to True.
+        found and the expected distributions; defaults to False.
 
     Z_conf_level: confidence level to draw lower and upper limits when
         plotting and to limit the top deviations to show. Defaults to None.
