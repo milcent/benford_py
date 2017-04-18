@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 # Imports
-from __future__ import print_function
-from __future__ import division
+# from __future__ import print_function
+# from __future__ import division
 
 
 import pandas as pd
@@ -191,7 +191,9 @@ Convert it to whether int of float, and try again.")
         ab = np.abs(self.Seq)
 
         if decimals == 'infer':
-            decimals = (ab - ab.astype(int)).astype(str).str.strip('0.').str.len()
+            # Getting the different number of decimal places
+            decimals = (ab - ab.astype(int)).astype(str).str.strip(
+                            '0.').str.len()
 
         self['ZN'] = (ab * (10**decimals)).astype(int)
 
