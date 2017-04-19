@@ -9,4 +9,4 @@
 
 #### cd into the site-packages subfolder of your python distribution and clone from there:
 
-#### $ git clone https://github.com/milcent/Benford_py.git.
+#### $ git clone https://github.com/milcent/benford.git.
