@@ -76,7 +76,7 @@ class First(pd.DataFrame):
         if plot:
             p = self.plot(kind='bar', color=colors['t'],
                           figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)))
-            p.set_facecolor(colors['b'])
+            p.set_axis_bgcolor(colors['b'])
 
 
 class Second(pd.DataFrame):
@@ -102,7 +102,7 @@ class Second(pd.DataFrame):
         if plot:
             p = self.plot(kind='bar', color=colors['t'],
                           figsize=(14, 10.5), ylim=(0, .14))
-            p.set_facecolor(colors['b'])
+            p.set_axis_bgcolor(colors['b'])
 
 
 class LastTwo(pd.DataFrame):
@@ -121,7 +121,7 @@ class LastTwo(pd.DataFrame):
         if plot:
             p = self.plot(kind='bar', figsize=(15, 8), color=colors['t'],
                           ylim=(0, 0.013))
-            p.set_facecolor(colors['b'])
+            p.set_axis_bgcolor(colors['b'])
 
 
 class Analysis(pd.DataFrame):
@@ -617,7 +617,7 @@ class Mantissas(pd.Series):
         ax.plot(x, n.cumsum(), color=colors['m'], linewidth=2)
         plt.ylim((0, 1.))
         plt.xlim((1, len(self) + 1))
-        ax.set_facecolor(colors['b'])
+        ax.set_axis_bgcolor(colors['b'])
         plt.show()
 
 
@@ -663,7 +663,7 @@ class Roll_mad(pd.Series):
 
     def show_plot(self, test, figsize=(15, 8)):
         fig, ax = plt.subplots(figsize=figsize)
-        ax.set_facecolor(colors['b'])
+        ax.set_axis_bgcolor(colors['b'])
         ax.plot(self, color=colors['m'])
         if test != -2:
             plt.axhline(y=mad_dict[test][0], color=colors['af'], linewidth=3)
@@ -712,7 +712,7 @@ class Roll_mse(pd.Series):
 
     def show_plot(self, figsize=(15, 8)):
         fig, ax = plt.subplots(figsize=figsize)
-        ax.set_facecolor(colors['b'])
+        ax.set_axis_bgcolor(colors['b'])
         ax.plot(self, color=colors['m'])
         plt.show()
 
@@ -836,7 +836,7 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     ax.plot(x, y_Exp * 100., color=colors['s'], linewidth=2.5,
             label='Benford', zorder=4)
     # ax.grid(axis='y', color='w', linestyle='-', zorder=0)
-    ax.set_facecolor(colors['b'])
+    ax.set_axis_bgcolor(colors['b'])
     if text_x:
         ind = np.array(df.index).astype(str)
         ind[:10] = np.array(['00', '01', '02', '03', '04', '05',
@@ -878,7 +878,7 @@ def _plot_sum_(df, figsize, li):
     ax.bar(df.index, df.Percent, color=colors['m'],
            label='Found Sums', zorder=3)
     ax.axhline(li, color=colors['s'], linewidth=2, label='Expected', zorder=4)
-    ax.set_facecolor(colors['b'])
+    ax.set_axis_bgcolor(colors['b'])
     # ax.grid(axis='y', color='w', linestyle='-', zorder=0)
     ax.legend()
 
