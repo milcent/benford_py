@@ -136,7 +136,8 @@ class Analysis(pd.DataFrame):
         integers or floats.
 
     decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0.
+        If integers, set to 0. If set to -infer-, it will deal separately
+        (and differently) with each registry.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -192,8 +193,8 @@ Convert it to whether int of float, and try again.")
 
         if decimals == 'infer':
             # Getting the different number of decimal places
-            decimals = (ab - ab.astype(int)).astype(str).str.strip(
-                            '0.').str.len()
+            decimals = (ab - ab.astype(int)
+                        ).astype(str).str.strip('0.').str.len()
 
         self['ZN'] = (ab * (10**decimals)).astype(int)
 
@@ -638,8 +639,10 @@ class Roll_mad(pd.Series):
 
     window: size of the subset to be used.
 
-    decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0.
+        decimals: number of decimal places to consider. Defaluts to 2.
+        If integers, set to 0. If set to -infer-, it will deal separately
+        (and differently) with each registry.
+
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -689,8 +692,10 @@ class Roll_mse(pd.Series):
 
     window: size of the subset to be used.
 
-    decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0.
+        decimals: number of decimal places to consider. Defaluts to 2.
+        If integers, set to 0. If set to -infer-, it will deal separately
+        (and differently) with each registry.
+
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -738,7 +743,8 @@ def _mad_(frame, test, inform=True):
     ----------
 
     frame: DataFrame with the Absolute Deviations already calculated.
-    test: Teste applied (F1D, SD, F2D...)
+
+    test: Test to compute the MAD from (F1D, SD, F2D...)
 
     inform: prints the MAD result and compares to limit values of
         conformity. Defaults to True. If False, returns the value.
@@ -768,6 +774,7 @@ def _mse_(frame, inform=True):
 
     frame -> DataFrame with the already computed Absolute Deviations between
             the found and expected proportions
+
     inform -> Prints the MSE. Defaults to True. If False, returns MSE.
     '''
     mse = (frame.AbsDif ** 2).mean()
@@ -780,9 +787,7 @@ def _mse_(frame, inform=True):
 
 def _getMantissas_(arr):
     '''
-    The mantissa is the non-integer part of the log of a number.
-    This fuction uses    the element-wise array operations of numpy
-    to get the mantissas of each number's log.
+    Returns the  mantissas, the non-integer part of the log of a number.
 
     arr: np.array of integers or floats ---> np.array of floats
     '''
@@ -796,6 +801,7 @@ def _lt_(num=False):
 
     Parameters
     ----------
+
     num: returns numeric (ints) values. Defaluts to False,
         which returns strings.
     '''
@@ -823,8 +829,6 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     conf_Z -> Confidence level
     text_x -> Forces to show all x ticks labels. Defaluts to True.
     '''
-    # y_Exp *= 100.
-    # y_Found *= 100.
     fig, ax = plt.subplots(figsize=figsize)
     plt.title('Expected vs. Found Distributions', size='xx-large')
     plt.xlabel('Digits', size='x-large')
@@ -867,8 +871,10 @@ def _plot_sum_(df, figsize, li):
     Plotss the summation test results
 
     df -> DataFrame with the data to be plotted
+
     figsize - > tuple to state the size of the plot figure
-    l -> values with which to draw the horizontal line
+
+    li -> values with which to draw the horizontal line
     '''
     fig = plt.figure(figsize=figsize)
     ax = fig.add_subplot(111)
@@ -879,7 +885,6 @@ def _plot_sum_(df, figsize, li):
            label='Found Sums', zorder=3)
     ax.axhline(li, color=colors['s'], linewidth=2, label='Expected', zorder=4)
     ax.set_axis_bgcolor(colors['b'])
-    # ax.grid(axis='y', color='w', linestyle='-', zorder=0)
     ax.legend()
 
 
@@ -959,7 +964,8 @@ def first_digits(data, digs, decimals=2, sign='all', inform=True,
         integers or floats.
 
     decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0.
+        If integers, set to 0. If set to -infer-, it will deal separately
+        (and differently) with each registry.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1023,7 +1029,8 @@ def second_digit(data, decimals=2, sign='all', inform=True,
         integers or floats.
 
     decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0.
+        If integers, set to 0. If set to -infer-, it will deal separately
+        (and differently) with each registry.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1084,7 +1091,8 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
         integers or floats.
 
     decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0.
+        If integers, set to 0. If set to -infer-, it will deal separately
+        (and differently) with each registry.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1140,6 +1148,9 @@ def mantissas(data, inform=True, show_plot=True):
     data: sequence to compute mantissas from, numpy 1D array, pandas
         Series of pandas DataFrame column.
 
+    inform: prints the mamtissas mean, variance, skewness and kurtosis
+        for the sequence studied, along with reference values.
+
     show_plot: plots the ordered mantissas and a line with the expected
         inclination. Defaults to True.
     '''
@@ -1164,6 +1175,10 @@ def summation(data, digs=2, decimals=2, sign='all', top=20, inform=True,
     digs: tells the first digits to use: 1- first; 2- first two;
         3- first three. Defaults to 2.
 
+    decimals: number of decimal places to consider. Defaluts to 2.
+        If integers, set to 0. If set to -infer-, it will deal separately
+        (and differently) with each registry.
+
     top: choses how many top values to show. Defaults to 20.
 
     show_plot: plots the results. Defaults to True.
@@ -1183,6 +1198,22 @@ def summation(data, digs=2, decimals=2, sign='all', top=20, inform=True,
 def mad(data, test, decimals=2, sign='all'):
     '''
     Returns the Mean Absolute Deviation of the Series
+
+    Parameters
+    ----------
+
+    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+        a pandas Series or a pandas DataFrame column, with values being
+        integers or floats.
+
+    decimals: number of decimal places to consider. Defaluts to 2.
+        If integers, set to 0. If set to -infer-, it will deal separately
+        (and differently) with each registry.
+
+    sign: tells which portion of the data to consider. pos: only the positive
+        entries; neg: only negative entries; all: all entries but zeros.
+        Defaults to all.`
+
     '''
     test = _check_test_(test)
 
@@ -1265,7 +1296,8 @@ def rolling_mad(data, test, window, decimals=2, sign='all', show_plot=False):
     window: size of the subset to be used.
 
     decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0.
+        If integers, set to 0. If set to -infer-, it will deal separately
+        (and differently) with each registry.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1282,6 +1314,7 @@ def rolling_mad(data, test, window, decimals=2, sign='all', show_plot=False):
 
 def _mad_to_roll_(arr, Exp, ind):
     '''
+    Mean Absolute Deviation used in the rolling function
     '''
     prop = pd.Series(arr)
     prop = prop.value_counts(normalize=True).sort_index()
@@ -1310,7 +1343,8 @@ def rolling_mse(data, test, window, decimals=2, sign='all', show_plot=False):
     window: size of the subset to be used.
 
     decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0.
+        If integers, set to 0. If set to -infer-, it will deal separately
+        (and differently) with each registry.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1326,6 +1360,7 @@ def rolling_mse(data, test, window, decimals=2, sign='all', show_plot=False):
 
 def _mse_to_roll_(arr, Exp, ind):
     '''
+    Mean Squared Error used in the rolling function
     '''
     prop = pd.Series(arr)
     temp = prop.value_counts(normalize=True).sort_index()
@@ -1379,6 +1414,7 @@ def duplicates(data, top_Rep=20, inform=True):
 
 def _subtract_sorted_(data):
     '''
+    Subtracts the sorted sequence elements from each other, discarding zeros.
     '''
     data.sort_values(inplace=True)
     data = data - data.shift(1)
@@ -1405,7 +1441,8 @@ def second_order(data, test, decimals=2, sign='all', inform=True, MAD=False,
         Second Digits; -2 or 'L2D': Last Two Digits.
 
     decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0.
+        If integers, set to 0. If set to -infer-, it will deal separately
+        (and differently) with each registry.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1457,12 +1494,9 @@ def second_order(data, test, decimals=2, sign='all', inform=True, MAD=False,
     return data
 
 
-def map_back():
-    pass
-
-
 def _check_test_(test):
     '''
+    Checks the test chosen, both for int or str values
     '''
     if isinstance(test, int):
         if test in digs_dict.keys():
