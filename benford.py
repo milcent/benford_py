@@ -213,16 +213,16 @@ Convert it to whether int of float, and try again.")
         '''
         self['Mant'] = _getMantissas_(self.Seq)
         p = self[['Seq', 'Mant']]
-        p = p[p.Seq > 0].sort_values('Mant')
+        p = p.loc[p.Seq > 0].sort_values('Mant')
         print("The Mantissas MEAN is {0}. Ref: 0.5.".format(p.Mant.mean()))
         print("The Mantissas VARIANCE is {0}. Ref: 0.083333.".format(
               p.Mant.var()))
         print("The Mantissas SKEWNESS is {0}. \tRef: 0.".format(p.Mant.skew()))
         print("The Mantissas KURTOSIS is {0}. \tRef: -1.2.".
               format(p.Mant.kurt()))
-        N = len(p)
 
         if plot:
+            N = len(p)
             p['x'] = np.arange(1, N + 1)
             n = np.ones(N) / N
             fig = plt.figure(figsize=figsize)
@@ -577,30 +577,23 @@ class Mantissas(pd.Series):
         elif isinstance(data, pd.Series):
             pass
         else:
-            raise ValueError('input must be a numpy array or a pandas Series')
+            raise ValueError('data must be a numpy array or a pandas Series')
         data.dropna(inplace=True)
         data = data.loc[data != 0]
         pd.Series.__init__(self, _getMantissas_(np.abs(data)))
 
-    def mean(self):
-        self.mean()
-
-    def var(self):
-        self.var()
-
-    def skew(self):
-        self.skew()
-
-    def kurt(self):
-        self.kurt()
+        self.stats = {'Mean': self.mean(), 'Var': self.var(),
+                      'Skew': self.skew(), 'Kurt': self.kurt()}
 
     def inform(self):
-        print("The Mantissas MEAN is {0}. \t\tRef: 0.5.".format(self.mean()))
+        print("The Mantissas MEAN is {0}. \t\tRef: 0.5.".
+              format(self.stats['Mean']))
         print("The Mantissas VARIANCE is {0}. \tRef: 0.083333.".
-              format(self.var()))
-        print("The Mantissas SKEWNESS is {0}. \tRef: 0.".format(self.skew()))
+              format(self.stats['Var']))
+        print("The Mantissas SKEWNESS is {0}. \tRef: 0.".
+              format(self.stats['Skew']))
         print("The Mantissas KURTOSIS is {0}. \tRef: -1.2.".
-              format(self.kurt()))
+              format(self.stats['Kurt']))
 
     def show_plot(self, figsize=(15, 8)):
         '''
@@ -614,11 +607,14 @@ class Mantissas(pd.Series):
         n = np.ones(len(self)) / len(self)
         fig = plt.figure(figsize=figsize)
         ax = fig.add_subplot(111)
-        ax.plot(x, self, linestyle='--', color=colors['s'], linewidth=3)
-        ax.plot(x, n.cumsum(), color=colors['m'], linewidth=2)
+        ax.plot(x, self, linestyle='--', color=colors['s'],
+                linewidth=3, label='Mantissas')
+        ax.plot(x, n.cumsum(), color=colors['m'],
+                linewidth=2, label='Expected')
         plt.ylim((0, 1.))
         plt.xlim((1, len(self) + 1))
         ax.set_axis_bgcolor(colors['b'])
+        plt.legend(loc='upper left')
         plt.show()
 
 
