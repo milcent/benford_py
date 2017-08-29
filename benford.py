@@ -285,10 +285,10 @@ Convert it to whether int of float, and try again.")
  was {0}. Value must be 1, 2 or 3.".format(digs))
 
         # self[digs_dict[digs]] = self.ZN.astype(str).str[:digs].astype(int)
-        self[digs_dict[digs]] = (self.ZN // 10 ** ((np.log10(self.ZN).astype(
+        temp = self.loc[self.ZN >= 10 ** (digs - 1)]
+        temp[digs_dict[digs]] = (temp.ZN // 10 ** ((np.log10(temp.ZN).astype(
                                                    int)) - (digs - 1))).astype(
                                                        int)
-        temp = self.loc[self.ZN >= 10 ** (digs - 1)]
 
         n, m = 10 ** (digs - 1), 10 ** (digs)
         x = np.arange(n, m)
@@ -367,10 +367,10 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
         conf = self.confs[str(Z_conf_level)]
 
         # self['SD'] = self.ZN.astype(str).str[1:2].astype(int)
-        self['SD'] = (self.ZN // 10**((np.log10(self.ZN)).astype(
+        temp = self.loc[self.ZN >= 10]
+        temp['SD'] = (temp.ZN // 10**((np.log10(temp.ZN)).astype(
                       int) - 1)) % 10
 
-        temp = self.loc[self.ZN >= 10]
 
         if simple:
             inform = False
@@ -442,9 +442,9 @@ following: {0}".format(list(self.confs.keys())))
         conf = self.confs[str(Z_conf_level)]
 
         # self['L2D'] = self.ZN.astype(str).str[-2:]
-        self['L2D'] = self.ZN % 100
-
         temp = self.loc[self.ZN >= 1000]
+        temp['L2D'] = temp.ZN % 100
+
 
         if simple:
             inform = False
