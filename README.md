@@ -17,7 +17,7 @@ It uses the versatility of numpy and pandas, along with matplotlib for vizualiza
 cd into the site-packages subfolder of your python distribution and git clone from there:
 
 ```
- git clone https://github.com/milcent/benford.git
+ git clone https://github.com/milcent/benford_py
 ```
 For a quick start, please go to the Demo notebook, in which I show examples on how to run the tests with the SPY (S&P 500 ETF) daily returns.
 
