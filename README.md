@@ -19,7 +19,7 @@ cd into the site-packages subfolder of your python distribution and git clone fr
 ```
  git clone https://github.com/milcent/benford_py
 ```
-For a quick start, please go to the Demo notebook, in which I show examples on how to run the tests with the SPY (S&P 500 ETF) daily returns.
+For a quick start, please go to the [Demo notebook](https://github.com/milcent/benford_py/blob/master/Demo.ipynb), in which I show examples on how to run the tests with the SPY (S&P 500 ETF) daily returns.
 
 I will be adding information about the tests already available and also documentation.
 
