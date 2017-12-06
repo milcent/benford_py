@@ -14,7 +14,11 @@ It uses the versatility of numpy and pandas, along with matplotlib for vizualiza
 
 ### Installation
 
-cd into the site-packages subfolder of your python distribution and git clone from there:
+As of Dec 2017 Benford_py is a package in PyPi, so you can install with pip:
+```
+ pip install benford_py
+```
+Or you can cd into the site-packages subfolder of your python distribution (or environment) and git clone from there:
 
 ```
  git clone https://github.com/milcent/benford_py
