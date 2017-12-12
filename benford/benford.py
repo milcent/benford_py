@@ -371,7 +371,6 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
         temp['SD'] = (temp.ZN // 10**((np.log10(temp.ZN)).astype(
                       int) - 1)) % 10
 
-
         if simple:
             inform = False
             show_plot = False
@@ -445,7 +444,6 @@ following: {0}".format(list(self.confs.keys())))
         temp = self.loc[self.ZN >= 1000]
         temp['L2D'] = temp.ZN % 100
 
-
         if simple:
             inform = False
             show_plot = False
@@ -494,8 +492,7 @@ records < 1000 after preparation".format(len(self), len(self) - len(temp)))
         if digs not in [1, 2, 3]:
             raise ValueError("The value assigned to the parameter -digs-\
  was {0}. Value must be 1, 2 or 3.".format(digs))
-        # Set the future dict key
-        # dig_name = 'SUM{0}'.format(digs)
+
         if digs == 1:
             top = 9
         # Call the dict for F1D, F2D, F3D
@@ -932,7 +929,7 @@ def _prep_(df, digs, limit_N, simple=False, Z_conf_level=None):
     # crate dataframe from them
     dd = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
     # join the dataframe with the one of expected Benford's frequencies
-    dd = _base_(digs).join(dd)
+    dd = _base_(digs).join(dd).fillna(0)
     # create column with absolute differences
     dd['Dif'] = dd.Found - dd.Expected
     dd['AbsDif'] = np.absolute(dd.Dif)
