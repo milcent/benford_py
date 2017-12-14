@@ -22,11 +22,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-# Imports
-# from __future__ import print_function
-# from __future__ import division
-
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -75,16 +70,6 @@ class First(pd.DataFrame):
 
         if plot:
             _plot_expected_(self, digs)
-            # fig, ax = plt.subplots(figsize=(2 * (digs ** 2 + 5), 1.5 *
-            #                                 (digs ** 2 + 5)))
-            # plt.title('Expected Benford Distributions', size='xx-large')
-            # plt.xlabel(dig_name, size='x-large')
-            # plt.ylabel('Distribution (%)', size='x-large')
-            # ax.set_facecolor(colors['b'])
-            # ax.bar(self.index, self.Expected, color=colors['t'])
-            # ax.set_xticks(self.index)
-            # ax.set_xticklabels(self.index)
-            # plt.show()
 
 
 class Second(pd.DataFrame):
@@ -109,9 +94,6 @@ class Second(pd.DataFrame):
 
         if plot:
             _plot_expected_(self, 22)
-            # p = self.plot(kind='bar', color=colors['t'],
-            #               figsize=(14, 10.5), ylim=(0, .14))
-            # p.set_facecolor(colors['b'])
 
 
 class LastTwo(pd.DataFrame):
@@ -129,9 +111,6 @@ class LastTwo(pd.DataFrame):
         self.set_index('Last_2_Dig', inplace=True)
         if plot:
             _plot_expected_(self, -2)
-            # p = self.plot(kind='bar', figsize=(15, 8), color=colors['t'],
-            #               ylim=(0, 0.013))
-            # p.set_facecolor(colors['b'])
 
 
 class Analysis(pd.DataFrame):
@@ -159,9 +138,6 @@ class Analysis(pd.DataFrame):
     inform: tells the number of registries that are being subjected to
         the Analysis; defaults to True
     '''
-    # maps = {}  # dict for recording the indexes to be mapped back to the
-    # dict of confidence levels for further use
-    # stats = {}
     confs = {'None': None, '80': 1.285, '85': 1.435, '90': 1.645, '95': 1.96,
              '99': 2.576, '99.9': 3.29, '99.99': 3.89, '99.999': 4.417,
              '99.9999': 4.892, '99.99999': 5.327}
@@ -449,7 +425,6 @@ following: {0}".format(list(self.confs.keys())))
 
         conf = self.confs[str(Z_conf_level)]
 
-        # self['L2D'] = self.ZN.astype(str).str[-2:]
         temp = self.loc[self.ZN >= 1000]
         temp['L2D'] = temp.ZN % 100
 
@@ -819,6 +794,9 @@ def _lt_(num=False):
 def _plot_expected_(df, digs):
     '''
     Plots the Expected Benford Distributions
+
+    df   -> DataFrame with the Expected Proportions
+    digs -> Test's digit
     '''
     if digs in [1, 2, 3]:
         y_max = df.Expected.max() + (10 ** -(digs) / 3)
