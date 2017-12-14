@@ -74,9 +74,17 @@ class First(pd.DataFrame):
         self.index.names = [dig_name]
 
         if plot:
-            p = self.plot(kind='bar', color=colors['t'],
-                          figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)))
-            p.set_axis_bgcolor(colors['b'])
+            _plot_expected_(self, digs)
+            # fig, ax = plt.subplots(figsize=(2 * (digs ** 2 + 5), 1.5 *
+            #                                 (digs ** 2 + 5)))
+            # plt.title('Expected Benford Distributions', size='xx-large')
+            # plt.xlabel(dig_name, size='x-large')
+            # plt.ylabel('Distribution (%)', size='x-large')
+            # ax.set_facecolor(colors['b'])
+            # ax.bar(self.index, self.Expected, color=colors['t'])
+            # ax.set_xticks(self.index)
+            # ax.set_xticklabels(self.index)
+            # plt.show()
 
 
 class Second(pd.DataFrame):
@@ -100,9 +108,10 @@ class Second(pd.DataFrame):
         pd.DataFrame.__init__(self, df.groupby('Sec_Dig').sum())
 
         if plot:
-            p = self.plot(kind='bar', color=colors['t'],
-                          figsize=(14, 10.5), ylim=(0, .14))
-            p.set_axis_bgcolor(colors['b'])
+            _plot_expected_(self, 22)
+            # p = self.plot(kind='bar', color=colors['t'],
+            #               figsize=(14, 10.5), ylim=(0, .14))
+            # p.set_facecolor(colors['b'])
 
 
 class LastTwo(pd.DataFrame):
@@ -119,9 +128,10 @@ class LastTwo(pd.DataFrame):
                               'Last_2_Dig': _lt_(num=num)})
         self.set_index('Last_2_Dig', inplace=True)
         if plot:
-            p = self.plot(kind='bar', figsize=(15, 8), color=colors['t'],
-                          ylim=(0, 0.013))
-            p.set_axis_bgcolor(colors['b'])
+            _plot_expected_(self, -2)
+            # p = self.plot(kind='bar', figsize=(15, 8), color=colors['t'],
+            #               ylim=(0, 0.013))
+            # p.set_facecolor(colors['b'])
 
 
 class Analysis(pd.DataFrame):
@@ -270,7 +280,7 @@ Convert it to whether int of float, and try again.")
         MSE: calculates the Mean Square Error of the sample; defaults to
             False.
 
-        show_plot: draws the test plot.
+        show_plot: draws the test plot. Defaults to True.
 
         ret_df: returns the test DataFrame. Defaults to False. True if run by
             the test function.
@@ -289,7 +299,6 @@ Convert it to whether int of float, and try again.")
         temp[digs_dict[digs]] = (temp.ZN // 10 ** ((np.log10(temp.ZN).astype(
                                                    int)) - (digs - 1))).astype(
                                                        int)
-
         n, m = 10 ** (digs - 1), 10 ** (digs)
         x = np.arange(n, m)
 
@@ -610,7 +619,7 @@ class Mantissas(pd.Series):
                 linewidth=2, label='Expected')
         plt.ylim((0, 1.))
         plt.xlim((1, len(self) + 1))
-        ax.set_axis_bgcolor(colors['b'])
+        ax.set_facecolor(colors['b'])
         plt.legend(loc='upper left')
         plt.show()
 
@@ -659,7 +668,7 @@ class Roll_mad(pd.Series):
 
     def show_plot(self, test, figsize=(15, 8)):
         fig, ax = plt.subplots(figsize=figsize)
-        ax.set_axis_bgcolor(colors['b'])
+        ax.set_facecolor(colors['b'])
         ax.plot(self, color=colors['m'])
         if test != -2:
             plt.axhline(y=mad_dict[test][0], color=colors['af'], linewidth=3)
@@ -710,7 +719,7 @@ class Roll_mse(pd.Series):
 
     def show_plot(self, figsize=(15, 8)):
         fig, ax = plt.subplots(figsize=figsize)
-        ax.set_axis_bgcolor(colors['b'])
+        ax.set_facecolor(colors['b'])
         ax.plot(self, color=colors['m'])
         plt.show()
 
@@ -807,6 +816,31 @@ def _lt_(num=False):
     return n
 
 
+def _plot_expected_(df, digs):
+    '''
+    Plots the Expected Benford Distributions
+    '''
+    if digs in [1, 2, 3]:
+        y_max = df.Expected.max() + (10 ** -(digs) / 3)
+        fig, ax = plt.subplots(figsize=(2 * (digs ** 2 + 5), 1.5 *
+                                        (digs ** 2 + 5)))
+    elif digs == 22:
+        y_max = .13
+        fig, ax = plt.subplots(figsize=(14, 10.5))
+    elif digs == -2:
+        y_max = .011
+        fig, ax = plt.subplots(figsize=(15, 8))
+    plt.title('Expected Benford Distributions', size='xx-large')
+    plt.xlabel(df.index.name, size='x-large')
+    plt.ylabel('Distribution (%)', size='x-large')
+    ax.set_facecolor(colors['b'])
+    ax.set_ylim(0, y_max)
+    ax.bar(df.index, df.Expected, color=colors['t'])
+    ax.set_xticks(df.index)
+    ax.set_xticklabels(df.index)
+    plt.show()
+
+
 def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     '''
     Plots the digits tests results
@@ -833,7 +867,7 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     ax.plot(x, y_Exp * 100., color=colors['s'], linewidth=2.5,
             label='Benford', zorder=4)
     # ax.grid(axis='y', color='w', linestyle='-', zorder=0)
-    ax.set_axis_bgcolor(colors['b'])
+    ax.set_facecolor(colors['b'])
     if text_x:
         ind = np.array(df.index).astype(str)
         ind[:10] = np.array(['00', '01', '02', '03', '04', '05',
@@ -877,7 +911,7 @@ def _plot_sum_(df, figsize, li):
     ax.bar(df.index, df.Percent, color=colors['m'],
            label='Found Sums', zorder=3)
     ax.axhline(li, color=colors['s'], linewidth=2, label='Expected', zorder=4)
-    ax.set_axis_bgcolor(colors['b'])
+    ax.set_facecolor(colors['b'])
     ax.legend()
 
 
@@ -1408,6 +1442,7 @@ def duplicates(data, top_Rep=20, inform=True):
 def _subtract_sorted_(data):
     '''
     Subtracts the sorted sequence elements from each other, discarding zeros.
+    Used in the Second Order test
     '''
     data.sort_values(inplace=True)
     data = data - data.shift(1)
