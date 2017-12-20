@@ -915,21 +915,21 @@ def _plot_expected_(df, digs):
     digs -> Test's digit
     '''
     if digs in [1, 2, 3]:
-        y_max = df.Expected.max() + (10 ** -(digs) / 3)
+        y_max = (df.Expected.max() + (10 ** -(digs) / 3)) * 100
         fig, ax = plt.subplots(figsize=(2 * (digs ** 2 + 5), 1.5 *
                                         (digs ** 2 + 5)))
     elif digs == 22:
-        y_max = .13
+        y_max = 13.
         fig, ax = plt.subplots(figsize=(14, 10.5))
     elif digs == -2:
-        y_max = .011
+        y_max = 1.1
         fig, ax = plt.subplots(figsize=(15, 8))
     plt.title('Expected Benford Distributions', size='xx-large')
     plt.xlabel(df.index.name, size='x-large')
     plt.ylabel('Distribution (%)', size='x-large')
     ax.set_facecolor(colors['b'])
     ax.set_ylim(0, y_max)
-    ax.bar(df.index, df.Expected, color=colors['t'])
+    ax.bar(df.index, df.Expected * 100, color=colors['t'])
     ax.set_xticks(df.index)
     ax.set_xticklabels(df.index)
     plt.show()
