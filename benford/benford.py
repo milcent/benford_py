@@ -62,6 +62,9 @@ crit_chi2 = {8: {'80': 11.03, '85': 12.027, '90': 13.362, '95': 15.507,
                    '99.999': 1091.422, '99.9999': 1115.141,
                    '99.99999': 1137.082}
              }
+KS_crit = {'80': 1.075, '85': 1.139, '90': 1.125, '95': 1.36, '99': 1.63,
+           '99.9': 1.95, '99.99': 2.23, '99.999': 2.47,
+           '99.9999': 2.7, '99.99999': 2.9}
 
 
 class First(pd.DataFrame):
@@ -240,7 +243,7 @@ Convert it to whether int of float, and try again.")
             plt.show()
 
     def first_digits(self, digs, inform=True, confidence=None, high_Z='pos',
-                     limit_N=None, MAD=False, MSE=False, chi_square=False,
+                     limit_N=None, MAD=False, MSE=False, chi_square=False, KS=False,
                      show_plot=True, simple=False, ret_df=False):
         '''
         Performs the Benford First Digits test with the series of
@@ -327,6 +330,10 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
             self.chi_square = _chi_square_(df, ddf=len(df) - 1,
                                            confidence=confidence,
                                            inform=inform)
+        # KS test
+        if KS:
+            self.KS = _KS_(df, confidence=confidence, N=len(temp),
+                           inform=inform)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
@@ -338,7 +345,7 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
 
     def second_digit(self, inform=True, confidence=None, high_Z='pos',
                      limit_N=None, MAD=False, MSE=False, chi_square=False,
-                     show_plot=True, simple=False, ret_df=False):
+                     KS=False, show_plot=True, simple=False, ret_df=False):
         '''
         Performs the Benford Second Digit test with the series of
         numbers provided.
@@ -409,6 +416,10 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
         if chi_square:
             self.chi_square = _chi_square_(df, ddf=9, confidence=confidence,
                                            inform=inform)
+        # KS test
+        if KS:
+            self.KS = _KS_(df, confidence=confidence, N=len(temp),
+                           inform=inform)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
@@ -418,7 +429,7 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
             return df
 
     def last_two_digits(self, inform=True, confidence=None, high_Z='pos',
-                        limit_N=None, MAD=False, MSE=False, chi_square=False,
+                        limit_N=None, MAD=False, MSE=False, chi_square=False, KS=False,
                         show_plot=True, simple=False, ret_df=False):
         '''
         Performs the Benford Last Two Digits test with the series of
@@ -486,6 +497,10 @@ records < 1000 after preparation".format(len(self), len(self) - len(temp)))
         if chi_square:
             self.chi_square = _chi_square_(df, ddf=99, confidence=confidence,
                                            inform=inform)
+        # KS test
+        if KS:
+            self.KS = _KS_(df, confidence=confidence, N=len(temp),
+                           inform=inform)
 
         # Plotting expected frequencies (line) versus found ones (bars)
         if show_plot:
@@ -749,8 +764,8 @@ def _Z_score(frame, N):
 
 def _chi_square_(frame, ddf, confidence, inform=True):
     '''
-    Returns the chi-square statistic of the foud distributions and compares
-    it with the critical chi-square of such a sampla, according to the
+    Returns the chi-square statistic of the found distributions and compares
+    it with the critical chi-square of such a sample, according to the
     confidence level chosen and the degrees of freedom - len(sample) -1.
 
     Parameters
@@ -764,14 +779,52 @@ def _chi_square_(frame, ddf, confidence, inform=True):
     inform:     prints the chi-squre result and compares to the critical
     chi-square for the sample. Defaults to True.
     '''
-    exp_counts = frame.Counts.sum() * frame.Expected
-    dif_counts = frame.Counts - exp_counts
-    found_chi = (dif_counts ** 2 / exp_counts).sum()
-    crit_chi = crit_chi2[ddf][str(confidence)]
-    if inform:
-        print("\nThe Chi-square statistic is {0}".format(found_chi))
-        print("Critical Chi-square for this series: {0}".format(crit_chi))
-    return (found_chi, crit_chi)
+    if confidence is None:
+        print('\nChi-square test needs confidence other than None.')
+        return
+    else:
+        exp_counts = frame.Counts.sum() * frame.Expected
+        dif_counts = frame.Counts - exp_counts
+        found_chi = (dif_counts ** 2 / exp_counts).sum()
+        crit_chi = crit_chi2[ddf][str(confidence)]
+        if inform:
+            print("\nThe Chi-square statistic is {0}".format(found_chi))
+            print("Critical Chi-square for this series: {0}".format(crit_chi))
+        return (found_chi, crit_chi)
+
+
+def _KS_(frame, confidence, N, inform=True):
+    '''
+    Returns the Kolmogorov-Smirnov test of the found distributions
+    and compares it with the critical chi-square of such a sample,
+    according to the confidence level chosen.
+
+    Parameters
+    ----------
+    frame: DataFrame with Foud and Expected distributions.
+
+    confidence: Confidence level - confs dict.
+
+    N: Sample size
+
+    inform: prints the KS result and the critical value for the sample.
+        Defaults to True.
+    '''
+    if confidence is None:
+        print('\nKolmogorov-Smirnov test needs confidence other than None.')
+        return
+    else:
+        # sorting and calculating the cumulative distribution
+        ks_frame = frame.sort_index()[['Found', 'Expected']].cumsum()
+        # finding the supremum - the largest cumul dist difference
+        suprem = ((ks_frame.Found - ks_frame.Expected).abs()).max()
+        # calculating the crittical value according to confidence
+        crit_KS = KS_crit[str(confidence)] / np.sqrt(N)
+
+        if inform:
+            print("\nThe Kolmogorov-Smirnov statistic is {0}".format(suprem))
+            print("Critical K-S for this series: {0}".format(crit_KS))
+        return (suprem, crit_KS)
 
 
 def _mad_(frame, test, inform=True):
@@ -1019,7 +1072,8 @@ def _prep_(df, digs, limit_N, simple=False, confidence=None):
 
 def first_digits(data, digs, decimals=2, sign='all', inform=True,
                  confidence=None, high_Z='pos', limit_N=None,
-                 MAD=False, MSE=False, chi_square=False, show_plot=True):
+                 MAD=False, MSE=False, chi_square=False, KS=False,
+                 show_plot=True):
     '''
     Performs the Benford First Digits test on the series of
     numbers provided.
@@ -1069,7 +1123,12 @@ def first_digits(data, digs, decimals=2, sign='all', inform=True,
     chi_square: calculates the chi_square statistic of the sample and
         compares it with a critical value, according to the confidence
         level chosen and the series's degrees of freedom. Defaults to
-        False.
+        False. Requires confidence != None.
+
+    KS: calculates the Kolmogorov-Smirnov test, comparing the cumulative
+        distribution of the sample with the Benford's, according to the
+        confidence level chosen. Defaults to False. Requires confidence
+        != None.
 
     show_plot: draws the test plot.
     '''
@@ -1078,7 +1137,7 @@ def first_digits(data, digs, decimals=2, sign='all', inform=True,
 
     data = data.first_digits(digs, inform=inform, confidence=confidence,
                              high_Z=high_Z, limit_N=limit_N, MAD=MAD, MSE=MSE,
-                             chi_square=chi_square, show_plot=show_plot,
+                             chi_square=chi_square, KS=KS, show_plot=show_plot,
                              ret_df=True)
 
     if confidence is not None:
@@ -1090,7 +1149,7 @@ def first_digits(data, digs, decimals=2, sign='all', inform=True,
 
 def second_digit(data, decimals=2, sign='all', inform=True,
                  confidence=None, high_Z='pos', limit_N=None,
-                 MAD=False, MSE=False, chi_square=False,
+                 MAD=False, MSE=False, chi_square=False, KS=False,
                  show_plot=True):
     '''
     Performs the Benford Second Digits test on the series of
@@ -1138,7 +1197,12 @@ def second_digit(data, decimals=2, sign='all', inform=True,
     chi_square: calculates the chi_square statistic of the sample and
         compares it with a critical value, according to the confidence
         level chosen and the series's degrees of freedom. Defaults to
-        False.
+        False. Requires confidence != None.
+
+    KS: calculates the Kolmogorov-Smirnov test, comparing the cumulative
+        distribution of the sample with the Benford's, according to the
+        confidence level chosen. Defaults to False. Requires confidence
+        != None.
 
     show_plot: draws the test plot.
 
@@ -1148,7 +1212,7 @@ def second_digit(data, decimals=2, sign='all', inform=True,
 
     data = data.second_digit(inform=inform, confidence=confidence,
                              high_Z=high_Z, limit_N=limit_N, MAD=MAD, MSE=MSE,
-                             chi_square=chi_square, show_plot=show_plot,
+                             chi_square=chi_square, KS=KS, show_plot=show_plot,
                              ret_df=True)
     if confidence is not None:
         data = data[['Counts', 'Found', 'Expected', 'Z_score']]
@@ -1159,7 +1223,7 @@ def second_digit(data, decimals=2, sign='all', inform=True,
 
 def last_two_digits(data, decimals=2, sign='all', inform=True,
                     confidence=None, high_Z='pos', limit_N=None,
-                    MAD=False, MSE=False, chi_square=False,
+                    MAD=False, MSE=False, chi_square=False, KS=False,
                     show_plot=True):
     '''
     Performs the Last Two Digits test on the series of
@@ -1207,7 +1271,12 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
     chi_square: calculates the chi_square statistic of the sample and
         compares it with a critical value, according to the confidence
         level chosen and the series's degrees of freedom. Defaults to
-        False.
+        False. Requires confidence != None.
+
+    KS: calculates the Kolmogorov-Smirnov test, comparing the cumulative
+        distribution of the sample with the Benford's, according to the
+        confidence level chosen. Defaults to False. Requires confidence
+        != None.
 
     show_plot: draws the test plot.
 
@@ -1217,7 +1286,7 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
 
     data = data.last_two_digits(inform=inform, confidence=confidence,
                                 high_Z=high_Z, limit_N=limit_N, MAD=MAD,
-                                MSE=MSE, chi_square=chi_square,
+                                MSE=MSE, chi_square=chi_square, KS=KS,
                                 show_plot=show_plot, ret_df=True)
 
     if confidence is not None:
@@ -1564,7 +1633,12 @@ def second_order(data, test, decimals=2, sign='all', inform=True, MAD=False,
     chi_square: calculates the chi_square statistic of the sample and
         compares it with a critical value, according to the confidence
         level chosen and the series's degrees of freedom. Defaults to
-        False.
+        False. Requires confidence != None.
+
+    KS: calculates the Kolmogorov-Smirnov test, comparing the cumulative
+        distribution of the sample with the Benford's, according to the
+        confidence level chosen. Defaults to False. Requires confidence
+        != None.
 
     show_plot: draws the test plot.
     '''
