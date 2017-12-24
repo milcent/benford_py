@@ -200,16 +200,18 @@ Convert it to whether int of float, and try again.")
 
         ab = self.Seq.abs()
 
-        if decimals == 'infer':
-            import platform
-            if platform.system() == 'Windows':
+        if self.Seq.dtypes == 'int':
+            self['ZN'] = ab
+        else:
+            if decimals == 'infer':
                 # There is some numerical issue with Windows that required
                 # implementing it differently (and slower)
                 self['ZN'] = ab.astype(str).str.replace('.', '').str.lstrip('0'
                                        ).str[:5].astype(int)
-            else:    
                 # Getting the different number of decimal places
-                decimals = (ab - ab.astype(int)).astype(str).str[2:].str.len()
+                # decimals = (ab - ab.astype(int)).astype(str).str[2:].str.len()
+                # self['ZN'] = (ab * (10 ** decimals)).astype(int)
+            else:
                 self['ZN'] = (ab * (10 ** decimals)).astype(int)
 
     def mantissas(self, plot=True, figsize=(15, 8)):
@@ -248,8 +250,8 @@ Convert it to whether int of float, and try again.")
             plt.show()
 
     def first_digits(self, digs, inform=True, confidence=None, high_Z='pos',
-                     limit_N=None, MAD=False, MSE=False, chi_square=False, KS=False,
-                     show_plot=True, simple=False, ret_df=False):
+                     limit_N=None, MAD=False, MSE=False, chi_square=False,
+                     KS=False, show_plot=True, simple=False, ret_df=False):
         '''
         Performs the Benford First Digits test with the series of
         numbers provided, and populates the mapping dict for future
@@ -434,8 +436,8 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
             return df
 
     def last_two_digits(self, inform=True, confidence=None, high_Z='pos',
-                        limit_N=None, MAD=False, MSE=False, chi_square=False, KS=False,
-                        show_plot=True, simple=False, ret_df=False):
+                        limit_N=None, MAD=False, MSE=False, chi_square=False,
+                        KS=False, show_plot=True, simple=False, ret_df=False):
         '''
         Performs the Benford Last Two Digits test with the series of
         numbers provided.
