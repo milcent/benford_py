@@ -152,7 +152,7 @@ class Analysis(pd.DataFrame):
 
     decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry.
+        (and differently) with each registry, but will loose performance.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -198,14 +198,21 @@ Convert it to whether int of float, and try again.")
                 print('Second Order Test. Initial series reduced to {0}\
  entries.'.format(len(self.Seq)))
 
-        ab = np.abs(self.Seq)
+        ab = self.Seq.abs()
 
-        if decimals == 'infer':
-            # Getting the different number of decimal places
-            decimals = (ab - ab.astype(int)
-                        ).astype(str).str.strip('0.').str.len()
-
-        self['ZN'] = (ab * (10**decimals)).astype(int)
+        if self.Seq.dtypes == 'int':
+            self['ZN'] = ab
+        else:
+            if decimals == 'infer':
+                # There is some numerical issue with Windows that required
+                # implementing it differently (and slower)
+                self['ZN'] = ab.astype(str).str.replace('.', '').str.lstrip('0'
+                                       ).str[:5].astype(int)
+                # Getting the different number of decimal places
+                # decimals = (ab - ab.astype(int)).astype(str).str[2:].str.len()
+                # self['ZN'] = (ab * (10 ** decimals)).astype(int)
+            else:
+                self['ZN'] = (ab * (10 ** decimals)).astype(int)
 
     def mantissas(self, plot=True, figsize=(15, 8)):
         '''
@@ -243,8 +250,8 @@ Convert it to whether int of float, and try again.")
             plt.show()
 
     def first_digits(self, digs, inform=True, confidence=None, high_Z='pos',
-                     limit_N=None, MAD=False, MSE=False, chi_square=False, KS=False,
-                     show_plot=True, simple=False, ret_df=False):
+                     limit_N=None, MAD=False, MSE=False, chi_square=False,
+                     KS=False, show_plot=True, simple=False, ret_df=False):
         '''
         Performs the Benford First Digits test with the series of
         numbers provided, and populates the mapping dict for future
@@ -429,8 +436,8 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
             return df
 
     def last_two_digits(self, inform=True, confidence=None, high_Z='pos',
-                        limit_N=None, MAD=False, MSE=False, chi_square=False, KS=False,
-                        show_plot=True, simple=False, ret_df=False):
+                        limit_N=None, MAD=False, MSE=False, chi_square=False,
+                        KS=False, show_plot=True, simple=False, ret_df=False):
         '''
         Performs the Benford Last Two Digits test with the series of
         numbers provided.
@@ -669,7 +676,7 @@ class Roll_mad(pd.Series):
 
         decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry.
+        (and differently) with each registry, but will loose performance.
 
 
     sign: tells which portion of the data to consider. pos: only the positive
@@ -722,7 +729,7 @@ class Roll_mse(pd.Series):
 
         decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry.
+        (and differently) with each registry, but will loose performance.
 
 
     sign: tells which portion of the data to consider. pos: only the positive
@@ -1087,7 +1094,7 @@ def first_digits(data, digs, decimals=2, sign='all', inform=True,
 
     decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry.
+        (and differently) with each registry, but will loose performance.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1164,7 +1171,7 @@ def second_digit(data, decimals=2, sign='all', inform=True,
 
     decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry.
+        (and differently) with each registry, but will loose performance.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1238,7 +1245,7 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
 
     decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry.
+        (and differently) with each registry, but will loose performance.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1334,7 +1341,7 @@ def summation(data, digs=2, decimals=2, sign='all', top=20, inform=True,
 
     decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry.
+        (and differently) with each registry, but will loose performance.
 
     top: choses how many top values to show. Defaults to 20.
 
@@ -1365,7 +1372,7 @@ def mad(data, test, decimals=2, sign='all'):
 
     decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry.
+        (and differently) with each registry, but will loose performance.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1454,7 +1461,7 @@ def rolling_mad(data, test, window, decimals=2, sign='all', show_plot=False):
 
     decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry.
+        (and differently) with each registry, but will loose performance.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1501,7 +1508,7 @@ def rolling_mse(data, test, window, decimals=2, sign='all', show_plot=False):
 
     decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry.
+        (and differently) with each registry, but will loose performance.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1600,7 +1607,7 @@ def second_order(data, test, decimals=2, sign='all', inform=True, MAD=False,
 
     decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry.
+        (and differently) with each registry, but will loose performance.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
