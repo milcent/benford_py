@@ -38,7 +38,9 @@ were more worn out, that is, more consulted.
 
 <p align="center">
   <img alt="Simon Newcomb" src="https://github.com/milcent/benford_py/blob/master/img/Simon_Newcomb_APS.jpg">
-  Simon Newcomb, 1835-1909.
+</p>
+<p align="center">
+Simon Newcomb, 1835-1909.
 </p>
 
 In that same article, Newcomb proposed the formula for the
@@ -46,9 +48,11 @@ probability of a certain digit "d" being the first digit of a
 number, given by the following equation.
 
 <p align="center">
-  <img alt="First digit equation" src="https://github.com/milcent/benford_py/blob/master/img/formula.jpg">
-  where: P (D = d) is the probability that the first digit is
-  equal to d, and d is an integer ranging from 1 to 9.
+  <img alt="First digit equation" src="https://github.com/milcent/benford_py/blob/master/img/formula.png">
+</p>
+<p align="center"> where: P (D = d) is the probability that
+  the first digit is equal to d, and d is an integer ranging 
+  from 1 to 9.
 </p>
 
 In 1938, the American physicist Frank Benford revisited the 
@@ -62,6 +66,8 @@ distribution.
 
 <p align="center">
   <img alt="Frank Benford" src="https://github.com/milcent/benford_py/blob/master/img/2429_Benford-Frank.jpg">
+</p>
+<p align="center">
   Frank Albert Benford, Jr., 1883-1948.
 </p>
 
