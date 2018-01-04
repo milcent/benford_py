@@ -319,7 +319,7 @@ Convert it to whether int of float, and try again.")
 
         if inform:
             print("\nTest performed on {0} registries.\nDiscarded {1} \
-records < {2} after preparation.".format(len(self), len(self) - len(temp),
+records < {2} after preparation.".format(len(temp), len(self) - len(temp),
                                          10 ** (digs - 1)))
             if confidence is not None:
                 _inform_(df, high_Z=high_Z, conf=confs[str(confidence)])
@@ -407,7 +407,7 @@ records < {2} after preparation.".format(len(self), len(self) - len(temp),
 
         if inform:
             print("\nTest performed on {0} registries.\nDiscarded \
-{1} records < 10 after preparation.".format(N, N - len(temp)))
+{1} records < 10 after preparation.".format(len(temp), len(self) - len(temp)))
             if confidence is not None:
                 _inform_(df, high_Z, conf)
 
@@ -488,7 +488,7 @@ following: {0}".format(list(confs.keys())))
 
         if inform:
             print("\nTest performed on {0} registries.\nDiscarded {1} \
-records < 1000 after preparation".format(len(self), len(self) - len(temp)))
+records < 1000 after preparation".format(len(temp), len(self) - len(temp)))
             if confidence is not None:
                 _inform_(df, high_Z, conf)
 
