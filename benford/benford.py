@@ -139,9 +139,122 @@ class LastTwo(pd.DataFrame):
             _plot_expected_(self, -2)
 
 
-class Analysis(pd.DataFrame):
+class Stem(pd.DataFrame):
     '''
-    Prepares the data for Analysis. pandas DataFrame subclass.
+    '''
+    def __init__(self, data, decimals, sign='all'):
+
+        pd.DataFrame.__init__(self, {'Seq': data})
+
+        if self.Seq.dtypes != 'float' and self.Seq.dtypes != 'int':
+            raise TypeError("The sequence dtype was not int nor float.\n\
+Convert it to whether int of float, and try again.")
+
+        if sign == 'all':
+            self.Seq = self.Seq.loc[self.Seq != 0]
+            # ab = self.Seq.abs()
+        elif sign == 'pos':
+            self.Seq = self.Seq.loc[self.Seq > 0]
+        else:
+            self.Seq = self.Seq.loc[self.Seq < 0]
+
+        self.dropna(inplace=True)
+
+        ab = self.Seq.abs()
+
+        if self.Seq.dtypes == 'int':
+            self['ZN'] = ab
+        else:
+            if decimals == 'infer':
+                self['ZN'] = ab.astype(str).str\
+                                .replace('.', '')\
+                                .str.lstrip('0')\
+                                .str[:5].astype(int)
+            else:
+                self['ZN'] = (ab * (10 ** decimals)).astype(int)
+        for col in ['F1D', 'F2D', 'F3D']:
+            temp = self.ZN.loc[self.ZN >= 10 ** (rev_digs[col] - 1)]
+            self[col] = (temp // 10 ** ((np.log10(temp).astype(int)) -
+                                        (rev_digs[col] - 1)))
+            self[col] = self[col].fillna(-1).astype(int)
+
+        temp_sd = self.loc[self.ZN >= 10]
+        self['SD'] = (temp_sd.ZN // 10**((np.log10(temp_sd.ZN)).astype(int) -
+                                         1)) % 10
+        self['SD'] = self['SD'].fillna(-1).astype(int)
+
+        temp_l2d = self.loc[self.ZN >= 1000]
+        self['L2D'] = temp_l2d.ZN % 100
+        self['L2D'] = self['L2D'].fillna(-1).astype(int)
+
+        self['Mant'] = _getMantissas_(ab)
+
+
+class _Prep_(pd.DataFrame):
+    '''
+    Transforms the original number sequence into a DataFrame reduced
+    by the ocurrences of the chosen digits, creating other computed
+    columns
+    '''
+    def __init__(self, data, digs, limit_N, simple=False, confidence=None):
+
+        N = _set_N_(len(data), limit_N=limit_N)
+
+        pd.DataFrame.__init__(self, _base_(digs))
+        # get the number of occurrences of the digits
+        self['Counts'] = data.value_counts()
+        # get their relative frequencies
+        self['Found'] = data.value_counts(normalize=True)
+        # crate dataframe from them
+        # df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
+        # join the dataframe with the one of expected Benford's frequencies
+        self.fillna(0, inplace=True)
+        # create column with absolute differences
+        self['Dif'] = self.Found - self.Expected
+        self['AbsDif'] = np.absolute(self.Dif)
+        if simple:
+            del self['Dif']
+        else:
+            if confidence is not None:
+                self['Z_score'] = _Z_score(self, N)
+        self.chi_square = _chi_square_2(self)
+        self.KS = _KS_2(self)
+        self.MAD = self.AbsDif.mean()
+
+
+class Benford():
+    '''
+    '''
+    def __init__(self, data, decimals=2, sign='all', limit_N=None,
+                 confidence=95):
+        self.data = data
+        self.stem = Stem(data, decimals, sign)
+        self.first_digit = _Prep_(self.stem['F1D'].loc[self.stem['F1D'] != -1],
+                                  digs=1, limit_N=limit_N, simple=False,
+                                  confidence=confidence)
+        self.first_2_digits = _Prep_(self.stem['F2D'].loc[self.stem['F2D'] != -1],
+                                     digs=2, limit_N=limit_N,
+                                     simple=False,
+                                     confidence=confidence)
+        self.first_3_digits = _Prep_(self.stem['F3D'].loc[self.stem['F3D'] != -1],
+                                     digs=3, limit_N=limit_N,
+                                     simple=False,
+                                     confidence=confidence)
+        self.second_digit = _Prep_(self.stem['SD'].loc[self.stem['SD'] != -1],
+                                   digs=22, limit_N=limit_N,
+                                   simple=False,
+                                   confidence=confidence)
+        self.last_2_digits = _Prep_(self.stem['L2D'].loc[self.stem['L2D'] != -1],
+                                    digs=-2, limit_N=limit_N,
+                                    simple=False,
+                                    confidence=confidence)
+        self.stem_sec = Stem(_subtract_sorted_(data), decimals, sign)
+
+
+
+class Source(pd.DataFrame):
+    '''
+    Prepares the data for nalysis. pandas DataFrame subclass.
 
     Parameters
     ----------
@@ -162,7 +275,7 @@ class Analysis(pd.DataFrame):
         differences between the ordered entries before running the Tests.
 
     inform: tells the number of registries that are being subjected to
-        the Analysis; defaults to True
+        the analysis; defaults to True
     '''
 
     def __init__(self, data, decimals=2, sign='all', sec_order=False,
@@ -206,15 +319,14 @@ Convert it to whether int of float, and try again.")
             if decimals == 'infer':
                 # There is some numerical issue with Windows that required
                 # implementing it differently (and slower)
-                self['ZN'] = ab.astype(str).str.replace('.', '').str.lstrip('0'
-                                       ).str[:5].astype(int)
-                # Getting the different number of decimal places
-                # decimals = (ab - ab.astype(int)).astype(str).str[2:].str.len()
-                # self['ZN'] = (ab * (10 ** decimals)).astype(int)
+                self['ZN'] = ab.astype(str).\
+                                str.replace('.', '').\
+                                str.lstrip('0').str[:5].\
+                                astype(int)
             else:
                 self['ZN'] = (ab * (10 ** decimals)).astype(int)
 
-    def mantissas(self, plot=True, figsize=(15, 8)):
+    def mantissas(self, inform=True, plot=True, figsize=(15, 8)):
         '''
         Calculates the mantissas, their mean and variance, and compares them
         with the mean and variance of a Benford's sequence.
@@ -227,15 +339,17 @@ Convert it to whether int of float, and try again.")
 
         figsize -> tuple that sets the figure size
         '''
-        self['Mant'] = _getMantissas_(self.Seq)
-        p = self[['Seq', 'Mant']]
-        p = p.loc[p.Seq > 0].sort_values('Mant')
-        print("The Mantissas MEAN is {0}. Ref: 0.5.".format(p.Mant.mean()))
-        print("The Mantissas VARIANCE is {0}. Ref: 0.083333.".format(
-              p.Mant.var()))
-        print("The Mantissas SKEWNESS is {0}. \tRef: 0.".format(p.Mant.skew()))
-        print("The Mantissas KURTOSIS is {0}. \tRef: -1.2.".
-              format(p.Mant.kurt()))
+        self['Mant'] = _getMantissas_(np.abs(self.Seq))
+        if inform:
+            p = self[['Seq', 'Mant']]
+            p = p.loc[p.Seq > 0].sort_values('Mant')
+            print("The Mantissas MEAN is {0}. Ref: 0.5.".format(p.Mant.mean()))
+            print("The Mantissas VARIANCE is {0}. Ref: 0.083333.".format(
+                  p.Mant.var()))
+            print("The Mantissas SKEWNESS is {0}. \tRef: 0.".
+                format(p.Mant.skew()))
+            print("The Mantissas KURTOSIS is {0}. \tRef: -1.2.".
+                  format(p.Mant.kurt()))
 
         if plot:
             N = len(p)
@@ -261,7 +375,8 @@ Convert it to whether int of float, and try again.")
             2 (first two digits) or 3 (first three digits).
 
         inform: tells the number of registries that are being subjected to
-            the Analysis; defaults to True
+            the a
+   nalysis; defaults to True
 
         digs: number of first digits to consider. Must be 1 (first digit),
             2 (first two digits) or 3 (first three digits).
@@ -311,11 +426,11 @@ Convert it to whether int of float, and try again.")
         if simple:
             inform = False
             show_plot = False
-            df = _prep_(temp, digs, limit_N=limit_N, simple=True,
-                        confidence=None)
+            df = _prep_(temp[digs_dict[digs]], digs, limit_N=limit_N,
+                        simple=True, confidence=None)
         else:
-            N, df = _prep_(temp, digs, limit_N=limit_N, simple=False,
-                           confidence=confidence)
+            N, df = _prep_(temp[digs_dict[digs]], digs, limit_N=limit_N,
+                           simple=False, confidence=confidence)
 
         if inform:
             print("\nTest performed on {0} registries.\nDiscarded {1} \
@@ -358,7 +473,8 @@ records < {2} after preparation.".format(len(temp), len(self) - len(temp),
         numbers provided.
 
         inform -> tells the number of registries that are being subjected to
-            the Analysis; defaults to True
+            the a
+   nalysis; defaults to True
 
         MAD: calculates the Mean Absolute Difference between the
             found and the expected distributions; defaults to False.
@@ -399,10 +515,10 @@ records < {2} after preparation.".format(len(temp), len(self) - len(temp),
         if simple:
             inform = False
             show_plot = False
-            df = _prep_(temp, 22, limit_N=limit_N, simple=True,
+            df = _prep_(temp['SD'], 22, limit_N=limit_N, simple=True,
                         confidence=None)
         else:
-            N, df = _prep_(temp, 22, limit_N=limit_N, simple=False,
+            N, df = _prep_(temp['SD'], 22, limit_N=limit_N, simple=False,
                            confidence=confidence)
 
         if inform:
@@ -443,7 +559,8 @@ records < {2} after preparation.".format(len(temp), len(self) - len(temp),
         numbers provided.
 
         inform -> tells the number of registries that are being subjected to
-            the Analysis; defaults to True
+            the a
+   nalysis; defaults to True
 
         MAD: calculates the Mean Absolute Difference between the
             found and the expected distributions; defaults to False.
@@ -480,10 +597,10 @@ following: {0}".format(list(confs.keys())))
         if simple:
             inform = False
             show_plot = False
-            df = _prep_(temp, -2, limit_N=limit_N, simple=True,
+            df = _prep_(temp['L2D'], -2, limit_N=limit_N, simple=True,
                         confidence=None)
         else:
-            N, df = _prep_(temp, -2, limit_N=limit_N, simple=False,
+            N, df = _prep_(temp['L2D'], -2, limit_N=limit_N, simple=False,
                            confidence=confidence)
 
         if inform:
@@ -687,8 +804,8 @@ class Roll_mad(pd.Series):
 
         test = _check_test_(test)
 
-        if not isinstance(data, Analysis):
-            start = Analysis(data, sign=sign, decimals=decimals, inform=False)
+        if not isinstance(data, Source):
+            start = Source(data, sign=sign, decimals=decimals, inform=False)
 
         Exp, ind = _prep_to_roll_(start, test)
 
@@ -740,8 +857,8 @@ class Roll_mse(pd.Series):
 
         test = _check_test_(test)
 
-        if not isinstance(data, Analysis):
-            start = Analysis(data, sign=sign, decimals=decimals, inform=False)
+        if not isinstance(data, Source):
+            start = Source(data, sign=sign, decimals=decimals, inform=False)
 
         Exp, ind = _prep_to_roll_(start, test)
 
@@ -800,6 +917,20 @@ def _chi_square_(frame, ddf, confidence, inform=True):
         return (found_chi, crit_chi)
 
 
+def _chi_square_2(frame):
+    '''
+    Returns the chi-square statistic of the found distributions 
+
+    Parameters
+    ----------
+    frame:      DataFrame with Foud, Expected and their difference columns.
+
+    '''
+    exp_counts = frame.Counts.sum() * frame.Expected
+    dif_counts = frame.Counts - exp_counts
+    return (dif_counts ** 2 / exp_counts).sum()
+
+
 def _KS_(frame, confidence, N, inform=True):
     '''
     Returns the Kolmogorov-Smirnov test of the found distributions
@@ -832,6 +963,20 @@ def _KS_(frame, confidence, N, inform=True):
             print("\nThe Kolmogorov-Smirnov statistic is {0}".format(suprem))
             print("Critical K-S for this series: {0}".format(crit_KS))
         return (suprem, crit_KS)
+
+
+def _KS_2(frame):
+    '''
+    Returns the Kolmogorov-Smirnov test of the found distributions.
+
+    Parameters
+    ----------
+    frame: DataFrame with Foud and Expected distributions.
+    '''
+    # sorting and calculating the cumulative distribution
+    ks_frame = frame.sort_index()[['Found', 'Expected']].cumsum()
+    # finding the supremum - the largest cumul dist difference
+    return ((ks_frame.Found - ks_frame.Expected).abs()).max()
 
 
 def _mad_(frame, test, inform=True):
@@ -1047,20 +1192,18 @@ def _base_(digs):
         return LastTwo(num=True, plot=False)
 
 
-def _prep_(df, digs, limit_N, simple=False, confidence=None):
+def _prep_(data, digs, limit_N, simple=False, confidence=None):
     '''
     Transforms the original number sequence into a DataFrame reduced
     by the ocurrences of the chosen digits, creating other computed
     columns
     '''
-    N = _set_N_(len(df), limit_N=limit_N)
+    N = _set_N_(len(data), limit_N=limit_N)
 
-    col = digs_dict[digs]
-
-    # get the number of occurrences of the last two digits
-    v = df[col].value_counts()
+    # get the number of occurrences of the digits
+    v = data.value_counts()
     # get their relative frequencies
-    p = df[col].value_counts(normalize=True)
+    p = data.value_counts(normalize=True)
     # crate dataframe from them
     dd = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
     # join the dataframe with the one of expected Benford's frequencies
@@ -1104,7 +1247,7 @@ def first_digits(data, digs, decimals=2, sign='all', inform=True,
         2 (first two digits) or 3 (first three digits).
 
     inform: tells the number of registries that are being subjected to
-        the Analysis and returns tha analysis DataFrame sorted by the
+        the analysis and returns tha analysis DataFrame sorted by the
         highest Z score down. Defaults to True.
 
     MAD: calculates the Mean Absolute Difference between the
@@ -1139,8 +1282,8 @@ def first_digits(data, digs, decimals=2, sign='all', inform=True,
 
     show_plot: draws the test plot.
     '''
-    if not isinstance(data, Analysis):
-        data = Analysis(data, decimals=decimals, sign=sign, inform=inform)
+    if not isinstance(data, Source):
+        data = Source(data, decimals=decimals, sign=sign, inform=inform)
 
     data = data.first_digits(digs, inform=inform, confidence=confidence,
                              high_Z=high_Z, limit_N=limit_N, MAD=MAD, MSE=MSE,
@@ -1178,7 +1321,7 @@ def second_digit(data, decimals=2, sign='all', inform=True,
         Defaults to all.`
 
     inform: tells the number of registries that are being subjected to
-        the Analysis and returns tha analysis DataFrame sorted by the
+        the analysis and returns tha analysis DataFrame sorted by the
         highest Z score down. Defaults to True.
 
     MAD: calculates the Mean Absolute Difference between the
@@ -1214,8 +1357,8 @@ def second_digit(data, decimals=2, sign='all', inform=True,
     show_plot: draws the test plot.
 
     '''
-    if not isinstance(data, Analysis):
-        data = Analysis(data, sign=sign, decimals=decimals, inform=inform)
+    if not isinstance(data, Source):
+        data = Source(data, sign=sign, decimals=decimals, inform=inform)
 
     data = data.second_digit(inform=inform, confidence=confidence,
                              high_Z=high_Z, limit_N=limit_N, MAD=MAD, MSE=MSE,
@@ -1252,7 +1395,7 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
         Defaults to all.`
 
     inform: tells the number of registries that are being subjected to
-        the Analysis and returns tha analysis DataFrame sorted by the
+        the analysis and returns tha analysis DataFrame sorted by the
         highest Z score down. Defaults to True.
 
     confidence: confidence level to draw lower and upper limits when
@@ -1288,8 +1431,8 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
     show_plot: draws the test plot.
 
     '''
-    if not isinstance(data, Analysis):
-        data = Analysis(data, decimals=decimals, sign=sign, inform=inform)
+    if not isinstance(data, Source):
+        data = Source(data, decimals=decimals, sign=sign, inform=inform)
 
     data = data.last_two_digits(inform=inform, confidence=confidence,
                                 high_Z=high_Z, limit_N=limit_N, MAD=MAD,
@@ -1348,8 +1491,8 @@ def summation(data, digs=2, decimals=2, sign='all', top=20, inform=True,
     show_plot: plots the results. Defaults to True.
 
     '''
-    if not isinstance(data, Analysis):
-        data = Analysis(data, sign=sign, decimals=decimals, inform=inform)
+    if not isinstance(data, Source):
+        data = Source(data, sign=sign, decimals=decimals, inform=inform)
 
     data = data.summation(digs=digs, top=top, inform=inform,
                           show_plot=show_plot, ret_df=True)
@@ -1381,7 +1524,7 @@ def mad(data, test, decimals=2, sign='all'):
     '''
     test = _check_test_(test)
 
-    start = Analysis(data, sign=sign, decimals=decimals, inform=False)
+    start = Source(data, sign=sign, decimals=decimals, inform=False)
 
     if test in [1, 2, 3]:
         start.first_digits(digs=test, inform=False, MAD=True, simple=True)
@@ -1398,7 +1541,7 @@ def mse(data, test, decimals=2, sign='all'):
     Returns the Mean Squared Error of the Series
     '''
     test = _check_test_(test)
-    start = Analysis(data, sign=sign, decimals=decimals, inform=False)
+    start = Source(data, sign=sign, decimals=decimals, inform=False)
     if test in [1, 2, 3]:
         start.first_digits(digs=test, MAD=False, MSE=True, simple=True)
     elif test == 22:
@@ -1581,10 +1724,11 @@ def _subtract_sorted_(data):
     Subtracts the sorted sequence elements from each other, discarding zeros.
     Used in the Second Order test
     '''
-    data.sort_values(inplace=True)
-    data = data - data.shift(1)
-    data = data.loc[data != 0]
-    return data
+    temp = data.copy()
+    temp.sort_values(inplace=True)
+    temp = temp - temp.shift(1)
+    temp = temp.loc[temp != 0]
+    return temp
 
 
 def second_order(data, test, decimals=2, sign='all', inform=True, MAD=False,
@@ -1614,7 +1758,7 @@ def second_order(data, test, decimals=2, sign='all', inform=True, MAD=False,
         Defaults to all.`
 
     inform: tells the number of registries that are being subjected to
-        the Analysis and returns tha analysis DataFrame sorted by the
+        the analysis and returns tha analysis DataFrame sorted by the
         highest Z score down. Defaults to True.
 
     MAD: calculates the Mean Absolute Difference between the
@@ -1651,9 +1795,9 @@ def second_order(data, test, decimals=2, sign='all', inform=True, MAD=False,
     '''
     test = _check_test_(test)
 
-    # if not isinstance(data, Analysis):
-    data = Analysis(data, decimals=decimals, sign=sign,
-                    sec_order=True, inform=inform)
+    # if not isinstance(data, Source):
+    data = Source(data, decimals=decimals, sign=sign,
+                  sec_order=True, inform=inform)
     if test in [1, 2, 3]:
         data.first_digits(digs=test, inform=inform, MAD=MAD,
                           confidence=confidence, high_Z=high_Z,
