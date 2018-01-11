@@ -31,6 +31,10 @@ digs_dict = {1: 'F1D', 2: 'F2D', 3: 'F3D', 22: 'SD', -2: 'L2D'}
 
 rev_digs = {'F1D': 1, 'F2D': 2, 'F3D': 3, 'SD': 22, 'L2D': -2}
 
+names = {1: 'First Digit Test', 2: 'First Two Digits Test',
+         3: 'First Three Digits Test', 22: 'Second Digit Test',
+         -2: 'Last Two Digits Test'}
+
 mad_dict = {1: [0.006, 0.012, 0.015], 2: [0.0012, 0.0018, 0.0022],
             3: [0.00036, 0.00044, 0.00050], 22: [0.008, 0.01, 0.012],
             'F1D': 'First Digit', 'F2D': 'First Two Digits',
@@ -139,7 +143,7 @@ class LastTwo(pd.DataFrame):
             _plot_expected_(self, -2)
 
 
-class Stem(pd.DataFrame):
+class Base(pd.DataFrame):
     '''
     '''
     def __init__(self, data, decimals, sign='all'):
@@ -190,7 +194,7 @@ Convert it to whether int of float, and try again.")
         self['Mant'] = _getMantissas_(ab)
 
 
-class _Prep_(pd.DataFrame):
+class Test(pd.DataFrame):
     '''
     Transforms the original number sequence into a DataFrame reduced
     by the ocurrences of the chosen digits, creating other computed
@@ -200,7 +204,7 @@ class _Prep_(pd.DataFrame):
 
         N = _set_N_(len(data), limit_N=limit_N)
 
-        pd.DataFrame.__init__(self, _base_(digs))
+        pd.DataFrame.__init__(self, _test_(digs))
         # get the number of occurrences of the digits
         self['Counts'] = data.value_counts()
         # get their relative frequencies
@@ -217,6 +221,7 @@ class _Prep_(pd.DataFrame):
         else:
             if confidence is not None:
                 self['Z_score'] = _Z_score(self, N)
+        self.name = names[digs]
         self.chi_square = _chi_square_2(self)
         self.KS = _KS_2(self)
         self.MAD = self.AbsDif.mean()
@@ -228,28 +233,22 @@ class Benford():
     def __init__(self, data, decimals=2, sign='all', limit_N=None,
                  confidence=95):
         self.data = data
-        self.stem = Stem(data, decimals, sign)
-        self.first_digit = _Prep_(self.stem['F1D'].loc[self.stem['F1D'] != -1],
-                                  digs=1, limit_N=limit_N, simple=False,
-                                  confidence=confidence)
-        self.first_2_digits = _Prep_(self.stem['F2D'].loc[self.stem['F2D'] != -1],
-                                     digs=2, limit_N=limit_N,
-                                     simple=False,
-                                     confidence=confidence)
-        self.first_3_digits = _Prep_(self.stem['F3D'].loc[self.stem['F3D'] != -1],
-                                     digs=3, limit_N=limit_N,
-                                     simple=False,
-                                     confidence=confidence)
-        self.second_digit = _Prep_(self.stem['SD'].loc[self.stem['SD'] != -1],
-                                   digs=22, limit_N=limit_N,
-                                   simple=False,
-                                   confidence=confidence)
-        self.last_2_digits = _Prep_(self.stem['L2D'].loc[self.stem['L2D'] != -1],
-                                    digs=-2, limit_N=limit_N,
-                                    simple=False,
-                                    confidence=confidence)
-        self.stem_sec = Stem(_subtract_sorted_(data), decimals, sign)
+        self.stem = Base(data, decimals, sign)
 
+        for key, val in zip(digs_dict.keys(), digs_dict.values()):
+            self.__setattr__(val, Test(self.stem[val].loc[self.stem[val] !=
+                                       -1], digs=key, limit_N=limit_N,
+                                       simple=False, confidence=confidence))
+        self.stem_sec = Base(_subtract_sorted_(data), decimals, sign)
+
+    def verify():
+        pass
+
+    def inform():
+        pass
+
+    def get_suspects():
+        pass
 
 
 class Source(pd.DataFrame):
@@ -1175,7 +1174,7 @@ integer.")
     return N
 
 
-def _base_(digs):
+def _test_(digs):
     '''
     Returns the base instance for the proper test to be performed
     depending on the digit
@@ -1207,7 +1206,7 @@ def _prep_(data, digs, limit_N, simple=False, confidence=None):
     # crate dataframe from them
     dd = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
     # join the dataframe with the one of expected Benford's frequencies
-    dd = _base_(digs).join(dd).fillna(0)
+    dd = _test_(digs).join(dd).fillna(0)
     # create column with absolute differences
     dd['Dif'] = dd.Found - dd.Expected
     dd['AbsDif'] = np.absolute(dd.Dif)
