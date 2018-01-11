@@ -225,29 +225,61 @@ class Test(pd.DataFrame):
         self.chi_square = _chi_square_2(self)
         self.KS = _KS_2(self)
         self.MAD = self.AbsDif.mean()
+        self.ddf = len(self) - 1
 
 
-class Benford():
+class Benford(object):
     '''
     '''
     def __init__(self, data, decimals=2, sign='all', limit_N=None,
                  confidence=95):
         self.data = data
-        self.stem = Base(data, decimals, sign)
+        self.decimals = decimals
+        self.confidence = confidence
+        self.sign = sign
+        self.limit_N = limit_N
+        self.base = Base(data, decimals, sign)
 
         for key, val in zip(digs_dict.keys(), digs_dict.values()):
-            self.__setattr__(val, Test(self.stem[val].loc[self.stem[val] !=
+            self.__setattr__(val, Test(self.base[val].loc[self.base[val] !=
                                        -1], digs=key, limit_N=limit_N,
                                        simple=False, confidence=confidence))
-        self.stem_sec = Base(_subtract_sorted_(data), decimals, sign)
 
-    def verify():
+    def second_order(self):
+        '''
+        '''
+        self.base_sec = Base(_subtract_sorted_(self.data), self.decimals,
+                             self.sign)
+        for key, val in zip(digs_dict.keys(), digs_dict.values()):
+            self.__setattr__(val + '_sec',
+                             Test(self.base_sec[val].loc[self.base_sec[val] !=
+                                  -1], digs=key, limit_N=self.limit_N,
+                                  simple=False, confidence=self.confidence))
+        self._has_sec_order_ = True
+
+    def summation(self, verbose=True):
+        '''
+        '''
+
+        for test in digs_dict.values():
+            df = self.base.abs().groupby(test)[['Seq']].sum()
+            df['Summ_Percent'] = df.Seq / df.Seq.sum()
+            df.columns.values[0] = 'Summ'
+            df['Summ_AbsDif'] = np.absolute(df.Summ_Percent - 1 / len(df))
+            self.__setattr__(test, self.__getattribute__(test).join(df))
+
+        # if verbose:
+        #     print('Added Summation columns to {}, {}, {}, {} and {}.'.format(
+        #           tuple(digs_dict.values())))
+        self._has_summation_ = True
+
+    def audit(self):
         pass
 
-    def inform():
+    def inform(self):
         pass
 
-    def get_suspects():
+    def get_suspects(self):
         pass
 
 
@@ -663,7 +695,7 @@ records < 1000 after preparation".format(len(temp), len(self) - len(temp)))
         df = self.groupby(d).sum()
         # s.drop(0, inplace=True)
         df['Percent'] = df.ZN / df.ZN.sum()
-        df.columns.values[1] = 'Sum'
+        df.columns.values[1] = 'Summ'
         df = df[['Sum', 'Percent']]
         df['AbsDif'] = np.absolute(df.Percent - li)
 
