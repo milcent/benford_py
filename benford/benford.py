@@ -171,15 +171,18 @@ Convert it to whether int of float, and try again.")
         else:
             if decimals == 'infer':
                 self['ZN'] = ab.astype(str).str\
-                                .replace('.', '')\
-                                .str.lstrip('0')\
-                                .str[:5].astype(int)
+                               .replace('.', '')\
+                               .str.lstrip('0')\
+                               .str[:5].astype(int)
             else:
                 self['ZN'] = (ab * (10 ** decimals)).astype(int)
+
         for col in ['F1D', 'F2D', 'F3D']:
             temp = self.ZN.loc[self.ZN >= 10 ** (rev_digs[col] - 1)]
             self[col] = (temp // 10 ** ((np.log10(temp).astype(int)) -
                                         (rev_digs[col] - 1)))
+            # fill NANs with -1, which is a non-usable value for digits,
+            # thus to be discarded later.
             self[col] = self[col].fillna(-1).astype(int)
 
         temp_sd = self.loc[self.ZN >= 10]
@@ -203,15 +206,12 @@ class Test(pd.DataFrame):
     def __init__(self, data, digs, limit_N, simple=False, confidence=None):
 
         N = _set_N_(len(data), limit_N=limit_N)
-
+        # create a separated Expected distributions object
         pd.DataFrame.__init__(self, _test_(digs))
-        # get the number of occurrences of the digits
+        # create column witg occurrences of the digits in the data
         self['Counts'] = data.value_counts()
-        # get their relative frequencies
+        # create column with relative frequencies
         self['Found'] = data.value_counts(normalize=True)
-        # crate dataframe from them
-        # df = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
-        # join the dataframe with the one of expected Benford's frequencies
         self.fillna(0, inplace=True)
         # create column with absolute differences
         self['Dif'] = self.Found - self.Expected
@@ -260,23 +260,21 @@ class Benford(object):
     def summation(self, verbose=True):
         '''
         '''
-
-        for test in digs_dict.values():
+        for test in ['F1D', 'F2D', 'F3D']:
             df = self.base.abs().groupby(test)[['Seq']].sum()
             df['Summ_Percent'] = df.Seq / df.Seq.sum()
             df.columns.values[0] = 'Summ'
             df['Summ_AbsDif'] = np.absolute(df.Summ_Percent - 1 / len(df))
             self.__setattr__(test, self.__getattribute__(test).join(df))
 
-        # if verbose:
-        #     print('Added Summation columns to {}, {}, {}, {} and {}.'.format(
-        #           tuple(digs_dict.values())))
+        if verbose:
+            print('Added Summation columns to F1D, F2D and F3D tests.')
         self._has_summation_ = True
 
-    def audit(self):
+    def audit(self, confidence=95):
         pass
 
-    def inform(self):
+    def display(self):
         pass
 
     def get_suspects(self):
@@ -350,10 +348,10 @@ Convert it to whether int64 of float64, and try again.")
             if decimals == 'infer':
                 # There is some numerical issue with Windows that required
                 # implementing it differently (and slower)
-                self['ZN'] = ab.astype(str).\
-                                str.replace('.', '').\
-                                str.lstrip('0').str[:5].\
-                                astype(int)
+                self['ZN'] = ab.astype(str)\
+                               .str.replace('.', '')\
+                               .str.lstrip('0').str[:5]\
+                               .astype(int)
             else:
                 self['ZN'] = (ab * (10 ** decimals)).astype(int)
 
@@ -378,7 +376,7 @@ Convert it to whether int64 of float64, and try again.")
             print("The Mantissas VARIANCE is {0}. Ref: 0.083333.".format(
                   p.Mant.var()))
             print("The Mantissas SKEWNESS is {0}. \tRef: 0.".
-                format(p.Mant.skew()))
+                  format(p.Mant.skew()))
             print("The Mantissas KURTOSIS is {0}. \tRef: -1.2.".
                   format(p.Mant.kurt()))
 
