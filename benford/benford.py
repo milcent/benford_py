@@ -1139,27 +1139,8 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     plt.title('Expected vs. Found Distributions', size='xx-large')
     plt.xlabel('Digits', size='x-large')
     plt.ylabel('Distribution (%)', size='x-large')
-    if conf_Z is not None:
-        sig = conf_Z * np.sqrt(y_Exp * (1 - y_Exp) / N)
-        upper = y_Exp + sig + (1 / (2 * N))
-        lower = y_Exp - sig - (1 / (2 * N))
-        u = (y_Found < lower) | (y_Found > upper)
-        c = np.array([colors['m']] * len(u))
-        c[u] = colors['af']
-        # for i, b in enumerate(bars):
-        #     if u.iloc[i]:
-        #         b.set_color(colors['af'])
-        lower *= 100.
-        upper *= 100.
-        ax.plot(x, upper, color=colors['s'], zorder=5)
-        ax.plot(x, lower, color=colors['s'], zorder=5)
-        ax.fill_between(x, upper, lower, color=colors['s'],
-                        alpha=.3, label='Conf')
-    else:
-        c = colors['m']
-    ax.bar(x, y_Found * 100., color=c, label='Found',
-           zorder=3,
-           align='center')
+    bars = plt.bar(x, y_Found * 100., color=colors['m'],
+                   label='Found', zorder=3, align='center')
     ax.plot(x, y_Exp * 100., color=colors['s'], linewidth=2.5,
             label='Benford', zorder=4)
     ax.set_xticks(x)
@@ -1170,9 +1151,24 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
         ind[:10] = np.array(['00', '01', '02', '03', '04', '05',
                              '06', '07', '08', '09'])
         plt.xticks(x, ind, rotation='vertical')
+
+    ax.legend()
     # Plotting the Upper and Lower bounds considering the Z for the
     # informed confidence level
-    ax.legend()
+    if conf_Z is not None:
+        sig = conf_Z * np.sqrt(y_Exp * (1 - y_Exp) / N)
+        upper = y_Exp + sig + (1 / (2 * N))
+        lower = y_Exp - sig - (1 / (2 * N))
+        u = (y_Found < lower) | (y_Found > upper)
+        for i, b in enumerate(bars):
+            if u.iloc[i]:
+                b.set_color(colors['af'])
+        lower *= 100.
+        upper *= 100.
+        ax.plot(x, upper, color=colors['s'], zorder=5)
+        ax.plot(x, lower, color=colors['s'], zorder=5)
+        ax.fill_between(x, upper, lower, color=colors['s'],
+                        alpha=.3, label='Conf')
 
     ax.set_ylim(0, max([y_Exp.max() * 100, y_Found.max() * 100]) + 10 / len(x))
     ax.set_xlim(x[0] - 1, x[-1] + 1)
