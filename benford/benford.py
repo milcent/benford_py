@@ -230,35 +230,81 @@ class Test(pd.DataFrame):
 
 class Benford(object):
     '''
+    Initialize a Benford Analysis object and computes the proporttions for
+    the digits. The tets dataFrames are atributes, i.e., obj.F1D is the First
+    Digit DataFrame, the obj.F2D,the First Two Digits one, and so one, F3D for
+    First Three Digits, SD for Second  Digit and L2D for Last Two Digits.
+
+    Parameters
+    ----------
+    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+        a pandas Series or a pandas DataFrame column, with values being
+        integers or floats.
+
+    decimals: number of decimal places to consider. Defaluts to 2.
+        If integers, set to 0. If set to -infer-, it will remove the zeros
+        and consider up to the fifth decimal place to the right, but will
+        loose performance.
+
+    sign: tells which portion of the data to consider. pos: only the positive
+        entries; neg: only negative entries; all: all entries but zeros.
+        Defaults to all.
+
+    confidence: confidence level to draw lower and upper limits when
+        plotting and to limit the top deviations to show. Defaults to None.
+
+    limit_N: sets a limit to N as the sample size for the calculation of
+        the Z scores if the sample is too big. Defaults to None.
     '''
-    def __init__(self, data, decimals=2, sign='all', limit_N=None,
-                 confidence=95):
+
+    def __init__(self, data, decimals=2, sign='all', confidence=95,
+                 limit_N=None, verbose=True):
         self.data = data
         self.decimals = decimals
         self.confidence = confidence
         self.sign = sign
         self.limit_N = limit_N
+        self.verbose = verbose
         self.base = Base(data, decimals, sign)
 
-        for key, val in zip(digs_dict.keys(), digs_dict.values()):
+        for key, val in digs_dict.items():
             self.__setattr__(val, Test(self.base[val].loc[self.base[val] !=
                                        -1], digs=key, limit_N=limit_N,
                                        simple=False, confidence=confidence))
+        # dict with the numbers of discarded entries for each test column
+        self._discarded = {key: val for (key, val) in zip(digs_dict.values(),
+                           [len(self.base[col].loc[self.base[col] == -1]) for
+                            col in digs_dict.values()])}
+        if self.verbose:
+            print('Benford started.')
+            print('Initial sample size: {0}.'.format(len(self.data)))
+            print('Test performed on {0} registries.'.format(len(self.base)))
+            print('Number of discarded entries for each test:\n{0}'
+                  .format(self._discarded))
 
     def second_order(self):
         '''
+        Adds the Second Order Test DataFrames to the Benford Object.
+        The Second Order Tests are the Benford's tests performed on the
+        differences between the ordered sample (a value minus the one
+        before it, and so on). If the original series is Benford-compliant,
+        this new sequence should aldo follow Beford.
         '''
         self.base_sec = Base(_subtract_sorted_(self.data), self.decimals,
                              self.sign)
-        for key, val in zip(digs_dict.keys(), digs_dict.values()):
+        for key, val in digs_dict.items():
             self.__setattr__(val + '_sec',
                              Test(self.base_sec[val].loc[self.base_sec[val] !=
                                   -1], digs=key, limit_N=self.limit_N,
                                   simple=False, confidence=self.confidence))
+        if self.verbose:
+            print('Added Second Order tests DataFrames')
         self._has_sec_order_ = True
 
-    def summation(self, verbose=True):
+    def summation(self):
         '''
+        Adds the Summation columns to the tests DataFrames of the First,
+        First Two, and First Three Digits tests
         '''
         for test in ['F1D', 'F2D', 'F3D']:
             df = self.base.abs().groupby(test)[['Seq']].sum()
@@ -267,7 +313,7 @@ class Benford(object):
             df['Summ_AbsDif'] = np.absolute(df.Summ_Percent - 1 / len(df))
             self.__setattr__(test, self.__getattribute__(test).join(df))
 
-        if verbose:
+        if self.verbose:
             print('Added Summation columns to F1D, F2D and F3D tests.')
         self._has_summation_ = True
 
@@ -293,8 +339,9 @@ class Source(pd.DataFrame):
         integers or floats.
 
     decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry, but will loose performance.
+        If integers, set to 0. If set to -infer-, it will remove the zeros
+        and consider up to the fifth decimal place to the right, but will
+        loose performance.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -421,8 +468,8 @@ Convert it to whether int of float, and try again.")
             positive and negative, regardless of whether Z is higher than
             the confidence or not.
 
-        limit_N: sets a limit to N for the calculation of the Z score
-            if the sample is too big. Defaults to None.
+        limit_N: sets a limit to N as the sample size for the calculation of
+            the Z scores if the sample is too big. Defaults to None.
 
         MAD: calculates the Mean Absolute Difference between the
             found and the expected distributions; defaults to False.
@@ -519,8 +566,8 @@ records < {2} after preparation.".format(len(temp), len(self) - len(temp),
             positive and negative, regardless of whether Z is higher than
             the confidence or not.
 
-        limit_N: sets a limit to N for the calculation of the Z score
-            if the sample is too big. Defaults to None.
+        limit_N: sets a limit to N as the sample size for the calculation of
+            the Z scores if the sample is too big. Defaults to None.
 
         MSE: calculates the Mean Square Error of the sample; defaults to
             False.
@@ -605,8 +652,8 @@ records < {2} after preparation.".format(len(temp), len(self) - len(temp),
             positive and negative, regardless of whether Z is higher than
             the confidence or not.
 
-        limit_N: sets a limit to N for the calculation of the Z score
-            if the sample is too big. Defaults to None.
+        limit_N: sets a limit to N as the sample size for the calculation of
+            the Z scores if the sample is too big. Defaults to None.
 
         MSE: calculates the Mean Square Error of the sample; defaults to
             False.
@@ -821,8 +868,9 @@ class Roll_mad(pd.Series):
     window: size of the subset to be used.
 
         decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry, but will loose performance.
+        If integers, set to 0. If set to -infer-, it will remove the zeros
+        and consider up to the fifth decimal place to the right, but will
+        loose performance.
 
 
     sign: tells which portion of the data to consider. pos: only the positive
@@ -874,8 +922,9 @@ class Roll_mse(pd.Series):
     window: size of the subset to be used.
 
         decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry, but will loose performance.
+        If integers, set to 0. If set to -infer-, it will remove the zeros
+        and consider up to the fifth decimal place to the right, but will
+        loose performance.
 
 
     sign: tells which portion of the data to consider. pos: only the positive
@@ -1273,8 +1322,9 @@ def first_digits(data, digs, decimals=2, sign='all', inform=True,
         integers or floats.
 
     decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry, but will loose performance.
+        If integers, set to 0. If set to -infer-, it will remove the zeros
+        and consider up to the fifth decimal place to the right, but will
+        loose performance.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1301,8 +1351,8 @@ def first_digits(data, digs, decimals=2, sign='all', inform=True,
         positive and negative, regardless of whether Z is higher than
         the confidence or not.
 
-    limit_N: sets a limit to N for the calculation of the Z score
-        if the sample is too big. Defaults to None.
+    limit_N: sets a limit to N as the sample size for the calculation of
+        the Z scores if the sample is too big. Defaults to None.
 
     MSE: calculates the Mean Square Error of the sample; defaults to
         False.
@@ -1350,8 +1400,9 @@ def second_digit(data, decimals=2, sign='all', inform=True,
         integers or floats.
 
     decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry, but will loose performance.
+        If integers, set to 0. If set to -infer-, it will remove the zeros
+        and consider up to the fifth decimal place to the right, but will
+        loose performance.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1375,8 +1426,8 @@ def second_digit(data, decimals=2, sign='all', inform=True,
         positive and negative, regardless of whether Z is higher than
         the confidence or not.
 
-    limit_N: sets a limit to N for the calculation of the Z score
-        if the sample is too big. Defaults to None.
+    limit_N: sets a limit to N as the sample size for the calculation of
+        the Z scores if the sample is too big. Defaults to None.
 
     MSE: calculates the Mean Square Error of the sample; defaults to
         False.
@@ -1424,8 +1475,9 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
         integers or floats.
 
     decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry, but will loose performance.
+        If integers, set to 0. If set to -infer-, it will remove the zeros
+        and consider up to the fifth decimal place to the right, but will
+        loose performance.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1446,8 +1498,8 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
         positive and negative, regardless of whether Z is higher than
         the confidence or not.
 
-    limit_N: sets a limit to N for the calculation of the Z score
-        if the sample is too big. Defaults to None.
+    limit_N: sets a limit to N as the sample size for the calculation of
+        the Z scores if the sample is too big. Defaults to None.
 
     MAD: calculates the Mean Absolute Difference between the
         found and the expected distributions; defaults to False.
@@ -1520,8 +1572,9 @@ def summation(data, digs=2, decimals=2, sign='all', top=20, inform=True,
         3- first three. Defaults to 2.
 
     decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry, but will loose performance.
+        If integers, set to 0. If set to -infer-, it will remove the zeros
+        and consider up to the fifth decimal place to the right, but will
+        loose performance.
 
     top: choses how many top values to show. Defaults to 20.
 
@@ -1551,8 +1604,9 @@ def mad(data, test, decimals=2, sign='all'):
         integers or floats.
 
     decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry, but will loose performance.
+        If integers, set to 0. If set to -infer-, it will remove the zeros
+        and consider up to the fifth decimal place to the right, but will
+        loose performance.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1640,8 +1694,9 @@ def rolling_mad(data, test, window, decimals=2, sign='all', show_plot=False):
     window: size of the subset to be used.
 
     decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry, but will loose performance.
+        If integers, set to 0. If set to -infer-, it will remove the zeros
+        and consider up to the fifth decimal place to the right, but will
+        loose performance.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1687,8 +1742,9 @@ def rolling_mse(data, test, window, decimals=2, sign='all', show_plot=False):
     window: size of the subset to be used.
 
     decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry, but will loose performance.
+        If integers, set to 0. If set to -infer-, it will remove the zeros
+        and consider up to the fifth decimal place to the right, but will
+        loose performance.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1787,8 +1843,9 @@ def second_order(data, test, decimals=2, sign='all', inform=True, MAD=False,
         Second Digits; -2 or 'L2D': Last Two Digits.
 
     decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will deal separately
-        (and differently) with each registry, but will loose performance.
+        If integers, set to 0. If set to -infer-, it will remove the zeros
+        and consider up to the fifth decimal place to the right, but will
+        loose performance.
 
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
@@ -1812,8 +1869,8 @@ def second_order(data, test, decimals=2, sign='all', inform=True, MAD=False,
         positive and negative, regardless of whether Z is higher than
         the confidence or not.
 
-    limit_N: sets a limit to N for the calculation of the Z score
-        if the sample is too big. Defaults to None.
+    limit_N: sets a limit to N as the sample size for the calculation of
+        the Z scores if the sample is too big. Defaults to None.
 
     MSE: calculates the Mean Square Error of the sample; defaults to
         False.
