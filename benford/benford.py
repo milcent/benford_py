@@ -29,6 +29,8 @@ import matplotlib.pyplot as plt
 
 digs_dict = {1: 'F1D', 2: 'F2D', 3: 'F3D', 22: 'SD', -2: 'L2D'}
 
+sec_order_dict = {key: val + '_sec' for key, val in digs_dict.items()}
+
 rev_digs = {'F1D': 1, 'F2D': 2, 'F3D': 3, 'SD': 22, 'L2D': -2}
 
 names = {1: 'First Digit Test', 2: 'First Two Digits Test',
@@ -88,9 +90,7 @@ class First(pd.DataFrame):
     '''
 
     def __init__(self, digs, plot=True):
-        if digs not in [1, 2, 3]:
-            raise ValueError("The value assigned to the parameter -digs-\
- was {0}. Value must be 1, 2 or 3.".format(digs))
+        _check_digs_(digs)
         dig_name = 'First_{0}_Dig'.format(digs)
         Dig = np.arange(10 ** (digs - 1), 10 ** digs)
         Exp = np.log10(1 + (1. / Dig))
@@ -145,12 +145,27 @@ class LastTwo(pd.DataFrame):
 
 class Base(pd.DataFrame):
     '''
+    Inetrnalizes and prepares the data for Analysis.
+    Parameters
+    ----------
+    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+        a pandas Series or a pandas DataFrame column, with values being
+        integers or floats.
+
+    decimals: number of decimal places to consider. Defaluts to 2.
+        If integers, set to 0. If set to -infer-, it will remove the zeros
+        and consider up to the fifth decimal place to the right, but will
+        loose performance.
+
+    sign: tells which portion of the data to consider. pos: only the positive
+        entries; neg: only negative entries; all: all entries but zeros.
+        Defaults to all.`
     '''
-    def __init__(self, data, decimals, sign='all'):
+    def __init__(self, data, decimals, sign='all', sec_order=False):
 
         pd.DataFrame.__init__(self, {'Seq': data})
 
-        if self.Seq.dtypes != 'float' and self.Seq.dtypes != 'int':
+        if (self.Seq.dtypes != 'float') & (self.Seq.dtypes != 'int'):
             raise TypeError("The sequence dtype was not int nor float.\n\
 Convert it to whether int of float, and try again.")
 
@@ -182,7 +197,7 @@ Convert it to whether int of float, and try again.")
             self[col] = (temp // 10 ** ((np.log10(temp).astype(int)) -
                                         (rev_digs[col] - 1)))
             # fill NANs with -1, which is a non-usable value for digits,
-            # thus to be discarded later.
+            # to be discarded later.
             self[col] = self[col].fillna(-1).astype(int)
 
         temp_sd = self.loc[self.ZN >= 10]
@@ -196,44 +211,82 @@ Convert it to whether int of float, and try again.")
 
         self['Mant'] = _getMantissas_(ab)
 
+    # def __setattr__(self, name, value):
+    #     setattr(self, name, value)
+
 
 class Test(pd.DataFrame):
     '''
     Transforms the original number sequence into a DataFrame reduced
     by the ocurrences of the chosen digits, creating other computed
     columns
-    '''
-    def __init__(self, data, digs, limit_N, simple=False, confidence=None):
 
-        N = _set_N_(len(data), limit_N=limit_N)
+    Parameters
+    ----------
+    base: The Base object with the data prepared for Analysis
+
+    digs: Tells which test to perform -> 1: first digit; 2: first two digits;
+        3: furst three digits; 22: second digit; -2: last two digits.
+
+    limit_N: sets a limit to N as the sample size for the calculation of
+            the Z scores if the sample is too big. Defaults to None.
+    '''
+    def __init__(self, base, digs):
+
         # create a separated Expected distributions object
-        pd.DataFrame.__init__(self, _test_(digs))
-        # create column witg occurrences of the digits in the data
-        self['Counts'] = data.value_counts()
+        super(Test, self).__init__(_test_(digs))
+        # create column witg occurrences of the digits in the base
+        self['Counts'] = base[digs_dict[digs]].value_counts()
         # create column with relative frequencies
-        self['Found'] = data.value_counts(normalize=True)
+        self['Found'] = base[digs_dict[digs]].value_counts(normalize=True)
         self.fillna(0, inplace=True)
         # create column with absolute differences
-        self['Dif'] = self.Found - self.Expected
-        self['AbsDif'] = np.absolute(self.Dif)
-        if simple:
-            del self['Dif']
-        else:
-            if confidence is not None:
-                self['Z_score'] = _Z_score(self, N)
-        self.name = names[digs]
+        self['AbsDif'] = np.absolute(self.Found - self.Expected)
+        self.N = len(base)
+        self['Z_score'] = _Z_score(self, self.N)
+
         self.chi_square = _chi_square_2(self)
         self.KS = _KS_2(self)
         self.MAD = self.AbsDif.mean()
         self.ddf = len(self) - 1
 
 
+class Summ(pd.DataFrame):
+    '''
+    Gets the base object and outputs a Summation test object
+
+    Parameters
+    ----------
+    base: The Base object with the data prepared for Analysis
+
+    test: The test for which to compute the summation
+
+    '''
+    def __init__(self, base, test):
+        super(Summ, self).__init__(base.abs()
+                                   .groupby(test)[['Seq']]
+                                   .sum())
+        self['Percent'] = self.Seq / self.Seq.sum()
+        self.columns.values[0] = 'Sum'
+        self['AbsDif'] = np.absolute(self.Percent - 1 / len(self))
+        self.index = self.index.astype(int)
+        self.MAD = self.AbsDif.mean()
+
+
 class Benford(object):
     '''
-    Initialize a Benford Analysis object and computes the proporttions for
+    Initializes a Benford Analysis object and computes the proportions for
     the digits. The tets dataFrames are atributes, i.e., obj.F1D is the First
     Digit DataFrame, the obj.F2D,the First Two Digits one, and so one, F3D for
     First Three Digits, SD for Second  Digit and L2D for Last Two Digits.
+
+    It also computes the Second Order Tests, which are the Benford's tests
+    performed on the differences between the ordered sample (a value minus
+    the one before it, and so on). If the original series is Benford-compliant,
+    this new sequence should aldo follow Beford.
+
+    In adition, it creates the Summation test columns for the DataFrames of the
+    First, First Two, and First Three Digits.
 
     Parameters
     ----------
@@ -250,78 +303,75 @@ class Benford(object):
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.
 
-    confidence: confidence level to draw lower and upper limits when
-        plotting and to limit the top deviations to show. Defaults to None.
-
-    limit_N: sets a limit to N as the sample size for the calculation of
-        the Z scores if the sample is too big. Defaults to None.
+    verbose: gives some information about the data and the registries used
+        and discarded for each test.
     '''
 
-    def __init__(self, data, decimals=2, sign='all', confidence=95,
-                 limit_N=None, verbose=True):
+    def __init__(self, data, decimals=2, sign='all', verbose=True):
         self.data = data
         self.decimals = decimals
-        self.confidence = confidence
         self.sign = sign
-        self.limit_N = limit_N
         self.verbose = verbose
         self.base = Base(data, decimals, sign)
+        self.base_sec = Base(_subtract_sorted_(data), decimals, sign)
 
+        # Create a DatFrame for each Test and Second order Test
         for key, val in digs_dict.items():
-            self.__setattr__(val, Test(self.base[val].loc[self.base[val] !=
-                                       -1], digs=key, limit_N=limit_N,
-                                       simple=False, confidence=confidence))
+            setattr(self, val, Test(self.base.loc[self.base[val] !=
+                                    -1], digs=key))
+            setattr(self, sec_order_dict[key],
+                    Test(self.base_sec.loc[self.base_sec[val] !=
+                         -1], digs=key))
         # dict with the numbers of discarded entries for each test column
         self._discarded = {key: val for (key, val) in zip(digs_dict.values(),
                            [len(self.base[col].loc[self.base[col] == -1]) for
                             col in digs_dict.values()])}
-        if self.verbose:
-            print('Benford started.')
+
+        self._discarded_sec = {key: val for (key, val) in zip(
+                               sec_order_dict.values(),
+                               [sum(self.base_sec[col] == -1) for col in
+                                digs_dict.values()])}
+
+        # Create Summation test columns
+        for test in ['F1D', 'F2D', 'F3D']:
+            setattr(self, test + '_Summ', Summ(self.base, test))
+
+        if verbose:
+            print('-----Benford-----.')
             print('Initial sample size: {0}.'.format(len(self.data)))
             print('Test performed on {0} registries.'.format(len(self.base)))
             print('Number of discarded entries for each test:\n{0}'
                   .format(self._discarded))
+            print('Second order tests run in {0} registries'
+                  .format(len(self.base_sec)))
+            print('Number of discarded entries for second order tests:\n{0}'
+                  .format(self._discarded_sec))
+            print('Added Summation columns to F1D, F2D and F3D Tests.')
 
-    def second_order(self):
+    def audit(self, tests, confidence=95, limit_N=None, display=True):
         '''
-        Adds the Second Order Test DataFrames to the Benford Object.
-        The Second Order Tests are the Benford's tests performed on the
-        differences between the ordered sample (a value minus the one
-        before it, and so on). If the original series is Benford-compliant,
-        this new sequence should aldo follow Beford.
+
+        Paremeters
+        ----------
+        tests: string, list of strings or 'all'
+
+        confidence: confidence level to draw lower and upper limits when
+            plotting and to limit the top deviations to show. Defaults to None.
+
+        limit_N: sets a limit to N as the sample size for the calculation of
+            the Z scores if the sample is too big. Defaults to None.
         '''
-        self.base_sec = Base(_subtract_sorted_(self.data), self.decimals,
-                             self.sign)
-        for key, val in digs_dict.items():
-            self.__setattr__(val + '_sec',
-                             Test(self.base_sec[val].loc[self.base_sec[val] !=
-                                  -1], digs=key, limit_N=self.limit_N,
-                                  simple=False, confidence=self.confidence))
-        if self.verbose:
-            print('Added Second Order tests DataFrames')
-        self._has_sec_order_ = True
+        _check_confidence_(confidence)
 
-    def summation(self):
-        '''
-        Adds the Summation columns to the tests DataFrames of the First,
-        First Two, and First Three Digits tests
-        '''
-        for test in ['F1D', 'F2D', 'F3D']:
-            df = self.base.abs().groupby(test)[['Seq']].sum()
-            df['Summ_Percent'] = df.Seq / df.Seq.sum()
-            df.columns.values[0] = 'Summ'
-            df['Summ_AbsDif'] = np.absolute(df.Summ_Percent - 1 / len(df))
-            self.__setattr__(test, self.__getattribute__(test).join(df))
-
-        if self.verbose:
-            print('Added Summation columns to F1D, F2D and F3D tests.')
-        self._has_summation_ = True
-
-    def audit(self, confidence=95):
-        pass
-
-    def display(self):
-        pass
+        # if tests != 'all':
+        #     if 
+        #     test_list = []
+        #     if not isinstance(tests, list):
+        #         test_list.append(tests)
+        #     else:
+        #         test_list.extend(tests)
+        # else:
+        #     test_list = 
 
     def get_suspects(self):
         pass
@@ -329,7 +379,7 @@ class Benford(object):
 
 class Source(pd.DataFrame):
     '''
-    Prepares the data for nalysis. pandas DataFrame subclass.
+    Prepares the data for Analysis. pandas DataFrame subclass.
 
     Parameters
     ----------
@@ -451,8 +501,7 @@ Convert it to whether int of float, and try again.")
             2 (first two digits) or 3 (first three digits).
 
         inform: tells the number of registries that are being subjected to
-            the a
-   nalysis; defaults to True
+            the analysis; defaults to True
 
         digs: number of first digits to consider. Must be 1 (first digit),
             2 (first two digits) or 3 (first three digits).
@@ -482,14 +531,10 @@ Convert it to whether int of float, and try again.")
         ret_df: returns the test DataFrame. Defaults to False. True if run by
             the test function.
         '''
-        # Check on the possible values for confidence lavels
-        if str(confidence) not in list(confs.keys()):
-            raise ValueError("Value of parameter -confidence- must be one\
- of the following: {0}".format(list(confs.keys())))
+        # Check on the possible values for confidence levels
+        _check_confidence_(confidence)
         # Check on possible digits
-        if digs not in [1, 2, 3]:
-            raise ValueError("The value assigned to the parameter -digs-\
- was {0}. Value must be 1, 2 or 3.".format(digs))
+        _check_digs_(digs)
 
         # self[digs_dict[digs]] = self.ZN.astype(str).str[:digs].astype(int)
         temp = self.loc[self.ZN >= 10 ** (digs - 1)]
@@ -577,9 +622,7 @@ records < {2} after preparation.".format(len(temp), len(self) - len(temp),
         ret_df: returns the test DataFrame. Defaults to False. True if run by
             the test function.
         '''
-        if str(confidence) not in list(confs.keys()):
-            raise ValueError("Value of -confidence- must be one of the\
- following: {0}".format(list(confs.keys())))
+        _check_confidence_(confidence)
 
         conf = confs[str(confidence)]
 
@@ -661,9 +704,7 @@ records < {2} after preparation.".format(len(temp), len(self) - len(temp),
         show_plot: draws the test plot.
 
         '''
-        if str(confidence) not in list(confs.keys()):
-            raise ValueError("Value of -confidence- must be one of the \
-following: {0}".format(list(confs.keys())))
+        _check_confidence_(confidence)
 
         conf = confs[str(confidence)]
 
@@ -723,10 +764,7 @@ records < 1000 after preparation".format(len(temp), len(self) - len(temp)))
 
         show_plot -> plots the results. Defaults to True.
         '''
-
-        if digs not in [1, 2, 3]:
-            raise ValueError("The value assigned to the parameter -digs-\
- was {0}. Value must be 1, 2 or 3.".format(digs))
+        _check_digs_(digs)
 
         if digs == 1:
             top = 9
@@ -1812,18 +1850,6 @@ def duplicates(data, top_Rep=20, inform=True):
     return dup_count
 
 
-def _subtract_sorted_(data):
-    '''
-    Subtracts the sorted sequence elements from each other, discarding zeros.
-    Used in the Second Order test
-    '''
-    temp = data.copy()
-    temp.sort_values(inplace=True)
-    temp = temp - temp.shift(1)
-    temp = temp.loc[temp != 0]
-    return temp
-
-
 def second_order(data, test, decimals=2, sign='all', inform=True, MAD=False,
                  confidence=None, high_Z='pos', limit_N=None, MSE=False,
                  show_plot=True):
@@ -1907,6 +1933,15 @@ def second_order(data, test, decimals=2, sign='all', inform=True, MAD=False,
     return data
 
 
+def _check_digs_(digs):
+    '''
+    Chhecks the possible values for the digs of the First Digits test
+    '''
+    if digs not in [1, 2, 3]:
+        raise ValueError("The value assigned to the parameter -digs-\
+ was {0}. Value must be 1, 2 or 3.".format(digs))
+
+
 def _check_test_(test):
     '''
     Checks the test chosen, both for int or str values
@@ -1924,11 +1959,34 @@ def _check_test_(test):
             raise ValueError('test was set to {0}. Should be one of {1}'
                              .format(test, rev_digs.keys()))
     else:
-        raise ValueError('Wrong value chosen for test parameter. \
-Please, refer to docs.')
+        raise ValueError('Wrong value chosen for test parameter. Possible values\
+         are\n {0} for ints and\n {1} for strings.'.format(
+                         list(digs_dict.keys()),
+                         list(rev_digs.keys())))
+
+
+def _check_confidence_(confidence):
+    '''
+    '''
+    if str(confidence) not in confs.keys():
+        raise ValueError("Value of parameter -confidence- must be one\
+ of the following: {0}".format(list(confs.keys())))
+
+
+def _subtract_sorted_(data):
+    '''
+    Subtracts the sorted sequence elements from each other, discarding zeros.
+    Used in the Second Order test
+    '''
+    sec = data.copy()
+    sec.sort_values(inplace=True)
+    sec = sec - sec.shift(1)
+    sec = sec.loc[sec != 0]
+    return sec
 
 
 def _inform_(df, high_Z, conf):
+
     '''
     Selects and sorts by the Z_stats chosen to be considered, informing or not,
     and populating the maps dict for further back analysis of the entries.
