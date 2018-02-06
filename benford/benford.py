@@ -39,7 +39,7 @@ names = {1: 'First Digit Test', 2: 'First Two Digits Test',
 
 mad_dict = {1: [0.006, 0.012, 0.015], 2: [0.0012, 0.0018, 0.0022],
             3: [0.00036, 0.00044, 0.00050], 22: [0.008, 0.01, 0.012],
-            'F1D': 'First Digit', 'F2D': 'First Two Digits',
+            -2: None, 'F1D': 'First Digit', 'F2D': 'First Two Digits',
             'F3D': 'First Three Digits', 'SD': 'Second Digits'}
 
 colors = {'m': '#00798c', 'b': '#E2DCD8', 's': '#9c3848',
@@ -51,26 +51,27 @@ confs = {'None': None, '80': 1.285, '85': 1.435, '90': 1.645, '95': 1.96,
          '99.9999': 4.892, '99.99999': 5.327}
 
 crit_chi2 = {8: {'80': 11.03, '85': 12.027, '90': 13.362, '95': 15.507,
-                 '99': 20.090, '99.9': 26.124, '99.99': 31.827,
+                 '99': 20.090, '99.9': 26.124, '99.99': 31.827, 'None': None,
                  '99.999': 37.332, '99.9999': 42.701, '99.99999': 47.972},
              9: {'80': 12.242, '85': 13.288, '90': 14.684, '95': 16.919,
-                 '99': 21.666, '99.9': 27.877, '99.99': 33.72,
+                 '99': 21.666, '99.9': 27.877, '99.99': 33.72, 'None': None,
                  '99.999': 39.341, '99.9999': 44.811, '99.99999': 50.172},
              89: {'80': 99.991, '85': 102.826, '90': 106.469, '95': 112.022,
                   '99': 122.942, '99.9': 135.978, '99.99': 147.350,
-                  '99.999': 157.702, '99.9999': 167.348, '99.99999': 176.471},
+                  '99.999': 157.702, '99.9999': 167.348, '99.99999': 176.471,
+                  'None': None},
              99: {'80': 110.607, '85': 113.585, '90': 117.407,
                   '95': 123.225, '99': 134.642, '99.9': 148.230,
                   '99.99': 160.056, '99.999': 170.798, '99.9999': 180.792,
-                  '99.99999': 190.23},
+                  '99.99999': 190.23, 'None': None},
              899: {'80': 934.479, '85': 942.981, '90': 953.752, '95': 969.865,
                    '99': 1000.575, '99.9': 1035.753, '99.99': 1065.314,
                    '99.999': 1091.422, '99.9999': 1115.141,
-                   '99.99999': 1137.082}
+                   '99.99999': 1137.082, 'None': None}
              }
 KS_crit = {'80': 1.075, '85': 1.139, '90': 1.125, '95': 1.36, '99': 1.63,
            '99.9': 1.95, '99.99': 2.23, '99.999': 2.47,
-           '99.9999': 2.7, '99.99999': 2.9}
+           '99.9999': 2.7, '99.99999': 2.9, 'None': None}
 
 
 class First(pd.DataFrame):
@@ -231,7 +232,7 @@ class Test(pd.DataFrame):
     limit_N: sets a limit to N as the sample size for the calculation of
             the Z scores if the sample is too big. Defaults to None.
     '''
-    def __init__(self, base, digs):
+    def __init__(self, base, digs, limit_N=None):
 
         # create a separated Expected distributions object
         super(Test, self).__init__(_test_(digs))
@@ -242,7 +243,7 @@ class Test(pd.DataFrame):
         self.fillna(0, inplace=True)
         # create column with absolute differences
         self['AbsDif'] = np.absolute(self.Found - self.Expected)
-        self.N = len(base)
+        self.N = _set_N_(len(base), limit_N)
         self['Z_score'] = _Z_score(self, self.N)
 
         self.chi_square = _chi_square_2(self)
@@ -305,24 +306,37 @@ class Benford(object):
         First Three Digits. The summation tests can also be called separately,
         through the method summation().
 
+    limit_N: sets a limit to N as the sample size for the calculation of
+        the Z scores if the sample is too big. Defaults to None.
+
     verbose: gives some information about the data and the registries used
         and discarded for each test.
     '''
 
-    def __init__(self, data, decimals=2, sign='all', sec_order=False,
-                 summation=False, verbose=True):
+    def __init__(self, data, decimals=2, sign='all', confidence=95,
+                 sec_order=False, summation=False, limit_N=None, verbose=True):
         self.data = data
         self.decimals = decimals
         self.sign = sign
+        self.confidence = str(_check_confidence_(confidence))
+        self.limit_N = limit_N
         self.verbose = verbose
         self.base = Base(data, decimals, sign)
         self.tests = []
+        self.crit_vals = {'Z': confs[self.confidence],
+                          'KS': KS_crit[self.confidence]
+                          }
 
         # Create a DatFrame for each Test and Second order Test
         for key, val in digs_dict.items():
-            setattr(self, val, Test(self.base.loc[self.base[val] !=
-                                    -1], digs=key))
+            test = Test(self.base.loc[self.base[val] !=
+                        -1], digs=key, limit_N=self.limit_N)
+            setattr(self, val, test)
             self.tests.append(val)
+            self.crit_vals[val] = {'chi2': crit_chi2[test.ddf]
+                                                    [self.confidence],
+                                   'MAD': mad_dict[key]
+                                   }
         # dict with the numbers of discarded entries for each test column
         self._discarded = {key: val for (key, val) in zip(digs_dict.values(),
                            [len(self.base[col].loc[self.base[col] == -1]) for
@@ -343,15 +357,21 @@ class Benford(object):
 
     def sec_order(self, verbose=True):
         '''
-        Runs the test in a modified 
-        '''
+        Runs the Second Order tests, which are the Benford's tests
+        performed on the differences between the ordered sample (a value minus
+        the one before it, and so on). If the original series is Benford-
+        compliant, this new sequence should aldo follow Beford. The Second
+        Order can also be called separately, through the method sec_order().
+            '''
         self.base_sec = Base(_subtract_sorted_(self.data),
                              decimals=self.decimals, sign=self.sign)
         for key, val in digs_dict.items():
-            setattr(self, sec_order_dict[key],
-                    Test(self.base_sec.loc[self.base_sec[val] !=
-                         -1], digs=key))
+            test = Test(self.base_sec.loc[self.base_sec[val] !=
+                        -1], digs=key, limit_N=self.limit_N)
+            setattr(self, sec_order_dict[key], test)
             self.tests.append(val)
+            # No need to populate crit_vals dict, since they are the
+            # same and do not depend on N
             self._discarded_sec = {key: val for (key, val) in zip(
                                    sec_order_dict.values(),
                                    [sum(self.base_sec[col] == -1) for col in
@@ -374,6 +394,12 @@ class Benford(object):
         if verbose:
             print('\nAdded Summation DataFrames to F1D, F2D and F3D Tests.')
 
+    def update_confidence(self, new_conf):
+        '''
+        Updates the confidence level for the tests.
+        '''
+        self.confidence = _check_confidence_(new_conf)
+
     def audit(self, tests, confidence=95, limit_N=None, display=True):
         '''
 
@@ -387,7 +413,7 @@ class Benford(object):
         limit_N: sets a limit to N as the sample size for the calculation of
             the Z scores if the sample is too big. Defaults to None.
         '''
-        _check_confidence_(confidence)
+        confidence = str(_check_confidence_(confidence))
 
         # if tests != 'all':
         #     if 
@@ -558,7 +584,7 @@ Convert it to whether int of float, and try again.")
             the test function.
         '''
         # Check on the possible values for confidence levels
-        _check_confidence_(confidence)
+        confidence = str(_check_confidence_(confidence))
         # Check on possible digits
         _check_digs_(digs)
 
@@ -648,7 +674,7 @@ records < {2} after preparation.".format(len(temp), len(self) - len(temp),
         ret_df: returns the test DataFrame. Defaults to False. True if run by
             the test function.
         '''
-        _check_confidence_(confidence)
+        confidence = str(_check_confidence_(confidence))
 
         conf = confs[str(confidence)]
 
@@ -730,7 +756,7 @@ records < {2} after preparation.".format(len(temp), len(self) - len(temp),
         show_plot: draws the test plot.
 
         '''
-        _check_confidence_(confidence)
+        confidence = str(_check_confidence_(confidence))
 
         conf = confs[str(confidence)]
 
@@ -1314,15 +1340,14 @@ def _plot_sum_(df, figsize, li):
 def _set_N_(len_df, limit_N):
     # Assigning to N the superior limit or the lenght of the series
     if limit_N is None or limit_N > len_df:
-        N = len_df
+        return len_df
     # Check on limit_N being a positive integer
     else:
         if limit_N < 0 or not isinstance(limit_N, int):
             raise ValueError("-limit_N- must be None or a positive \
 integer.")
         else:
-            N = limit_N
-    return N
+            return limit_N
 
 
 def _test_(digs):
@@ -1997,6 +2022,7 @@ def _check_confidence_(confidence):
     if str(confidence) not in confs.keys():
         raise ValueError("Value of parameter -confidence- must be one\
  of the following: {0}".format(list(confs.keys())))
+    return confidence
 
 
 def _subtract_sorted_(data):
