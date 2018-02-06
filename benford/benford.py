@@ -280,14 +280,6 @@ class Benford(object):
     Digit DataFrame, the obj.F2D,the First Two Digits one, and so one, F3D for
     First Three Digits, SD for Second  Digit and L2D for Last Two Digits.
 
-    It also computes the Second Order Tests, which are the Benford's tests
-    performed on the differences between the ordered sample (a value minus
-    the one before it, and so on). If the original series is Benford-compliant,
-    this new sequence should aldo follow Beford.
-
-    In adition, it creates the Summation test columns for the DataFrames of the
-    First, First Two, and First Three Digits.
-
     Parameters
     ----------
     data: sequence of numbers to be evaluated. Must be a numpy 1D array,
@@ -303,50 +295,84 @@ class Benford(object):
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.
 
+    sec_order: runs the Second Order tests, which are the Benford's tests
+        performed on the differences between the ordered sample (a value minus
+        the one before it, and so on). If the original series is Benford-
+        compliant, this new sequence should aldo follow Beford. The Second
+        Order can also be called separately, through the method sec_order().
+
+    summation: creates the Summation DataFrames for the First, First Two, and
+        First Three Digits. The summation tests can also be called separately,
+        through the method summation().
+
     verbose: gives some information about the data and the registries used
         and discarded for each test.
     '''
 
-    def __init__(self, data, decimals=2, sign='all', verbose=True):
+    def __init__(self, data, decimals=2, sign='all', sec_order=False,
+                 summation=False, verbose=True):
         self.data = data
         self.decimals = decimals
         self.sign = sign
         self.verbose = verbose
         self.base = Base(data, decimals, sign)
-        self.base_sec = Base(_subtract_sorted_(data), decimals, sign)
+        self.tests = []
 
         # Create a DatFrame for each Test and Second order Test
         for key, val in digs_dict.items():
             setattr(self, val, Test(self.base.loc[self.base[val] !=
                                     -1], digs=key))
-            setattr(self, sec_order_dict[key],
-                    Test(self.base_sec.loc[self.base_sec[val] !=
-                         -1], digs=key))
+            self.tests.append(val)
         # dict with the numbers of discarded entries for each test column
         self._discarded = {key: val for (key, val) in zip(digs_dict.values(),
                            [len(self.base[col].loc[self.base[col] == -1]) for
                             col in digs_dict.values()])}
 
-        self._discarded_sec = {key: val for (key, val) in zip(
-                               sec_order_dict.values(),
-                               [sum(self.base_sec[col] == -1) for col in
-                                digs_dict.values()])}
-
-        # Create Summation test columns
-        for test in ['F1D', 'F2D', 'F3D']:
-            setattr(self, test + '_Summ', Summ(self.base, test))
-
         if verbose:
-            print('-----Benford-----.')
-            print('Initial sample size: {0}.'.format(len(self.data)))
+            print('-----Benford-----.\n')
+            print('Initial sample size: {0}.\n'.format(len(self.data)))
             print('Test performed on {0} registries.'.format(len(self.base)))
             print('Number of discarded entries for each test:\n{0}'
                   .format(self._discarded))
-            print('Second order tests run in {0} registries'
+
+        if sec_order:
+            self.sec_order(verbose=self.verbose)
+
+        if summation:
+            self.summation(verbose=self.verbose)
+
+    def sec_order(self, verbose=True):
+        '''
+        Runs the test in a modified 
+        '''
+        self.base_sec = Base(_subtract_sorted_(self.data),
+                             decimals=self.decimals, sign=self.sign)
+        for key, val in digs_dict.items():
+            setattr(self, sec_order_dict[key],
+                    Test(self.base_sec.loc[self.base_sec[val] !=
+                         -1], digs=key))
+            self.tests.append(val)
+            self._discarded_sec = {key: val for (key, val) in zip(
+                                   sec_order_dict.values(),
+                                   [sum(self.base_sec[col] == -1) for col in
+                                    digs_dict.values()])}
+        if verbose:
+            print('\nSecond order tests run in {0} registries'
                   .format(len(self.base_sec)))
             print('Number of discarded entries for second order tests:\n{0}'
                   .format(self._discarded_sec))
-            print('Added Summation columns to F1D, F2D and F3D Tests.')
+
+    def summation(self, verbose=True):
+        '''
+        Create Summation test DataFrames from Base object
+        '''
+        for test in ['F1D', 'F2D', 'F3D']:
+            t = test + '_Summ'
+            setattr(self, t, Summ(self.base, test))
+            self.tests.append(t)
+
+        if verbose:
+            print('\nAdded Summation DataFrames to F1D, F2D and F3D Tests.')
 
     def audit(self, tests, confidence=95, limit_N=None, display=True):
         '''
@@ -1035,7 +1061,7 @@ def _chi_square_(frame, ddf, confidence, inform=True):
 
 def _chi_square_2(frame):
     '''
-    Returns the chi-square statistic of the found distributions 
+    Returns the chi-square statistic of the found distributions
 
     Parameters
     ----------
