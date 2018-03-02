@@ -1692,6 +1692,8 @@ def mad(data, test, decimals=2, sign='all'):
         a pandas Series or a pandas DataFrame column, with values being
         integers or floats.
 
+    test: informs which base test to use for the mad.
+
     decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0. If set to -infer-, it will remove the zeros
         and consider up to the fifth decimal place to the right, but will
@@ -1702,17 +1704,10 @@ def mad(data, test, decimals=2, sign='all'):
         Defaults to all.`
 
     '''
-    test = _check_test_(test)
+    _check_digs_(test)
 
     start = Source(data, sign=sign, decimals=decimals, inform=False)
-
-    if test in [1, 2, 3]:
-        start.first_digits(digs=test, inform=False, MAD=True, simple=True)
-    elif test == 22:
-        start.second_digit(inform=False, MAD=True, simple=True)
-    else:
-        start.last_two_digits(inform=False, MAD=True, simple=True)
-
+    start.first_digits(digs=test, inform=False, MAD=True, simple=True)
     return start.MAD
 
 
@@ -1729,6 +1724,42 @@ def mse(data, test, decimals=2, sign='all'):
     else:
         start.last_two_digits(MAD=False, MSE=True, simple=True)
     return start.MSE
+
+
+def mad_summ(data, test, decimals=2, sign='all'):
+    '''
+    Returns the Mean Absolute Deviation of the Summation Test
+
+    Parameters
+    ----------
+
+    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+        a pandas Series or a pandas DataFrame column, with values being
+        integers or floats.
+
+    test: informs which base test to use for the summation mad.
+
+    decimals: number of decimal places to consider. Defaluts to 2.
+        If integers, set to 0. If set to -infer-, it will remove the zeros
+        and consider up to the fifth decimal place to the right, but will
+        loose performance.
+
+    sign: tells which portion of the data to consider. pos: only the positive
+        entries; neg: only negative entries; all: all entries but zeros.
+        Defaults to all.`
+
+    '''
+    _check_digs_(test)
+
+    start = Source(data, sign=sign, decimals=decimals, inform=False)
+    temp = start.loc[start.ZN >= 10 ** (test - 1)]
+    temp[digs_dict[test]] = (temp.ZN // 10 ** ((np.log10(temp.ZN).astype(
+                                                int)) - (test - 1))).astype(
+                                                    int)
+    li = 1. / (9 * (10 ** (test - 1)))
+
+    df = temp.groupby(digs_dict[test]).sum()
+    return np.mean(np.absolute(df.ZN / df.ZN.sum() - li))
 
 
 def _prep_to_roll_(start, test):
