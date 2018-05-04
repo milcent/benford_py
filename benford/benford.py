@@ -46,32 +46,32 @@ colors = {'m': '#00798c', 'b': '#E2DCD8', 's': '#9c3848',
           'af': '#edae49', 'ab': '#33658a', 'h': '#d1495b',
           'h2': '#f64740', 't': '#16DB93'}
 
-confs = {'None': None, '80': 1.285, '85': 1.435, '90': 1.645, '95': 1.96,
-         '99': 2.576, '99.9': 3.29, '99.99': 3.89, '99.999': 4.417,
-         '99.9999': 4.892, '99.99999': 5.327}
+confs = {None: None, 80: 1.285, 85: 1.435, 90: 1.645, 95: 1.96,
+         99: 2.576, 99.9: 3.29, 99.99: 3.89, 99.999: 4.417,
+         99.9999: 4.892, 99.99999: 5.327}
 
-crit_chi2 = {8: {'80': 11.03, '85': 12.027, '90': 13.362, '95': 15.507,
-                 '99': 20.090, '99.9': 26.124, '99.99': 31.827, 'None': None,
-                 '99.999': 37.332, '99.9999': 42.701, '99.99999': 47.972},
-             9: {'80': 12.242, '85': 13.288, '90': 14.684, '95': 16.919,
-                 '99': 21.666, '99.9': 27.877, '99.99': 33.72, 'None': None,
-                 '99.999': 39.341, '99.9999': 44.811, '99.99999': 50.172},
-             89: {'80': 99.991, '85': 102.826, '90': 106.469, '95': 112.022,
-                  '99': 122.942, '99.9': 135.978, '99.99': 147.350,
-                  '99.999': 157.702, '99.9999': 167.348, '99.99999': 176.471,
-                  'None': None},
-             99: {'80': 110.607, '85': 113.585, '90': 117.407,
-                  '95': 123.225, '99': 134.642, '99.9': 148.230,
-                  '99.99': 160.056, '99.999': 170.798, '99.9999': 180.792,
-                  '99.99999': 190.23, 'None': None},
-             899: {'80': 934.479, '85': 942.981, '90': 953.752, '95': 969.865,
-                   '99': 1000.575, '99.9': 1035.753, '99.99': 1065.314,
-                   '99.999': 1091.422, '99.9999': 1115.141,
-                   '99.99999': 1137.082, 'None': None}
+crit_chi2 = {8: {80: 11.03, 85: 12.027, 90: 13.362, 95: 15.507,
+                 99: 20.090, 99.9: 26.124, 99.99: 31.827, None: None,
+                 99.999: 37.332, 99.9999: 42.701, 99.99999: 47.972},
+             9: {80: 12.242, 85: 13.288, 90: 14.684, 95: 16.919,
+                 99: 21.666, 99.9: 27.877, 99.99: 33.72, None: None,
+                 99.999: 39.341, 99.9999: 44.811, 99.99999: 50.172},
+             89: {80: 99.991, 85: 102.826, 90: 106.469, 95: 112.022,
+                  99: 122.942, 99.9: 135.978, 99.99: 147.350,
+                  99.999: 157.702, 99.9999: 167.348, 99.99999: 176.471,
+                  None: None},
+             99: {80: 110.607, 85: 113.585, 90: 117.407,
+                  95: 123.225, 99: 134.642, 99.9: 148.230,
+                  99.99: 160.056, 99.999: 170.798, 99.9999: 180.792,
+                  99.99999: 190.23, None: None},
+             899: {80: 934.479, 85: 942.981, 90: 953.752, 95: 969.865,
+                   99: 1000.575, 99.9: 1035.753, 99.99: 1065.314,
+                   99.999: 1091.422, 99.9999: 1115.141,
+                   99.99999: 1137.082, None: None}
              }
-KS_crit = {'80': 1.075, '85': 1.139, '90': 1.125, '95': 1.36, '99': 1.63,
-           '99.9': 1.95, '99.99': 2.23, '99.999': 2.47,
-           '99.9999': 2.7, '99.99999': 2.9, 'None': None}
+KS_crit = {80: 1.075, 85: 1.139, 90: 1.125, 95: 1.36, 99: 1.63,
+           99.9: 1.95, 99.99: 2.23, 99.999: 2.47,
+           99.9999: 2.7, 99.99999: 2.9, None: None}
 
 
 class First(pd.DataFrame):
@@ -284,8 +284,8 @@ class Benford(object):
     Parameters
     ----------
     data: sequence of numbers to be evaluated. Must be a numpy 1D array,
-        a pandas Series or a pandas DataFrame column, with values being
-        integers or floats.
+        a pandas Series or a tuple with a pandas DataFrame and the name (str)
+        of the chosen column. Values must be integers or floats.
 
     decimals: number of decimal places to consider. Defaluts to 2.
         If integers, set to 0. If set to -infer-, it will remove the zeros
@@ -315,13 +315,13 @@ class Benford(object):
 
     def __init__(self, data, decimals=2, sign='all', confidence=95,
                  sec_order=False, summation=False, limit_N=None, verbose=True):
-        self.data = data
+        self.data, self.chosen = _input_data_(data)
         self.decimals = decimals
         self.sign = sign
-        self.confidence = str(_check_confidence_(confidence))
+        self.confidence = _check_confidence_(confidence)
         self.limit_N = limit_N
         self.verbose = verbose
-        self.base = Base(data, decimals, sign)
+        self.base = Base(self.chosen, decimals, sign)
         self.tests = []
         self.crit_vals = {'Z': confs[self.confidence],
                           'KS': KS_crit[self.confidence]
@@ -344,7 +344,7 @@ class Benford(object):
 
         if verbose:
             print('-----Benford-----.\n')
-            print('Initial sample size: {0}.\n'.format(len(self.data)))
+            print('Initial sample size: {0}.\n'.format(len(self.chosen)))
             print('Test performed on {0} registries.'.format(len(self.base)))
             print('Number of discarded entries for each test:\n{0}'
                   .format(self._discarded))
@@ -363,7 +363,7 @@ class Benford(object):
         compliant, this new sequence should aldo follow Beford. The Second
         Order can also be called separately, through the method sec_order().
             '''
-        self.base_sec = Base(_subtract_sorted_(self.data),
+        self.base_sec = Base(_subtract_sorted_(self.chosen),
                              decimals=self.decimals, sign=self.sign)
         for key, val in digs_dict.items():
             test = Test(self.base_sec.loc[self.base_sec[val] !=
@@ -413,7 +413,7 @@ class Benford(object):
         limit_N: sets a limit to N as the sample size for the calculation of
             the Z scores if the sample is too big. Defaults to None.
         '''
-        confidence = str(_check_confidence_(confidence))
+        confidence = _check_confidence_(confidence)
 
         # if tests != 'all':
         #     if 
@@ -584,7 +584,7 @@ Convert it to whether int of float, and try again.")
             the test function.
         '''
         # Check on the possible values for confidence levels
-        confidence = str(_check_confidence_(confidence))
+        confidence = _check_confidence_(confidence)
         # Check on possible digits
         _check_digs_(digs)
 
@@ -610,7 +610,7 @@ Convert it to whether int of float, and try again.")
 records < {2} after preparation.".format(len(temp), len(self) - len(temp),
                                          10 ** (digs - 1)))
             if confidence is not None:
-                _inform_(df, high_Z=high_Z, conf=confs[str(confidence)])
+                _inform_(df, high_Z=high_Z, conf=confs[confidence])
 
         # Mean absolute difference
         if MAD:
@@ -634,7 +634,7 @@ records < {2} after preparation.".format(len(temp), len(self) - len(temp),
         if show_plot:
             _plot_dig_(df, x=x, y_Exp=df.Expected, y_Found=df.Found, N=N,
                        figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)),
-                       conf_Z=confs[str(confidence)])
+                       conf_Z=confs[confidence])
         if ret_df:
             return df
 
@@ -674,9 +674,9 @@ records < {2} after preparation.".format(len(temp), len(self) - len(temp),
         ret_df: returns the test DataFrame. Defaults to False. True if run by
             the test function.
         '''
-        confidence = str(_check_confidence_(confidence))
+        confidence = _check_confidence_(confidence)
 
-        conf = confs[str(confidence)]
+        conf = confs[confidence]
 
         # self['SD'] = self.ZN.astype(str).str[1:2].astype(int)
         temp = self.loc[self.ZN >= 10]
@@ -756,9 +756,9 @@ records < {2} after preparation.".format(len(temp), len(self) - len(temp),
         show_plot: draws the test plot.
 
         '''
-        confidence = str(_check_confidence_(confidence))
+        confidence = _check_confidence_(confidence)
 
-        conf = confs[str(confidence)]
+        conf = confs[confidence]
 
         temp = self.loc[self.ZN >= 1000]
         temp['L2D'] = temp.ZN % 100
@@ -1078,7 +1078,7 @@ def _chi_square_(frame, ddf, confidence, inform=True):
         exp_counts = frame.Counts.sum() * frame.Expected
         dif_counts = frame.Counts - exp_counts
         found_chi = (dif_counts ** 2 / exp_counts).sum()
-        crit_chi = crit_chi2[ddf][str(confidence)]
+        crit_chi = crit_chi2[ddf][confidence]
         if inform:
             print("\nThe Chi-square statistic is {0}".format(found_chi))
             print("Critical Chi-square for this series: {0}".format(crit_chi))
@@ -1125,7 +1125,7 @@ def _KS_(frame, confidence, N, inform=True):
         # finding the supremum - the largest cumul dist difference
         suprem = ((ks_frame.Found - ks_frame.Expected).abs()).max()
         # calculating the crittical value according to confidence
-        crit_KS = KS_crit[str(confidence)] / np.sqrt(N)
+        crit_KS = KS_crit[confidence] / np.sqrt(N)
 
         if inform:
             print("\nThe Kolmogorov-Smirnov statistic is {0}".format(suprem))
@@ -1365,6 +1365,23 @@ def _test_(digs):
         return Second(plot=False)
     else:
         return LastTwo(num=True, plot=False)
+
+
+def _input_data_(given):
+    '''
+    '''
+    if (type(given) == pd.Series) | (type(given) == np.ndarray):
+        data = None
+        chosen = given
+    elif type(given) == tuple:
+        if (type(given[0]) != pd.DataFrame) | (type(given[1]) != str):
+            raise TypeError('The data tuple must be composed of a pandas DataFrame \
+and the name (str) of the chosen column, in that order')
+        data = given[0]
+        chosen = given[0][given[1]]
+    else:
+        raise TypeError("Wrong data input type. Check docstring.")
+    return data, chosen
 
 
 def _prep_(data, digs, limit_N, simple=False, confidence=None):
@@ -2050,7 +2067,7 @@ def _check_test_(test):
 def _check_confidence_(confidence):
     '''
     '''
-    if str(confidence) not in confs.keys():
+    if confidence not in confs.keys():
         raise ValueError("Value of parameter -confidence- must be one\
  of the following: {0}".format(list(confs.keys())))
     return confidence
