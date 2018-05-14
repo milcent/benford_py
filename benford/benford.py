@@ -980,7 +980,8 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     if conf_Z is not None:
         sig = conf_Z * np.sqrt(y_Exp * (1 - y_Exp) / N)
         upper = y_Exp + sig + (1 / (2 * N))
-        lower = y_Exp - sig - (1 / (2 * N))
+        lower_zeros = np.array([0]*len(upper))
+        lower = np.maximum(y_Exp - sig - (1 / (2 * N)), lower_zeros)
         u = (y_Found < lower) | (y_Found > upper)
         for i, b in enumerate(bars):
             if u.iloc[i]:
