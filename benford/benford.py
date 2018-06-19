@@ -50,6 +50,10 @@ confs = {None: None, 80: 1.285, 85: 1.435, 90: 1.645, 95: 1.96,
          99: 2.576, 99.9: 3.29, 99.99: 3.89, 99.999: 4.417,
          99.9999: 4.892, 99.99999: 5.327}
 
+p_values = {None: 'None', 80: '0.2', 85: '0.15', 90: '0.1', 95: '0.05',
+            99: '0.01', 99.9: '0.001', 99.99: '0.0001', 99.999: '0.00001',
+            99.9999: '0.000001', 99.99999: '0.0000001'}
+
 crit_chi2 = {8: {80: 11.03, 85: 12.027, 90: 13.362, 95: 15.507,
                  99: 20.090, 99.9: 26.124, 99.99: 31.827, None: None,
                  99.999: 37.332, 99.9999: 42.701, 99.99999: 47.972},
@@ -167,8 +171,9 @@ class Base(pd.DataFrame):
         pd.DataFrame.__init__(self, {'Seq': data})
 
         if (self.Seq.dtypes != 'float') & (self.Seq.dtypes != 'int'):
-            raise TypeError("The sequence dtype was not int nor float.\n\
-Convert it to whether int of float, and try again.")
+            raise TypeError("The sequence dtype was not int nor float. "
+                            "Convert it to whether int of float, "
+                            "and try again.")
 
         if sign == 'all':
             self.Seq = self.Seq.loc[self.Seq != 0]
@@ -232,8 +237,8 @@ class Test(pd.DataFrame):
     limit_N: sets a limit to N as the sample size for the calculation of
             the Z scores if the sample is too big. Defaults to None.
     '''
-    def __init__(self, base, digs, limit_N=None):
 
+    def __init__(self, base, digs, limit_N=None):
         # create a separated Expected distributions object
         super(Test, self).__init__(_test_(digs))
         # create column witg occurrences of the digits in the base
@@ -263,6 +268,7 @@ class Summ(pd.DataFrame):
     test: The test for which to compute the summation
 
     '''
+
     def __init__(self, base, test):
         super(Summ, self).__init__(base.abs()
                                    .groupby(test)[['Seq']]
@@ -329,8 +335,8 @@ class Benford(object):
 
         # Create a DatFrame for each Test and Second order Test
         for key, val in digs_dict.items():
-            test = Test(self.base.loc[self.base[val] !=
-                        -1], digs=key, limit_N=self.limit_N)
+            test = Test(self.base.loc[self.base[val] != -1],
+                        digs=key, limit_N=self.limit_N)
             setattr(self, val, test)
             self.tests.append(val)
             self.crit_vals[val] = {'chi2': crit_chi2[test.ddf]
@@ -338,9 +344,10 @@ class Benford(object):
                                    'MAD': mad_dict[key]
                                    }
         # dict with the numbers of discarded entries for each test column
-        self._discarded = {key: val for (key, val) in zip(digs_dict.values(),
-                           [len(self.base[col].loc[self.base[col] == -1]) for
-                            col in digs_dict.values()])}
+        self._discarded = {key: val for (key, val) in
+                           zip(digs_dict.values(),
+                               [len(self.base[col].loc[self.base[col] == -1])
+                                for col in digs_dict.values()])}
 
         if verbose:
             print('-----Benford-----.\n')
@@ -366,8 +373,8 @@ class Benford(object):
         self.base_sec = Base(_subtract_sorted_(self.chosen),
                              decimals=self.decimals, sign=self.sign)
         for key, val in digs_dict.items():
-            test = Test(self.base_sec.loc[self.base_sec[val] !=
-                        -1], digs=key, limit_N=self.limit_N)
+            test = Test(self.base_sec.loc[self.base_sec[val] != -1],
+                        digs=key, limit_N=self.limit_N)
             setattr(self, sec_order_dict[key], test)
             self.tests.append(val)
             # No need to populate crit_vals dict, since they are the
@@ -416,14 +423,14 @@ class Benford(object):
         confidence = _check_confidence_(confidence)
 
         # if tests != 'all':
-        #     if 
+        #     if
         #     test_list = []
         #     if not isinstance(tests, list):
         #         test_list.append(tests)
         #     else:
         #         test_list.extend(tests)
         # else:
-        #     test_list = 
+        #     test_list =
 
     def get_suspects(self):
         pass
@@ -460,14 +467,16 @@ class Source(pd.DataFrame):
                  inform=True):
 
         if sign not in ['all', 'pos', 'neg']:
-            raise ValueError("The -sign- argument must be 'all','pos'\
- or 'neg'.")
+            raise ValueError("The -sign- argument must be "
+                             "'all','pos' or 'neg'.")
 
         pd.DataFrame.__init__(self, {'Seq': data})
 
         if self.Seq.dtypes != 'float' and self.Seq.dtypes != 'int':
-            raise TypeError("The sequence dtype was not int nor float.\n\
-Convert it to whether int of float, and try again.")
+            raise TypeError("The sequence dtype was not int nor float."
+                            "\n"
+                            "Convert it to whether int of float, "
+                            "and try again.")
 
         if sign == 'pos':
             self.Seq = self.Seq.loc[self.Seq > 0]
@@ -486,8 +495,8 @@ Convert it to whether int of float, and try again.")
             self.dropna(inplace=True)
             self.reset_index(inplace=True)
             if inform:
-                print('Second Order Test. Initial series reduced to {0}\
- entries.'.format(len(self.Seq)))
+                print('Second Order Test. Initial series reduced '
+                      'to {0} entries.'.format(len(self.Seq)))
 
         ab = self.Seq.abs()
 
@@ -893,6 +902,7 @@ class Mantissas(pd.Series):
     data: sequence to compute mantissas from, numpy 1D array, pandas
         Series of pandas DataFrame column.
     '''
+
     def __init__(self, data):
         if isinstance(data, np.ndarray):
             data = pd.Series(data)
@@ -967,6 +977,7 @@ class Roll_mad(pd.Series):
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.
     '''
+
     def __init__(self, data, test, window, decimals=2, sign='all'):
 
         test = _check_test_(test)
@@ -1021,6 +1032,7 @@ class Roll_mse(pd.Series):
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.
     '''
+
     def __init__(self, data, test, window, decimals=2, sign='all'):
 
         test = _check_test_(test)
@@ -1375,8 +1387,9 @@ def _input_data_(given):
         chosen = given
     elif type(given) == tuple:
         if (type(given[0]) != pd.DataFrame) | (type(given[1]) != str):
-            raise TypeError('The data tuple must be composed of a pandas DataFrame \
-and the name (str) of the chosen column, in that order')
+            raise TypeError('The data tuple must be composed of a pandas '
+                            'DataFrame and the name (str) of the chosen '
+                            'column, in that order')
         data = given[0]
         chosen = given[0][given[1]]
     else:
@@ -1723,7 +1736,7 @@ def mad(data, test, decimals=2, sign='all'):
     '''
     _check_digs_(test)
 
-    start = Source(data, sign=sign, decimals=decimals, inform=False)
+    start = Source(data.values, sign=sign, decimals=decimals, inform=False)
     start.first_digits(digs=test, inform=False, MAD=True, simple=True)
     return start.MAD
 
@@ -1799,7 +1812,7 @@ def _prep_to_roll_(start, test):
 
         Expec = np.log10(1 + (1. / np.arange(10, 100)))
         temp = pd.DataFrame({'Expected': Expec, 'Sec_Dig':
-                            np.array(list(range(10)) * 9)})
+                             np.array(list(range(10)) * 9)})
         Exp = temp.groupby('Sec_Dig').sum().values.reshape(10,)
         ind = np.arange(0, 10)
 
@@ -2037,8 +2050,8 @@ def _check_digs_(digs):
     Chhecks the possible values for the digs of the First Digits test
     '''
     if digs not in [1, 2, 3]:
-        raise ValueError("The value assigned to the parameter -digs-\
- was {0}. Value must be 1, 2 or 3.".format(digs))
+        raise ValueError("The value assigned to the parameter -digs- "
+                         "was {0}. Value must be 1, 2 or 3.".format(digs))
 
 
 def _check_test_(test):
@@ -2058,18 +2071,18 @@ def _check_test_(test):
             raise ValueError('test was set to {0}. Should be one of {1}'
                              .format(test, rev_digs.keys()))
     else:
-        raise ValueError('Wrong value chosen for test parameter. Possible values\
-         are\n {0} for ints and\n {1} for strings.'.format(
-                         list(digs_dict.keys()),
-                         list(rev_digs.keys())))
+        raise ValueError('Wrong value chosen for test parameter. Possible '
+                         'values are\n {0} for ints and\n {1} for strings.'
+                         .format(list(digs_dict.keys()),
+                                 list(rev_digs.keys())))
 
 
 def _check_confidence_(confidence):
     '''
     '''
     if confidence not in confs.keys():
-        raise ValueError("Value of parameter -confidence- must be one\
- of the following: {0}".format(list(confs.keys())))
+        raise ValueError("Value of parameter -confidence- must be one of the "
+                         "following: {0}".format(list(confs.keys())))
     return confidence
 
 
@@ -2086,7 +2099,6 @@ def _subtract_sorted_(data):
 
 
 def _inform_(df, high_Z, conf):
-
     '''
     Selects and sorts by the Z_stats chosen to be considered, informing or not,
     and populating the maps dict for further back analysis of the entries.
@@ -2095,16 +2107,15 @@ def _inform_(df, high_Z, conf):
     if isinstance(high_Z, int):
         if conf is not None:
             dd = df[['Expected', 'Found', 'Z_score'
-                     ]].sort_values('Z_score', ascending=False
-                                    ).head(high_Z)
-            print('\nThe entries with the top {0} Z scores are\
-:\n'.format(high_Z))
+                     ]].sort_values('Z_score', ascending=False).head(high_Z)
+            print('\nThe entries with the top {0} Z scores are:\n'
+                  .format(high_Z))
         # Summation Test
         else:
             dd = df.sort_values('AbsDif', ascending=False
                                 ).head(high_Z)
-            print('\nThe entries with the top {0} absolute deviations \
-are:\n'.format(high_Z))
+            print('\nThe entries with the top {0} absolute deviations are:\n'
+                  .format(high_Z))
     else:
         if high_Z == 'pos':
             m1 = df.Dif > 0
