@@ -988,7 +988,7 @@ class Roll_mad(pd.Series):
         Exp, ind = _prep_to_roll_(start, test)
 
         pd.Series.__init__(self, start[digs_dict[test]].rolling(
-            window=window).apply(_mad_to_roll_, args=(Exp, ind)))
+            window=window).apply(_mad_to_roll_, args=(Exp, ind), raw=False))
 
         self.dropna(inplace=True)
 
@@ -1043,7 +1043,7 @@ class Roll_mse(pd.Series):
         Exp, ind = _prep_to_roll_(start, test)
 
         pd.Series.__init__(self, start[digs_dict[test]].rolling(
-            window=window).apply(_mse_to_roll_, args=(Exp, ind)))
+            window=window).apply(_mse_to_roll_, args=(Exp, ind), raw=False))
 
         self.dropna(inplace=True)
 
