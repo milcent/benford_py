@@ -174,9 +174,9 @@ class Analysis(pd.DataFrame):
 
         pd.DataFrame.__init__(self, {'Seq': data})
 
-        if self.Seq.dtypes != 'float' and self.Seq.dtypes != 'int':
-            raise TypeError("The sequence dtype was not int nor float.\n\
-Convert it to whether int of float, and try again.")
+        if self.Seq.dtypes != 'float64' and self.Seq.dtypes != 'int64':
+            raise TypeError("The sequence dtype was not pandas int64 nor float64.\n\
+Convert it to whether int64 of float64, and try again.")
 
         if sign == 'pos':
             self.Seq = self.Seq.loc[self.Seq > 0]
@@ -188,19 +188,19 @@ Convert it to whether int of float, and try again.")
         self.dropna(inplace=True)
 
         if inform:
-            print("Initialized sequence with {0} registries.".format(
+            print("\nInitialized sequence with {0} registries.".format(
                   len(self)))
         if sec_order:
             self.Seq = _subtract_sorted_(self.Seq.copy())
             self.dropna(inplace=True)
             self.reset_index(inplace=True)
             if inform:
-                print('Second Order Test. Initial series reduced to {0}\
+                print('\nSecond Order Test. Initial series reduced to {0}\
  entries.'.format(len(self.Seq)))
 
         ab = self.Seq.abs()
 
-        if self.Seq.dtypes == 'int':
+        if self.Seq.dtypes == 'int64':
             self['ZN'] = ab
         else:
             if decimals == 'infer':
@@ -230,7 +230,7 @@ Convert it to whether int of float, and try again.")
         self['Mant'] = _getMantissas_(self.Seq)
         p = self[['Seq', 'Mant']]
         p = p.loc[p.Seq > 0].sort_values('Mant')
-        print("The Mantissas MEAN is {0}. Ref: 0.5.".format(p.Mant.mean()))
+        print("\nThe Mantissas MEAN is {0}. Ref: 0.5.".format(p.Mant.mean()))
         print("The Mantissas VARIANCE is {0}. Ref: 0.083333.".format(
               p.Mant.var()))
         print("The Mantissas SKEWNESS is {0}. \tRef: 0.".format(p.Mant.skew()))
@@ -487,7 +487,7 @@ following: {0}".format(list(confs.keys())))
                            confidence=confidence)
 
         if inform:
-            print("\nTest performed on {0} registries.\nDiscarded {1} \
+            print("\nTest performed on {0} registries.\n\nDiscarded {1} \
 records < 1000 after preparation".format(len(temp), len(self) - len(temp)))
             if confidence is not None:
                 _inform_(df, high_Z, conf)
@@ -593,7 +593,7 @@ records < 1000 after preparation".format(len(temp), len(self) - len(temp)))
         self.maps['dup'] = dup_count.index[:top_Rep].values  # np.array
 
         if inform:
-            print('Found {0} duplicated entries'.format(len(dup_count)))
+            print('\nFound {0} duplicated entries'.format(len(dup_count)))
             print('The entries with the {0} highest repitition counts are:'
                   .format(top_Rep))
             print(dup_count.head(top_Rep))
@@ -625,7 +625,7 @@ class Mantissas(pd.Series):
                       'Skew': self.skew(), 'Kurt': self.kurt()}
 
     def inform(self):
-        print("The Mantissas MEAN is {0}. \t\tRef: 0.5.".
+        print("\nThe Mantissas MEAN is {0}. \t\tRef: 0.5.".
               format(self.stats['Mean']))
         print("The Mantissas VARIANCE is {0}. \tRef: 0.083333.".
               format(self.stats['Var']))
@@ -980,7 +980,8 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     if conf_Z is not None:
         sig = conf_Z * np.sqrt(y_Exp * (1 - y_Exp) / N)
         upper = y_Exp + sig + (1 / (2 * N))
-        lower = y_Exp - sig - (1 / (2 * N))
+        lower_zeros = np.array([0]*len(upper))
+        lower = np.maximum(y_Exp - sig - (1 / (2 * N)), lower_zeros)
         u = (y_Found < lower) | (y_Found > upper)
         for i, b in enumerate(bars):
             if u.iloc[i]:
@@ -1559,7 +1560,7 @@ def duplicates(data, top_Rep=20, inform=True):
         try:
             data = pd.Series(data)
         except ValueError:
-            print('data must be a numpy Ndarray or a pandas Series.')
+            print('\ndata must be a numpy Ndarray or a pandas Series.')
 
     dup = data.loc[data.duplicated(keep=False)]
     dup_count = dup.value_counts()
@@ -1568,7 +1569,7 @@ def duplicates(data, top_Rep=20, inform=True):
     dup_count.name = 'Count'
 
     if inform:
-        print('Found {0} duplicated entries'.format(len(dup_count)))
+        print('\nFound {0} duplicated entries'.format(len(dup_count)))
         print('The entries with the {0} highest repitition counts are:'
               .format(top_Rep))
         print(dup_count.head(top_Rep))
