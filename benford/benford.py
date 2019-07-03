@@ -493,8 +493,8 @@ Convert it to whether int64 of float64, and try again.")
             self.dropna(inplace=True)
             self.reset_index(inplace=True)
             if inform:
-                print('Second Order Test. Initial series reduced to {0}\
- entries.'.format(len(self.Seq)))
+                print('Second Order Test. Initial series reduced '
+                      'to {0} entries.'.format(len(self.Seq)))
 
         ab = self.Seq.abs()
 
