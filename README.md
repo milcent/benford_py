@@ -39,8 +39,8 @@ were more worn out, that is, more consulted.
 <p align="center">
   <img alt="Simon Newcomb" src="https://github.com/milcent/benford_py/blob/master/img/Simon_Newcomb_APS.jpg">
 </p>
-<p align="center">
-Simon Newcomb, 1835-1909.
+<p align="center"><h3>
+Simon Newcomb, 1835-1909.</h3>
 </p>
 
 In that same article, Newcomb proposed the formula for the
