@@ -959,14 +959,14 @@ def arc_test(mant, decimals = 2, grid=True, figsize=10):
     ax.scatter(df["mant_y"], df["mant_x"], label= "ARC TEST")
     ax.scatter(x_mean, y_mean) 
     text_annotation = Annotation(
-                "  Centro de Gravidade: x({0}), y({1})".format(
+                "  Gravity Center: x({0}), y({1})".format(
                 round(x_mean,decimals), round(y_mean,decimals)), 
-                xy=(x_mean, y_mean), xycoords='data')
+                xy=(x_mean - 0.65, y_mean - 0.1), xycoords='data')
     ax.add_artist(text_annotation)
     ax.grid(True, which='both')
     ax.axhline(y=0, color='k')
     ax.axvline(x=0, color='k')
-    ax.legend()
+    ax.legend(loc = 'lower left')
     ax.figure
 
 
