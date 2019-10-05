@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import math
+from matplotlib.text import Annotation
 
 
 digs_dict = {1: 'F1D', 2: 'F2D', 3: 'F3D', 22: 'SD', -2: 'L2D'}
@@ -946,6 +948,31 @@ class Mantissas(pd.Series):
         ax.set_facecolor(colors['b'])
         plt.legend(loc='upper left')
         plt.show()
+
+    def arc_test(self, decimals = 2, grid=True, figsize=10):
+        '''
+        Add two columns to Mantissas's DataFrame equal to their "X" and "Y" coordinates,
+        plots its to a scatter plot and calculates gravity center of the circle.
+        
+        '''
+        df = pd.DataFrame(self)
+        df["mant_x"] = df[df.columns[0]].apply(lambda x: math.cos(2 * math.pi * x))
+        df["mant_y"] = df[df.columns[0]].apply(lambda x: math.sin(2 * math.pi * x))
+        x_mean, y_mean = df["mant_y"].mean(), df["mant_x"].mean()
+        fig = plt.figure(figsize=(figsize,figsize))
+        ax = plt.subplot()
+        ax.scatter(df["mant_y"], df["mant_x"], label= "ARC TEST")
+        ax.scatter(x_mean, y_mean) 
+        text_annotation = Annotation(
+                    "  Gravity Center: x({0}), y({1})".format(
+                    round(x_mean,decimals), round(y_mean,decimals)), 
+                    xy=(x_mean - 0.65, y_mean - 0.1), xycoords='data')
+        ax.add_artist(text_annotation)
+        ax.grid(True, which='both')
+        ax.axhline(y=0, color='k')
+        ax.axvline(x=0, color='k')
+        ax.legend(loc = 'lower left')
+        ax.figure
 
 
 class Roll_mad(pd.Series):
