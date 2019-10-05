@@ -961,8 +961,9 @@ class Mantissas(pd.Series):
         x_mean, y_mean = df["mant_y"].mean(), df["mant_x"].mean()
         fig = plt.figure(figsize=(figsize,figsize))
         ax = plt.subplot()
-        ax.scatter(df["mant_y"], df["mant_x"], label= "ARC TEST")
-        ax.scatter(x_mean, y_mean) 
+        ax.set_facecolor(colors['b'])
+        ax.scatter(df["mant_y"], df["mant_x"], label= "ARC TEST", color=colors['m'])
+        ax.scatter(x_mean, y_mean, color=colors['s']) 
         text_annotation = Annotation(
                     "  Gravity Center: x({0}), y({1})".format(
                     round(x_mean,decimals), round(y_mean,decimals)), 
