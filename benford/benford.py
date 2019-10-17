@@ -386,10 +386,9 @@ class Benford(object):
                                    [sum(self.base_sec[col] == -1) for col in
                                     digs_dict.values()])}
         if verbose:
-            print('\nSecond order tests run in {0} registries'
-                  .format(len(self.base_sec)))
-            print('Number of discarded entries for second order tests:\n{0}'
-                  .format(self._discarded_sec))
+            print(f'\nSecond order tests run in {len(self.base_sec)} '
+                  'registries.\nNumber of discarded entries for second order'
+                  f' tests:\n{self._discarded_sec)}')
 
     def summation(self, verbose=True):
         '''
@@ -475,8 +474,8 @@ class Source(pd.DataFrame):
         pd.DataFrame.__init__(self, {'Seq': data})
 
         if self.Seq.dtypes != 'float64' and self.Seq.dtypes != 'int64':
-            raise TypeError("The sequence dtype was not pandas int64 nor float64.\n\
-Convert it to whether int64 of float64, and try again.")
+            raise TypeError('The sequence dtype was not pandas int64 nor float64.\n'
+                            'Convert it to whether int64 of float64, and try again.')
 
         if sign == 'pos':
             self.Seq = self.Seq.loc[self.Seq > 0]
@@ -615,9 +614,9 @@ Convert it to whether int64 of float64, and try again.")
                            simple=False, confidence=confidence)
 
         if inform:
-            print("\nTest performed on {0} registries.\nDiscarded {1} \
-records < {2} after preparation.".format(len(temp), len(self) - len(temp),
-                                         10 ** (digs - 1)))
+            print(f"\nTest performed on {len(temp)} registries.\n"
+                  f"Discarded {len(self) - len(temp)} records < {10 ** (digs - 1)}"
+                  " after preparation.")
             if confidence is not None:
                 _inform_(df, high_Z=high_Z, conf=confs[confidence])
 
@@ -655,8 +654,7 @@ records < {2} after preparation.".format(len(temp), len(self) - len(temp),
         numbers provided.
 
         inform -> tells the number of registries that are being subjected to
-            the a
-   nalysis; defaults to True
+            the analysis; defaults to True
 
         MAD: calculates the Mean Absolute Difference between the
             found and the expected distributions; defaults to False.
@@ -702,8 +700,8 @@ records < {2} after preparation.".format(len(temp), len(self) - len(temp),
                            confidence=confidence)
 
         if inform:
-            print("\nTest performed on {0} registries.\nDiscarded \
-{1} records < 10 after preparation.".format(len(temp), len(self) - len(temp)))
+            print(f"\nTest performed on {len(temp)} registries.\nDiscarded "
+                  f"{len(self) - len(temp)} records < 10 after preparation.")
             if confidence is not None:
                 _inform_(df, high_Z, conf)
 
@@ -739,8 +737,7 @@ records < {2} after preparation.".format(len(temp), len(self) - len(temp),
         numbers provided.
 
         inform -> tells the number of registries that are being subjected to
-            the a
-   nalysis; defaults to True
+            the analysis; defaults to True
 
         MAD: calculates the Mean Absolute Difference between the
             found and the expected distributions; defaults to False.
@@ -782,8 +779,8 @@ records < {2} after preparation.".format(len(temp), len(self) - len(temp),
                            confidence=confidence)
 
         if inform:
-            print("\nTest performed on {0} registries.\n\nDiscarded {1} \
-records < 1000 after preparation".format(len(temp), len(self) - len(temp)))
+            print(f"\nTest performed on {len(temp)} registries.\n\nDiscarded "
+                  f"{len(self) - len(temp)} records < 1000 after preparation")
             if confidence is not None:
                 _inform_(df, high_Z, conf)
 
@@ -848,8 +845,8 @@ records < 1000 after preparation".format(len(temp), len(self) - len(temp)))
         #                                high_Z=top, conf=None)).astype(int)
         if inform:
             # N = len(self)
-            print("\nTest performed on {0} registries.\n".format(len(self)))
-            print("The top {0} diferences are:\n".format(top))
+            print(f"\nTest performed on {len(self)} registries.\n")
+            print(f"The top {top} diferences are:\n")
             print(df[:top])
 
         if show_plot:
@@ -885,9 +882,8 @@ records < 1000 after preparation".format(len(temp), len(self) - len(temp)))
         self.maps['dup'] = dup_count.index[:top_Rep].values  # np.array
 
         if inform:
-            print('\nFound {0} duplicated entries'.format(len(dup_count)))
-            print('The entries with the {0} highest repitition counts are:'
-                  .format(top_Rep))
+            print(f'\nFound {len(dup_count)} duplicated entries.\n'
+                  f'The entries with the {top_Rep} highest repitition counts are:')
             print(dup_count.head(top_Rep))
         else:
             return dup_count(top_Rep)
@@ -1118,8 +1114,8 @@ def _chi_square_(frame, ddf, confidence, inform=True):
         found_chi = (dif_counts ** 2 / exp_counts).sum()
         crit_chi = crit_chi2[ddf][confidence]
         if inform:
-            print("\nThe Chi-square statistic is {0}".format(found_chi))
-            print("Critical Chi-square for this series: {0}".format(crit_chi))
+            print(f"\nThe Chi-square statistic is {found_chi}.\n"
+                  f"Critical Chi-square for this series: {crit_chi}.")
         return (found_chi, crit_chi)
 
 
@@ -1381,8 +1377,7 @@ def _set_N_(len_df, limit_N):
     # Check on limit_N being a positive integer
     else:
         if limit_N < 0 or not isinstance(limit_N, int):
-            raise ValueError("-limit_N- must be None or a positive \
-integer.")
+            raise ValueError("limit_N must be None or a positive integer.")
         else:
             return limit_N
 
@@ -1392,12 +1387,8 @@ def _test_(digs):
     Returns the base instance for the proper test to be performed
     depending on the digit
     '''
-    if digs == 1:
-        return First(1, plot=False)
-    elif digs == 2:
-        return First(2, plot=False)
-    elif digs == 3:
-        return First(3, plot=False)
+    if digs in [1, 2, 3]:
+        return First(digs, plot=False)
     elif digs == 22:
         return Second(plot=False)
     else:
@@ -1979,9 +1970,8 @@ def duplicates(data, top_Rep=20, inform=True):
     dup_count.name = 'Count'
 
     if inform:
-        print('\nFound {0} duplicated entries'.format(len(dup_count)))
-        print('The entries with the {0} highest repitition counts are:'
-              .format(top_Rep))
+        print(f'\nFound {len(dup_count)} duplicated entries.\n'
+              f'The entries with the {top_Rep} highest repitition counts are:')
         print(dup_count.head(top_Rep))
 
     return dup_count
@@ -2076,7 +2066,7 @@ def _check_digs_(digs):
     '''
     if digs not in [1, 2, 3]:
         raise ValueError("The value assigned to the parameter -digs- "
-                         "was {0}. Value must be 1, 2 or 3.".format(digs))
+                         f"was {digs}. Value must be 1, 2 or 3.")
 
 
 def _check_test_(test):
@@ -2097,17 +2087,15 @@ def _check_test_(test):
                              .format(test, rev_digs.keys()))
     else:
         raise ValueError('Wrong value chosen for test parameter. Possible '
-                         'values are\n {0} for ints and\n {1} for strings.'
-                         .format(list(digs_dict.keys()),
-                                 list(rev_digs.keys())))
-
+                         f'values are\n {list(digs_dict.keys())} for ints and'
+                         f'\n {list(rev_digs.keys())} for strings.')
 
 def _check_confidence_(confidence):
     '''
     '''
     if confidence not in confs.keys():
         raise ValueError("Value of parameter -confidence- must be one of the "
-                         "following: {0}".format(list(confs.keys())))
+                         f"following:\n {list(confs.keys())}")
     return confidence
 
 
@@ -2147,22 +2135,18 @@ def _inform_(df, high_Z, conf):
             m2 = df.Z_score > conf
             dd = df[['Expected', 'Found', 'Z_score'
                      ]].loc[m1 & m2].sort_values('Z_score', ascending=False)
-            print('\nThe entries with the significant positive deviations \
-are:\n')
+            print('\nThe entries with the significant positive '
+                  'deviations are:\n')
         elif high_Z == 'neg':
             m1 = df.Dif < 0
             m2 = df.Z_score > conf
             dd = df[['Expected', 'Found', 'Z_score'
                      ]].loc[m1 & m2].sort_values('Z_score', ascending=False)
-            print('\nThe entries with the significant negative deviations \
-are:\n')
+            print('\nThe entries with the significant negative '
+                  'deviations are:\n')
         else:
             dd = df[['Expected', 'Found', 'Z_score'
                      ]].loc[df.Z_score > conf].sort_values('Z_score',
                                                            ascending=False)
             print('\nThe entries with the significant deviations are:\n')
     print(dd)
-
-# to do:
-
-# XXXXXXX MAPPING BACK XXXXXXX
