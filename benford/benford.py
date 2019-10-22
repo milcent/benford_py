@@ -360,9 +360,11 @@ class Benford(object):
 
         if sec_order:
             self.sec_order(verbose=self.verbose)
+            self._has_sec_order = True
 
         if summation:
             self.summation(verbose=self.verbose)
+            self._has_summation = True
 
     def sec_order(self, verbose=True):
         '''
@@ -402,6 +404,7 @@ class Benford(object):
 
         if verbose:
             print('\nAdded Summation DataFrames to F1D, F2D and F3D Tests.')
+        self._has_summation = True
 
     def update_confidence(self, new_conf):
         '''
