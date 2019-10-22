@@ -388,7 +388,8 @@ class Benford(object):
         if verbose:
             print(f'\nSecond order tests run in {len(self.base_sec)} '
                   'registries.\nNumber of discarded entries for second order'
-                  f' tests:\n{self._discarded_sec)}')
+                  f' tests:\n{self._discarded_sec}')
+        self._has_sec_order = True
 
     def summation(self, verbose=True):
         '''
