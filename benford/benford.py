@@ -331,9 +331,6 @@ class Benford(object):
         self.verbose = verbose
         self.base = Base(self.chosen, decimals, sign)
         self.tests = []
-        self.crit_vals = {'Z': confs[self.confidence],
-                          'KS': KS_crit[self.confidence]
-                          }
 
         # Create a DatFrame for each Test and Second order Test
         for key, val in digs_dict.items():
@@ -341,10 +338,6 @@ class Benford(object):
                         digs=key, limit_N=self.limit_N)
             setattr(self, val, test)
             self.tests.append(val)
-            self.crit_vals[val] = {'chi2': crit_chi2[test.ddf]
-                                                    [self.confidence],
-                                   'MAD': mad_dict[key]
-                                   }
         # dict with the numbers of discarded entries for each test column
         self._discarded = {key: val for (key, val) in
                            zip(digs_dict.values(),
@@ -365,6 +358,18 @@ class Benford(object):
         if summation:
             self.summation(verbose=self.verbose)
             self._has_summation = True
+    
+    @property
+    def critical_values(self):
+        crit_vals =  {'Z': confs[self.confidence],
+                     'KS': KS_crit[self.confidence]
+                     }
+        for key, val in digs_dict.items():
+            ddf = getattr(self, val).ddf
+            crit_vals[val] = {'chi2': crit_chi2[ddf][self.confidence],
+                             'MAD': mad_dict[key]
+                             }
+        return crit_vals
 
     def sec_order(self, verbose=True):
         '''
@@ -406,11 +411,6 @@ class Benford(object):
             print('\nAdded Summation DataFrames to F1D, F2D and F3D Tests.')
         self._has_summation = True
 
-    def update_confidence(self, new_conf):
-        '''
-        Updates the confidence level for the tests.
-        '''
-        self.confidence = _check_confidence_(new_conf)
 
     def audit(self, tests, confidence=95, limit_N=None, display=True):
         '''
