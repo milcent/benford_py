@@ -345,7 +345,7 @@ class Benford(object):
             print(f'Number of discarded entries for each test:\n{self._discarded}')
 
         if mantissas:
-            self.mantissas(self.base.Seq)
+            self.mantissas()
             self._has_mantissas = True
     
         if sec_order:
@@ -369,7 +369,10 @@ class Benford(object):
         return crit_vals
 
     def mantissas(self, data):
-        self.Mantissas = Mantissas(data)
+        """ 
+        Adds a Mantissas object from the 
+        """
+        self.Mantissas = Mantissas(self.Base.Seq)
         if self.verbose:
             self.Mantissas.inform()
 
@@ -402,7 +405,7 @@ class Benford(object):
 
     def summation(self):
         '''
-        Create Summation test DataFrames from Base object
+        Creates Summation test DataFrames from Base object
         '''
         for test in ['F1D', 'F2D', 'F3D']:
             t = test + '_Summ'
@@ -874,7 +877,13 @@ class Mantissas(object):
 
     def __init__(self, data):
         if (not isinstance(data, np.ndarray)) & (not isinstance(data, pd.Series)):
-            raise ValueError('data must be a numpy array or a pandas Series')
+            print('data is not a numpy NDarray nor a pandas Series.'
+                  'Trying to convert...')
+            try:
+                data = np.array(data)
+            except:
+                raise ValueError('Could not convert data. Check input.')
+            print('Conversion successful.')
         
         data = data.dropna().loc[data != 0]
         
@@ -895,10 +904,13 @@ class Mantissas(object):
         print(f"The Mantissas KURTOSIS is {round(self.stats['Kurt'], 6)}."
               "\tRef: -1.2.")
 
-    def show_plot(self, figsize=(15, 8)):
+    def show_plot(self, figsize=(12, 6)):
         '''
         plots the ordered mantissas and a line with the expected
                 inclination. Defaults to True.
+
+        Parameters
+        ----------
 
         figsize -> tuple that sets the figure size
         '''
@@ -917,12 +929,23 @@ class Mantissas(object):
         plt.legend(loc='upper left')
         plt.show()
 
-    def arc_test(self, decimals = 2, grid=True, figsize=10):
+    def arc_test(self, decimals=2, grid=True, figsize=12):
         '''
         Add two columns to Mantissas's DataFrame equal to their "X" and "Y"
-        coordinates, plots its to a scatter plot and calculates gravity center
-        of the circle.
+        coordinates, plots its to a scatter plot and calculates the gravity
+        center of the circle.
+
+        Parameters
+        ----------
+
+        decimals -> number of decimal places for displaying the gravity center.
+            Defaults to 2.
         
+        grid -> show grid of the plot. Defaluts to True.
+        
+        figsize -> size of the figure to be displayed. Since it is a square,
+            there is no need to provide a tuple, like is usually the case with
+            matplotlib.
         '''
         if not hasattr(self, 'gravity_center'):
             self.data['mant_x'] = np.cos(2 * np.pi * self.data.Mantissa)
