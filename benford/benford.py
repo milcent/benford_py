@@ -25,7 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import math
 from matplotlib.text import Annotation
 
 
@@ -217,12 +216,6 @@ class Base(pd.DataFrame):
         self['L2D'] = temp_l2d.ZN % 100
         self['L2D'] = self['L2D'].fillna(-1).astype(int)
 
-        self['Mant'] = _getMantissas_(ab)
-
-    # def __setattr__(self, name, value):
-    #     setattr(self, name, value)
-
-
 class Test(pd.DataFrame):
     '''
     Transforms the original number sequence into a DataFrame reduced
@@ -322,7 +315,8 @@ class Benford(object):
     '''
 
     def __init__(self, data, decimals=2, sign='all', confidence=95,
-                 sec_order=False, summation=False, limit_N=None, verbose=True):
+                 mantissas=True, sec_order=False, summation=False,
+                 limit_N=None, verbose=True):
         self.data, self.chosen = _input_data_(data)
         self.decimals = decimals
         self.sign = sign
@@ -350,6 +344,10 @@ class Benford(object):
             print(f'Test performed on {len(self.base)} registries.')
             print(f'Number of discarded entries for each test:\n{self._discarded}')
 
+        if mantissas:
+            self.mantissas(self.base.Seq)
+            self._has_mantissas = True
+    
         if sec_order:
             self.sec_order()
             self._has_sec_order = True
@@ -369,6 +367,11 @@ class Benford(object):
                              'MAD': mad_dict[key]
                              }
         return crit_vals
+
+    def mantissas(self, data):
+        self.Mantissas = Mantissas(data)
+        if self.verbose:
+            self.Mantissas.inform()
 
     def sec_order(self):
         '''
@@ -859,7 +862,7 @@ class Source(pd.DataFrame):
             return dup_count(top_Rep)
 
 
-class Mantissas(pd.Series):
+class Mantissas(object):
     '''
     Returns a Series with the data mantissas,
 
@@ -870,24 +873,27 @@ class Mantissas(pd.Series):
     '''
 
     def __init__(self, data):
-        if isinstance(data, np.ndarray):
-            data = pd.Series(data)
-        elif isinstance(data, pd.Series):
-            pass
-        else:
+        if (not isinstance(data, np.ndarray)) & (not isinstance(data, pd.Series)):
             raise ValueError('data must be a numpy array or a pandas Series')
-        data.dropna(inplace=True)
-        data = data.loc[data != 0]
-        pd.Series.__init__(self, _getMantissas_(np.abs(data)))
+        
+        data = data.dropna().loc[data != 0]
+        
+        self.data = pd.DataFrame({'Mantissa': _getMantissas_(np.abs(data))})
 
-        self.stats = {'Mean': self.mean(), 'Var': self.var(),
-                      'Skew': self.skew(), 'Kurt': self.kurt()}
+        self.stats = {'Mean': self.data.Mantissa.mean(),
+                      'Var': self.data.Mantissa.var(),
+                      'Skew': self.data.Mantissa.skew(),
+                      'Kurt': self.data.Mantissa.kurt()}
 
     def inform(self):
-        print(f"\nThe Mantissas MEAN is {self.stats['Mean']}. \t\tRef: 0.5.")
-        print(f"The Mantissas VARIANCE is {self.stats['Var']}. \tRef: 0.08333.")
-        print(f"The Mantissas SKEWNESS is {self.stats['Skew']}. \tRef: 0.")
-        print(f"The Mantissas KURTOSIS is {self.stats['Kurt']}. \tRef: -1.2.")
+        print(f"\nThe Mantissas MEAN is {round(self.stats['Mean'], 6)}."
+              "\t\tRef: 0.5.")
+        print(f"The Mantissas VARIANCE is {round(self.stats['Var'], 6)}."
+              "\tRef: 0.08333.")
+        print(f"The Mantissas SKEWNESS is {round(self.stats['Skew'], 6)}."
+              "\tRef: 0.")
+        print(f"The Mantissas KURTOSIS is {round(self.stats['Kurt'], 6)}."
+              "\tRef: -1.2.")
 
     def show_plot(self, figsize=(15, 8)):
         '''
@@ -896,40 +902,47 @@ class Mantissas(pd.Series):
 
         figsize -> tuple that sets the figure size
         '''
-        self.sort_values(inplace=True)
-        x = np.arange(1, len(self) + 1)
-        n = np.ones(len(self)) / len(self)
+        ld = len(self.data)
+        x = np.arange(1, ld + 1)
+        n = np.ones(ld) / ld
         fig = plt.figure(figsize=figsize)
         ax = fig.add_subplot(111)
-        ax.plot(x, self, linestyle='--', color=colors['s'],
-                linewidth=3, label='Mantissas')
+        ax.plot(x, self.data.Mantissa.sort_values(), linestyle='--',
+                color=colors['s'], linewidth=3, label='Mantissas')
         ax.plot(x, n.cumsum(), color=colors['m'],
                 linewidth=2, label='Expected')
         plt.ylim((0, 1.))
-        plt.xlim((1, len(self) + 1))
+        plt.xlim((1, ld + 1))
         ax.set_facecolor(colors['b'])
         plt.legend(loc='upper left')
         plt.show()
 
     def arc_test(self, decimals = 2, grid=True, figsize=10):
         '''
-        Add two columns to Mantissas's DataFrame equal to their "X" and "Y" coordinates,
-        plots its to a scatter plot and calculates gravity center of the circle.
+        Add two columns to Mantissas's DataFrame equal to their "X" and "Y"
+        coordinates, plots its to a scatter plot and calculates gravity center
+        of the circle.
         
         '''
-        df = pd.DataFrame(self)
-        df["mant_x"] = df[df.columns[0]].apply(lambda x: math.cos(2 * math.pi * x))
-        df["mant_y"] = df[df.columns[0]].apply(lambda x: math.sin(2 * math.pi * x))
-        x_mean, y_mean = df["mant_y"].mean(), df["mant_x"].mean()
+        if not hasattr(self, 'gravity_center'):
+            self.data['mant_x'] = np.cos(2 * np.pi * self.data.Mantissa)
+            self.data['mant_y'] = np.sin(2 * np.pi * self.data.Mantissa)
+            self.gravity_center = (self.data.mant_x.mean(),
+                                   self.data.mant_y.mean())
         fig = plt.figure(figsize=(figsize,figsize))
         ax = plt.subplot()
         ax.set_facecolor(colors['b'])
-        ax.scatter(df["mant_y"], df["mant_x"], label= "ARC TEST", color=colors['m'])
-        ax.scatter(x_mean, y_mean, color=colors['s']) 
+        ax.scatter(self.data.mant_x, self.data.mant_y, label= "ARC TEST",
+                   color=colors['m'])
+        ax.scatter(self.gravity_center[0], self.gravity_center[1],
+                   color=colors['s']) 
         text_annotation = Annotation(
-                    f"  Gravity Center: x({round(x_mean,decimals)}),"
-                    f" y({round(y_mean,decimals)})", 
-                    xy=(x_mean - 0.65, y_mean - 0.1), xycoords='data')
+                    "  Gravity Center: "
+                    f"x({round(self.gravity_center[0], decimals)}),"
+                    f" y({round(self.gravity_center[1], decimals)})", 
+                    xy=(self.gravity_center[0] - 0.65,
+                        self.gravity_center[1] - 0.1),
+                    xycoords='data')
         ax.add_artist(text_annotation)
         ax.grid(True, which='both')
         ax.axhline(y=0, color='k')
@@ -1630,7 +1643,7 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
         return data[['Counts', 'Found', 'Expected']]
 
 
-def mantissas(data, inform=True, show_plot=True):
+def mantissas(data, inform=True, show_plot=True, arc_test=True):
     '''
     Returns a Series with the data mantissas,
 
@@ -1650,6 +1663,8 @@ def mantissas(data, inform=True, show_plot=True):
         mant.inform()
     if show_plot:
         mant.show_plot()
+    if arc_test:
+        mant.arc_test()
     return mant
 
 
