@@ -98,7 +98,7 @@ class First(pd.DataFrame):
 
     def __init__(self, digs, plot=True):
         _check_digs_(digs)
-        dig_name = 'First_{0}_Dig'.format(digs)
+        dig_name = f'First_{digs}_Dig'
         Dig = np.arange(10 ** (digs - 1), 10 ** digs)
         Exp = np.log10(1 + (1. / Dig))
 
@@ -344,19 +344,18 @@ class Benford(object):
                                [len(self.base[col].loc[self.base[col] == -1])
                                 for col in digs_dict.values()])}
 
-        if verbose:
+        if self.verbose:
             print('-----Benford-----.\n')
-            print('Initial sample size: {0}.\n'.format(len(self.chosen)))
-            print('Test performed on {0} registries.'.format(len(self.base)))
-            print('Number of discarded entries for each test:\n{0}'
-                  .format(self._discarded))
+            print(f'Initial sample size: {len(self.chosen)}.\n')
+            print(f'Test performed on {len(self.base)} registries.')
+            print(f'Number of discarded entries for each test:\n{self._discarded}')
 
         if sec_order:
-            self.sec_order(verbose=self.verbose)
+            self.sec_order()
             self._has_sec_order = True
 
         if summation:
-            self.summation(verbose=self.verbose)
+            self.summation()
             self._has_summation = True
     
     @property
@@ -371,7 +370,7 @@ class Benford(object):
                              }
         return crit_vals
 
-    def sec_order(self, verbose=True):
+    def sec_order(self):
         '''
         Runs the Second Order tests, which are the Benford's tests
         performed on the differences between the ordered sample (a value minus
@@ -392,13 +391,13 @@ class Benford(object):
                                    sec_order_dict.values(),
                                    [sum(self.base_sec[col] == -1) for col in
                                     digs_dict.values()])}
-        if verbose:
+        if self.verbose:
             print(f'\nSecond order tests run in {len(self.base_sec)} '
                   'registries.\nNumber of discarded entries for second order'
                   f' tests:\n{self._discarded_sec}')
         self._has_sec_order = True
 
-    def summation(self, verbose=True):
+    def summation(self):
         '''
         Create Summation test DataFrames from Base object
         '''
@@ -407,7 +406,7 @@ class Benford(object):
             setattr(self, t, Summ(self.base, test))
             self.tests.append(t)
 
-        if verbose:
+        if self.verbose:
             print('\nAdded Summation DataFrames to F1D, F2D and F3D Tests.')
         self._has_summation = True
 
@@ -491,15 +490,14 @@ class Source(pd.DataFrame):
         self.dropna(inplace=True)
 
         if inform:
-            print("\nInitialized sequence with {0} registries.".format(
-                  len(self)))
+            print(f"\nInitialized sequence with {len(self)} registries.")
         if sec_order:
             self.Seq = _subtract_sorted_(self.Seq.copy())
             self.dropna(inplace=True)
             self.reset_index(inplace=True)
             if inform:
                 print('Second Order Test. Initial series reduced '
-                      'to {0} entries.'.format(len(self.Seq)))
+                      f'to {len(self.Seq)} entries.')
 
         ab = self.Seq.abs()
 
@@ -533,13 +531,10 @@ class Source(pd.DataFrame):
         if inform:
             p = self[['Seq', 'Mant']]
             p = p.loc[p.Seq > 0].sort_values('Mant')
-            print("The Mantissas MEAN is {0}. Ref: 0.5.".format(p.Mant.mean()))
-            print("The Mantissas VARIANCE is {0}. Ref: 0.083333.".format(
-                  p.Mant.var()))
-            print("The Mantissas SKEWNESS is {0}. \tRef: 0.".
-                  format(p.Mant.skew()))
-            print("The Mantissas KURTOSIS is {0}. \tRef: -1.2.".
-                  format(p.Mant.kurt()))
+            print(f"The Mantissas MEAN is {p.Mant.mean()}. Ref: 0.5.")
+            print(f"The Mantissas VARIANCE is {p.Mant.var()}. Ref: 0.083333.")
+            print(f"The Mantissas SKEWNESS is {p.Mant.skew()}. \tRef: 0.")
+            print(f"The Mantissas KURTOSIS is {p.Mant.kurt()}. \tRef: -1.2.")
 
         if plot:
             N = len(p)
@@ -918,14 +913,10 @@ class Mantissas(pd.Series):
                       'Skew': self.skew(), 'Kurt': self.kurt()}
 
     def inform(self):
-        print("\nThe Mantissas MEAN is {0}. \t\tRef: 0.5.".
-              format(self.stats['Mean']))
-        print("The Mantissas VARIANCE is {0}. \tRef: 0.083333.".
-              format(self.stats['Var']))
-        print("The Mantissas SKEWNESS is {0}. \tRef: 0.".
-              format(self.stats['Skew']))
-        print("The Mantissas KURTOSIS is {0}. \tRef: -1.2.".
-              format(self.stats['Kurt']))
+        print(f"\nThe Mantissas MEAN is {self.stats['Mean']}. \t\tRef: 0.5.")
+        print(f"The Mantissas VARIANCE is {self.stats['Var']}. \tRef: 0.08333.")
+        print(f"The Mantissas SKEWNESS is {self.stats['Skew']}. \tRef: 0.")
+        print(f"The Mantissas KURTOSIS is {self.stats['Kurt']}. \tRef: -1.2.")
 
     def show_plot(self, figsize=(15, 8)):
         '''
@@ -965,8 +956,8 @@ class Mantissas(pd.Series):
         ax.scatter(df["mant_y"], df["mant_x"], label= "ARC TEST", color=colors['m'])
         ax.scatter(x_mean, y_mean, color=colors['s']) 
         text_annotation = Annotation(
-                    "  Gravity Center: x({0}), y({1})".format(
-                    round(x_mean,decimals), round(y_mean,decimals)), 
+                    f"  Gravity Center: x({round(x_mean,decimals)}),"
+                    f" y({round(y_mean,decimals)})", 
                     xy=(x_mean - 0.65, y_mean - 0.1), xycoords='data')
         ax.add_artist(text_annotation)
         ax.grid(True, which='both')
@@ -1166,8 +1157,8 @@ def _KS_(frame, confidence, N, inform=True):
         crit_KS = KS_crit[confidence] / np.sqrt(N)
 
         if inform:
-            print("\nThe Kolmogorov-Smirnov statistic is {0}".format(suprem))
-            print("Critical K-S for this series: {0}".format(crit_KS))
+            print(f"\nThe Kolmogorov-Smirnov statistic is {suprem}.\n"
+                  f"Critical K-S for this series: {crit_KS}")
         return (suprem, crit_KS)
 
 
@@ -1203,17 +1194,14 @@ def _mad_(frame, test, inform=True):
     mad = frame.AbsDif.mean()
 
     if inform:
-        print("\nThe Mean Absolute Deviation is {0}".format(mad))
+        print(f"\nThe Mean Absolute Deviation is {mad}")
 
         if test != -2:
-            print("For the {0}:\n\
-            - 0.0000 to {1}: Close Conformity\n\
-            - {1} to {2}: Acceptable Conformity\n\
-            - {2} to {3}: Marginally Acceptable Conformity\n\
-            - Above {3}: Nonconformity".format(mad_dict[digs_dict[test]],
-                                               mad_dict[test][0],
-                                               mad_dict[test][1],
-                                               mad_dict[test][2]))
+            print(f"For the {mad_dict[digs_dict[test]]}:\n\
+            - 0.0000 to {mad_dict[test][0]}: Close Conformity\n\
+            - {mad_dict[test][0]} to {mad_dict[test][1]}: Acceptable Conformity\n\
+            - {mad_dict[test][1]} to {3}: Marginally Acceptable Conformity\n\
+            - Above {mad_dict[test][2]}: Nonconformity")
         else:
             pass
     return mad
@@ -1231,7 +1219,7 @@ def _mse_(frame, inform=True):
     mse = (frame.AbsDif ** 2).mean()
 
     if inform:
-        print("\nMean Square Error = {0}".format(mse))
+        print(f"\nMean Square Error = {mse}")
 
     return mse
 
@@ -1324,9 +1312,6 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
         u = (y_Found < lower) | (y_Found > upper)
         c = np.array([colors['m']] * len(u))
         c[u] = colors['af']
-        # for i, b in enumerate(bars):
-        #     if u.iloc[i]:
-        #         b.set_color(colors['af'])
         lower *= 100.
         upper *= 100.
         ax.plot(x, upper, color=colors['s'], zorder=5)
@@ -2081,14 +2066,14 @@ def _check_test_(test):
         if test in digs_dict.keys():
             return test
         else:
-            raise ValueError('test was set to {0}. Should be one of {1}'
-                             .format(test, digs_dict.keys()))
+            raise ValueError(f'Test was set to {test}. Should be one of '
+                             f'{digs_dict.keys()}')
     elif isinstance(test, str):
         if test in rev_digs.keys():
             return rev_digs[test]
         else:
-            raise ValueError('test was set to {0}. Should be one of {1}'
-                             .format(test, rev_digs.keys()))
+            raise ValueError(f'Test was set to {test}. Should be one of '
+                             f'{rev_digs.keys()}')
     else:
         raise ValueError('Wrong value chosen for test parameter. Possible '
                          f'values are\n {list(digs_dict.keys())} for ints and'
@@ -2125,14 +2110,13 @@ def _inform_(df, high_Z, conf):
         if conf is not None:
             dd = df[['Expected', 'Found', 'Z_score'
                      ]].sort_values('Z_score', ascending=False).head(high_Z)
-            print('\nThe entries with the top {0} Z scores are:\n'
-                  .format(high_Z))
+            print(f'\nThe entries with the top {high_Z} Z scores are:\n')
         # Summation Test
         else:
             dd = df.sort_values('AbsDif', ascending=False
                                 ).head(high_Z)
-            print('\nThe entries with the top {0} absolute deviations are:\n'
-                  .format(high_Z))
+            print(f'\nThe entries with the top {high_Z} absolute deviations '
+                  'are:\n')
     else:
         if high_Z == 'pos':
             m1 = df.Dif > 0
