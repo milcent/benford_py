@@ -411,35 +411,6 @@ class Benford(object):
         self._has_summation = True
 
 
-    def audit(self, tests, confidence=95, limit_N=None, display=True):
-        '''
-
-        Paremeters
-        ----------
-        tests: string, list of strings or 'all'
-
-        confidence: confidence level to draw lower and upper limits when
-            plotting and to limit the top deviations to show. Defaults to None.
-
-        limit_N: sets a limit to N as the sample size for the calculation of
-            the Z scores if the sample is too big. Defaults to None.
-        '''
-        confidence = _check_confidence_(confidence)
-
-        # if tests != 'all':
-        #     if
-        #     test_list = []
-        #     if not isinstance(tests, list):
-        #         test_list.append(tests)
-        #     else:
-        #         test_list.extend(tests)
-        # else:
-        #     test_list =
-
-    def get_suspects(self):
-        pass
-
-
 class Source(pd.DataFrame):
     '''
     Prepares the data for Analysis. pandas DataFrame subclass.
