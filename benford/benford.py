@@ -315,7 +315,7 @@ class Benford(object):
     '''
 
     def __init__(self, data, decimals=2, sign='all', confidence=95,
-                 mantissas=True, sec_order=False, summation=False,
+                 mantissas=False, sec_order=False, summation=False,
                  limit_N=None, verbose=True):
         self.data, self.chosen = _input_data_(data)
         self.decimals = decimals
@@ -346,18 +346,15 @@ class Benford(object):
 
         if mantissas:
             self.mantissas()
-            self._has_mantissas = True
     
         if sec_order:
             self.sec_order()
-            self._has_sec_order = True
 
         if summation:
             self.summation()
-            self._has_summation = True
     
     @property
-    def critical_values(self):
+    def stats(self):
         crit_vals =  {'Z': confs[self.confidence],
                      'KS': KS_crit[self.confidence]
                      }
@@ -366,13 +363,17 @@ class Benford(object):
             crit_vals[val] = {'chi2': crit_chi2[ddf][self.confidence],
                              'MAD': mad_dict[key]
                              }
+        if hasattr(self, 'Mantissas'):
+            crit_vals['Mantissas'] = self.Mantissas.stats
         return crit_vals
 
-    def mantissas(self, data):
+    def mantissas(self):
         """ 
-        Adds a Mantissas object from the 
+        Adds a Mantissas object to the tests, with all its statistics and
+        plotting capabilities. 
         """
-        self.Mantissas = Mantissas(self.Base.Seq)
+        self.Mantissas = Mantissas(self.base.Seq)
+        self.tests.append('Mantissas')
         if self.verbose:
             self.Mantissas.inform()
 
@@ -390,7 +391,7 @@ class Benford(object):
             test = Test(self.base_sec.loc[self.base_sec[val] != -1],
                         digs=key, limit_N=self.limit_N)
             setattr(self, sec_order_dict[key], test)
-            self.tests.append(val)
+            self.tests.append(f'{val}_sec')
             # No need to populate crit_vals dict, since they are the
             # same and do not depend on N
             self._discarded_sec = {key: val for (key, val) in zip(
@@ -401,20 +402,18 @@ class Benford(object):
             print(f'\nSecond order tests run in {len(self.base_sec)} '
                   'registries.\nNumber of discarded entries for second order'
                   f' tests:\n{self._discarded_sec}')
-        self._has_sec_order = True
 
     def summation(self):
         '''
         Creates Summation test DataFrames from Base object
         '''
         for test in ['F1D', 'F2D', 'F3D']:
-            t = test + '_Summ'
+            t =  f'{test}_Summ'
             setattr(self, t, Summ(self.base, test))
             self.tests.append(t)
 
         if self.verbose:
             print('\nAdded Summation DataFrames to F1D, F2D and F3D Tests.')
-        self._has_summation = True
 
 
 class Source(pd.DataFrame):
@@ -947,24 +946,24 @@ class Mantissas(object):
             there is no need to provide a tuple, like is usually the case with
             matplotlib.
         '''
-        if not hasattr(self, 'gravity_center'):
+        if self.stats.get('gravity_center') is None:
             self.data['mant_x'] = np.cos(2 * np.pi * self.data.Mantissa)
             self.data['mant_y'] = np.sin(2 * np.pi * self.data.Mantissa)
-            self.gravity_center = (self.data.mant_x.mean(),
-                                   self.data.mant_y.mean())
+            self.stats['gravity_center'] = (self.data.mant_x.mean(),
+                                            self.data.mant_y.mean())
         fig = plt.figure(figsize=(figsize,figsize))
         ax = plt.subplot()
         ax.set_facecolor(colors['b'])
         ax.scatter(self.data.mant_x, self.data.mant_y, label= "ARC TEST",
                    color=colors['m'])
-        ax.scatter(self.gravity_center[0], self.gravity_center[1],
+        ax.scatter(self.stats['gravity_center'][0], self.stats['gravity_center'][1],
                    color=colors['s']) 
         text_annotation = Annotation(
                     "  Gravity Center: "
-                    f"x({round(self.gravity_center[0], decimals)}),"
-                    f" y({round(self.gravity_center[1], decimals)})", 
-                    xy=(self.gravity_center[0] - 0.65,
-                        self.gravity_center[1] - 0.1),
+                    f"x({round(self.stats['gravity_center'][0], decimals)}),"
+                    f" y({round(self.stats['gravity_center'][1], decimals)})", 
+                    xy=(self.stats['gravity_center'][0] - 0.65,
+                        self.stats['gravity_center'][1] - 0.1),
                     xycoords='data')
         ax.add_artist(text_annotation)
         ax.grid(True, which='both')
