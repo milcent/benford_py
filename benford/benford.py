@@ -30,7 +30,7 @@ from matplotlib.text import Annotation
 
 digs_dict = {1: 'F1D', 2: 'F2D', 3: 'F3D', 22: 'SD', -2: 'L2D'}
 
-sec_order_dict = {key: val + '_sec' for key, val in digs_dict.items()}
+sec_order_dict = {key: f'{val}_sec' for key, val in digs_dict.items()}
 
 rev_digs = {'F1D': 1, 'F2D': 2, 'F3D': 3, 'SD': 22, 'L2D': -2}
 
@@ -38,15 +38,18 @@ names = {1: 'First Digit Test', 2: 'First Two Digits Test',
          3: 'First Three Digits Test', 22: 'Second Digit Test',
          -2: 'Last Two Digits Test'}
 
+# Critical values for Mean Absolute Deviation
 mad_dict = {1: [0.006, 0.012, 0.015], 2: [0.0012, 0.0018, 0.0022],
             3: [0.00036, 0.00044, 0.00050], 22: [0.008, 0.01, 0.012],
             -2: None, 'F1D': 'First Digit', 'F2D': 'First Two Digits',
             'F3D': 'First Three Digits', 'SD': 'Second Digits'}
 
+# Color for the plotting
 colors = {'m': '#00798c', 'b': '#E2DCD8', 's': '#9c3848',
           'af': '#edae49', 'ab': '#33658a', 'h': '#d1495b',
           'h2': '#f64740', 't': '#16DB93'}
 
+# Critical Z-scores according to the confindence levels
 confs = {None: None, 80: 1.285, 85: 1.435, 90: 1.645, 95: 1.96,
          99: 2.576, 99.9: 3.29, 99.99: 3.89, 99.999: 4.417,
          99.9999: 4.892, 99.99999: 5.327}
@@ -55,6 +58,8 @@ p_values = {None: 'None', 80: '0.2', 85: '0.15', 90: '0.1', 95: '0.05',
             99: '0.01', 99.9: '0.001', 99.99: '0.0001', 99.999: '0.00001',
             99.9999: '0.000001', 99.99999: '0.0000001'}
 
+# Critical Chi-Square values according to the tests degrees of freedom
+# and confidence levels
 crit_chi2 = {8: {80: 11.03, 85: 12.027, 90: 13.362, 95: 15.507,
                  99: 20.090, 99.9: 26.124, 99.99: 31.827, None: None,
                  99.999: 37.332, 99.9999: 42.701, 99.99999: 47.972},
@@ -74,6 +79,8 @@ crit_chi2 = {8: {80: 11.03, 85: 12.027, 90: 13.362, 95: 15.507,
                    99.999: 1091.422, 99.9999: 1115.141,
                    99.99999: 1137.082, None: None}
              }
+
+# Critical Kolmogorov-Smirnof values according to the confidence levels 
 KS_crit = {80: 1.075, 85: 1.139, 90: 1.125, 95: 1.36, 99: 1.63,
            99.9: 1.95, 99.99: 2.23, 99.999: 2.47,
            99.9999: 2.7, 99.99999: 2.9, None: None}
@@ -151,7 +158,8 @@ class LastTwo(pd.DataFrame):
 
 class Base(pd.DataFrame):
     '''
-    Inetrnalizes and prepares the data for Analysis.
+    Internalizes and prepares the data for Analysis.
+
     Parameters
     ----------
     data: sequence of numbers to be evaluated. Must be a numpy 1D array,
@@ -178,7 +186,6 @@ class Base(pd.DataFrame):
 
         if sign == 'all':
             self.Seq = self.Seq.loc[self.Seq != 0]
-            # ab = self.Seq.abs()
         elif sign == 'pos':
             self.Seq = self.Seq.loc[self.Seq > 0]
         else:
@@ -198,7 +205,7 @@ class Base(pd.DataFrame):
                                .str[:5].astype(int)
             else:
                 self['ZN'] = (ab * (10 ** decimals)).astype(int)
-
+        # First digits
         for col in ['F1D', 'F2D', 'F3D']:
             temp = self.ZN.loc[self.ZN >= 10 ** (rev_digs[col] - 1)]
             self[col] = (temp // 10 ** ((np.log10(temp).astype(int)) -
@@ -206,12 +213,12 @@ class Base(pd.DataFrame):
             # fill NANs with -1, which is a non-usable value for digits,
             # to be discarded later.
             self[col] = self[col].fillna(-1).astype(int)
-
+        # Second digit
         temp_sd = self.loc[self.ZN >= 10]
         self['SD'] = (temp_sd.ZN // 10**((np.log10(temp_sd.ZN)).astype(int) -
                                          1)) % 10
         self['SD'] = self['SD'].fillna(-1).astype(int)
-
+        # Last two digits
         temp_l2d = self.loc[self.ZN >= 1000]
         self['L2D'] = temp_l2d.ZN % 100
         self['L2D'] = self['L2D'].fillna(-1).astype(int)
@@ -236,7 +243,7 @@ class Test(pd.DataFrame):
     def __init__(self, base, digs, limit_N=None):
         # create a separated Expected distributions object
         super(Test, self).__init__(_test_(digs))
-        # create column witg occurrences of the digits in the base
+        # create column with occurrences of the digits in the base
         self['Counts'] = base[digs_dict[digs]].value_counts()
         # create column with relative frequencies
         self['Found'] = base[digs_dict[digs]].value_counts(normalize=True)
@@ -245,7 +252,6 @@ class Test(pd.DataFrame):
         self['AbsDif'] = np.absolute(self.Found - self.Expected)
         self.N = _set_N_(len(base), limit_N)
         self['Z_score'] = _Z_score(self, self.N)
-
         self.chi_square = _chi_square_2(self)
         self.KS = _KS_2(self)
         self.MAD = self.AbsDif.mean()
@@ -263,7 +269,6 @@ class Summ(pd.DataFrame):
     test: The test for which to compute the summation
 
     '''
-
     def __init__(self, base, test):
         super(Summ, self).__init__(base.abs()
                                    .groupby(test)[['Seq']]
@@ -414,6 +419,14 @@ class Benford(object):
 
         if self.verbose:
             print('\nAdded Summation DataFrames to F1D, F2D and F3D Tests.')
+
+    # def report(self, test=None, plot=True):
+    #     '''
+    #     '''
+    #     pass
+    #     _plot_dig_(df, x=x, y_Exp=df.Expected, y_Found=df.Found, N=N,
+    #                figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)),
+    #                conf_Z=confs[confidence])
 
 
 class Source(pd.DataFrame):
@@ -1097,7 +1110,7 @@ def _chi_square_(frame, ddf, confidence, inform=True):
 
     Parameters
     ----------
-    frame:      DataFrame with Foud, Expected and their difference columns.
+    frame:      DataFrame with Found, Expected and their difference columns.
 
     ddf:        Degrees of freedom to consider.
 
@@ -1126,7 +1139,7 @@ def _chi_square_2(frame):
 
     Parameters
     ----------
-    frame:      DataFrame with Foud, Expected and their difference columns.
+    frame:      DataFrame with Found, Expected and their difference columns.
 
     '''
     exp_counts = frame.Counts.sum() * frame.Expected
@@ -1287,7 +1300,7 @@ def _plot_expected_(df, digs):
     plt.show()
 
 
-def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
+def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=True):
     '''
     Plots the digits tests results
 
