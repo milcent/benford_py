@@ -94,11 +94,11 @@ class First(pd.DataFrame):
     Parameters
     ----------
 
-    -> digs: 1, 2 or 3 - tells which of the first digits to consider:
+    digs-> 1, 2 or 3 - tells which of the first digits to consider:
             1 for the First Digit, 2 for the First Two Digits and 3 for
             the First Three Digits.
 
-    -> plot: option to plot a bar chart of the Expected proportions.
+    plot-> option to plot a bar chart of the Expected proportions.
             Defaults to True.
     '''
 
@@ -162,6 +162,7 @@ class Base(pd.DataFrame):
 
     Parameters
     ----------
+
     data: sequence of numbers to be evaluated. Must be a numpy 1D array,
         a pandas Series or a pandas DataFrame column, with values being
         integers or floats.
@@ -223,6 +224,7 @@ class Base(pd.DataFrame):
         self['L2D'] = temp_l2d.ZN % 100
         self['L2D'] = self['L2D'].fillna(-1).astype(int)
 
+
 class Test(pd.DataFrame):
     '''
     Transforms the original number sequence into a DataFrame reduced
@@ -231,16 +233,20 @@ class Test(pd.DataFrame):
 
     Parameters
     ----------
+
     base: The Base object with the data prepared for Analysis
 
     digs: Tells which test to perform -> 1: first digit; 2: first two digits;
         3: furst three digits; 22: second digit; -2: last two digits.
+    
+    confidence: confidence level to draw lower and upper limits when
+        plotting and to limit the top deviations to show.
 
     limit_N: sets a limit to N as the sample size for the calculation of
             the Z scores if the sample is too big. Defaults to None.
     '''
 
-    def __init__(self, base, digs, limit_N=None):
+    def __init__(self, base, digs, confidence, limit_N=None, sec_order=False):
         # create a separated Expected distributions object
         super(Test, self).__init__(_test_(digs))
         # create column with occurrences of the digits in the base
@@ -301,6 +307,10 @@ class Benford(object):
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.
+    
+    confidence: confidence level to draw lower and upper limits when
+            plotting and to limit the top deviations to show, as well as to
+            calculate critical values for the tests' statistics. Defaults to 95.
 
     sec_order: runs the Second Order tests, which are the Benford's tests
         performed on the differences between the ordered sample (a value minus
@@ -420,14 +430,6 @@ class Benford(object):
         if self.verbose:
             print('\nAdded Summation DataFrames to F1D, F2D and F3D Tests.')
 
-    # def report(self, test=None, plot=True):
-    #     '''
-    #     '''
-    #     pass
-    #     _plot_dig_(df, x=x, y_Exp=df.Expected, y_Found=df.Found, N=N,
-    #                figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)),
-    #                conf_Z=confs[confidence])
-
 
 class Source(pd.DataFrame):
     '''
@@ -545,6 +547,9 @@ class Source(pd.DataFrame):
         numbers provided, and populates the mapping dict for future
         selection of the original series.
 
+        Parameters
+        ----------
+
         digs -> number of first digits to consider. Must be 1 (first digit),
             2 (first two digits) or 3 (first three digits).
 
@@ -555,7 +560,8 @@ class Source(pd.DataFrame):
             2 (first two digits) or 3 (first three digits).
 
         confidence: confidence level to draw lower and upper limits when
-            plotting and to limit the top deviations to show. Defaults to None.
+            plotting and to limit the top deviations to show, as well as to
+            calculate critical values for the tests' statistics. Defaults to None.
 
         high_Z: chooses which Z scores to be used when displaying results,
             according to the confidence level chosen. Defaluts to 'pos',
@@ -648,7 +654,8 @@ class Source(pd.DataFrame):
             found and the expected distributions; defaults to False.
 
         confidence: confidence level to draw lower and upper limits when
-            plotting and to limit the top deviations to show. Defaults to None.
+            plotting and to limit the top deviations to show, as well as to
+            calculate critical values for the tests' statistics. Defaults to None.
 
         high_Z: chooses which Z scores to be used when displaying results,
             according to the confidence level chosen. Defaluts to 'pos',
@@ -731,7 +738,8 @@ class Source(pd.DataFrame):
             found and the expected distributions; defaults to False.
 
         confidence: confidence level to draw lower and upper limits when
-            plotting and to limit the top deviations to show. Defaults to None.
+            plotting and to limit the top deviations to show, as well as to
+            calculate critical values for the tests' statistics. Defaults to None.
 
         high_Z: chooses which Z scores to be used when displaying results,
             according to the confidence level chosen. Defaluts to 'pos',
@@ -2123,8 +2131,7 @@ def _subtract_sorted_(data):
 
 def _inform_(df, high_Z, conf):
     '''
-    Selects and sorts by the Z_stats chosen to be considered, informing or not,
-    and populating the maps dict for further back analysis of the entries.
+    Selects and sorts by the Z_stats chosen to be considered, informing or not.
     '''
 
     if isinstance(high_Z, int):
