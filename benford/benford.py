@@ -378,6 +378,7 @@ class Summ(pd.DataFrame):
         self['AbsDif'] = np.absolute(self.Percent - 1 / len(self))
         self.index = self.index.astype(int)
         self.MAD = self.AbsDif.mean()
+        self.confidence = None
 
 
 class Benford(object):
@@ -435,10 +436,11 @@ class Benford(object):
         self.base = Base(self.chosen, decimals, sign)
         self.tests = []
 
-        # Create a DatFrame for each Test and Second order Test
+        # Create a DatFrame for each Test
         for key, val in digs_dict.items():
             test = Test(self.base.loc[self.base[val] != -1],
-                        digs=key, limit_N=self.limit_N)
+                        digs=key, confidence=self.confidence,
+                        limit_N=self.limit_N)
             setattr(self, val, test)
             self.tests.append(val)
         # dict with the numbers of discarded entries for each test column
@@ -462,19 +464,48 @@ class Benford(object):
         if summation:
             self.summation()
     
+    def update_confidence(self, new_conf, tests=None):
+        '''
+        Sets a new confidence level for the Benford object, so as to be used to
+        produce critical values for the tests
+
+        Parameters
+        ----------
+        new_conf -> new confidence level to draw lower and upper limits when
+            plotting and to limit the top deviations to show, as well as to
+            calculate critical values for the tests' statistics.
+        tests -> list of tests names (strings) to have their confidence updated.
+            If only one, provide a one-element list, like ['F1D']. Defauts to
+            None, in which case it will use the instance .test list attribute.
+        '''
+        self.confidence = _check_confidence_(new_conf)
+        if tests is None:
+            tests = self.tests
+        else:
+            if not isinstance(tests, list):
+                raise ValueError('tests must be a list or None.')
+        for test in tests:
+            try:
+                getattr(self, test).update_confidence(self.confidence, check=False)
+            except AttributeError:
+                if test == 'Mantissas':
+                    pass
+                else:
+                    print(f"{test} not in instance attibutes - review test's name.")
+                    pass
+    
     @property
-    def stats(self):
-        crit_vals =  {'Z': confs[self.confidence],
-                     'KS': KS_crit[self.confidence]
-                     }
-        for key, val in digs_dict.items():
-            ddf = getattr(self, val).ddf
-            crit_vals[val] = {'chi2': crit_chi2[ddf][self.confidence],
-                             'MAD': mad_dict[key]
-                             }
-        if hasattr(self, 'Mantissas'):
-            crit_vals['Mantissas'] = self.Mantissas.stats
-        return crit_vals
+    def all_confidences(self):
+        '''
+        Returns the confidence level for the instance's tests, when applicable 
+        '''
+        con_dic= {}
+        for key in self.tests:
+            try:
+                con_dic[key] = getattr(self, key).confidence
+            except AttributeError:
+                pass
+        return con_dic
 
     def mantissas(self):
         """ 
@@ -493,12 +524,13 @@ class Benford(object):
         the one before it, and so on). If the original series is Benford-
         compliant, this new sequence should aldo follow Beford. The Second
         Order can also be called separately, through the method sec_order().
-            '''
+        '''
         self.base_sec = Base(_subtract_sorted_(self.chosen),
                              decimals=self.decimals, sign=self.sign)
         for key, val in digs_dict.items():
             test = Test(self.base_sec.loc[self.base_sec[val] != -1],
-                        digs=key, limit_N=self.limit_N)
+                        digs=key, confidence=self.confidence,
+                        limit_N=self.limit_N, sec_order=True)
             setattr(self, sec_order_dict[key], test)
             self.tests.append(f'{val}_sec')
             # No need to populate crit_vals dict, since they are the
