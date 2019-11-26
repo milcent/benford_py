@@ -2210,6 +2210,15 @@ def _check_confidence_(confidence):
                          f"following:\n {list(confs.keys())}")
     return confidence
 
+def _check_high_Z_(high_Z):
+    '''
+    '''
+    if not high_Z in ['pos', 'all']:
+        if not isinstance(high_Z, int):
+            raise ValueError("The parameter -high_Z- should be 'pos', "
+                             "'all' or an int.")
+    return high_Z
+
 
 def _subtract_sorted_(data):
     '''
