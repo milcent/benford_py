@@ -34,9 +34,19 @@ sec_order_dict = {key: f'{val}_sec' for key, val in digs_dict.items()}
 
 rev_digs = {'F1D': 1, 'F2D': 2, 'F3D': 3, 'SD': 22, 'L2D': -2}
 
-names = {1: 'First Digit Test', 2: 'First Two Digits Test',
-         3: 'First Three Digits Test', 22: 'Second Digit Test',
-         -2: 'Last Two Digits Test'}
+names = {'F1D': 'First Digit Test', 'F2D': 'First Two Digits Test',
+         'F3D': 'First Three Digits Test', 'SD': 'Second Digit Test',
+         'L2D': 'Last Two Digits Test',
+         'F1D_sec': 'First Digit Second Order Test',
+         'F2D_sec': 'First Two Digits Second Order Test',
+         'F3D_sec': 'First Three Digits Second Order Test',
+         'SD_sec': 'Second Digit Second Order Test',
+         'L2D_sec': 'Last Two Digits Second Order Test',
+         'F1D_Summ': 'First Digit Summation Test',
+         'F2D_Summ': 'First Two Digits Summation Test',
+         'F3D_Summ': 'First Three Digits Summation Test',
+         'Mantissas': 'Mantissas Test'
+         }
 
 # Critical values for Mean Absolute Deviation
 mad_dict = {1: [0.006, 0.012, 0.015], 2: [0.0012, 0.0018, 0.0022],
@@ -143,6 +153,9 @@ class LastTwo(pd.DataFrame):
     '''
     Returns the expected probabilities of the Last Two Digits
     according to Benford's distribution.
+
+    Parameters
+    ----------
 
     plot: option to plot a bar chart of the Expected proportions.
         Defaults to True.
@@ -262,6 +275,87 @@ class Test(pd.DataFrame):
         self.KS = _KS_2(self)
         self.MAD = self.AbsDif.mean()
         self.ddf = len(self) - 1
+        self.confidence = confidence
+        self.digs = digs
+        self.sec_order = sec_order
+
+        if sec_order:
+            self.name = names[sec_order_dict[digs]]
+        else:
+            self.name = names[digs_dict[digs]]
+    
+    def update_confidence(self, new_conf, check=True):
+        '''
+        Sets a new confidence level for the Benford object, so as to be used to
+        produce critical values for the tests
+
+        Parameters
+        ----------
+
+        new_conf -> new confidence level to draw lower and upper limits when
+            plotting and to limit the top deviations to show, as well as to
+            calculate critical values for the tests' statistics.
+        
+        check -> checks the value provided for the confidence. Defaults to True
+        '''
+        if check:
+            self.confidence = _check_confidence_(new_conf)
+        else:
+            self.confidence = new_conf
+
+    @property
+    def critical_values(self):
+        '''
+        Returns a dict with the critical values for the test at hand, accroding
+        to the current confidence level.
+        '''
+        crit_vals = {'Z': confs[self.confidence],
+                     'KS': KS_crit[self.confidence]
+                     }
+        for key, val in digs_dict.items():
+            crit_vals[val] = {'chi2': crit_chi2[self.ddf][self.confidence],
+                                'MAD': mad_dict[key]
+                                }
+        return crit_vals
+
+    def show_plot(self):
+        '''
+        Draws the test plot.
+        '''
+        n, m = 10 ** (self.digs - 1), 10 ** (self.digs)
+        x = np.arange(n, m)
+        ## Adapt also for SD and L2D (figsize)
+        _plot_dig_(self, x=x, y_Exp=self.Expected, y_Found=self.Found,
+                    N=self.N, figsize=(2 * (self.digs ** 2 + 5),
+                    1.5 * (self.digs ** 2 + 5)),
+                    conf_Z=confs[self.confidence]
+                    )
+
+    @property
+    def report(self, high_Z='pos', show_plot=True):
+        '''
+        Handles the report especific to the test, considering its statistics
+        and according to the current confidence level.
+
+        Parameters
+        ----------
+        high_Z: chooses which Z scores to be used when displaying results,
+            according to the confidence level chosen. Defaluts to 'pos',
+            which will highlight only values higher than the expexted
+            frequencies; 'all' will highlight both extremes (positive and
+            negative); and an integer, which will use the first n entries,
+            positive and negative, regardless of whether Z is higher than
+            the critical value or not.
+        '''
+        high_Z = _check_high_Z_(high_Z)
+        crit_vals = self.critical_values
+        print(f'  {self.name}  '.center(40, '#'), '\n')
+        print(f"Critical Z score for confidence {self.confidence}: "
+              f"{confs[self.confidence]}.\n")
+        _inform_(self, high_Z, confs[self.confidence])
+        # KS, chi2 e MAD
+        if show_plot:
+            self.show_plot()
 
 
 class Summ(pd.DataFrame):
