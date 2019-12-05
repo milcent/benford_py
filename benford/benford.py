@@ -268,7 +268,8 @@ class Test(pd.DataFrame):
         self['Found'] = base[digs_dict[digs]].value_counts(normalize=True)
         self.fillna(0, inplace=True)
         # create column with absolute differences
-        self['AbsDif'] = np.absolute(self.Found - self.Expected)
+        self['Dif'] = self.Found - self.Expected
+        self['AbsDif'] = np.absolute(self.Dif)
         self.N = _set_N_(len(base), limit_N)
         self['Z_score'] = _Z_score(self, self.N)
         self.chi_square = _chi_square_2(self)
@@ -309,29 +310,31 @@ class Test(pd.DataFrame):
         Returns a dict with the critical values for the test at hand, accroding
         to the current confidence level.
         '''
-        crit_vals = {'Z': confs[self.confidence],
-                     'KS': KS_crit[self.confidence]
-                     }
-        for key, val in digs_dict.items():
-            crit_vals[val] = {'chi2': crit_chi2[self.ddf][self.confidence],
-                                'MAD': mad_dict[key]
-                                }
-        return crit_vals
+        return {'Z': confs[self.confidence],
+                'KS': KS_crit[self.confidence],
+                'chi2': crit_chi2[self.ddf][self.confidence],
+                'MAD': mad_dict[self.digs]
+                }
 
     def show_plot(self):
         '''
         Draws the test plot.
         '''
-        n, m = 10 ** (self.digs - 1), 10 ** (self.digs)
-        x = np.arange(n, m)
+        if self.digs == -2:
+            text_x = True
+            x = np.arange(100)
+            figsize = (15, 5)
+        else:
+            text_x = False
+            n, m = 10 ** (self.digs - 1), 10 ** (self.digs)
+            x = np.arange(n, m)
+            figsize = (2 * (self.digs ** 2 + 5), 1.5 * (self.digs ** 2 + 5))
         ## Adapt also for SD and L2D (figsize)
         _plot_dig_(self, x=x, y_Exp=self.Expected, y_Found=self.Found,
-                    N=self.N, figsize=(2 * (self.digs ** 2 + 5),
-                    1.5 * (self.digs ** 2 + 5)),
-                    conf_Z=confs[self.confidence]
+                    N=self.N, figsize=figsize, conf_Z=confs[self.confidence],
+                    text_x=text_x
                     )
 
-    @property
     def report(self, high_Z='pos', show_plot=True):
         '''
         Handles the report especific to the test, considering its statistics
@@ -346,10 +349,11 @@ class Test(pd.DataFrame):
             negative); and an integer, which will use the first n entries,
             positive and negative, regardless of whether Z is higher than
             the critical value or not.
+        show_plot:
         '''
         high_Z = _check_high_Z_(high_Z)
         crit_vals = self.critical_values
-        print(f'  {self.name}  '.center(40, '#'), '\n')
+        print(f'  {self.name}  '.center(50, '#'), '\n')
         print(f"Critical Z score for confidence {self.confidence}: "
               f"{confs[self.confidence]}.\n")
         _inform_(self, high_Z, confs[self.confidence])
@@ -926,7 +930,7 @@ class Source(pd.DataFrame):
         # Plotting expected frequencies (line) versus found ones (bars)
         if show_plot:
             _plot_dig_(df, x=np.arange(0, 100), y_Exp=df.Expected,
-                       y_Found=df.Found, N=N, figsize=(15, 8),
+                       y_Found=df.Found, N=N, figsize=(15, 5),
                        conf_Z=conf, text_x=True)
         if ret_df:
             return df
@@ -1434,7 +1438,7 @@ def _plot_expected_(df, digs):
     plt.show()
 
 
-def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=True):
+def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     '''
     Plots the digits tests results
 
