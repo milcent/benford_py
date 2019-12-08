@@ -90,7 +90,7 @@ crit_chi2 = {8: {80: 11.03, 85: 12.027, 90: 13.362, 95: 15.507,
                    99.99999: 1137.082, None: None}
              }
 
-# Critical Kolmogorov-Smirnof values according to the confidence levels 
+# Critical Kolmogorov-Smirnoff values according to the confidence levels 
 KS_crit = {80: 1.075, 85: 1.139, 90: 1.125, 95: 1.36, 99: 1.63,
            99.9: 1.95, 99.99: 2.23, 99.999: 2.47,
            99.9999: 2.7, 99.99999: 2.9, None: None}
@@ -311,7 +311,7 @@ class Test(pd.DataFrame):
         to the current confidence level.
         '''
         return {'Z': confs[self.confidence],
-                'KS': KS_crit[self.confidence],
+                'KS': KS_crit[self.confidence] / self.N ** 0.5,
                 'chi2': crit_chi2[self.ddf][self.confidence],
                 'MAD': mad_dict[self.digs]
                 }
@@ -352,15 +352,21 @@ class Test(pd.DataFrame):
         show_plot:
         '''
         high_Z = _check_high_Z_(high_Z)
-        crit_vals = self.critical_values
         print(f'  {self.name}  '.center(50, '#'), '\n')
-        print(f"Critical Z score for confidence {self.confidence}: "
-              f"{confs[self.confidence]}.\n")
-        _inform_(self, high_Z, confs[self.confidence])
-        # KS, chi2 e MAD
+        _report_MAD_(self.digs, self.MAD)
+        if self.confidence is not None:
+            crit_vals = self.critical_values
+            print(f"For confidence level {self.confidence}%: ")
+            _report_KS_(self.KS, crit_vals['KS'])
+            _report_chi2_(self.chi_square, crit_vals['chi2'])
+            _report_Z_(self, high_Z, crit_vals['Z'])
+        else:
+            print('Confidence is currently `None`. Set the confidence level, '
+                   'so as to generate comparable critical values.' )
+            if isinstance(high_Z, int):
+                _inform_(self, high_Z, confs[self.confidence])
         if show_plot:
             self.show_plot()
-
 
 class Summ(pd.DataFrame):
     '''
@@ -2280,8 +2286,9 @@ def _inform_(df, high_Z, conf):
             print(f'\nThe entries with the top {high_Z} Z scores are:\n')
         # Summation Test
         else:
-            dd = df.sort_values('AbsDif', ascending=False
-                                ).head(high_Z)
+            dd = df[['Expected', 'Found', 'AbsDif'
+                     ]].sort_values('AbsDif', ascending=False
+                                    ).head(high_Z)
             print(f'\nThe entries with the top {high_Z} absolute deviations '
                   'are:\n')
     else:
@@ -2305,3 +2312,42 @@ def _inform_(df, high_Z, conf):
                                                            ascending=False)
             print('\nThe entries with the significant deviations are:\n')
     print(dd)
+
+def _report_MAD_(digs, MAD):
+    '''
+    '''
+    print(f'Mean Absolute Deviation: {MAD:.6f}')
+    if digs != -2:
+        mads = mad_dict[digs]
+        if MAD <= mads[0]:
+            print(f'MAD <= {mads[0]:.6f}: Close conformity.\n')
+        elif MAD <= mads[1]:
+            print(f'{mads[0]:.6f} < MAD <= {mads[1]:.6f}: '
+                  'Acceptable conformity.\n')
+        elif MAD <= mads[2]:
+            print(f'{mads[1]:.6f} < MAD <= {mads[2]:.6f}: '
+                  'Marginally Acceptable conformity.\n')
+        else:
+            print(f'MAD > {mads[2]:.6f}: Nonconformity.\n')
+    else:
+        print("There is no conformity check for this test's MAD.\n")
+
+def _report_KS_(KS, crit_KS):
+    '''
+    '''
+    result = 'PASS' if KS <= crit_KS else 'FAIL'
+    print(f"\n\tKolmogorov Smirnoff: {KS:.6f}",
+          f"\n\tCritical value: {crit_KS:.6f} -- {result}")
+
+def _report_chi2_(chi2, crit_chi2):
+    '''
+    '''
+    result = 'PASS' if chi2 <= crit_chi2 else 'FAIL'
+    print(f"\n\tChi square: {chi2:.6f}",
+          f"\n\tCritical value: {crit_chi2:.6f} -- {result}")
+
+def _report_Z_(df, high_Z, crit_Z):
+    '''
+    '''
+    print(f"\n\tCritical Z-score:{crit_Z}.")
+    _inform_(df, high_Z, crit_Z)
