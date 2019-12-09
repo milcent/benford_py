@@ -385,11 +385,21 @@ class Summ(pd.DataFrame):
                                    .sum())
         self['Percent'] = self.Seq / self.Seq.sum()
         self.columns.values[0] = 'Sum'
-        self['AbsDif'] = np.absolute(self.Percent - 1 / len(self))
+        self.expected = 1 / len(self)
+        self['AbsDif'] = np.absolute(self.Percent - self.expected)
         self.index = self.index.astype(int)
         self.MAD = self.AbsDif.mean()
         self.confidence = None
+        self.digs = rev_digs[test]
+        self.name = names[f'{test}_Summ']
 
+    def show_plot(self):
+        '''
+        Draws the Summation test plot.
+        '''
+        figsize=(2 * (self.digs ** 2 + 5), 1.5 * (self.digs ** 2 + 5))
+        _plot_sum_(self, figsize, self.expected)
+        
 
 class Benford(object):
     '''
@@ -1502,7 +1512,7 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
 
 def _plot_sum_(df, figsize, li):
     '''
-    Plotss the summation test results
+    Plots the summation test results
 
     df -> DataFrame with the data to be plotted
 
