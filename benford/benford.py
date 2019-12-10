@@ -320,16 +320,7 @@ class Test(pd.DataFrame):
         '''
         Draws the test plot.
         '''
-        if self.digs == -2:
-            text_x = True
-            x = np.arange(100)
-            figsize = (15, 5)
-        else:
-            text_x = False
-            n, m = 10 ** (self.digs - 1), 10 ** (self.digs)
-            x = np.arange(n, m)
-            figsize = (2 * (self.digs ** 2 + 5), 1.5 * (self.digs ** 2 + 5))
-        ## Adapt also for SD and L2D (figsize)
+        x, figsize, text_x = _get_plot_args(self.digs)
         _plot_dig_(self, x=x, y_Exp=self.Expected, y_Found=self.Found,
                     N=self.N, figsize=figsize, conf_Z=confs[self.confidence],
                     text_x=text_x
@@ -1453,6 +1444,26 @@ def _plot_expected_(df, digs):
     ax.set_xticklabels(df.index)
     plt.show()
 
+def _get_plot_args(digs):
+    '''
+    Gets the correct arguments for the plotting functions, depending on the
+    the test (digs) chosen.
+    '''
+    if digs in [1, 2, 3]:
+        text_x = False
+        n, m = 10 ** (digs - 1), 10 ** (digs)
+        x = np.arange(n, m)
+        figsize = (2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5))
+    elif digs == 22:
+        text_x = False
+        x = np.arange(10)
+        figsize = (14, 10)
+    else:
+        text_x = True
+        x = np.arange(100)
+        figsize = (15, 7)
+    return x, figsize, text_x
+    
 
 def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     '''
@@ -1510,7 +1521,7 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     plt.show()
 
 
-def _plot_sum_(df, figsize, li):
+def _plot_sum_(df, figsize, li, text_x=False):
     '''
     Plots the summation test results
 
@@ -1520,16 +1531,26 @@ def _plot_sum_(df, figsize, li):
 
     li -> values with which to draw the horizontal line
     '''
+    x = df.index
+    rotation = 90 if len(x) > 10 else 0
     fig = plt.figure(figsize=figsize)
     ax = fig.add_subplot(111)
     plt.title('Expected vs. Found Sums')
     plt.xlabel('Digits')
     plt.ylabel('Sums')
-    ax.bar(df.index, df.Percent, color=colors['m'],
+    ax.bar(x, df.Percent, color=colors['m'],
            label='Found Sums', zorder=3, align='center')
     ax.axhline(li, color=colors['s'], linewidth=2, label='Expected', zorder=4)
+    ax.set_xticks(x)
+    ax.set_xticklabels(x, rotation=rotation)
     ax.set_facecolor(colors['b'])
+    if text_x:
+        ind = np.array(x).astype(str)
+        ind[:10] = np.array(['00', '01', '02', '03', '04', '05',
+                             '06', '07', '08', '09'])
+        plt.xticks(x, ind, rotation='vertical')
     ax.legend()
+    plt.show()
 
 
 def _set_N_(len_df, limit_N):
