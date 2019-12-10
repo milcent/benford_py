@@ -340,22 +340,10 @@ class Test(pd.DataFrame):
             negative); and an integer, which will use the first n entries,
             positive and negative, regardless of whether Z is higher than
             the critical value or not.
-        show_plot:
+        show_plot: calls the show_plot method, to draw the test plot
         '''
         high_Z = _check_high_Z_(high_Z)
-        print(f'  {self.name}  '.center(50, '#'), '\n')
-        _report_MAD_(self.digs, self.MAD)
-        if self.confidence is not None:
-            crit_vals = self.critical_values
-            print(f"For confidence level {self.confidence}%: ")
-            _report_KS_(self.KS, crit_vals['KS'])
-            _report_chi2_(self.chi_square, crit_vals['chi2'])
-            _report_Z_(self, high_Z, crit_vals['Z'])
-        else:
-            print('Confidence is currently `None`. Set the confidence level, '
-                   'so as to generate comparable critical values.' )
-            if isinstance(high_Z, int):
-                _inform_(self, high_Z, confs[self.confidence])
+        _report_test_(self, high_Z, self.critical_values)
         if show_plot:
             self.show_plot()
 
@@ -390,6 +378,21 @@ class Summ(pd.DataFrame):
         '''
         figsize=(2 * (self.digs ** 2 + 5), 1.5 * (self.digs ** 2 + 5))
         _plot_sum_(self, figsize, self.expected)
+    
+    def report(self, high_diff=None, show_plot=True):
+        '''
+        Gives the report on the Summation test.
+        -----------
+        Parameters
+
+        high_diff: Number of records to show after ordering by the absolute
+            differences between the found and the expected proportions
+        
+        show_plot: calls the show_plot method, to draw the Summation test plot
+        '''
+        _report_test_(self, high_diff)
+        if show_plot:
+            self.show_plot()
         
 
 class Benford(object):
@@ -2382,3 +2385,25 @@ def _report_Z_(df, high_Z, crit_Z):
     '''
     print(f"\n\tCritical Z-score:{crit_Z}.")
     _inform_(df, high_Z, crit_Z)
+
+def _report_test_(test, high=None, crit_vals=None):
+        print(f'  {test.name}  '.center(50, '#'), '\n')
+        if not 'Summation' in test.name:
+            _report_MAD_(test.digs, test.MAD)
+            if test.confidence is not None:
+                print(f"For confidence level {test.confidence}%: ")
+                _report_KS_(test.KS, crit_vals['KS'])
+                _report_chi2_(test.chi_square, crit_vals['chi2'])
+                _report_Z_(test, high, crit_vals['Z'])
+            else:
+                print('Confidence is currently `None`. Set the confidence level, '
+                        'so as to generate comparable critical values.' )
+                if isinstance(high, int):
+                    _inform_(test, high, None)
+        else:
+            if high is not None:
+                print(f'\nThe top {high} Absolute Differences are:\n')
+                print(test.sort_values('AbsDif', ascending=False).head(high))
+            else:
+                print('\nThe top Absolute Differences are:\n')
+                print(test.sort_values('AbsDif', ascending=False))
