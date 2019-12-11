@@ -394,7 +394,6 @@ class Summ(pd.DataFrame):
         if show_plot:
             self.show_plot()
         
-
 class Benford(object):
     '''
     Initializes a Benford Analysis object and computes the proportions for
@@ -502,10 +501,10 @@ class Benford(object):
             try:
                 getattr(self, test).update_confidence(self.confidence, check=False)
             except AttributeError:
-                if test == 'Mantissas':
+                if test in ['Mantissas', 'F1D_Summ', 'F2D_Summ', 'F3D_Summ']:
                     pass
                 else:
-                    print(f"{test} not in instance attibutes - review test's name.")
+                    print(f"{test} not in Benford instance tests - review test's name.")
                     pass
     
     @property
