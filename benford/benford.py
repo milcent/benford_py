@@ -2386,6 +2386,15 @@ def _report_Z_(df, high_Z, crit_Z):
     print(f"\n\tCritical Z-score:{crit_Z}.")
     _inform_(df, high_Z, crit_Z)
 
+def _report_summ_(test, high_diff):
+    if high_diff is not None:
+        print(f'\nThe top {high_diff} Absolute Differences are:\n')
+        print(test.sort_values('AbsDif', ascending=False).head(high_diff))
+    else:
+        print('\nThe top Absolute Differences are:\n')
+        print(test.sort_values('AbsDif', ascending=False))
+    
+
 def _report_test_(test, high=None, crit_vals=None):
         print(f'  {test.name}  '.center(50, '#'), '\n')
         if not 'Summation' in test.name:
@@ -2401,9 +2410,4 @@ def _report_test_(test, high=None, crit_vals=None):
                 if isinstance(high, int):
                     _inform_(test, high, None)
         else:
-            if high is not None:
-                print(f'\nThe top {high} Absolute Differences are:\n')
-                print(test.sort_values('AbsDif', ascending=False).head(high))
-            else:
-                print('\nThe top Absolute Differences are:\n')
-                print(test.sort_values('AbsDif', ascending=False))
+            _report_summ_(test, high)
