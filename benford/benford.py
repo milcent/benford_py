@@ -25,29 +25,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import math
 from matplotlib.text import Annotation
 
 
 digs_dict = {1: 'F1D', 2: 'F2D', 3: 'F3D', 22: 'SD', -2: 'L2D'}
 
-sec_order_dict = {key: val + '_sec' for key, val in digs_dict.items()}
+sec_order_dict = {key: f'{val}_sec' for key, val in digs_dict.items()}
 
 rev_digs = {'F1D': 1, 'F2D': 2, 'F3D': 3, 'SD': 22, 'L2D': -2}
 
-names = {1: 'First Digit Test', 2: 'First Two Digits Test',
-         3: 'First Three Digits Test', 22: 'Second Digit Test',
-         -2: 'Last Two Digits Test'}
+names = {'F1D': 'First Digit Test', 'F2D': 'First Two Digits Test',
+         'F3D': 'First Three Digits Test', 'SD': 'Second Digit Test',
+         'L2D': 'Last Two Digits Test',
+         'F1D_sec': 'First Digit Second Order Test',
+         'F2D_sec': 'First Two Digits Second Order Test',
+         'F3D_sec': 'First Three Digits Second Order Test',
+         'SD_sec': 'Second Digit Second Order Test',
+         'L2D_sec': 'Last Two Digits Second Order Test',
+         'F1D_Summ': 'First Digit Summation Test',
+         'F2D_Summ': 'First Two Digits Summation Test',
+         'F3D_Summ': 'First Three Digits Summation Test',
+         'Mantissas': 'Mantissas Test'
+         }
 
+# Critical values for Mean Absolute Deviation
 mad_dict = {1: [0.006, 0.012, 0.015], 2: [0.0012, 0.0018, 0.0022],
             3: [0.00036, 0.00044, 0.00050], 22: [0.008, 0.01, 0.012],
             -2: None, 'F1D': 'First Digit', 'F2D': 'First Two Digits',
             'F3D': 'First Three Digits', 'SD': 'Second Digits'}
 
+# Color for the plotting
 colors = {'m': '#00798c', 'b': '#E2DCD8', 's': '#9c3848',
           'af': '#edae49', 'ab': '#33658a', 'h': '#d1495b',
           'h2': '#f64740', 't': '#16DB93'}
 
+# Critical Z-scores according to the confindence levels
 confs = {None: None, 80: 1.285, 85: 1.435, 90: 1.645, 95: 1.96,
          99: 2.576, 99.9: 3.29, 99.99: 3.89, 99.999: 4.417,
          99.9999: 4.892, 99.99999: 5.327}
@@ -56,6 +68,8 @@ p_values = {None: 'None', 80: '0.2', 85: '0.15', 90: '0.1', 95: '0.05',
             99: '0.01', 99.9: '0.001', 99.99: '0.0001', 99.999: '0.00001',
             99.9999: '0.000001', 99.99999: '0.0000001'}
 
+# Critical Chi-Square values according to the tests degrees of freedom
+# and confidence levels
 crit_chi2 = {8: {80: 11.03, 85: 12.027, 90: 13.362, 95: 15.507,
                  99: 20.090, 99.9: 26.124, 99.99: 31.827, None: None,
                  99.999: 37.332, 99.9999: 42.701, 99.99999: 47.972},
@@ -75,6 +89,8 @@ crit_chi2 = {8: {80: 11.03, 85: 12.027, 90: 13.362, 95: 15.507,
                    99.999: 1091.422, 99.9999: 1115.141,
                    99.99999: 1137.082, None: None}
              }
+
+# Critical Kolmogorov-Smirnoff values according to the confidence levels 
 KS_crit = {80: 1.075, 85: 1.139, 90: 1.125, 95: 1.36, 99: 1.63,
            99.9: 1.95, 99.99: 2.23, 99.999: 2.47,
            99.9999: 2.7, 99.99999: 2.9, None: None}
@@ -88,17 +104,17 @@ class First(pd.DataFrame):
     Parameters
     ----------
 
-    -> digs: 1, 2 or 3 - tells which of the first digits to consider:
+    digs-> 1, 2 or 3 - tells which of the first digits to consider:
             1 for the First Digit, 2 for the First Two Digits and 3 for
             the First Three Digits.
 
-    -> plot: option to plot a bar chart of the Expected proportions.
+    plot-> option to plot a bar chart of the Expected proportions.
             Defaults to True.
     '''
 
     def __init__(self, digs, plot=True):
         _check_digs_(digs)
-        dig_name = 'First_{0}_Dig'.format(digs)
+        dig_name = f'First_{digs}_Dig'
         Dig = np.arange(10 ** (digs - 1), 10 ** digs)
         Exp = np.log10(1 + (1. / Dig))
 
@@ -138,6 +154,9 @@ class LastTwo(pd.DataFrame):
     Returns the expected probabilities of the Last Two Digits
     according to Benford's distribution.
 
+    Parameters
+    ----------
+
     plot: option to plot a bar chart of the Expected proportions.
         Defaults to True.
     '''
@@ -152,9 +171,11 @@ class LastTwo(pd.DataFrame):
 
 class Base(pd.DataFrame):
     '''
-    Inetrnalizes and prepares the data for Analysis.
+    Internalizes and prepares the data for Analysis.
+
     Parameters
     ----------
+
     data: sequence of numbers to be evaluated. Must be a numpy 1D array,
         a pandas Series or a pandas DataFrame column, with values being
         integers or floats.
@@ -179,7 +200,6 @@ class Base(pd.DataFrame):
 
         if sign == 'all':
             self.Seq = self.Seq.loc[self.Seq != 0]
-            # ab = self.Seq.abs()
         elif sign == 'pos':
             self.Seq = self.Seq.loc[self.Seq > 0]
         else:
@@ -199,7 +219,7 @@ class Base(pd.DataFrame):
                                .str[:5].astype(int)
             else:
                 self['ZN'] = (ab * (10 ** decimals)).astype(int)
-
+        # First digits
         for col in ['F1D', 'F2D', 'F3D']:
             temp = self.ZN.loc[self.ZN >= 10 ** (rev_digs[col] - 1)]
             self[col] = (temp // 10 ** ((np.log10(temp).astype(int)) -
@@ -207,20 +227,15 @@ class Base(pd.DataFrame):
             # fill NANs with -1, which is a non-usable value for digits,
             # to be discarded later.
             self[col] = self[col].fillna(-1).astype(int)
-
+        # Second digit
         temp_sd = self.loc[self.ZN >= 10]
         self['SD'] = (temp_sd.ZN // 10**((np.log10(temp_sd.ZN)).astype(int) -
                                          1)) % 10
         self['SD'] = self['SD'].fillna(-1).astype(int)
-
+        # Last two digits
         temp_l2d = self.loc[self.ZN >= 1000]
         self['L2D'] = temp_l2d.ZN % 100
         self['L2D'] = self['L2D'].fillna(-1).astype(int)
-
-        self['Mant'] = _getMantissas_(ab)
-
-    # def __setattr__(self, name, value):
-    #     setattr(self, name, value)
 
 
 class Test(pd.DataFrame):
@@ -231,33 +246,106 @@ class Test(pd.DataFrame):
 
     Parameters
     ----------
+
     base: The Base object with the data prepared for Analysis
 
     digs: Tells which test to perform -> 1: first digit; 2: first two digits;
         3: furst three digits; 22: second digit; -2: last two digits.
+    
+    confidence: confidence level to draw lower and upper limits when
+        plotting and to limit the top deviations to show.
 
     limit_N: sets a limit to N as the sample size for the calculation of
             the Z scores if the sample is too big. Defaults to None.
     '''
 
-    def __init__(self, base, digs, limit_N=None):
+    def __init__(self, base, digs, confidence, limit_N=None, sec_order=False):
         # create a separated Expected distributions object
         super(Test, self).__init__(_test_(digs))
-        # create column witg occurrences of the digits in the base
+        # create column with occurrences of the digits in the base
         self['Counts'] = base[digs_dict[digs]].value_counts()
         # create column with relative frequencies
         self['Found'] = base[digs_dict[digs]].value_counts(normalize=True)
         self.fillna(0, inplace=True)
         # create column with absolute differences
-        self['AbsDif'] = np.absolute(self.Found - self.Expected)
+        self['Dif'] = self.Found - self.Expected
+        self['AbsDif'] = np.absolute(self.Dif)
         self.N = _set_N_(len(base), limit_N)
         self['Z_score'] = _Z_score(self, self.N)
-
         self.chi_square = _chi_square_2(self)
         self.KS = _KS_2(self)
         self.MAD = self.AbsDif.mean()
         self.ddf = len(self) - 1
+        self.confidence = confidence
+        self.digs = digs
+        self.sec_order = sec_order
 
+        if sec_order:
+            self.name = names[sec_order_dict[digs]]
+        else:
+            self.name = names[digs_dict[digs]]
+    
+    def update_confidence(self, new_conf, check=True):
+        '''
+        Sets a new confidence level for the Benford object, so as to be used to
+        produce critical values for the tests
+
+        Parameters
+        ----------
+
+        new_conf -> new confidence level to draw lower and upper limits when
+            plotting and to limit the top deviations to show, as well as to
+            calculate critical values for the tests' statistics.
+        
+        check -> checks the value provided for the confidence. Defaults to True
+        '''
+        if check:
+            self.confidence = _check_confidence_(new_conf)
+        else:
+            self.confidence = new_conf
+
+    @property
+    def critical_values(self):
+        '''
+        Returns a dict with the critical values for the test at hand, accroding
+        to the current confidence level.
+        '''
+        return {'Z': confs[self.confidence],
+                'KS': KS_crit[self.confidence] / self.N ** 0.5,
+                'chi2': crit_chi2[self.ddf][self.confidence],
+                'MAD': mad_dict[self.digs]
+                }
+
+    def show_plot(self):
+        '''
+        Draws the test plot.
+        '''
+        x, figsize, text_x = _get_plot_args(self.digs)
+        _plot_dig_(self, x=x, y_Exp=self.Expected, y_Found=self.Found,
+                    N=self.N, figsize=figsize, conf_Z=confs[self.confidence],
+                    text_x=text_x
+                    )
+
+    def report(self, high_Z='pos', show_plot=True):
+        '''
+        Handles the report especific to the test, considering its statistics
+        and according to the current confidence level.
+
+        Parameters
+        ----------
+        high_Z: chooses which Z scores to be used when displaying results,
+            according to the confidence level chosen. Defaluts to 'pos',
+            which will highlight only values higher than the expexted
+            frequencies; 'all' will highlight both extremes (positive and
+            negative); and an integer, which will use the first n entries,
+            positive and negative, regardless of whether Z is higher than
+            the critical value or not.
+        show_plot: calls the show_plot method, to draw the test plot
+        '''
+        high_Z = _check_high_Z_(high_Z)
+        _report_test_(self, high_Z, self.critical_values)
+        if show_plot:
+            self.show_plot()
 
 class Summ(pd.DataFrame):
     '''
@@ -270,18 +358,42 @@ class Summ(pd.DataFrame):
     test: The test for which to compute the summation
 
     '''
-
     def __init__(self, base, test):
         super(Summ, self).__init__(base.abs()
                                    .groupby(test)[['Seq']]
                                    .sum())
         self['Percent'] = self.Seq / self.Seq.sum()
         self.columns.values[0] = 'Sum'
-        self['AbsDif'] = np.absolute(self.Percent - 1 / len(self))
+        self.expected = 1 / len(self)
+        self['AbsDif'] = np.absolute(self.Percent - self.expected)
         self.index = self.index.astype(int)
         self.MAD = self.AbsDif.mean()
+        self.confidence = None
+        self.digs = rev_digs[test]
+        self.name = names[f'{test}_Summ']
 
+    def show_plot(self):
+        '''
+        Draws the Summation test plot.
+        '''
+        figsize=(2 * (self.digs ** 2 + 5), 1.5 * (self.digs ** 2 + 5))
+        _plot_sum_(self, figsize, self.expected)
+    
+    def report(self, high_diff=None, show_plot=True):
+        '''
+        Gives the report on the Summation test.
+        -----------
+        Parameters
 
+        high_diff: Number of records to show after ordering by the absolute
+            differences between the found and the expected proportions
+        
+        show_plot: calls the show_plot method, to draw the Summation test plot
+        '''
+        _report_test_(self, high_diff)
+        if show_plot:
+            self.show_plot()
+        
 class Benford(object):
     '''
     Initializes a Benford Analysis object and computes the proportions for
@@ -303,6 +415,10 @@ class Benford(object):
     sign: tells which portion of the data to consider. pos: only the positive
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.
+    
+    confidence: confidence level to draw lower and upper limits when
+            plotting and to limit the top deviations to show, as well as to
+            calculate critical values for the tests' statistics. Defaults to 95.
 
     sec_order: runs the Second Order tests, which are the Benford's tests
         performed on the differences between the ordered sample (a value minus
@@ -322,7 +438,8 @@ class Benford(object):
     '''
 
     def __init__(self, data, decimals=2, sign='all', confidence=95,
-                 sec_order=False, summation=False, limit_N=None, verbose=True):
+                 mantissas=False, sec_order=False, summation=False,
+                 limit_N=None, verbose=True):
         self.data, self.chosen = _input_data_(data)
         self.decimals = decimals
         self.sign = sign
@@ -331,110 +448,126 @@ class Benford(object):
         self.verbose = verbose
         self.base = Base(self.chosen, decimals, sign)
         self.tests = []
-        self.crit_vals = {'Z': confs[self.confidence],
-                          'KS': KS_crit[self.confidence]
-                          }
 
-        # Create a DatFrame for each Test and Second order Test
+        # Create a DatFrame for each Test
         for key, val in digs_dict.items():
             test = Test(self.base.loc[self.base[val] != -1],
-                        digs=key, limit_N=self.limit_N)
+                        digs=key, confidence=self.confidence,
+                        limit_N=self.limit_N)
             setattr(self, val, test)
             self.tests.append(val)
-            self.crit_vals[val] = {'chi2': crit_chi2[test.ddf]
-                                                    [self.confidence],
-                                   'MAD': mad_dict[key]
-                                   }
         # dict with the numbers of discarded entries for each test column
         self._discarded = {key: val for (key, val) in
                            zip(digs_dict.values(),
                                [len(self.base[col].loc[self.base[col] == -1])
                                 for col in digs_dict.values()])}
 
-        if verbose:
+        if self.verbose:
             print('-----Benford-----.\n')
-            print('Initial sample size: {0}.\n'.format(len(self.chosen)))
-            print('Test performed on {0} registries.'.format(len(self.base)))
-            print('Number of discarded entries for each test:\n{0}'
-                  .format(self._discarded))
+            print(f'Initial sample size: {len(self.chosen)}.\n')
+            print(f'Test performed on {len(self.base)} registries.')
+            print(f'Number of discarded entries for each test:\n{self._discarded}')
 
+        if mantissas:
+            self.mantissas()
+    
         if sec_order:
-            self.sec_order(verbose=self.verbose)
+            self.sec_order()
 
         if summation:
-            self.summation(verbose=self.verbose)
+            self.summation()
+    
+    def update_confidence(self, new_conf, tests=None):
+        '''
+        Sets a new confidence level for the Benford object, so as to be used to
+        produce critical values for the tests
 
-    def sec_order(self, verbose=True):
+        Parameters
+        ----------
+        new_conf -> new confidence level to draw lower and upper limits when
+            plotting and to limit the top deviations to show, as well as to
+            calculate critical values for the tests' statistics.
+        tests -> list of tests names (strings) to have their confidence updated.
+            If only one, provide a one-element list, like ['F1D']. Defauts to
+            None, in which case it will use the instance .test list attribute.
+        '''
+        self.confidence = _check_confidence_(new_conf)
+        if tests is None:
+            tests = self.tests
+        else:
+            if not isinstance(tests, list):
+                raise ValueError('tests must be a list or None.')
+        for test in tests:
+            try:
+                getattr(self, test).update_confidence(self.confidence, check=False)
+            except AttributeError:
+                if test in ['Mantissas', 'F1D_Summ', 'F2D_Summ', 'F3D_Summ']:
+                    pass
+                else:
+                    print(f"{test} not in Benford instance tests - review test's name.")
+                    pass
+    
+    @property
+    def all_confidences(self):
+        '''
+        Returns the confidence level for the instance's tests, when applicable 
+        '''
+        con_dic= {}
+        for key in self.tests:
+            try:
+                con_dic[key] = getattr(self, key).confidence
+            except AttributeError:
+                pass
+        return con_dic
+
+    def mantissas(self):
+        """ 
+        Adds a Mantissas object to the tests, with all its statistics and
+        plotting capabilities. 
+        """
+        self.Mantissas = Mantissas(self.base.Seq)
+        self.tests.append('Mantissas')
+        if self.verbose:
+            print('\nAdded Mantissas test\n')
+
+    def sec_order(self):
         '''
         Runs the Second Order tests, which are the Benford's tests
         performed on the differences between the ordered sample (a value minus
         the one before it, and so on). If the original series is Benford-
         compliant, this new sequence should aldo follow Beford. The Second
         Order can also be called separately, through the method sec_order().
-            '''
+        '''
         self.base_sec = Base(_subtract_sorted_(self.chosen),
                              decimals=self.decimals, sign=self.sign)
         for key, val in digs_dict.items():
             test = Test(self.base_sec.loc[self.base_sec[val] != -1],
-                        digs=key, limit_N=self.limit_N)
+                        digs=key, confidence=self.confidence,
+                        limit_N=self.limit_N, sec_order=True)
             setattr(self, sec_order_dict[key], test)
-            self.tests.append(val)
+            self.tests.append(f'{val}_sec')
             # No need to populate crit_vals dict, since they are the
             # same and do not depend on N
             self._discarded_sec = {key: val for (key, val) in zip(
                                    sec_order_dict.values(),
                                    [sum(self.base_sec[col] == -1) for col in
                                     digs_dict.values()])}
-        if verbose:
+        if self.verbose:
             print(f'\nSecond order tests run in {len(self.base_sec)} '
                   'registries.\nNumber of discarded entries for second order'
-                  f' tests:\n{self._discarded_sec)}')
+                  f' tests:\n{self._discarded_sec}')
 
-    def summation(self, verbose=True):
+    def summation(self):
         '''
-        Create Summation test DataFrames from Base object
+        Creates Summation test DataFrames from Base object
         '''
         for test in ['F1D', 'F2D', 'F3D']:
-            t = test + '_Summ'
+            t =  f'{test}_Summ'
             setattr(self, t, Summ(self.base, test))
             self.tests.append(t)
 
-        if verbose:
+        if self.verbose:
             print('\nAdded Summation DataFrames to F1D, F2D and F3D Tests.')
-
-    def update_confidence(self, new_conf):
-        '''
-        Updates the confidence level for the tests.
-        '''
-        self.confidence = _check_confidence_(new_conf)
-
-    def audit(self, tests, confidence=95, limit_N=None, display=True):
-        '''
-
-        Paremeters
-        ----------
-        tests: string, list of strings or 'all'
-
-        confidence: confidence level to draw lower and upper limits when
-            plotting and to limit the top deviations to show. Defaults to None.
-
-        limit_N: sets a limit to N as the sample size for the calculation of
-            the Z scores if the sample is too big. Defaults to None.
-        '''
-        confidence = _check_confidence_(confidence)
-
-        # if tests != 'all':
-        #     if
-        #     test_list = []
-        #     if not isinstance(tests, list):
-        #         test_list.append(tests)
-        #     else:
-        #         test_list.extend(tests)
-        # else:
-        #     test_list =
-
-    def get_suspects(self):
-        pass
 
 
 class Source(pd.DataFrame):
@@ -487,15 +620,14 @@ class Source(pd.DataFrame):
         self.dropna(inplace=True)
 
         if inform:
-            print("\nInitialized sequence with {0} registries.".format(
-                  len(self)))
+            print(f"\nInitialized sequence with {len(self)} registries.")
         if sec_order:
             self.Seq = _subtract_sorted_(self.Seq.copy())
             self.dropna(inplace=True)
             self.reset_index(inplace=True)
             if inform:
                 print('Second Order Test. Initial series reduced '
-                      'to {0} entries.'.format(len(self.Seq)))
+                      f'to {len(self.Seq)} entries.')
 
         ab = self.Seq.abs()
 
@@ -529,13 +661,10 @@ class Source(pd.DataFrame):
         if inform:
             p = self[['Seq', 'Mant']]
             p = p.loc[p.Seq > 0].sort_values('Mant')
-            print("The Mantissas MEAN is {0}. Ref: 0.5.".format(p.Mant.mean()))
-            print("The Mantissas VARIANCE is {0}. Ref: 0.083333.".format(
-                  p.Mant.var()))
-            print("The Mantissas SKEWNESS is {0}. \tRef: 0.".
-                  format(p.Mant.skew()))
-            print("The Mantissas KURTOSIS is {0}. \tRef: -1.2.".
-                  format(p.Mant.kurt()))
+            print(f"The Mantissas MEAN is {p.Mant.mean()}. Ref: 0.5.")
+            print(f"The Mantissas VARIANCE is {p.Mant.var()}. Ref: 0.083333.")
+            print(f"The Mantissas SKEWNESS is {p.Mant.skew()}. \tRef: 0.")
+            print(f"The Mantissas KURTOSIS is {p.Mant.kurt()}. \tRef: -1.2.")
 
         if plot:
             N = len(p)
@@ -557,6 +686,9 @@ class Source(pd.DataFrame):
         numbers provided, and populates the mapping dict for future
         selection of the original series.
 
+        Parameters
+        ----------
+
         digs -> number of first digits to consider. Must be 1 (first digit),
             2 (first two digits) or 3 (first three digits).
 
@@ -567,7 +699,8 @@ class Source(pd.DataFrame):
             2 (first two digits) or 3 (first three digits).
 
         confidence: confidence level to draw lower and upper limits when
-            plotting and to limit the top deviations to show. Defaults to None.
+            plotting and to limit the top deviations to show, as well as to
+            calculate critical values for the tests' statistics. Defaults to None.
 
         high_Z: chooses which Z scores to be used when displaying results,
             according to the confidence level chosen. Defaluts to 'pos',
@@ -660,7 +793,8 @@ class Source(pd.DataFrame):
             found and the expected distributions; defaults to False.
 
         confidence: confidence level to draw lower and upper limits when
-            plotting and to limit the top deviations to show. Defaults to None.
+            plotting and to limit the top deviations to show, as well as to
+            calculate critical values for the tests' statistics. Defaults to None.
 
         high_Z: chooses which Z scores to be used when displaying results,
             according to the confidence level chosen. Defaluts to 'pos',
@@ -743,7 +877,8 @@ class Source(pd.DataFrame):
             found and the expected distributions; defaults to False.
 
         confidence: confidence level to draw lower and upper limits when
-            plotting and to limit the top deviations to show. Defaults to None.
+            plotting and to limit the top deviations to show, as well as to
+            calculate critical values for the tests' statistics. Defaults to None.
 
         high_Z: chooses which Z scores to be used when displaying results,
             according to the confidence level chosen. Defaluts to 'pos',
@@ -804,7 +939,7 @@ class Source(pd.DataFrame):
         # Plotting expected frequencies (line) versus found ones (bars)
         if show_plot:
             _plot_dig_(df, x=np.arange(0, 100), y_Exp=df.Expected,
-                       y_Found=df.Found, N=N, figsize=(15, 8),
+                       y_Found=df.Found, N=N, figsize=(15, 5),
                        conf_Z=conf, text_x=True)
         if ret_df:
             return df
@@ -889,7 +1024,7 @@ class Source(pd.DataFrame):
             return dup_count(top_Rep)
 
 
-class Mantissas(pd.Series):
+class Mantissas(object):
     '''
     Returns a Series with the data mantissas,
 
@@ -900,70 +1035,100 @@ class Mantissas(pd.Series):
     '''
 
     def __init__(self, data):
-        if isinstance(data, np.ndarray):
-            data = pd.Series(data)
-        elif isinstance(data, pd.Series):
-            pass
-        else:
-            raise ValueError('data must be a numpy array or a pandas Series')
-        data.dropna(inplace=True)
-        data = data.loc[data != 0]
-        pd.Series.__init__(self, _getMantissas_(np.abs(data)))
+        if (not isinstance(data, np.ndarray)) & (not isinstance(data, pd.Series)):
+            print('data is not a numpy NDarray nor a pandas Series.'
+                  'Trying to convert...')
+            try:
+                data = np.array(data)
+            except:
+                raise ValueError('Could not convert data. Check input.')
+            print('Conversion successful.')
+        
+        data = data.dropna().loc[data != 0]
+        
+        self.data = pd.DataFrame({'Mantissa': _getMantissas_(np.abs(data))})
 
-        self.stats = {'Mean': self.mean(), 'Var': self.var(),
-                      'Skew': self.skew(), 'Kurt': self.kurt()}
+        self.stats = {'Mean': self.data.Mantissa.mean(),
+                      'Var': self.data.Mantissa.var(),
+                      'Skew': self.data.Mantissa.skew(),
+                      'Kurt': self.data.Mantissa.kurt()}
 
-    def inform(self):
-        print("\nThe Mantissas MEAN is {0}. \t\tRef: 0.5.".
-              format(self.stats['Mean']))
-        print("The Mantissas VARIANCE is {0}. \tRef: 0.083333.".
-              format(self.stats['Var']))
-        print("The Mantissas SKEWNESS is {0}. \tRef: 0.".
-              format(self.stats['Skew']))
-        print("The Mantissas KURTOSIS is {0}. \tRef: -1.2.".
-              format(self.stats['Kurt']))
+    def report(self):
+        '''
+        Shows the Mantissas test stats
+        '''
+        print('  Mantissas Test  '.center(52, '#'))
+        print(f"\nThe Mantissas MEAN is      {self.stats['Mean']:.6f}."
+              "\tRef: 0.5")
+        print(f"The Mantissas VARIANCE is  {self.stats['Var']:.6f}."
+              "\tRef: 0.08333")
+        print(f"The Mantissas SKEWNESS is  {self.stats['Skew']:.6f}."
+              "\tRef: 0.0")
+        print(f"The Mantissas KURTOSIS is  {self.stats['Kurt']:.6f}."
+              "\tRef: -1.2")
 
-    def show_plot(self, figsize=(15, 8)):
+    def show_plot(self, figsize=(12, 6)):
         '''
         plots the ordered mantissas and a line with the expected
                 inclination. Defaults to True.
 
+        Parameters
+        ----------
+
         figsize -> tuple that sets the figure size
         '''
-        self.sort_values(inplace=True)
-        x = np.arange(1, len(self) + 1)
-        n = np.ones(len(self)) / len(self)
+        ld = len(self.data)
+        x = np.arange(1, ld + 1)
+        n = np.ones(ld) / ld
         fig = plt.figure(figsize=figsize)
         ax = fig.add_subplot(111)
-        ax.plot(x, self, linestyle='--', color=colors['s'],
-                linewidth=3, label='Mantissas')
+        ax.plot(x, self.data.Mantissa.sort_values(), linestyle='--',
+                color=colors['s'], linewidth=3, label='Mantissas')
         ax.plot(x, n.cumsum(), color=colors['m'],
                 linewidth=2, label='Expected')
         plt.ylim((0, 1.))
-        plt.xlim((1, len(self) + 1))
+        plt.xlim((1, ld + 1))
         ax.set_facecolor(colors['b'])
         plt.legend(loc='upper left')
         plt.show()
 
-    def arc_test(self, decimals = 2, grid=True, figsize=10):
+    def arc_test(self, decimals=2, grid=True, figsize=12):
         '''
-        Add two columns to Mantissas's DataFrame equal to their "X" and "Y" coordinates,
-        plots its to a scatter plot and calculates gravity center of the circle.
+        Add two columns to Mantissas's DataFrame equal to their "X" and "Y"
+        coordinates, plots its to a scatter plot and calculates the gravity
+        center of the circle.
+
+        Parameters
+        ----------
+
+        decimals -> number of decimal places for displaying the gravity center.
+            Defaults to 2.
         
+        grid -> show grid of the plot. Defaluts to True.
+        
+        figsize -> size of the figure to be displayed. Since it is a square,
+            there is no need to provide a tuple, like is usually the case with
+            matplotlib.
         '''
-        df = pd.DataFrame(self)
-        df["mant_x"] = df[df.columns[0]].apply(lambda x: math.cos(2 * math.pi * x))
-        df["mant_y"] = df[df.columns[0]].apply(lambda x: math.sin(2 * math.pi * x))
-        x_mean, y_mean = df["mant_y"].mean(), df["mant_x"].mean()
+        if self.stats.get('gravity_center') is None:
+            self.data['mant_x'] = np.cos(2 * np.pi * self.data.Mantissa)
+            self.data['mant_y'] = np.sin(2 * np.pi * self.data.Mantissa)
+            self.stats['gravity_center'] = (self.data.mant_x.mean(),
+                                            self.data.mant_y.mean())
         fig = plt.figure(figsize=(figsize,figsize))
         ax = plt.subplot()
         ax.set_facecolor(colors['b'])
-        ax.scatter(df["mant_y"], df["mant_x"], label= "ARC TEST", color=colors['m'])
-        ax.scatter(x_mean, y_mean, color=colors['s']) 
+        ax.scatter(self.data.mant_x, self.data.mant_y, label= "ARC TEST",
+                   color=colors['m'])
+        ax.scatter(self.stats['gravity_center'][0], self.stats['gravity_center'][1],
+                   color=colors['s']) 
         text_annotation = Annotation(
-                    "  Gravity Center: x({0}), y({1})".format(
-                    round(x_mean,decimals), round(y_mean,decimals)), 
-                    xy=(x_mean - 0.65, y_mean - 0.1), xycoords='data')
+                    "  Gravity Center: "
+                    f"x({round(self.stats['gravity_center'][0], decimals)}),"
+                    f" y({round(self.stats['gravity_center'][1], decimals)})", 
+                    xy=(self.stats['gravity_center'][0] - 0.65,
+                        self.stats['gravity_center'][1] - 0.1),
+                    xycoords='data')
         ax.add_artist(text_annotation)
         ax.grid(True, which='both')
         ax.axhline(y=0, color='k')
@@ -1096,7 +1261,7 @@ def _chi_square_(frame, ddf, confidence, inform=True):
 
     Parameters
     ----------
-    frame:      DataFrame with Foud, Expected and their difference columns.
+    frame:      DataFrame with Found, Expected and their difference columns.
 
     ddf:        Degrees of freedom to consider.
 
@@ -1125,7 +1290,7 @@ def _chi_square_2(frame):
 
     Parameters
     ----------
-    frame:      DataFrame with Foud, Expected and their difference columns.
+    frame:      DataFrame with Found, Expected and their difference columns.
 
     '''
     exp_counts = frame.Counts.sum() * frame.Expected
@@ -1162,8 +1327,8 @@ def _KS_(frame, confidence, N, inform=True):
         crit_KS = KS_crit[confidence] / np.sqrt(N)
 
         if inform:
-            print("\nThe Kolmogorov-Smirnov statistic is {0}".format(suprem))
-            print("Critical K-S for this series: {0}".format(crit_KS))
+            print(f"\nThe Kolmogorov-Smirnov statistic is {suprem}.\n"
+                  f"Critical K-S for this series: {crit_KS}")
         return (suprem, crit_KS)
 
 
@@ -1199,17 +1364,14 @@ def _mad_(frame, test, inform=True):
     mad = frame.AbsDif.mean()
 
     if inform:
-        print("\nThe Mean Absolute Deviation is {0}".format(mad))
+        print(f"\nThe Mean Absolute Deviation is {mad}")
 
         if test != -2:
-            print("For the {0}:\n\
-            - 0.0000 to {1}: Close Conformity\n\
-            - {1} to {2}: Acceptable Conformity\n\
-            - {2} to {3}: Marginally Acceptable Conformity\n\
-            - Above {3}: Nonconformity".format(mad_dict[digs_dict[test]],
-                                               mad_dict[test][0],
-                                               mad_dict[test][1],
-                                               mad_dict[test][2]))
+            print(f"For the {mad_dict[digs_dict[test]]}:\n\
+            - 0.0000 to {mad_dict[test][0]}: Close Conformity\n\
+            - {mad_dict[test][0]} to {mad_dict[test][1]}: Acceptable Conformity\n\
+            - {mad_dict[test][1]} to {3}: Marginally Acceptable Conformity\n\
+            - Above {mad_dict[test][2]}: Nonconformity")
         else:
             pass
     return mad
@@ -1227,7 +1389,7 @@ def _mse_(frame, inform=True):
     mse = (frame.AbsDif ** 2).mean()
 
     if inform:
-        print("\nMean Square Error = {0}".format(mse))
+        print(f"\nMean Square Error = {mse}")
 
     return mse
 
@@ -1288,6 +1450,26 @@ def _plot_expected_(df, digs):
     ax.set_xticklabels(df.index)
     plt.show()
 
+def _get_plot_args(digs):
+    '''
+    Gets the correct arguments for the plotting functions, depending on the
+    the test (digs) chosen.
+    '''
+    if digs in [1, 2, 3]:
+        text_x = False
+        n, m = 10 ** (digs - 1), 10 ** (digs)
+        x = np.arange(n, m)
+        figsize = (2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5))
+    elif digs == 22:
+        text_x = False
+        x = np.arange(10)
+        figsize = (14, 10)
+    else:
+        text_x = True
+        x = np.arange(100)
+        figsize = (15, 7)
+    return x, figsize, text_x
+    
 
 def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     '''
@@ -1320,9 +1502,6 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
         u = (y_Found < lower) | (y_Found > upper)
         c = np.array([colors['m']] * len(u))
         c[u] = colors['af']
-        # for i, b in enumerate(bars):
-        #     if u.iloc[i]:
-        #         b.set_color(colors['af'])
         lower *= 100.
         upper *= 100.
         ax.plot(x, upper, color=colors['s'], zorder=5)
@@ -1348,9 +1527,9 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     plt.show()
 
 
-def _plot_sum_(df, figsize, li):
+def _plot_sum_(df, figsize, li, text_x=False):
     '''
-    Plotss the summation test results
+    Plots the summation test results
 
     df -> DataFrame with the data to be plotted
 
@@ -1358,16 +1537,26 @@ def _plot_sum_(df, figsize, li):
 
     li -> values with which to draw the horizontal line
     '''
+    x = df.index
+    rotation = 90 if len(x) > 10 else 0
     fig = plt.figure(figsize=figsize)
     ax = fig.add_subplot(111)
     plt.title('Expected vs. Found Sums')
     plt.xlabel('Digits')
     plt.ylabel('Sums')
-    ax.bar(df.index, df.Percent, color=colors['m'],
+    ax.bar(x, df.Percent, color=colors['m'],
            label='Found Sums', zorder=3, align='center')
     ax.axhline(li, color=colors['s'], linewidth=2, label='Expected', zorder=4)
+    ax.set_xticks(x)
+    ax.set_xticklabels(x, rotation=rotation)
     ax.set_facecolor(colors['b'])
+    if text_x:
+        ind = np.array(x).astype(str)
+        ind[:10] = np.array(['00', '01', '02', '03', '04', '05',
+                             '06', '07', '08', '09'])
+        plt.xticks(x, ind, rotation='vertical')
     ax.legend()
+    plt.show()
 
 
 def _set_N_(len_df, limit_N):
@@ -1670,7 +1859,7 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
         return data[['Counts', 'Found', 'Expected']]
 
 
-def mantissas(data, inform=True, show_plot=True):
+def mantissas(data, inform=True, show_plot=True, arc_test=True):
     '''
     Returns a Series with the data mantissas,
 
@@ -1690,6 +1879,8 @@ def mantissas(data, inform=True, show_plot=True):
         mant.inform()
     if show_plot:
         mant.show_plot()
+    if arc_test:
+        mant.arc_test()
     return mant
 
 
@@ -2077,14 +2268,14 @@ def _check_test_(test):
         if test in digs_dict.keys():
             return test
         else:
-            raise ValueError('test was set to {0}. Should be one of {1}'
-                             .format(test, digs_dict.keys()))
+            raise ValueError(f'Test was set to {test}. Should be one of '
+                             f'{digs_dict.keys()}')
     elif isinstance(test, str):
         if test in rev_digs.keys():
             return rev_digs[test]
         else:
-            raise ValueError('test was set to {0}. Should be one of {1}'
-                             .format(test, rev_digs.keys()))
+            raise ValueError(f'Test was set to {test}. Should be one of '
+                             f'{rev_digs.keys()}')
     else:
         raise ValueError('Wrong value chosen for test parameter. Possible '
                          f'values are\n {list(digs_dict.keys())} for ints and'
@@ -2097,6 +2288,15 @@ def _check_confidence_(confidence):
         raise ValueError("Value of parameter -confidence- must be one of the "
                          f"following:\n {list(confs.keys())}")
     return confidence
+
+def _check_high_Z_(high_Z):
+    '''
+    '''
+    if not high_Z in ['pos', 'all']:
+        if not isinstance(high_Z, int):
+            raise ValueError("The parameter -high_Z- should be 'pos', "
+                             "'all' or an int.")
+    return high_Z
 
 
 def _subtract_sorted_(data):
@@ -2113,22 +2313,21 @@ def _subtract_sorted_(data):
 
 def _inform_(df, high_Z, conf):
     '''
-    Selects and sorts by the Z_stats chosen to be considered, informing or not,
-    and populating the maps dict for further back analysis of the entries.
+    Selects and sorts by the Z_stats chosen to be considered, informing or not.
     '''
 
     if isinstance(high_Z, int):
         if conf is not None:
             dd = df[['Expected', 'Found', 'Z_score'
                      ]].sort_values('Z_score', ascending=False).head(high_Z)
-            print('\nThe entries with the top {0} Z scores are:\n'
-                  .format(high_Z))
+            print(f'\nThe entries with the top {high_Z} Z scores are:\n')
         # Summation Test
         else:
-            dd = df.sort_values('AbsDif', ascending=False
-                                ).head(high_Z)
-            print('\nThe entries with the top {0} absolute deviations are:\n'
-                  .format(high_Z))
+            dd = df[['Expected', 'Found', 'AbsDif'
+                     ]].sort_values('AbsDif', ascending=False
+                                    ).head(high_Z)
+            print(f'\nThe entries with the top {high_Z} absolute deviations '
+                  'are:\n')
     else:
         if high_Z == 'pos':
             m1 = df.Dif > 0
@@ -2150,3 +2349,85 @@ def _inform_(df, high_Z, conf):
                                                            ascending=False)
             print('\nThe entries with the significant deviations are:\n')
     print(dd)
+
+def _report_MAD_(digs, MAD):
+    '''
+    Reports the test Mean Absolut Deviation and compares it to critical values
+    '''
+    print(f'Mean Absolute Deviation: {MAD:.6f}')
+    if digs != -2:
+        mads = mad_dict[digs]
+        if MAD <= mads[0]:
+            print(f'MAD <= {mads[0]:.6f}: Close conformity.\n')
+        elif MAD <= mads[1]:
+            print(f'{mads[0]:.6f} < MAD <= {mads[1]:.6f}: '
+                  'Acceptable conformity.\n')
+        elif MAD <= mads[2]:
+            print(f'{mads[1]:.6f} < MAD <= {mads[2]:.6f}: '
+                  'Marginally Acceptable conformity.\n')
+        else:
+            print(f'MAD > {mads[2]:.6f}: Nonconformity.\n')
+    else:
+        print("There is no conformity check for this test's MAD.\n")
+
+def _report_KS_(KS, crit_KS):
+    '''
+    Reports the test Kolmogorov Smirnoff statistic and compares it to critical
+    values, depending on the confidence level
+    '''
+    result = 'PASS' if KS <= crit_KS else 'FAIL'
+    print(f"\n\tKolmogorov Smirnoff: {KS:.6f}",
+          f"\n\tCritical value: {crit_KS:.6f} -- {result}")
+
+def _report_chi2_(chi2, crit_chi2):
+    '''
+    Reports the test Chi-square statistic and compares it to critical values,
+    depending on the confidence level
+    '''
+    result = 'PASS' if chi2 <= crit_chi2 else 'FAIL'
+    print(f"\n\tChi square: {chi2:.6f}",
+          f"\n\tCritical value: {crit_chi2:.6f} -- {result}")
+
+def _report_Z_(df, high_Z, crit_Z):
+    '''
+    Reports the test Z scores and compares them to a critical value,
+    depending on the confidence level
+    '''
+    print(f"\n\tCritical Z-score:{crit_Z}.")
+    _inform_(df, high_Z, crit_Z)
+
+def _report_summ_(test, high_diff):
+    '''
+    Reports the Summation Test Absolute Differences between the Found and
+    the Expected proportions
+
+    '''
+    if high_diff is not None:
+        print(f'\nThe top {high_diff} Absolute Differences are:\n')
+        print(test.sort_values('AbsDif', ascending=False).head(high_diff))
+    else:
+        print('\nThe top Absolute Differences are:\n')
+        print(test.sort_values('AbsDif', ascending=False))
+    
+
+def _report_test_(test, high=None, crit_vals=None):
+    '''
+    Main report function. Receives the parameters to report with, initiates
+    the process, and calls the right reporting helper function(s), depending
+    on the Test.
+    '''
+    print(f'  {test.name}  '.center(50, '#'), '\n')
+    if not 'Summation' in test.name:
+        _report_MAD_(test.digs, test.MAD)
+        if test.confidence is not None:
+            print(f"For confidence level {test.confidence}%: ")
+            _report_KS_(test.KS, crit_vals['KS'])
+            _report_chi2_(test.chi_square, crit_vals['chi2'])
+            _report_Z_(test, high, crit_vals['Z'])
+        else:
+            print('Confidence is currently `None`. Set the confidence level, '
+                    'so as to generate comparable critical values.' )
+            if isinstance(high, int):
+                _inform_(test, high, None)
+    else:
+        _report_summ_(test, high)
