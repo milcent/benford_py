@@ -528,7 +528,7 @@ class Benford(object):
         self.Mantissas = Mantissas(self.base.Seq)
         self.tests.append('Mantissas')
         if self.verbose:
-            self.Mantissas.inform()
+            print('\nAdded Mantissas test\n')
 
     def sec_order(self):
         '''
@@ -1053,15 +1053,19 @@ class Mantissas(object):
                       'Skew': self.data.Mantissa.skew(),
                       'Kurt': self.data.Mantissa.kurt()}
 
-    def inform(self):
-        print(f"\nThe Mantissas MEAN is {round(self.stats['Mean'], 6)}."
-              "\t\tRef: 0.5.")
-        print(f"The Mantissas VARIANCE is {round(self.stats['Var'], 6)}."
-              "\tRef: 0.08333.")
-        print(f"The Mantissas SKEWNESS is {round(self.stats['Skew'], 6)}."
-              "\tRef: 0.")
-        print(f"The Mantissas KURTOSIS is {round(self.stats['Kurt'], 6)}."
-              "\tRef: -1.2.")
+    def report(self):
+        '''
+        Shows the Mantissas test stats
+        '''
+        print('  Mantissas Test  '.center(52, '#'))
+        print(f"\nThe Mantissas MEAN is      {self.stats['Mean']:.6f}."
+              "\tRef: 0.5")
+        print(f"The Mantissas VARIANCE is  {self.stats['Var']:.6f}."
+              "\tRef: 0.08333")
+        print(f"The Mantissas SKEWNESS is  {self.stats['Skew']:.6f}."
+              "\tRef: 0.0")
+        print(f"The Mantissas KURTOSIS is  {self.stats['Kurt']:.6f}."
+              "\tRef: -1.2")
 
     def show_plot(self, figsize=(12, 6)):
         '''
