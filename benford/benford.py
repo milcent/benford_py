@@ -1057,7 +1057,7 @@ class Mantissas(object):
         '''
         Shows the Mantissas test stats
         '''
-        print('  Mantissas Test  '.center(52, '#'))
+        print("\n", '  Mantissas Test  '.center(52, '#'))
         print(f"\nThe Mantissas MEAN is      {self.stats['Mean']:.6f}."
               "\tRef: 0.5")
         print(f"The Mantissas VARIANCE is  {self.stats['Var']:.6f}."
@@ -1065,7 +1065,7 @@ class Mantissas(object):
         print(f"The Mantissas SKEWNESS is  {self.stats['Skew']:.6f}."
               "\tRef: 0.0")
         print(f"The Mantissas KURTOSIS is  {self.stats['Kurt']:.6f}."
-              "\tRef: -1.2")
+              "\tRef: -1.2\n")
 
     def show_plot(self, figsize=(12, 6)):
         '''
@@ -1089,8 +1089,9 @@ class Mantissas(object):
         plt.ylim((0, 1.))
         plt.xlim((1, ld + 1))
         ax.set_facecolor(colors['b'])
+        ax.set_title("Ordered Mantissas")
         plt.legend(loc='upper left')
-        plt.show()
+        plt.show();
 
     def arc_test(self, decimals=2, grid=True, figsize=12):
         '''
@@ -1134,7 +1135,8 @@ class Mantissas(object):
         ax.axhline(y=0, color='k')
         ax.axvline(x=0, color='k')
         ax.legend(loc = 'lower left')
-        ax.figure
+        ax.set_title("Mantissas Arc Test")
+        plt.show();
 
 
 class Roll_mad(pd.Series):
