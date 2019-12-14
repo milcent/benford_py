@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='benford_py',
-      version='0.1.0.3',
+      version='0.1.2.0',
       description='A library for testing data sets with Bendford\'s Law',
       url='https://github.com/milcent/benford_py',
       download_url='https://github.com/milcent/benford_py/archive/v.0.1.0.3.tar.gz',
@@ -14,4 +14,18 @@ setup(name='benford_py',
       	'numpy',
       	'matplotlib',
       ],
-      zip_safe=False)
+      zip_safe=False,
+      classifiers=[
+            'Programming Language :: Python :: 3',
+            'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
+            'Natural Language :: English',
+            'Operating System :: OS Independent',
+            'Development Status :: 2 - Pre-Alpha',
+            'Intended Audience :: Financial and Insurance Industry',
+            'Intended Audience :: Science/Research',
+            'Intended Audience :: Education',
+            'Intended Audience :: Other Audience',
+            'Topic :: Office/Business :: Financial :: Accounting',
+            'Topic :: Scientific/Engineering :: Mathematics',
+            
+      ],)
