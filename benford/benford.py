@@ -1035,16 +1035,9 @@ class Mantissas(object):
     '''
 
     def __init__(self, data):
-        if (not isinstance(data, np.ndarray)) & (not isinstance(data, pd.Series)):
-            print('data is not a numpy NDarray nor a pandas Series.'
-                  'Trying to convert...')
-            try:
-                data = np.array(data)
-            except:
-                raise ValueError('Could not convert data. Check input.')
-            print('Conversion successful.')
-        
-        data = data.dropna().loc[data != 0]
+
+        data = pd.Series(_check_num_array(data))
+        data = data.dropna().loc[data != 0].abs()
         
         self.data = pd.DataFrame({'Mantissa': _getMantissas_(np.abs(data))})
 
@@ -1057,7 +1050,7 @@ class Mantissas(object):
         '''
         Shows the Mantissas test stats
         '''
-        print('  Mantissas Test  '.center(52, '#'))
+        print("\n", '  Mantissas Test  '.center(52, '#'))
         print(f"\nThe Mantissas MEAN is      {self.stats['Mean']:.6f}."
               "\tRef: 0.5")
         print(f"The Mantissas VARIANCE is  {self.stats['Var']:.6f}."
@@ -1065,7 +1058,7 @@ class Mantissas(object):
         print(f"The Mantissas SKEWNESS is  {self.stats['Skew']:.6f}."
               "\tRef: 0.0")
         print(f"The Mantissas KURTOSIS is  {self.stats['Kurt']:.6f}."
-              "\tRef: -1.2")
+              "\tRef: -1.2\n")
 
     def show_plot(self, figsize=(12, 6)):
         '''
@@ -1089,8 +1082,9 @@ class Mantissas(object):
         plt.ylim((0, 1.))
         plt.xlim((1, ld + 1))
         ax.set_facecolor(colors['b'])
+        ax.set_title("Ordered Mantissas")
         plt.legend(loc='upper left')
-        plt.show()
+        plt.show();
 
     def arc_test(self, decimals=2, grid=True, figsize=12):
         '''
@@ -1134,7 +1128,8 @@ class Mantissas(object):
         ax.axhline(y=0, color='k')
         ax.axvline(x=0, color='k')
         ax.legend(loc = 'lower left')
-        ax.figure
+        ax.set_title("Mantissas Arc Test")
+        plt.show();
 
 
 class Roll_mad(pd.Series):
@@ -1859,7 +1854,7 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
         return data[['Counts', 'Found', 'Expected']]
 
 
-def mantissas(data, inform=True, show_plot=True, arc_test=True):
+def mantissas(data, report=True, show_plot=True, arc_test=True):
     '''
     Returns a Series with the data mantissas,
 
@@ -1868,15 +1863,15 @@ def mantissas(data, inform=True, show_plot=True, arc_test=True):
     data: sequence to compute mantissas from, numpy 1D array, pandas
         Series of pandas DataFrame column.
 
-    inform: prints the mamtissas mean, variance, skewness and kurtosis
+    report: prints the mamtissas mean, variance, skewness and kurtosis
         for the sequence studied, along with reference values.
 
     show_plot: plots the ordered mantissas and a line with the expected
         inclination. Defaults to True.
     '''
     mant = Mantissas(data)
-    if inform:
-        mant.inform()
+    if report:
+        mant.report()
     if show_plot:
         mant.show_plot()
     if arc_test:
@@ -2297,6 +2292,25 @@ def _check_high_Z_(high_Z):
             raise ValueError("The parameter -high_Z- should be 'pos', "
                              "'all' or an int.")
     return high_Z
+
+def _check_num_array(data):
+    '''
+    '''
+    if (not isinstance(data, np.ndarray)) & (not isinstance(data, pd.Series)):
+        print('\n`data` not a numpy NDarray nor a pandas Series.'
+                ' Trying to convert...')
+        try:
+            data = np.array(data)
+        except:
+            raise ValueError('Could not convert data. Check input.')
+        print('\nConversion successful.')
+    elif (data.dtype == int) | (not data.dtype == float):
+        print("\n`data` type not int nor float. Trying to convert...")
+        try:
+            data = data.astype(float)
+        except:
+            raise ValueError('Could not convert data. Check input.')
+    return data
 
 
 def _subtract_sorted_(data):
