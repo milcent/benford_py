@@ -1859,7 +1859,7 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
         return data[['Counts', 'Found', 'Expected']]
 
 
-def mantissas(data, inform=True, show_plot=True, arc_test=True):
+def mantissas(data, report=True, show_plot=True, arc_test=True):
     '''
     Returns a Series with the data mantissas,
 
@@ -1868,15 +1868,15 @@ def mantissas(data, inform=True, show_plot=True, arc_test=True):
     data: sequence to compute mantissas from, numpy 1D array, pandas
         Series of pandas DataFrame column.
 
-    inform: prints the mamtissas mean, variance, skewness and kurtosis
+    report: prints the mamtissas mean, variance, skewness and kurtosis
         for the sequence studied, along with reference values.
 
     show_plot: plots the ordered mantissas and a line with the expected
         inclination. Defaults to True.
     '''
     mant = Mantissas(data)
-    if inform:
-        mant.inform()
+    if report:
+        mant.report()
     if show_plot:
         mant.show_plot()
     if arc_test:
