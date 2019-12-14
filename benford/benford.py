@@ -1035,16 +1035,9 @@ class Mantissas(object):
     '''
 
     def __init__(self, data):
-        if (not isinstance(data, np.ndarray)) & (not isinstance(data, pd.Series)):
-            print('data is not a numpy NDarray nor a pandas Series.'
-                  'Trying to convert...')
-            try:
-                data = np.array(data)
-            except:
-                raise ValueError('Could not convert data. Check input.')
-            print('Conversion successful.')
-        
-        data = data.dropna().loc[data != 0]
+
+        data = pd.Series(_check_num_array(data))
+        data = data.dropna().loc[data != 0].abs()
         
         self.data = pd.DataFrame({'Mantissa': _getMantissas_(np.abs(data))})
 
@@ -2299,6 +2292,25 @@ def _check_high_Z_(high_Z):
             raise ValueError("The parameter -high_Z- should be 'pos', "
                              "'all' or an int.")
     return high_Z
+
+def _check_num_array(data):
+    '''
+    '''
+    if (not isinstance(data, np.ndarray)) & (not isinstance(data, pd.Series)):
+        print('\n`data` not a numpy NDarray nor a pandas Series.'
+                ' Trying to convert...')
+        try:
+            data = np.array(data)
+        except:
+            raise ValueError('Could not convert data. Check input.')
+        print('\nConversion successful.')
+    elif (data.dtype == int) | (not data.dtype == float):
+        print("\n`data` type not int nor float. Trying to convert...")
+        try:
+            data = data.astype(float)
+        except:
+            raise ValueError('Could not convert data. Check input.')
+    return data
 
 
 def _subtract_sorted_(data):
