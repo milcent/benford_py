@@ -463,9 +463,9 @@ class Benford(object):
                                 for col in digs_dict.values()])}
 
         if self.verbose:
-            print('-----Benford-----.\n')
+            print('\n',' Benford Object Instantiated '.center(50, '#'),'\n')
             print(f'Initial sample size: {len(self.chosen)}.\n')
-            print(f'Test performed on {len(self.base)} registries.')
+            print(f'Test performed on {len(self.base)} registries.\n')
             print(f'Number of discarded entries for each test:\n{self._discarded}')
 
         if mantissas:
@@ -528,7 +528,7 @@ class Benford(object):
         self.Mantissas = Mantissas(self.base.Seq)
         self.tests.append('Mantissas')
         if self.verbose:
-            print('\nAdded Mantissas test\n')
+            print('\nAdded Mantissas test.')
 
     def sec_order(self):
         '''
@@ -554,7 +554,7 @@ class Benford(object):
                                     digs_dict.values()])}
         if self.verbose:
             print(f'\nSecond order tests run in {len(self.base_sec)} '
-                  'registries.\nNumber of discarded entries for second order'
+                  'registries.\n\nNumber of discarded entries for second order'
                   f' tests:\n{self._discarded_sec}')
 
     def summation(self):
@@ -2430,7 +2430,7 @@ def _report_test_(test, high=None, crit_vals=None):
     the process, and calls the right reporting helper function(s), depending
     on the Test.
     '''
-    print(f'  {test.name}  '.center(50, '#'), '\n')
+    print(f'\n  {test.name}  '.center(50, '#'), '\n')
     if not 'Summation' in test.name:
         _report_MAD_(test.digs, test.MAD)
         if test.confidence is not None:
