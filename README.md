@@ -1,7 +1,7 @@
 # Benford for Python
 
 ```
-current version = 0.1.0.3
+current version = 0.2.0
 ```
 
 The first digit of a number is its leftmost digit.
@@ -97,10 +97,10 @@ distributed in the interval [0,1] (NIGRINI, 2012, p.10).
 
 In general, a series of numerical records follows Benford's Law
 when (NIGRINI, 2012, p.21):
-* represents magnitudes of events or events, such as populations
+* it represents magnitudes of events or events, such as populations
 of cities, flows of water in rivers or sizes of celestial bodies;
-* does not have pre-established minimum or maximum limits;
-* is not made up of numbers used as identifiers, such as 
+* it does not have pre-established minimum or maximum limits;
+* it is not made up of numbers used as identifiers, such as 
 identity or social security numbers, bank accounts, telephone numbers; and
 * its mean is less than the median, and the data is not
 concentrated around the mean.
@@ -112,7 +112,7 @@ distortions, whether intentional or not.
 
 Benford's Law has been used in [several fields](http://www.benfordonline.net/). 
 Afer asserting that the usual data type is Benford-compliant,
-one can study samples from the same data in search of
+one can study samples from the same data type tin search of
 inconsistencies, errors or even [fraud](https://www.amazon.com.br/Benfords-Law-Applications-Accounting-Detection/dp/1118152859).
 
 This open source module is an attempt to facilitate the 
@@ -138,11 +138,9 @@ Or you can cd into the site-packages subfolder of your python distribution (or e
 ```
 For a quick start, please go to the [Demo notebook](https://github.com/milcent/benford_py/blob/master/Demo.ipynb), in which I show examples on how to run the tests with the SPY (S&P 500 ETF) daily returns.
 
-I will be adding information about the tests already available and also documentation.
+It has been a long time since I last tested it in Python 2. The death clock is ticking, so officially it is for Python 3 now. It should work on Linux, Windows and Mac, but please file a bug report if you run into some trouble.
 
-I've been testing it in Python 2 and 3, and in Linux (Ubuntu), Windows and Mac, so feel free to file a bug report if you run into some trouble.
-
-Also, if you have some nice data set that we can run these tests on, send it over an I will dedicate a jupyter notebook to it.
+Also, if you have some nice data set that we can run these tests on, let'us try it.
 
 Thanks!
 
