@@ -727,7 +727,7 @@ class Source(pd.DataFrame):
         # Check on the possible values for confidence levels
         confidence = _check_confidence_(confidence)
         # Check on possible digits
-        _check_digs_(digs)
+        _check_test_(digs)
 
         # self[digs_dict[digs]] = self.ZN.astype(str).str[:digs].astype(int)
         temp = self.loc[self.ZN >= 10 ** (digs - 1)]
@@ -1936,10 +1936,14 @@ def mad(data, test, decimals=2, sign='all'):
         Defaults to all.`
 
     '''
-    _check_digs_(test)
-
-    start = Source(data.values, sign=sign, decimals=decimals, inform=False)
-    start.first_digits(digs=test, inform=False, MAD=True, simple=True)
+    _check_test_(test)
+    start = Source(data.values, sign=sign, decimals=decimals, report=False)
+    if test in [1, 2, 3]:
+        start.first_digits(digs=test, MAD=True, MSE=True, simple=True)
+    elif test == 22:
+        start.second_digit(MAD=True, MSE=False, simple=True)
+    else:
+        start.last_two_digits(MAD=True, MSE=False, simple=True)
     return start.MAD
 
 
