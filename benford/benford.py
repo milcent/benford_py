@@ -26,6 +26,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.text import Annotation
+import warnings
+warnings.filterwarnings("default", category=PendingDeprecationWarning)
 
 
 digs_dict = {1: 'F1D', 2: 'F2D', 3: 'F3D', 22: 'SD', -2: 'L2D'}
@@ -731,7 +733,8 @@ class Source(pd.DataFrame):
         # Check on possible digits
         _check_test_(digs)
 
-        # self[digs_dict[digs]] = self.ZN.astype(str).str[:digs].astype(int)
+        verbose = _deprecate_inform_(verbose, inform)
+
         temp = self.loc[self.ZN >= 10 ** (digs - 1)]
         temp[digs_dict[digs]] = (temp.ZN // 10 ** ((np.log10(temp.ZN).astype(
                                                    int)) - (digs - 1))).astype(
@@ -822,13 +825,14 @@ class Source(pd.DataFrame):
 
         conf = confs[confidence]
 
-        # self['SD'] = self.ZN.astype(str).str[1:2].astype(int)
+        verbose = _deprecate_inform_(verbose, inform)
+
         temp = self.loc[self.ZN >= 10]
         temp['SD'] = (temp.ZN // 10**((np.log10(temp.ZN)).astype(
                       int) - 1)) % 10
 
         if simple:
-            report = False
+            verbose = False
             show_plot = False
             df = _prep_(temp['SD'], 22, limit_N=limit_N, simple=True,
                         confidence=None)
@@ -902,8 +906,9 @@ class Source(pd.DataFrame):
 
         '''
         confidence = _check_confidence_(confidence)
-
         conf = confs[confidence]
+
+        verbose = _deprecate_inform_(verbose, inform)
 
         temp = self.loc[self.ZN >= 1000]
         temp['L2D'] = temp.ZN % 100
@@ -963,6 +968,8 @@ class Source(pd.DataFrame):
         '''
         _check_digs_(digs)
 
+        verbose = _deprecate_inform_(verbose, inform)
+
         if digs == 1:
             top = 9
         # Call the dict for F1D, F2D, F3D
@@ -1009,6 +1016,8 @@ class Source(pd.DataFrame):
         '''
         if top_Rep is not None and not isinstance(top_Rep, int):
             raise ValueError('The top_Rep parameter must be an int or None.')
+
+        verbose = _deprecate_inform_(verbose, inform)
 
         dup = self[['Seq']][self.Seq.duplicated(keep=False)]
         dup_count = dup.groupby(self.Seq).count()
@@ -1692,6 +1701,8 @@ def first_digits(data, digs, decimals=2, sign='all', verbose=True,
 
     show_plot: draws the test plot.
     '''
+    verbose = _deprecate_inform_(verbose, inform)
+
     if not isinstance(data, Source):
         data = Source(data, decimals=decimals, sign=sign, verbose=verbose)
 
@@ -1768,6 +1779,8 @@ def second_digit(data, decimals=2, sign='all', verbose=True,
     show_plot: draws the test plot.
 
     '''
+    verbose = _deprecate_inform_(verbose, inform)
+
     if not isinstance(data, Source):
         data = Source(data, sign=sign, decimals=decimals, verbose=verbose)
 
@@ -1843,6 +1856,8 @@ def last_two_digits(data, decimals=2, sign='all', verbose=True,
     show_plot: draws the test plot.
 
     '''
+    verbose = _deprecate_inform_(verbose, inform)
+
     if not isinstance(data, Source):
         data = Source(data, decimals=decimals, sign=sign, verbose=verbose)
 
@@ -1873,6 +1888,8 @@ def mantissas(data, report=True, show_plot=True, arc_test=True, inform=None):
     show_plot: plots the ordered mantissas and a line with the expected
         inclination. Defaults to True.
     '''
+    report = _deprecate_inform_(report, inform)
+
     mant = Mantissas(data)
     if report:
         mant.report()
@@ -1906,6 +1923,8 @@ def summation(data, digs=2, decimals=2, sign='all', top=20, verbose=True,
     show_plot: plots the results. Defaults to True.
 
     '''
+    verbose = _deprecate_inform_(verbose, inform)
+
     if not isinstance(data, Source):
         data = Source(data, sign=sign, decimals=decimals, verbose=verbose)
 
@@ -2148,6 +2167,8 @@ def duplicates(data, top_Rep=20, verbose=True, inform=None):
         shown withe the top repititions. int or None. Defaluts to 20.
         If None, returns al the ordered repetitions.
     '''
+    verbose = _deprecate_inform_(verbose, inform)
+
     if top_Rep is not None and not isinstance(top_Rep, int):
         raise ValueError('The top_Rep parameter must be an int or None.')
 
@@ -2236,7 +2257,8 @@ def second_order(data, test, decimals=2, sign='all', verbose=True, MAD=False,
     '''
     test = _check_test_(test)
 
-    # if not isinstance(data, Source):
+    verbose = _deprecate_inform_(verbose, inform)
+
     data = Source(data, decimals=decimals, sign=sign,
                   sec_order=True, verbose=verbose)
     if test in [1, 2, 3]:
@@ -2453,3 +2475,13 @@ def _report_test_(test, high=None, crit_vals=None):
                 _inform_(test, high, None)
     else:
         _report_summ_(test, high)
+
+
+def _deprecate_inform_(verbose, inform):
+    if inform is None:
+        return verbose
+    else:
+        warnings.warn('The parameter `inform` will be deprecated in future '
+                      'versions. Use `verbose` instead.',
+                      PendingDeprecationWarning)
+        return inform
