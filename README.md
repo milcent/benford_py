@@ -3,6 +3,10 @@
 ```
 current version = 0.2.0
 ```
+## New in version 0.2
+- Mantissas [Arc Test and Plot](https://github.com/milcent/benford_py/pull/24) (thanks to @im-alexandre);
+- Whole new Benford class, which holds the initial tests (First Digit,
+Second Digit, First Two Digits, First Three Digits and Last Two Digits) at instantiation, but may also hold all the Second Order tests, Summation tests and Mantissas tests. All statistics are computed and stored for each test as applicable, and the confidence level may be reset for all tests or individually. Reports can then be called on each test, along with the respective plot. See the "Benford Class" section of the [Demo Notebook](https://github.com/milcent/benford_py/blob/master/Demo.ipynb) for more details
 
 The first digit of a number is its leftmost digit.
 <p align="center">
