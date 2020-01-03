@@ -1376,7 +1376,7 @@ def _mad_(frame, test, verbose=True):
             print(f"For the {mad_dict[digs_dict[test]]}:\n\
             - 0.0000 to {mad_dict[test][0]}: Close Conformity\n\
             - {mad_dict[test][0]} to {mad_dict[test][1]}: Acceptable Conformity\n\
-            - {mad_dict[test][1]} to {3}: Marginally Acceptable Conformity\n\
+            - {mad_dict[test][1]} to {mad_dict[test][2]}: Marginally Acceptable Conformity\n\
             - Above {mad_dict[test][2]}: Nonconformity")
         else:
             pass
