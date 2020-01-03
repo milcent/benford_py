@@ -1057,7 +1057,7 @@ class Mantissas(object):
                       'Skew': self.data.Mantissa.skew(),
                       'Kurt': self.data.Mantissa.kurt()}
 
-    def verbose(self):
+    def report(self):
         '''
         Shows the Mantissas test stats
         '''
