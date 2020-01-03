@@ -27,8 +27,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.text import Annotation
 import warnings
-warnings.filterwarnings("default", category=PendingDeprecationWarning)
-
 
 digs_dict = {1: 'F1D', 2: 'F2D', 3: 'F3D', 22: 'SD', -2: 'L2D'}
 
@@ -2483,5 +2481,5 @@ def _deprecate_inform_(verbose, inform):
     else:
         warnings.warn('The parameter `inform` will be deprecated in future '
                       'versions. Use `verbose` instead.',
-                      PendingDeprecationWarning)
+                      FutureWarning)
         return inform
