@@ -1594,8 +1594,7 @@ def _input_data_(given):
     '''
     '''
     if (type(given) == pd.Series) | (type(given) == np.ndarray):
-        data = None
-        chosen = given
+        data = chosen = given
     elif type(given) == tuple:
         if (type(given[0]) != pd.DataFrame) | (type(given[1]) != str):
             raise TypeError('The data tuple must be composed of a pandas '
