@@ -4,7 +4,8 @@
 
 ## New in version 0.2
 
-- Mantissas [Arc Test and Plot](https://github.com/milcent/benford_py/pull/24) (thanks to @im-alexandre);
+- New Mantissas object, with methods `report`, `show_plot` and `arc_test`, which shows the [Arc Test and Plot](https://github.com/milcent/benford_py/pull/24) (the latter thanks to @im-alexandre);
+- Future Deprecation of the `inform` parameter in favor of `verbose` or `report`, dependeing on the caase; and
 - Whole new Benford class, which holds the initial tests (First Digit,
 Second Digit, First Two Digits, First Three Digits and Last Two Digits) at instantiation, but may also hold all the Second Order tests, Summation tests and Mantissas tests. All statistics are computed and stored for each test as applicable, and the confidence level may be reset for all tests or individually. Reports can then be called on each test, along with the respective plot. See the "Benford Class" section of the [Demo Notebook](https://github.com/milcent/benford_py/blob/master/Demo.ipynb) for more details
 
@@ -137,7 +138,7 @@ Or you can cd into the site-packages subfolder of your python distribution (or e
 `git clone https://github.com/milcent/benford_py`
 For a quick start, please go to the [Demo notebook](https://github.com/milcent/benford_py/blob/master/Demo.ipynb), in which I show examples on how to run the tests with the SPY (S&P 500 ETF) daily returns.
 
-It has been a long time since I last tested it in Python 2. The death clock is ticking, so officially it is for Python 3 now. It should work on Linux, Windows and Mac, but please file a bug report if you run into some trouble.
+It has been a long time since I last tested it in Python 2. The death clock has stopped ticking, so officially it is for Python 3 now. It should work on Linux, Windows and Mac, but please file a bug report if you run into some trouble.
 
 Also, if you have some nice data set that we can run these tests on, let'us try it.
 
