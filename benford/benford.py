@@ -90,7 +90,7 @@ crit_chi2 = {8: {80: 11.03, 85: 12.027, 90: 13.362, 95: 15.507,
                    99.99999: 1137.082, None: None}
              }
 
-# Critical Kolmogorov-Smirnoff values according to the confidence levels 
+# Critical Kolmogorov-Smirnov values according to the confidence levels 
 KS_crit = {80: 1.075, 85: 1.139, 90: 1.125, 95: 1.36, 99: 1.63,
            99.9: 1.95, 99.99: 2.23, 99.999: 2.47,
            99.9999: 2.7, 99.99999: 2.9, None: None}
@@ -2413,11 +2413,11 @@ def _report_MAD_(digs, MAD):
 
 def _report_KS_(KS, crit_KS):
     '''
-    Reports the test Kolmogorov Smirnoff statistic and compares it to critical
+    Reports the test Kolmogorov-Smirnov statistic and compares it to critical
     values, depending on the confidence level
     '''
     result = 'PASS' if KS <= crit_KS else 'FAIL'
-    print(f"\n\tKolmogorov Smirnoff: {KS:.6f}",
+    print(f"\n\tKolmogorov-Smirnov: {KS:.6f}",
           f"\n\tCritical value: {crit_KS:.6f} -- {result}")
 
 def _report_chi2_(chi2, crit_chi2):
