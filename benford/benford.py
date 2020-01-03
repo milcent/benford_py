@@ -2457,7 +2457,7 @@ def _report_test_(test, high=None, crit_vals=None):
     the process, and calls the right reporting helper function(s), depending
     on the Test.
     '''
-    print(f'\n  {test.name}  '.center(50, '#'), '\n')
+    print('\n', f'  {test.name}  '.center(50, '#'), '\n')
     if not 'Summation' in test.name:
         _report_MAD_(test.digs, test.MAD)
         if test.confidence is not None:
