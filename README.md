@@ -1,9 +1,9 @@
 # Benford for Python
 
-```
-current version = 0.2.0
-```
+`current version = 0.2.0`
+
 ## New in version 0.2
+
 - Mantissas [Arc Test and Plot](https://github.com/milcent/benford_py/pull/24) (thanks to @im-alexandre);
 - Whole new Benford class, which holds the initial tests (First Digit,
 Second Digit, First Two Digits, First Three Digits and Last Two Digits) at instantiation, but may also hold all the Second Order tests, Summation tests and Mantissas tests. All statistics are computed and stored for each test as applicable, and the confidence level may be reset for all tests or individually. Reports can then be called on each test, along with the respective plot. See the "Benford Class" section of the [Demo Notebook](https://github.com/milcent/benford_py/blob/master/Demo.ipynb) for more details
@@ -28,7 +28,7 @@ a way that the digit "1" is the most frequent, followed by "2",
 "3", and so in a successive and decremental way down to "9", 
 which presents the lowest frequency as the first digit.
 
-The expected distributions of the First Digits in a 
+The expected distributions of the First Digits in a
 Benford-compliant data set are the ones shown below:
 <p align="center">
   <img alt="Expected Distributions of First Digits" src="https://github.com/milcent/benford_py/blob/master/img/First.png">
@@ -132,14 +132,9 @@ bellow and much more.
 ### Installation
 
 As of Dec 2017 Benford_py is a package in PyPi, so you can install with pip:
-```
- pip install benford_py
-```
+`pip install benford_py`
 Or you can cd into the site-packages subfolder of your python distribution (or environment) and git clone from there:
-
-```
- git clone https://github.com/milcent/benford_py
-```
+`git clone https://github.com/milcent/benford_py`
 For a quick start, please go to the [Demo notebook](https://github.com/milcent/benford_py/blob/master/Demo.ipynb), in which I show examples on how to run the tests with the SPY (S&P 500 ETF) daily returns.
 
 It has been a long time since I last tested it in Python 2. The death clock is ticking, so officially it is for Python 3 now. It should work on Linux, Windows and Mac, but please file a bug report if you run into some trouble.
