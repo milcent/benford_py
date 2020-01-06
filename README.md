@@ -9,6 +9,13 @@
 - Whole new Benford class, which holds the initial tests (First Digit,
 Second Digit, First Two Digits, First Three Digits and Last Two Digits) at instantiation, but may also hold all the Second Order tests, Summation tests and Mantissas tests. All statistics are computed and stored for each test as applicable, and the confidence level may be reset for all tests or individually. Reports can then be called on each test, along with the respective plot. See the "Benford Class" section of the [Demo Notebook](https://github.com/milcent/benford_py/blob/master/Demo.ipynb) for more details
 
+## On the RoadMap
+
+- Brake the module in different files for better organization;
+- Tests, Tests,... and more tests (I mean **PY**tests!!);
+- Set up warnings when the usable sample is too small for the especific test;
+- Implement the bootstrap approach for conformity checking ([Issue 15](https://github.com/milcent/benford_py/issues/15))
+
 The first digit of a number is its leftmost digit.
 <p align="center">
   <img alt="First Digits" src="https://github.com/milcent/benford_py/blob/master/img/First_Digits.png">
@@ -132,10 +139,14 @@ bellow and much more.
 
 ### Installation
 
-As of Dec 2017 Benford_py is a package in PyPi, so you can install with pip:
+Benford_py is a package in PyPi, so you can install with pip:
+
 `pip install benford_py`
+
 Or you can cd into the site-packages subfolder of your python distribution (or environment) and git clone from there:
+
 `git clone https://github.com/milcent/benford_py`
+
 For a quick start, please go to the [Demo notebook](https://github.com/milcent/benford_py/blob/master/Demo.ipynb), in which I show examples on how to run the tests with the SPY (S&P 500 ETF) daily returns.
 
 It has been a long time since I last tested it in Python 2. The death clock has stopped ticking, so officially it is for Python 3 now. It should work on Linux, Windows and Mac, but please file a bug report if you run into some trouble.
