@@ -1,8 +1,20 @@
 # Benford for Python
 
-```
-current version = 0.1.0.3
-```
+`current version = 0.2.0`
+
+## New in version 0.2
+
+- New Mantissas object, with methods `report`, `show_plot` and `arc_test`, which shows the [Arc Test and Plot](https://github.com/milcent/benford_py/pull/24) (the latter thanks to @im-alexandre);
+- Future Deprecation of the `inform` parameter in favor of `verbose` or `report`, dependeing on the caase; and
+- Whole new Benford class, which holds the initial tests (First Digit,
+Second Digit, First Two Digits, First Three Digits and Last Two Digits) at instantiation, but may also hold all the Second Order tests, Summation tests and Mantissas tests. All statistics are computed and stored for each test as applicable, and the confidence level may be reset for all tests or individually. Reports can then be called on each test, along with the respective plot. See the "Benford Class" section of the [Demo Notebook](https://github.com/milcent/benford_py/blob/master/Demo.ipynb) for more details
+
+## On the RoadMap
+
+- Brake the module in different files for better organization;
+- Tests, Tests,... and more tests (I mean **PY**tests!!);
+- Set up warnings when the usable sample is too small for the especific test;
+- Implement the bootstrap approach for conformity checking ([Issue 15](https://github.com/milcent/benford_py/issues/15))
 
 The first digit of a number is its leftmost digit.
 <p align="center">
@@ -24,7 +36,7 @@ a way that the digit "1" is the most frequent, followed by "2",
 "3", and so in a successive and decremental way down to "9", 
 which presents the lowest frequency as the first digit.
 
-The expected distributions of the First Digits in a 
+The expected distributions of the First Digits in a
 Benford-compliant data set are the ones shown below:
 <p align="center">
   <img alt="Expected Distributions of First Digits" src="https://github.com/milcent/benford_py/blob/master/img/First.png">
@@ -97,10 +109,10 @@ distributed in the interval [0,1] (NIGRINI, 2012, p.10).
 
 In general, a series of numerical records follows Benford's Law
 when (NIGRINI, 2012, p.21):
-* represents magnitudes of events or events, such as populations
+* it represents magnitudes of events or events, such as populations
 of cities, flows of water in rivers or sizes of celestial bodies;
-* does not have pre-established minimum or maximum limits;
-* is not made up of numbers used as identifiers, such as 
+* it does not have pre-established minimum or maximum limits;
+* it is not made up of numbers used as identifiers, such as 
 identity or social security numbers, bank accounts, telephone numbers; and
 * its mean is less than the median, and the data is not
 concentrated around the mean.
@@ -112,7 +124,7 @@ distortions, whether intentional or not.
 
 Benford's Law has been used in [several fields](http://www.benfordonline.net/). 
 Afer asserting that the usual data type is Benford-compliant,
-one can study samples from the same data in search of
+one can study samples from the same data type tin search of
 inconsistencies, errors or even [fraud](https://www.amazon.com.br/Benfords-Law-Applications-Accounting-Detection/dp/1118152859).
 
 This open source module is an attempt to facilitate the 
@@ -127,22 +139,19 @@ bellow and much more.
 
 ### Installation
 
-As of Dec 2017 Benford_py is a package in PyPi, so you can install with pip:
-```
- pip install benford_py
-```
+Benford_py is a package in PyPi, so you can install with pip:
+
+`pip install benford_py`
+
 Or you can cd into the site-packages subfolder of your python distribution (or environment) and git clone from there:
 
-```
- git clone https://github.com/milcent/benford_py
-```
+`git clone https://github.com/milcent/benford_py`
+
 For a quick start, please go to the [Demo notebook](https://github.com/milcent/benford_py/blob/master/Demo.ipynb), in which I show examples on how to run the tests with the SPY (S&P 500 ETF) daily returns.
 
-I will be adding information about the tests already available and also documentation.
+It has been a long time since I last tested it in Python 2. The death clock has stopped ticking, so officially it is for Python 3 now. It should work on Linux, Windows and Mac, but please file a bug report if you run into some trouble.
 
-I've been testing it in Python 2 and 3, and in Linux (Ubuntu), Windows and Mac, so feel free to file a bug report if you run into some trouble.
-
-Also, if you have some nice data set that we can run these tests on, send it over an I will dedicate a jupyter notebook to it.
+Also, if you have some nice data set that we can run these tests on, let'us try it.
 
 Thanks!
 
