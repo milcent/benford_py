@@ -91,6 +91,7 @@ crit_chi2 = {8: {80: 11.03, 85: 12.027, 90: 13.362, 95: 15.507,
              }
 
 # Critical Kolmogorov-Smirnov values according to the confidence levels 
+# These values are yet to be divided by the square root of the sample size
 KS_crit = {80: 1.075, 85: 1.139, 90: 1.125, 95: 1.36, 99: 1.63,
            99.9: 1.95, 99.99: 2.23, 99.999: 2.47,
            99.9999: 2.7, 99.99999: 2.9, None: None}
@@ -307,11 +308,11 @@ class Test(pd.DataFrame):
     @property
     def critical_values(self):
         '''
-        Returns a dict with the critical values for the test at hand, accroding
+        Returns a dict with the critical values for the test at hand, according
         to the current confidence level.
         '''
         return {'Z': confs[self.confidence],
-                'KS': KS_crit[self.confidence] / self.N ** 0.5,
+                'KS': KS_crit[self.confidence] / (self.N ** 0.5),
                 'chi2': crit_chi2[self.ddf][self.confidence],
                 'MAD': mad_dict[self.digs]
                 }
