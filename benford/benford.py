@@ -26,7 +26,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.text import Annotation
-
+import warnings
 
 digs_dict = {1: 'F1D', 2: 'F2D', 3: 'F3D', 22: 'SD', -2: 'L2D'}
 
@@ -90,7 +90,8 @@ crit_chi2 = {8: {80: 11.03, 85: 12.027, 90: 13.362, 95: 15.507,
                    99.99999: 1137.082, None: None}
              }
 
-# Critical Kolmogorov-Smirnoff values according to the confidence levels 
+# Critical Kolmogorov-Smirnov values according to the confidence levels 
+# These values are yet to be divided by the square root of the sample size
 KS_crit = {80: 1.075, 85: 1.139, 90: 1.125, 95: 1.36, 99: 1.63,
            99.9: 1.95, 99.99: 2.23, 99.999: 2.47,
            99.9999: 2.7, 99.99999: 2.9, None: None}
@@ -307,11 +308,11 @@ class Test(pd.DataFrame):
     @property
     def critical_values(self):
         '''
-        Returns a dict with the critical values for the test at hand, accroding
+        Returns a dict with the critical values for the test at hand, according
         to the current confidence level.
         '''
         return {'Z': confs[self.confidence],
-                'KS': KS_crit[self.confidence] / self.N ** 0.5,
+                'KS': KS_crit[self.confidence] / (self.N ** 0.5),
                 'chi2': crit_chi2[self.ddf][self.confidence],
                 'MAD': mad_dict[self.digs]
                 }
@@ -463,9 +464,9 @@ class Benford(object):
                                 for col in digs_dict.values()])}
 
         if self.verbose:
-            print('-----Benford-----.\n')
+            print('\n',' Benford Object Instantiated '.center(50, '#'),'\n')
             print(f'Initial sample size: {len(self.chosen)}.\n')
-            print(f'Test performed on {len(self.base)} registries.')
+            print(f'Test performed on {len(self.base)} registries.\n')
             print(f'Number of discarded entries for each test:\n{self._discarded}')
 
         if mantissas:
@@ -528,7 +529,7 @@ class Benford(object):
         self.Mantissas = Mantissas(self.base.Seq)
         self.tests.append('Mantissas')
         if self.verbose:
-            print('\nAdded Mantissas test\n')
+            print('\nAdded Mantissas test.')
 
     def sec_order(self):
         '''
@@ -554,7 +555,7 @@ class Benford(object):
                                     digs_dict.values()])}
         if self.verbose:
             print(f'\nSecond order tests run in {len(self.base_sec)} '
-                  'registries.\nNumber of discarded entries for second order'
+                  'registries.\n\nNumber of discarded entries for second order'
                   f' tests:\n{self._discarded_sec}')
 
     def summation(self):
@@ -593,12 +594,12 @@ class Source(pd.DataFrame):
     sec_order: choice for the Second Order Test, which cumputes the
         differences between the ordered entries before running the Tests.
 
-    inform: tells the number of registries that are being subjected to
+    verbose: tells the number of registries that are being subjected to
         the analysis; defaults to True
     '''
 
     def __init__(self, data, decimals=2, sign='all', sec_order=False,
-                 inform=True):
+                 verbose=True, inform=None):
 
         if sign not in ['all', 'pos', 'neg']:
             raise ValueError("The -sign- argument must be "
@@ -619,13 +620,15 @@ class Source(pd.DataFrame):
 
         self.dropna(inplace=True)
 
-        if inform:
+        self.verbose = _deprecate_inform_(verbose, inform)
+        if self.verbose:
             print(f"\nInitialized sequence with {len(self)} registries.")
+
         if sec_order:
             self.Seq = _subtract_sorted_(self.Seq.copy())
             self.dropna(inplace=True)
             self.reset_index(inplace=True)
-            if inform:
+            if verbose:
                 print('Second Order Test. Initial series reduced '
                       f'to {len(self.Seq)} entries.')
 
@@ -644,21 +647,22 @@ class Source(pd.DataFrame):
             else:
                 self['ZN'] = (ab * (10 ** decimals)).astype(int)
 
-    def mantissas(self, inform=True, plot=True, figsize=(15, 8)):
+    def mantissas(self, report=True, plot=True, figsize=(15, 8)):
         '''
         Calculates the mantissas, their mean and variance, and compares them
         with the mean and variance of a Benford's sequence.
 
         Parameters
         ----------
-
+        report: prints the mamtissas mean, variance, skewness and kurtosis
+            for the sequence studied, along with reference values.
         plot: plots the ordered mantissas and a line with the expected
             inclination. Defaults to True.
 
         figsize -> tuple that sets the figure size
         '''
         self['Mant'] = _getMantissas_(np.abs(self.Seq))
-        if inform:
+        if report:
             p = self[['Seq', 'Mant']]
             p = p.loc[p.Seq > 0].sort_values('Mant')
             print(f"The Mantissas MEAN is {p.Mant.mean()}. Ref: 0.5.")
@@ -678,7 +682,7 @@ class Source(pd.DataFrame):
             plt.xlim((1, N + 1))
             plt.show()
 
-    def first_digits(self, digs, inform=True, confidence=None, high_Z='pos',
+    def first_digits(self, digs, confidence=None, high_Z='pos',
                      limit_N=None, MAD=False, MSE=False, chi_square=False,
                      KS=False, show_plot=True, simple=False, ret_df=False):
         '''
@@ -692,7 +696,7 @@ class Source(pd.DataFrame):
         digs -> number of first digits to consider. Must be 1 (first digit),
             2 (first two digits) or 3 (first three digits).
 
-        inform: tells the number of registries that are being subjected to
+        verbose: tells the number of registries that are being subjected to
             the analysis; defaults to True
 
         digs: number of first digits to consider. Must be 1 (first digit),
@@ -727,9 +731,8 @@ class Source(pd.DataFrame):
         # Check on the possible values for confidence levels
         confidence = _check_confidence_(confidence)
         # Check on possible digits
-        _check_digs_(digs)
+        _check_test_(digs)
 
-        # self[digs_dict[digs]] = self.ZN.astype(str).str[:digs].astype(int)
         temp = self.loc[self.ZN >= 10 ** (digs - 1)]
         temp[digs_dict[digs]] = (temp.ZN // 10 ** ((np.log10(temp.ZN).astype(
                                                    int)) - (digs - 1))).astype(
@@ -738,7 +741,7 @@ class Source(pd.DataFrame):
         x = np.arange(n, m)
 
         if simple:
-            inform = False
+            self.verbose = False
             show_plot = False
             df = _prep_(temp[digs_dict[digs]], digs, limit_N=limit_N,
                         simple=True, confidence=None)
@@ -746,7 +749,7 @@ class Source(pd.DataFrame):
             N, df = _prep_(temp[digs_dict[digs]], digs, limit_N=limit_N,
                            simple=False, confidence=confidence)
 
-        if inform:
+        if self.verbose:
             print(f"\nTest performed on {len(temp)} registries.\n"
                   f"Discarded {len(self) - len(temp)} records < {10 ** (digs - 1)}"
                   " after preparation.")
@@ -755,21 +758,21 @@ class Source(pd.DataFrame):
 
         # Mean absolute difference
         if MAD:
-            self.MAD = _mad_(df, test=digs, inform=inform)
+            self.MAD = _mad_(df, test=digs, verbose=self.verbose)
 
         # Mean Square Error
         if MSE:
-            self.MSE = _mse_(df, inform=inform)
+            self.MSE = _mse_(df, verbose=self.verbose)
 
         # Chi-square statistic
         if chi_square:
             self.chi_square = _chi_square_(df, ddf=len(df) - 1,
                                            confidence=confidence,
-                                           inform=inform)
+                                           verbose=self.verbose)
         # KS test
         if KS:
             self.KS = _KS_(df, confidence=confidence, N=len(temp),
-                           inform=inform)
+                           verbose=self.verbose)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
@@ -779,14 +782,14 @@ class Source(pd.DataFrame):
         if ret_df:
             return df
 
-    def second_digit(self, inform=True, confidence=None, high_Z='pos',
+    def second_digit(self, confidence=None, high_Z='pos',
                      limit_N=None, MAD=False, MSE=False, chi_square=False,
                      KS=False, show_plot=True, simple=False, ret_df=False):
         '''
         Performs the Benford Second Digit test with the series of
         numbers provided.
 
-        inform -> tells the number of registries that are being subjected to
+        verbose-> tells the number of registries that are being subjected to
             the analysis; defaults to True
 
         MAD: calculates the Mean Absolute Difference between the
@@ -819,13 +822,12 @@ class Source(pd.DataFrame):
 
         conf = confs[confidence]
 
-        # self['SD'] = self.ZN.astype(str).str[1:2].astype(int)
         temp = self.loc[self.ZN >= 10]
         temp['SD'] = (temp.ZN // 10**((np.log10(temp.ZN)).astype(
                       int) - 1)) % 10
 
         if simple:
-            inform = False
+            self.verbose = False
             show_plot = False
             df = _prep_(temp['SD'], 22, limit_N=limit_N, simple=True,
                         confidence=None)
@@ -833,7 +835,7 @@ class Source(pd.DataFrame):
             N, df = _prep_(temp['SD'], 22, limit_N=limit_N, simple=False,
                            confidence=confidence)
 
-        if inform:
+        if self.verbose:
             print(f"\nTest performed on {len(temp)} registries.\nDiscarded "
                   f"{len(self) - len(temp)} records < 10 after preparation.")
             if confidence is not None:
@@ -841,20 +843,20 @@ class Source(pd.DataFrame):
 
         # Mean absolute difference
         if MAD:
-            self.MAD = _mad_(df, test=22, inform=inform)
+            self.MAD = _mad_(df, test=22, verbose=self.verbose)
 
         # Mean Square Error
         if MSE:
-            self.MSE = _mse_(df, inform=inform)
+            self.MSE = _mse_(df, verbose=self.verbose)
 
         # Chi-square statistic
         if chi_square:
             self.chi_square = _chi_square_(df, ddf=9, confidence=confidence,
-                                           inform=inform)
+                                           verbose=self.verbose)
         # KS test
         if KS:
             self.KS = _KS_(df, confidence=confidence, N=len(temp),
-                           inform=inform)
+                           verbose=self.verbose)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
@@ -863,14 +865,14 @@ class Source(pd.DataFrame):
         if ret_df:
             return df
 
-    def last_two_digits(self, inform=True, confidence=None, high_Z='pos',
+    def last_two_digits(self, confidence=None, high_Z='pos',
                         limit_N=None, MAD=False, MSE=False, chi_square=False,
                         KS=False, show_plot=True, simple=False, ret_df=False):
         '''
         Performs the Benford Last Two Digits test with the series of
         numbers provided.
 
-        inform -> tells the number of registries that are being subjected to
+        verbose-> tells the number of registries that are being subjected to
             the analysis; defaults to True
 
         MAD: calculates the Mean Absolute Difference between the
@@ -898,14 +900,13 @@ class Source(pd.DataFrame):
 
         '''
         confidence = _check_confidence_(confidence)
-
         conf = confs[confidence]
 
         temp = self.loc[self.ZN >= 1000]
         temp['L2D'] = temp.ZN % 100
 
         if simple:
-            inform = False
+            self.verbose = False
             show_plot = False
             df = _prep_(temp['L2D'], -2, limit_N=limit_N, simple=True,
                         confidence=None)
@@ -913,7 +914,7 @@ class Source(pd.DataFrame):
             N, df = _prep_(temp['L2D'], -2, limit_N=limit_N, simple=False,
                            confidence=confidence)
 
-        if inform:
+        if self.verbose:
             print(f"\nTest performed on {len(temp)} registries.\n\nDiscarded "
                   f"{len(self) - len(temp)} records < 1000 after preparation")
             if confidence is not None:
@@ -921,20 +922,20 @@ class Source(pd.DataFrame):
 
         # Mean absolute difference
         if MAD:
-            self.MAD = _mad_(df, test=-2, inform=inform)
+            self.MAD = _mad_(df, test=-2, verbose=self.verbose)
 
         # Mean Square Error
         if MSE:
-            self.MSE = _mse_(df, inform=inform)
+            self.MSE = _mse_(df, verbose=self.verbose)
 
         # Chi-square statistic
         if chi_square:
             self.chi_square = _chi_square_(df, ddf=99, confidence=confidence,
-                                           inform=inform)
+                                           verbose=self.verbose)
         # KS test
         if KS:
             self.KS = _KS_(df, confidence=confidence, N=len(temp),
-                           inform=inform)
+                           verbose=self.verbose)
 
         # Plotting expected frequencies (line) versus found ones (bars)
         if show_plot:
@@ -944,7 +945,7 @@ class Source(pd.DataFrame):
         if ret_df:
             return df
 
-    def summation(self, digs=2, top=20, inform=True, show_plot=True,
+    def summation(self, digs=2, top=20, show_plot=True,
                   ret_df=False):
         '''
         Performs the Summation test. In a Benford series, the sums of the
@@ -978,7 +979,7 @@ class Source(pd.DataFrame):
         # Populate dict with the most relevant entries
         # self.maps[dig_name] = np.array(_inform_and_map_(s, inform,
         #                                high_Z=top, conf=None)).astype(int)
-        if inform:
+        if self.verbose:
             # N = len(self)
             print(f"\nTest performed on {len(self)} registries.\n")
             print(f"The top {top} diferences are:\n")
@@ -991,12 +992,12 @@ class Source(pd.DataFrame):
         if ret_df:
             return df
 
-    def duplicates(self, inform=True, top_Rep=20):
+    def duplicates(self, top_Rep=20, inform=None):
         '''
         Performs a duplicates test and maps the duplicates count in descending
         order.
 
-        inform -> tells how many duplicated entries were found and prints the
+        verbose -> tells how many duplicated entries were found and prints the
             top numbers according to the top_Rep parameter. Defaluts to True.
 
         top_Rep -> int or None. Chooses how many duplicated entries will be
@@ -1016,7 +1017,7 @@ class Source(pd.DataFrame):
 
         self.maps['dup'] = dup_count.index[:top_Rep].values  # np.array
 
-        if inform:
+        if self.verbose:
             print(f'\nFound {len(dup_count)} duplicated entries.\n'
                   f'The entries with the {top_Rep} highest repitition counts are:')
             print(dup_count.head(top_Rep))
@@ -1165,7 +1166,7 @@ class Roll_mad(pd.Series):
         test = _check_test_(test)
 
         if not isinstance(data, Source):
-            start = Source(data, sign=sign, decimals=decimals, inform=False)
+            start = Source(data, sign=sign, decimals=decimals, verbose=False)
 
         Exp, ind = _prep_to_roll_(start, test)
 
@@ -1220,7 +1221,7 @@ class Roll_mse(pd.Series):
         test = _check_test_(test)
 
         if not isinstance(data, Source):
-            start = Source(data, sign=sign, decimals=decimals, inform=False)
+            start = Source(data, sign=sign, decimals=decimals, verbose=False)
 
         Exp, ind = _prep_to_roll_(start, test)
 
@@ -1248,7 +1249,7 @@ def _Z_score(frame, N):
            (frame.Expected * (1. - frame.Expected)) / N)
 
 
-def _chi_square_(frame, ddf, confidence, inform=True):
+def _chi_square_(frame, ddf, confidence, verbose=True):
     '''
     Returns the chi-square statistic of the found distributions and compares
     it with the critical chi-square of such a sample, according to the
@@ -1262,7 +1263,7 @@ def _chi_square_(frame, ddf, confidence, inform=True):
 
     confidence: Confidence level - confs dict.
 
-    inform:     prints the chi-squre result and compares to the critical
+    verbose:     prints the chi-squre result and compares to the critical
     chi-square for the sample. Defaults to True.
     '''
     if confidence is None:
@@ -1273,8 +1274,8 @@ def _chi_square_(frame, ddf, confidence, inform=True):
         dif_counts = frame.Counts - exp_counts
         found_chi = (dif_counts ** 2 / exp_counts).sum()
         crit_chi = crit_chi2[ddf][confidence]
-        if inform:
-            print(f"\nThe Chi-square statistic is {found_chi}.\n"
+        if verbose:
+            print(f"\nThe Chi-square statistic is {found_chi:.4f}.\n"
                   f"Critical Chi-square for this series: {crit_chi}.")
         return (found_chi, crit_chi)
 
@@ -1293,7 +1294,7 @@ def _chi_square_2(frame):
     return (dif_counts ** 2 / exp_counts).sum()
 
 
-def _KS_(frame, confidence, N, inform=True):
+def _KS_(frame, confidence, N, verbose=True):
     '''
     Returns the Kolmogorov-Smirnov test of the found distributions
     and compares it with the critical chi-square of such a sample,
@@ -1307,7 +1308,7 @@ def _KS_(frame, confidence, N, inform=True):
 
     N: Sample size
 
-    inform: prints the KS result and the critical value for the sample.
+    verbose: prints the KS result and the critical value for the sample.
         Defaults to True.
     '''
     if confidence is None:
@@ -1321,9 +1322,9 @@ def _KS_(frame, confidence, N, inform=True):
         # calculating the crittical value according to confidence
         crit_KS = KS_crit[confidence] / np.sqrt(N)
 
-        if inform:
-            print(f"\nThe Kolmogorov-Smirnov statistic is {suprem}.\n"
-                  f"Critical K-S for this series: {crit_KS}")
+        if verbose:
+            print(f"\nThe Kolmogorov-Smirnov statistic is {suprem:.4f}.\n"
+                  f"Critical K-S for this series: {crit_KS:.4f}")
         return (suprem, crit_KS)
 
 
@@ -1341,7 +1342,7 @@ def _KS_2(frame):
     return ((ks_frame.Found - ks_frame.Expected).abs()).max()
 
 
-def _mad_(frame, test, inform=True):
+def _mad_(frame, test, verbose=True):
     '''
     Returns the Mean Absolute Deviation (MAD) between the found and the
     expected proportions.
@@ -1353,37 +1354,37 @@ def _mad_(frame, test, inform=True):
 
     test: Test to compute the MAD from (F1D, SD, F2D...)
 
-    inform: prints the MAD result and compares to limit values of
+    verbose: prints the MAD result and compares to limit values of
         conformity. Defaults to True.
     '''
     mad = frame.AbsDif.mean()
 
-    if inform:
+    if verbose:
         print(f"\nThe Mean Absolute Deviation is {mad}")
 
         if test != -2:
             print(f"For the {mad_dict[digs_dict[test]]}:\n\
             - 0.0000 to {mad_dict[test][0]}: Close Conformity\n\
             - {mad_dict[test][0]} to {mad_dict[test][1]}: Acceptable Conformity\n\
-            - {mad_dict[test][1]} to {3}: Marginally Acceptable Conformity\n\
+            - {mad_dict[test][1]} to {mad_dict[test][2]}: Marginally Acceptable Conformity\n\
             - Above {mad_dict[test][2]}: Nonconformity")
         else:
             pass
     return mad
 
 
-def _mse_(frame, inform=True):
+def _mse_(frame, verbose=True):
     '''
     Returns the test's Mean Square Error
 
     frame -> DataFrame with the already computed Absolute Deviations between
             the found and expected proportions
 
-    inform -> Prints the MSE. Defaults to True. If False, returns MSE.
+    verbose -> Prints the MSE. Defaults to True. If False, returns MSE.
     '''
     mse = (frame.AbsDif ** 2).mean()
 
-    if inform:
+    if verbose:
         print(f"\nMean Square Error = {mse}")
 
     return mse
@@ -1583,8 +1584,7 @@ def _input_data_(given):
     '''
     '''
     if (type(given) == pd.Series) | (type(given) == np.ndarray):
-        data = None
-        chosen = given
+        data = chosen = given
     elif type(given) == tuple:
         if (type(given[0]) != pd.DataFrame) | (type(given[1]) != str):
             raise TypeError('The data tuple must be composed of a pandas '
@@ -1625,10 +1625,10 @@ def _prep_(data, digs, limit_N, simple=False, confidence=None):
         return N, dd
 
 
-def first_digits(data, digs, decimals=2, sign='all', inform=True,
+def first_digits(data, digs, decimals=2, sign='all', verbose=True,
                  confidence=None, high_Z='pos', limit_N=None,
                  MAD=False, MSE=False, chi_square=False, KS=False,
-                 show_plot=True):
+                 show_plot=True, inform=None):
     '''
     Performs the Benford First Digits test on the series of
     numbers provided.
@@ -1652,7 +1652,7 @@ def first_digits(data, digs, decimals=2, sign='all', inform=True,
     digs: number of first digits to consider. Must be 1 (first digit),
         2 (first two digits) or 3 (first three digits).
 
-    inform: tells the number of registries that are being subjected to
+    verbose: tells the number of registries that are being subjected to
         the analysis and returns tha analysis DataFrame sorted by the
         highest Z score down. Defaults to True.
 
@@ -1688,11 +1688,13 @@ def first_digits(data, digs, decimals=2, sign='all', inform=True,
 
     show_plot: draws the test plot.
     '''
-    if not isinstance(data, Source):
-        data = Source(data, decimals=decimals, sign=sign, inform=inform)
+    verbose = _deprecate_inform_(verbose, inform)
 
-    data = data.first_digits(digs, inform=inform, confidence=confidence,
-                             high_Z=high_Z, limit_N=limit_N, MAD=MAD, MSE=MSE,
+    if not isinstance(data, Source):
+        data = Source(data, decimals=decimals, sign=sign, verbose=verbose)
+
+    data = data.first_digits(digs, confidence=confidence, high_Z=high_Z,
+                             limit_N=limit_N, MAD=MAD, MSE=MSE,
                              chi_square=chi_square, KS=KS, show_plot=show_plot,
                              ret_df=True)
 
@@ -1703,10 +1705,10 @@ def first_digits(data, digs, decimals=2, sign='all', inform=True,
         return data[['Counts', 'Found', 'Expected']]
 
 
-def second_digit(data, decimals=2, sign='all', inform=True,
+def second_digit(data, decimals=2, sign='all', verbose=True,
                  confidence=None, high_Z='pos', limit_N=None,
                  MAD=False, MSE=False, chi_square=False, KS=False,
-                 show_plot=True):
+                 show_plot=True, inform=None):
     '''
     Performs the Benford Second Digits test on the series of
     numbers provided.
@@ -1727,7 +1729,7 @@ def second_digit(data, decimals=2, sign='all', inform=True,
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.`
 
-    inform: tells the number of registries that are being subjected to
+    verbose: tells the number of registries that are being subjected to
         the analysis and returns tha analysis DataFrame sorted by the
         highest Z score down. Defaults to True.
 
@@ -1764,11 +1766,13 @@ def second_digit(data, decimals=2, sign='all', inform=True,
     show_plot: draws the test plot.
 
     '''
-    if not isinstance(data, Source):
-        data = Source(data, sign=sign, decimals=decimals, inform=inform)
+    verbose = _deprecate_inform_(verbose, inform)
 
-    data = data.second_digit(inform=inform, confidence=confidence,
-                             high_Z=high_Z, limit_N=limit_N, MAD=MAD, MSE=MSE,
+    if not isinstance(data, Source):
+        data = Source(data, sign=sign, decimals=decimals, verbose=verbose)
+
+    data = data.second_digit(confidence=confidence, high_Z=high_Z,
+                             limit_N=limit_N, MAD=MAD, MSE=MSE,
                              chi_square=chi_square, KS=KS, show_plot=show_plot,
                              ret_df=True)
     if confidence is not None:
@@ -1778,10 +1782,10 @@ def second_digit(data, decimals=2, sign='all', inform=True,
         return data[['Counts', 'Found', 'Expected']]
 
 
-def last_two_digits(data, decimals=2, sign='all', inform=True,
+def last_two_digits(data, decimals=2, sign='all', verbose=True,
                     confidence=None, high_Z='pos', limit_N=None,
                     MAD=False, MSE=False, chi_square=False, KS=False,
-                    show_plot=True):
+                    show_plot=True, inform=None):
     '''
     Performs the Last Two Digits test on the series of
     numbers provided.
@@ -1802,7 +1806,7 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.`
 
-    inform: tells the number of registries that are being subjected to
+    verbose: tells the number of registries that are being subjected to
         the analysis and returns tha analysis DataFrame sorted by the
         highest Z score down. Defaults to True.
 
@@ -1839,11 +1843,13 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
     show_plot: draws the test plot.
 
     '''
-    if not isinstance(data, Source):
-        data = Source(data, decimals=decimals, sign=sign, inform=inform)
+    verbose = _deprecate_inform_(verbose, inform)
 
-    data = data.last_two_digits(inform=inform, confidence=confidence,
-                                high_Z=high_Z, limit_N=limit_N, MAD=MAD,
+    if not isinstance(data, Source):
+        data = Source(data, decimals=decimals, sign=sign, verbose=verbose)
+
+    data = data.last_two_digits(confidence=confidence, high_Z=high_Z,
+                                limit_N=limit_N, MAD=MAD,
                                 MSE=MSE, chi_square=chi_square, KS=KS,
                                 show_plot=show_plot, ret_df=True)
 
@@ -1854,7 +1860,7 @@ def last_two_digits(data, decimals=2, sign='all', inform=True,
         return data[['Counts', 'Found', 'Expected']]
 
 
-def mantissas(data, report=True, show_plot=True, arc_test=True):
+def mantissas(data, report=True, show_plot=True, arc_test=True, inform=None):
     '''
     Returns a Series with the data mantissas,
 
@@ -1869,6 +1875,8 @@ def mantissas(data, report=True, show_plot=True, arc_test=True):
     show_plot: plots the ordered mantissas and a line with the expected
         inclination. Defaults to True.
     '''
+    report = _deprecate_inform_(report, inform)
+
     mant = Mantissas(data)
     if report:
         mant.report()
@@ -1879,8 +1887,8 @@ def mantissas(data, report=True, show_plot=True, arc_test=True):
     return mant
 
 
-def summation(data, digs=2, decimals=2, sign='all', top=20, inform=True,
-              show_plot=True):
+def summation(data, digs=2, decimals=2, sign='all', top=20, verbose=True,
+              show_plot=True, inform=None):
     '''
     Performs the Summation test. In a Benford series, the sums of the
     entries begining with the same digits tends to be the same.
@@ -1902,12 +1910,14 @@ def summation(data, digs=2, decimals=2, sign='all', top=20, inform=True,
     show_plot: plots the results. Defaults to True.
 
     '''
-    if not isinstance(data, Source):
-        data = Source(data, sign=sign, decimals=decimals, inform=inform)
+    verbose = _deprecate_inform_(verbose, inform)
 
-    data = data.summation(digs=digs, top=top, inform=inform,
+    if not isinstance(data, Source):
+        data = Source(data, sign=sign, decimals=decimals, verbose=verbose)
+
+    data = data.summation(digs=digs, top=top, verbose=verbose,
                           show_plot=show_plot, ret_df=True)
-    if inform:
+    if verbose:
         return data.sort_values('AbsDif', ascending=False)
     else:
         return data
@@ -1936,10 +1946,14 @@ def mad(data, test, decimals=2, sign='all'):
         Defaults to all.`
 
     '''
-    _check_digs_(test)
-
-    start = Source(data.values, sign=sign, decimals=decimals, inform=False)
-    start.first_digits(digs=test, inform=False, MAD=True, simple=True)
+    _check_test_(test)
+    start = Source(data.values, sign=sign, decimals=decimals, verbose=False)
+    if test in [1, 2, 3]:
+        start.first_digits(digs=test, MAD=True, MSE=True, simple=True)
+    elif test == 22:
+        start.second_digit(MAD=True, MSE=False, simple=True)
+    else:
+        start.last_two_digits(MAD=True, MSE=False, simple=True)
     return start.MAD
 
 
@@ -1948,7 +1962,7 @@ def mse(data, test, decimals=2, sign='all'):
     Returns the Mean Squared Error of the Series
     '''
     test = _check_test_(test)
-    start = Source(data, sign=sign, decimals=decimals, inform=False)
+    start = Source(data, sign=sign, decimals=decimals, verbose=False)
     if test in [1, 2, 3]:
         start.first_digits(digs=test, MAD=False, MSE=True, simple=True)
     elif test == 22:
@@ -1983,7 +1997,7 @@ def mad_summ(data, test, decimals=2, sign='all'):
     '''
     _check_digs_(test)
 
-    start = Source(data, sign=sign, decimals=decimals, inform=False)
+    start = Source(data, sign=sign, decimals=decimals, verbose=False)
     temp = start.loc[start.ZN >= 10 ** (test - 1)]
     temp[digs_dict[test]] = (temp.ZN // 10 ** ((np.log10(temp.ZN).astype(
                                                 int)) - (test - 1))).astype(
@@ -2123,7 +2137,7 @@ def _mse_to_roll_(arr, Exp, ind):
     return ((temp - Exp) ** 2).mean()
 
 
-def duplicates(data, top_Rep=20, inform=True):
+def duplicates(data, top_Rep=20, verbose=True, inform=None):
     '''
     Performs a duplicates test and maps the duplicates count in descending
     order.
@@ -2133,13 +2147,15 @@ def duplicates(data, top_Rep=20, inform=True):
     data: sequence to take the duplicates from. pandas Series or
         numpy Ndarray.
 
-    inform: tells how many duplicated entries were found and prints the
+    verbose: tells how many duplicated entries were found and prints the
         top numbers according to the top_Rep parameter. Defaluts to True.
 
     top_Rep: chooses how many duplicated entries will be
         shown withe the top repititions. int or None. Defaluts to 20.
         If None, returns al the ordered repetitions.
     '''
+    verbose = _deprecate_inform_(verbose, inform)
+
     if top_Rep is not None and not isinstance(top_Rep, int):
         raise ValueError('The top_Rep parameter must be an int or None.')
 
@@ -2155,7 +2171,7 @@ def duplicates(data, top_Rep=20, inform=True):
     dup_count.index.names = ['Entries']
     dup_count.name = 'Count'
 
-    if inform:
+    if verbose:
         print(f'\nFound {len(dup_count)} duplicated entries.\n'
               f'The entries with the {top_Rep} highest repitition counts are:')
         print(dup_count.head(top_Rep))
@@ -2163,9 +2179,9 @@ def duplicates(data, top_Rep=20, inform=True):
     return dup_count
 
 
-def second_order(data, test, decimals=2, sign='all', inform=True, MAD=False,
+def second_order(data, test, decimals=2, sign='all', verbose=True, MAD=False,
                  confidence=None, high_Z='pos', limit_N=None, MSE=False,
-                 show_plot=True):
+                 show_plot=True, inform=None):
     '''
     Performs the chosen test after subtracting the ordered sequence by itself.
     Hence Second Order.
@@ -2190,7 +2206,7 @@ def second_order(data, test, decimals=2, sign='all', inform=True, MAD=False,
         entries; neg: only negative entries; all: all entries but zeros.
         Defaults to all.`
 
-    inform: tells the number of registries that are being subjected to
+    verbose: tells the number of registries that are being subjected to
         the analysis and returns tha analysis DataFrame sorted by the
         highest Z score down. Defaults to True.
 
@@ -2228,27 +2244,26 @@ def second_order(data, test, decimals=2, sign='all', inform=True, MAD=False,
     '''
     test = _check_test_(test)
 
-    # if not isinstance(data, Source):
+    verbose = _deprecate_inform_(verbose, inform)
+
     data = Source(data, decimals=decimals, sign=sign,
-                  sec_order=True, inform=inform)
+                  sec_order=True, verbose=verbose)
     if test in [1, 2, 3]:
-        data.first_digits(digs=test, inform=inform, MAD=MAD,
+        data.first_digits(digs=test, MAD=MAD,
                           confidence=confidence, high_Z=high_Z,
                           limit_N=limit_N, MSE=MSE, show_plot=show_plot)
     elif test == 22:
-        data.second_digit(inform=inform, MAD=MAD, confidence=confidence,
-                          high_Z=high_Z, limit_N=limit_N, MSE=MSE,
-                          show_plot=show_plot)
+        data.second_digit(MAD=MAD, confidence=confidence, high_Z=high_Z,
+                          limit_N=limit_N, MSE=MSE, show_plot=show_plot)
     else:
-        data.last_two_digits(inform=inform, MAD=MAD,
-                             confidence=confidence, high_Z=high_Z,
+        data.last_two_digits(MAD=MAD, confidence=confidence, high_Z=high_Z,
                              limit_N=limit_N, MSE=MSE, show_plot=show_plot)
     return data
 
 
 def _check_digs_(digs):
     '''
-    Chhecks the possible values for the digs of the First Digits test
+    Chhecks the possible values for the digs of the First Digits test1
     '''
     if digs not in [1, 2, 3]:
         raise ValueError("The value assigned to the parameter -digs- "
@@ -2386,11 +2401,11 @@ def _report_MAD_(digs, MAD):
 
 def _report_KS_(KS, crit_KS):
     '''
-    Reports the test Kolmogorov Smirnoff statistic and compares it to critical
+    Reports the test Kolmogorov-Smirnov statistic and compares it to critical
     values, depending on the confidence level
     '''
     result = 'PASS' if KS <= crit_KS else 'FAIL'
-    print(f"\n\tKolmogorov Smirnoff: {KS:.6f}",
+    print(f"\n\tKolmogorov-Smirnov: {KS:.6f}",
           f"\n\tCritical value: {crit_KS:.6f} -- {result}")
 
 def _report_chi2_(chi2, crit_chi2):
@@ -2430,7 +2445,7 @@ def _report_test_(test, high=None, crit_vals=None):
     the process, and calls the right reporting helper function(s), depending
     on the Test.
     '''
-    print(f'  {test.name}  '.center(50, '#'), '\n')
+    print('\n', f'  {test.name}  '.center(50, '#'), '\n')
     if not 'Summation' in test.name:
         _report_MAD_(test.digs, test.MAD)
         if test.confidence is not None:
@@ -2445,3 +2460,13 @@ def _report_test_(test, high=None, crit_vals=None):
                 _inform_(test, high, None)
     else:
         _report_summ_(test, high)
+
+
+def _deprecate_inform_(verbose, inform):
+    if inform is None:
+        return verbose
+    else:
+        warnings.warn('The parameter `inform` will be deprecated in future '
+                      'versions. Use `verbose` instead.',
+                      FutureWarning)
+        return inform
