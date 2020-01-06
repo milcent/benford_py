@@ -598,7 +598,7 @@ class Source(pd.DataFrame):
     '''
 
     def __init__(self, data, decimals=2, sign='all', sec_order=False,
-                 verbose=True):
+                 verbose=True, inform=None):
 
         if sign not in ['all', 'pos', 'neg']:
             raise ValueError("The -sign- argument must be "
@@ -619,8 +619,10 @@ class Source(pd.DataFrame):
 
         self.dropna(inplace=True)
 
-        if verbose:
+        self.verbose = _deprecate_inform_(verbose, inform)
+        if self.verbose:
             print(f"\nInitialized sequence with {len(self)} registries.")
+
         if sec_order:
             self.Seq = _subtract_sorted_(self.Seq.copy())
             self.dropna(inplace=True)
@@ -679,10 +681,9 @@ class Source(pd.DataFrame):
             plt.xlim((1, N + 1))
             plt.show()
 
-    def first_digits(self, digs, verbose=True, confidence=None, high_Z='pos',
+    def first_digits(self, digs, confidence=None, high_Z='pos',
                      limit_N=None, MAD=False, MSE=False, chi_square=False,
-                     KS=False, show_plot=True, simple=False, ret_df=False,
-                     inform=None):
+                     KS=False, show_plot=True, simple=False, ret_df=False):
         '''
         Performs the Benford First Digits test with the series of
         numbers provided, and populates the mapping dict for future
@@ -731,8 +732,6 @@ class Source(pd.DataFrame):
         # Check on possible digits
         _check_test_(digs)
 
-        verbose = _deprecate_inform_(verbose, inform)
-
         temp = self.loc[self.ZN >= 10 ** (digs - 1)]
         temp[digs_dict[digs]] = (temp.ZN // 10 ** ((np.log10(temp.ZN).astype(
                                                    int)) - (digs - 1))).astype(
@@ -741,7 +740,7 @@ class Source(pd.DataFrame):
         x = np.arange(n, m)
 
         if simple:
-            verbose = False
+            self.verbose = False
             show_plot = False
             df = _prep_(temp[digs_dict[digs]], digs, limit_N=limit_N,
                         simple=True, confidence=None)
@@ -749,7 +748,7 @@ class Source(pd.DataFrame):
             N, df = _prep_(temp[digs_dict[digs]], digs, limit_N=limit_N,
                            simple=False, confidence=confidence)
 
-        if verbose:
+        if self.verbose:
             print(f"\nTest performed on {len(temp)} registries.\n"
                   f"Discarded {len(self) - len(temp)} records < {10 ** (digs - 1)}"
                   " after preparation.")
@@ -758,21 +757,21 @@ class Source(pd.DataFrame):
 
         # Mean absolute difference
         if MAD:
-            self.MAD = _mad_(df, test=digs, verbose=verbose)
+            self.MAD = _mad_(df, test=digs, verbose=self.verbose)
 
         # Mean Square Error
         if MSE:
-            self.MSE = _mse_(df, verbose=verbose)
+            self.MSE = _mse_(df, verbose=self.verbose)
 
         # Chi-square statistic
         if chi_square:
             self.chi_square = _chi_square_(df, ddf=len(df) - 1,
                                            confidence=confidence,
-                                           verbose=verbose)
+                                           verbose=self.verbose)
         # KS test
         if KS:
             self.KS = _KS_(df, confidence=confidence, N=len(temp),
-                           verbose=verbose)
+                           verbose=self.verbose)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
@@ -782,10 +781,9 @@ class Source(pd.DataFrame):
         if ret_df:
             return df
 
-    def second_digit(self, verbose=True, confidence=None, high_Z='pos',
+    def second_digit(self, confidence=None, high_Z='pos',
                      limit_N=None, MAD=False, MSE=False, chi_square=False,
-                     KS=False, show_plot=True, simple=False, ret_df=False,
-                     inform=None):
+                     KS=False, show_plot=True, simple=False, ret_df=False):
         '''
         Performs the Benford Second Digit test with the series of
         numbers provided.
@@ -823,14 +821,12 @@ class Source(pd.DataFrame):
 
         conf = confs[confidence]
 
-        verbose = _deprecate_inform_(verbose, inform)
-
         temp = self.loc[self.ZN >= 10]
         temp['SD'] = (temp.ZN // 10**((np.log10(temp.ZN)).astype(
                       int) - 1)) % 10
 
         if simple:
-            verbose = False
+            self.verbose = False
             show_plot = False
             df = _prep_(temp['SD'], 22, limit_N=limit_N, simple=True,
                         confidence=None)
@@ -838,7 +834,7 @@ class Source(pd.DataFrame):
             N, df = _prep_(temp['SD'], 22, limit_N=limit_N, simple=False,
                            confidence=confidence)
 
-        if verbose:
+        if self.verbose:
             print(f"\nTest performed on {len(temp)} registries.\nDiscarded "
                   f"{len(self) - len(temp)} records < 10 after preparation.")
             if confidence is not None:
@@ -846,20 +842,20 @@ class Source(pd.DataFrame):
 
         # Mean absolute difference
         if MAD:
-            self.MAD = _mad_(df, test=22, verbose=verbose)
+            self.MAD = _mad_(df, test=22, verbose=self.verbose)
 
         # Mean Square Error
         if MSE:
-            self.MSE = _mse_(df, verbose=verbose)
+            self.MSE = _mse_(df, verbose=self.verbose)
 
         # Chi-square statistic
         if chi_square:
             self.chi_square = _chi_square_(df, ddf=9, confidence=confidence,
-                                           verbose=verbose)
+                                           verbose=self.verbose)
         # KS test
         if KS:
             self.KS = _KS_(df, confidence=confidence, N=len(temp),
-                           verbose=verbose)
+                           verbose=self.verbose)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
@@ -868,10 +864,9 @@ class Source(pd.DataFrame):
         if ret_df:
             return df
 
-    def last_two_digits(self, verbose=True, confidence=None, high_Z='pos',
+    def last_two_digits(self, confidence=None, high_Z='pos',
                         limit_N=None, MAD=False, MSE=False, chi_square=False,
-                        KS=False, show_plot=True, simple=False, ret_df=False,
-                        inform=None):
+                        KS=False, show_plot=True, simple=False, ret_df=False):
         '''
         Performs the Benford Last Two Digits test with the series of
         numbers provided.
@@ -906,13 +901,11 @@ class Source(pd.DataFrame):
         confidence = _check_confidence_(confidence)
         conf = confs[confidence]
 
-        verbose = _deprecate_inform_(verbose, inform)
-
         temp = self.loc[self.ZN >= 1000]
         temp['L2D'] = temp.ZN % 100
 
         if simple:
-            verbose = False
+            self.verbose = False
             show_plot = False
             df = _prep_(temp['L2D'], -2, limit_N=limit_N, simple=True,
                         confidence=None)
@@ -920,7 +913,7 @@ class Source(pd.DataFrame):
             N, df = _prep_(temp['L2D'], -2, limit_N=limit_N, simple=False,
                            confidence=confidence)
 
-        if verbose:
+        if self.verbose:
             print(f"\nTest performed on {len(temp)} registries.\n\nDiscarded "
                   f"{len(self) - len(temp)} records < 1000 after preparation")
             if confidence is not None:
@@ -928,20 +921,20 @@ class Source(pd.DataFrame):
 
         # Mean absolute difference
         if MAD:
-            self.MAD = _mad_(df, test=-2, verbose=verbose)
+            self.MAD = _mad_(df, test=-2, verbose=self.verbose)
 
         # Mean Square Error
         if MSE:
-            self.MSE = _mse_(df, verbose=verbose)
+            self.MSE = _mse_(df, verbose=self.verbose)
 
         # Chi-square statistic
         if chi_square:
             self.chi_square = _chi_square_(df, ddf=99, confidence=confidence,
-                                           verbose=verbose)
+                                           verbose=self.verbose)
         # KS test
         if KS:
             self.KS = _KS_(df, confidence=confidence, N=len(temp),
-                           verbose=verbose)
+                           verbose=self.verbose)
 
         # Plotting expected frequencies (line) versus found ones (bars)
         if show_plot:
@@ -951,8 +944,8 @@ class Source(pd.DataFrame):
         if ret_df:
             return df
 
-    def summation(self, digs=2, top=20, verbose=True, show_plot=True,
-                  ret_df=False, inform=None):
+    def summation(self, digs=2, top=20, show_plot=True,
+                  ret_df=False):
         '''
         Performs the Summation test. In a Benford series, the sums of the
         entries begining with the same digits tends to be the same.
@@ -965,8 +958,6 @@ class Source(pd.DataFrame):
         show_plot -> plots the results. Defaults to True.
         '''
         _check_digs_(digs)
-
-        verbose = _deprecate_inform_(verbose, inform)
 
         if digs == 1:
             top = 9
@@ -987,7 +978,7 @@ class Source(pd.DataFrame):
         # Populate dict with the most relevant entries
         # self.maps[dig_name] = np.array(_inform_and_map_(s, inform,
         #                                high_Z=top, conf=None)).astype(int)
-        if verbose:
+        if self.verbose:
             # N = len(self)
             print(f"\nTest performed on {len(self)} registries.\n")
             print(f"The top {top} diferences are:\n")
@@ -1000,7 +991,7 @@ class Source(pd.DataFrame):
         if ret_df:
             return df
 
-    def duplicates(self, verbose=True, top_Rep=20, inform=None):
+    def duplicates(self, top_Rep=20, inform=None):
         '''
         Performs a duplicates test and maps the duplicates count in descending
         order.
@@ -1015,8 +1006,6 @@ class Source(pd.DataFrame):
         if top_Rep is not None and not isinstance(top_Rep, int):
             raise ValueError('The top_Rep parameter must be an int or None.')
 
-        verbose = _deprecate_inform_(verbose, inform)
-
         dup = self[['Seq']][self.Seq.duplicated(keep=False)]
         dup_count = dup.groupby(self.Seq).count()
 
@@ -1027,7 +1016,7 @@ class Source(pd.DataFrame):
 
         self.maps['dup'] = dup_count.index[:top_Rep].values  # np.array
 
-        if verbose:
+        if self.verbose:
             print(f'\nFound {len(dup_count)} duplicated entries.\n'
                   f'The entries with the {top_Rep} highest repitition counts are:')
             print(dup_count.head(top_Rep))
@@ -1703,8 +1692,8 @@ def first_digits(data, digs, decimals=2, sign='all', verbose=True,
     if not isinstance(data, Source):
         data = Source(data, decimals=decimals, sign=sign, verbose=verbose)
 
-    data = data.first_digits(digs, verbose=verbose, confidence=confidence,
-                             high_Z=high_Z, limit_N=limit_N, MAD=MAD, MSE=MSE,
+    data = data.first_digits(digs, confidence=confidence, high_Z=high_Z,
+                             limit_N=limit_N, MAD=MAD, MSE=MSE,
                              chi_square=chi_square, KS=KS, show_plot=show_plot,
                              ret_df=True)
 
@@ -1781,8 +1770,8 @@ def second_digit(data, decimals=2, sign='all', verbose=True,
     if not isinstance(data, Source):
         data = Source(data, sign=sign, decimals=decimals, verbose=verbose)
 
-    data = data.second_digit(verbose=verbose, confidence=confidence,
-                             high_Z=high_Z, limit_N=limit_N, MAD=MAD, MSE=MSE,
+    data = data.second_digit(confidence=confidence, high_Z=high_Z,
+                             limit_N=limit_N, MAD=MAD, MSE=MSE,
                              chi_square=chi_square, KS=KS, show_plot=show_plot,
                              ret_df=True)
     if confidence is not None:
@@ -1858,8 +1847,8 @@ def last_two_digits(data, decimals=2, sign='all', verbose=True,
     if not isinstance(data, Source):
         data = Source(data, decimals=decimals, sign=sign, verbose=verbose)
 
-    data = data.last_two_digits(verbose=verbose, confidence=confidence,
-                                high_Z=high_Z, limit_N=limit_N, MAD=MAD,
+    data = data.last_two_digits(confidence=confidence, high_Z=high_Z,
+                                limit_N=limit_N, MAD=MAD,
                                 MSE=MSE, chi_square=chi_square, KS=KS,
                                 show_plot=show_plot, ret_df=True)
 
@@ -2259,16 +2248,14 @@ def second_order(data, test, decimals=2, sign='all', verbose=True, MAD=False,
     data = Source(data, decimals=decimals, sign=sign,
                   sec_order=True, verbose=verbose)
     if test in [1, 2, 3]:
-        data.first_digits(digs=test, verbose=verbose, MAD=MAD,
+        data.first_digits(digs=test, MAD=MAD,
                           confidence=confidence, high_Z=high_Z,
                           limit_N=limit_N, MSE=MSE, show_plot=show_plot)
     elif test == 22:
-        data.second_digit(verbose=verbose, MAD=MAD, confidence=confidence,
-                          high_Z=high_Z, limit_N=limit_N, MSE=MSE,
-                          show_plot=show_plot)
+        data.second_digit(MAD=MAD, confidence=confidence, high_Z=high_Z,
+                          limit_N=limit_N, MSE=MSE, show_plot=show_plot)
     else:
-        data.last_two_digits(verbose=verbose, MAD=MAD,
-                             confidence=confidence, high_Z=high_Z,
+        data.last_two_digits(MAD=MAD, confidence=confidence, high_Z=high_Z,
                              limit_N=limit_N, MSE=MSE, show_plot=show_plot)
     return data
 
