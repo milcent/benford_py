@@ -1274,7 +1274,7 @@ def _chi_square_(frame, ddf, confidence, verbose=True):
         found_chi = (dif_counts ** 2 / exp_counts).sum()
         crit_chi = crit_chi2[ddf][confidence]
         if verbose:
-            print(f"\nThe Chi-square statistic is {found_chi}.\n"
+            print(f"\nThe Chi-square statistic is {found_chi:.4f}.\n"
                   f"Critical Chi-square for this series: {crit_chi}.")
         return (found_chi, crit_chi)
 
@@ -1322,8 +1322,8 @@ def _KS_(frame, confidence, N, verbose=True):
         crit_KS = KS_crit[confidence] / np.sqrt(N)
 
         if verbose:
-            print(f"\nThe Kolmogorov-Smirnov statistic is {suprem}.\n"
-                  f"Critical K-S for this series: {crit_KS}")
+            print(f"\nThe Kolmogorov-Smirnov statistic is {suprem:.4f}.\n"
+                  f"Critical K-S for this series: {crit_KS:.4f}")
         return (suprem, crit_KS)
 
 
