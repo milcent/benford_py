@@ -13,6 +13,8 @@ Second Digit, First Two Digits, First Three Digits and Last Two Digits) at insta
 
 - Brake the module in different files for better organization;
 - Tests, Tests,... and more tests (I mean **PY**tests!!);
+- Sphynx documentation;
+- More color optionns for ploting;
 - Set up warnings when the usable sample is too small for the especific test;
 - Implement the bootstrap approach for conformity checking ([Issue 15](https://github.com/milcent/benford_py/issues/15))
 
