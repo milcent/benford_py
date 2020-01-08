@@ -4,7 +4,7 @@ to a sequence of numbers.
 
 Dependent on pandas, numpy and matplotlib
 
-All logarithms ar in base 10: "np.log10"
+All logarithms ar in base 10: "log10"
 
 Copyright (C) 2014  Marcel Milcent
 
@@ -22,155 +22,24 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import pandas as pd
-import numpy as np
+from pandas import Series, DataFrame
+from numpy import array, arange, log10, ones, abs, cos, sin, pi, sqrt, mean 
 import matplotlib.pyplot as plt
 from matplotlib.text import Annotation
 import warnings
+from .constants import names, confs, digs_dict, rev_digs, sec_order_dict,\
+    mad_dict, crit_chi2, KS_crit, colors
+from .utils import _test_, _set_N_, _check_confidence_, _check_high_Z_, \
+    _input_data_, _prep_, _check_digs_, _check_test_, _check_num_array, \
+    _subtract_sorted_, _prep_to_roll_, _mad_to_roll_, _mse_to_roll_, _lt_, \
+    _getMantissas_
+from .viz import _get_plot_args, _plot_dig_, _plot_sum_
+from .reports import _inform_, _report_MAD_, _report_summ_, _report_KS_,\
+    _report_Z_, _report_chi2_, _report_test_, _deprecate_inform_
+from .stats import _Z_score, _chi_square_, _chi_square_2, _KS_, _KS_2, \
+    _mad_, _mse_
 
-digs_dict = {1: 'F1D', 2: 'F2D', 3: 'F3D', 22: 'SD', -2: 'L2D'}
-
-sec_order_dict = {key: f'{val}_sec' for key, val in digs_dict.items()}
-
-rev_digs = {'F1D': 1, 'F2D': 2, 'F3D': 3, 'SD': 22, 'L2D': -2}
-
-names = {'F1D': 'First Digit Test', 'F2D': 'First Two Digits Test',
-         'F3D': 'First Three Digits Test', 'SD': 'Second Digit Test',
-         'L2D': 'Last Two Digits Test',
-         'F1D_sec': 'First Digit Second Order Test',
-         'F2D_sec': 'First Two Digits Second Order Test',
-         'F3D_sec': 'First Three Digits Second Order Test',
-         'SD_sec': 'Second Digit Second Order Test',
-         'L2D_sec': 'Last Two Digits Second Order Test',
-         'F1D_Summ': 'First Digit Summation Test',
-         'F2D_Summ': 'First Two Digits Summation Test',
-         'F3D_Summ': 'First Three Digits Summation Test',
-         'Mantissas': 'Mantissas Test'
-         }
-
-# Critical values for Mean Absolute Deviation
-mad_dict = {1: [0.006, 0.012, 0.015], 2: [0.0012, 0.0018, 0.0022],
-            3: [0.00036, 0.00044, 0.00050], 22: [0.008, 0.01, 0.012],
-            -2: None, 'F1D': 'First Digit', 'F2D': 'First Two Digits',
-            'F3D': 'First Three Digits', 'SD': 'Second Digits'}
-
-# Color for the plotting
-colors = {'m': '#00798c', 'b': '#E2DCD8', 's': '#9c3848',
-          'af': '#edae49', 'ab': '#33658a', 'h': '#d1495b',
-          'h2': '#f64740', 't': '#16DB93'}
-
-# Critical Z-scores according to the confindence levels
-confs = {None: None, 80: 1.285, 85: 1.435, 90: 1.645, 95: 1.96,
-         99: 2.576, 99.9: 3.29, 99.99: 3.89, 99.999: 4.417,
-         99.9999: 4.892, 99.99999: 5.327}
-
-p_values = {None: 'None', 80: '0.2', 85: '0.15', 90: '0.1', 95: '0.05',
-            99: '0.01', 99.9: '0.001', 99.99: '0.0001', 99.999: '0.00001',
-            99.9999: '0.000001', 99.99999: '0.0000001'}
-
-# Critical Chi-Square values according to the tests degrees of freedom
-# and confidence levels
-crit_chi2 = {8: {80: 11.03, 85: 12.027, 90: 13.362, 95: 15.507,
-                 99: 20.090, 99.9: 26.124, 99.99: 31.827, None: None,
-                 99.999: 37.332, 99.9999: 42.701, 99.99999: 47.972},
-             9: {80: 12.242, 85: 13.288, 90: 14.684, 95: 16.919,
-                 99: 21.666, 99.9: 27.877, 99.99: 33.72, None: None,
-                 99.999: 39.341, 99.9999: 44.811, 99.99999: 50.172},
-             89: {80: 99.991, 85: 102.826, 90: 106.469, 95: 112.022,
-                  99: 122.942, 99.9: 135.978, 99.99: 147.350,
-                  99.999: 157.702, 99.9999: 167.348, 99.99999: 176.471,
-                  None: None},
-             99: {80: 110.607, 85: 113.585, 90: 117.407,
-                  95: 123.225, 99: 134.642, 99.9: 148.230,
-                  99.99: 160.056, 99.999: 170.798, 99.9999: 180.792,
-                  99.99999: 190.23, None: None},
-             899: {80: 934.479, 85: 942.981, 90: 953.752, 95: 969.865,
-                   99: 1000.575, 99.9: 1035.753, 99.99: 1065.314,
-                   99.999: 1091.422, 99.9999: 1115.141,
-                   99.99999: 1137.082, None: None}
-             }
-
-# Critical Kolmogorov-Smirnov values according to the confidence levels 
-# These values are yet to be divided by the square root of the sample size
-KS_crit = {80: 1.075, 85: 1.139, 90: 1.125, 95: 1.36, 99: 1.63,
-           99.9: 1.95, 99.99: 2.23, 99.999: 2.47,
-           99.9999: 2.7, 99.99999: 2.9, None: None}
-
-
-class First(pd.DataFrame):
-    '''
-     Returns the expected probabilities of the First, First Two, or
-     First Three digits according to Benford's distribution.
-
-    Parameters
-    ----------
-
-    digs-> 1, 2 or 3 - tells which of the first digits to consider:
-            1 for the First Digit, 2 for the First Two Digits and 3 for
-            the First Three Digits.
-
-    plot-> option to plot a bar chart of the Expected proportions.
-            Defaults to True.
-    '''
-
-    def __init__(self, digs, plot=True):
-        _check_digs_(digs)
-        dig_name = f'First_{digs}_Dig'
-        Dig = np.arange(10 ** (digs - 1), 10 ** digs)
-        Exp = np.log10(1 + (1. / Dig))
-
-        pd.DataFrame.__init__(self, {'Expected': Exp}, index=Dig)
-        self.index.names = [dig_name]
-
-        if plot:
-            _plot_expected_(self, digs)
-
-
-class Second(pd.DataFrame):
-    '''
-    Returns the expected probabilities of the Second Digits
-    according to Benford's distribution.
-
-    Parameters
-    ----------
-
-    plot: option to plot a bar chart of the Expected proportions.
-        Defaults to True.
-    '''
-    def __init__(self, plot=True):
-        a = np.arange(10, 100)
-        Expe = np.log10(1 + (1. / a))
-        Sec_Dig = np.array(list(range(10)) * 9)
-
-        df = pd.DataFrame({'Expected': Expe, 'Sec_Dig': Sec_Dig})
-
-        pd.DataFrame.__init__(self, df.groupby('Sec_Dig').sum())
-
-        if plot:
-            _plot_expected_(self, 22)
-
-
-class LastTwo(pd.DataFrame):
-    '''
-    Returns the expected probabilities of the Last Two Digits
-    according to Benford's distribution.
-
-    Parameters
-    ----------
-
-    plot: option to plot a bar chart of the Expected proportions.
-        Defaults to True.
-    '''
-    def __init__(self, num=False, plot=True):
-        exp = np.array([1 / 99.] * 100)
-        pd.DataFrame.__init__(self, {'Expected': exp,
-                              'Last_2_Dig': _lt_(num=num)})
-        self.set_index('Last_2_Dig', inplace=True)
-        if plot:
-            _plot_expected_(self, -2)
-
-
-class Base(pd.DataFrame):
+class Base(DataFrame):
     '''
     Internalizes and prepares the data for Analysis.
 
@@ -192,7 +61,7 @@ class Base(pd.DataFrame):
     '''
     def __init__(self, data, decimals, sign='all', sec_order=False):
 
-        pd.DataFrame.__init__(self, {'Seq': data})
+        DataFrame.__init__(self, {'Seq': data})
 
         if (self.Seq.dtypes != 'float64') & (self.Seq.dtypes != 'int64'):
             raise TypeError("The sequence dtype was not pandas int64 nor "
@@ -223,14 +92,14 @@ class Base(pd.DataFrame):
         # First digits
         for col in ['F1D', 'F2D', 'F3D']:
             temp = self.ZN.loc[self.ZN >= 10 ** (rev_digs[col] - 1)]
-            self[col] = (temp // 10 ** ((np.log10(temp).astype(int)) -
+            self[col] = (temp // 10 ** ((log10(temp).astype(int)) -
                                         (rev_digs[col] - 1)))
             # fill NANs with -1, which is a non-usable value for digits,
             # to be discarded later.
             self[col] = self[col].fillna(-1).astype(int)
         # Second digit
         temp_sd = self.loc[self.ZN >= 10]
-        self['SD'] = (temp_sd.ZN // 10**((np.log10(temp_sd.ZN)).astype(int) -
+        self['SD'] = (temp_sd.ZN // 10**((log10(temp_sd.ZN)).astype(int) -
                                          1)) % 10
         self['SD'] = self['SD'].fillna(-1).astype(int)
         # Last two digits
@@ -239,7 +108,7 @@ class Base(pd.DataFrame):
         self['L2D'] = self['L2D'].fillna(-1).astype(int)
 
 
-class Test(pd.DataFrame):
+class Test(DataFrame):
     '''
     Transforms the original number sequence into a DataFrame reduced
     by the ocurrences of the chosen digits, creating other computed
@@ -270,7 +139,7 @@ class Test(pd.DataFrame):
         self.fillna(0, inplace=True)
         # create column with absolute differences
         self['Dif'] = self.Found - self.Expected
-        self['AbsDif'] = np.absolute(self.Dif)
+        self['AbsDif'] = self.Dif.abs()
         self.N = _set_N_(len(base), limit_N)
         self['Z_score'] = _Z_score(self, self.N)
         self.chi_square = _chi_square_2(self)
@@ -348,7 +217,7 @@ class Test(pd.DataFrame):
         if show_plot:
             self.show_plot()
 
-class Summ(pd.DataFrame):
+class Summ(DataFrame):
     '''
     Gets the base object and outputs a Summation test object
 
@@ -366,7 +235,7 @@ class Summ(pd.DataFrame):
         self['Percent'] = self.Seq / self.Seq.sum()
         self.columns.values[0] = 'Sum'
         self.expected = 1 / len(self)
-        self['AbsDif'] = np.absolute(self.Percent - self.expected)
+        self['AbsDif'] = (self.Percent - self.expected).abs()
         self.index = self.index.astype(int)
         self.MAD = self.AbsDif.mean()
         self.confidence = None
@@ -571,7 +440,7 @@ class Benford(object):
             print('\nAdded Summation DataFrames to F1D, F2D and F3D Tests.')
 
 
-class Source(pd.DataFrame):
+class Source(DataFrame):
     '''
     Prepares the data for Analysis. pandas DataFrame subclass.
 
@@ -605,7 +474,7 @@ class Source(pd.DataFrame):
             raise ValueError("The -sign- argument must be "
                              "'all','pos' or 'neg'.")
 
-        pd.DataFrame.__init__(self, {'Seq': data})
+        DataFrame.__init__(self, {'Seq': data})
 
         if self.Seq.dtypes != 'float64' and self.Seq.dtypes != 'int64':
             raise TypeError('The sequence dtype was not pandas int64 nor float64.\n'
@@ -661,7 +530,7 @@ class Source(pd.DataFrame):
 
         figsize -> tuple that sets the figure size
         '''
-        self['Mant'] = _getMantissas_(np.abs(self.Seq))
+        self['Mant'] = _getMantissas_(self.Seq.abs())
         if report:
             p = self[['Seq', 'Mant']]
             p = p.loc[p.Seq > 0].sort_values('Mant')
@@ -672,8 +541,8 @@ class Source(pd.DataFrame):
 
         if plot:
             N = len(p)
-            p['x'] = np.arange(1, N + 1)
-            n = np.ones(N) / N
+            p['x'] = arange(1, N + 1)
+            n = ones(N) / N
             fig = plt.figure(figsize=figsize)
             ax = fig.add_subplot(111)
             ax.plot(p.x, p.Mant, 'r-', p.x, n.cumsum(), 'b--',
@@ -734,11 +603,11 @@ class Source(pd.DataFrame):
         _check_test_(digs)
 
         temp = self.loc[self.ZN >= 10 ** (digs - 1)]
-        temp[digs_dict[digs]] = (temp.ZN // 10 ** ((np.log10(temp.ZN).astype(
+        temp[digs_dict[digs]] = (temp.ZN // 10 ** ((log10(temp.ZN).astype(
                                                    int)) - (digs - 1))).astype(
                                                        int)
         n, m = 10 ** (digs - 1), 10 ** (digs)
-        x = np.arange(n, m)
+        x = arange(n, m)
 
         if simple:
             self.verbose = False
@@ -823,7 +692,7 @@ class Source(pd.DataFrame):
         conf = confs[confidence]
 
         temp = self.loc[self.ZN >= 10]
-        temp['SD'] = (temp.ZN // 10**((np.log10(temp.ZN)).astype(
+        temp['SD'] = (temp.ZN // 10**((log10(temp.ZN)).astype(
                       int) - 1)) % 10
 
         if simple:
@@ -860,7 +729,7 @@ class Source(pd.DataFrame):
 
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
-            _plot_dig_(df, x=np.arange(0, 10), y_Exp=df.Expected,
+            _plot_dig_(df, x=arange(0, 10), y_Exp=df.Expected,
                        y_Found=df.Found, N=N, figsize=(10, 6), conf_Z=conf)
         if ret_df:
             return df
@@ -939,7 +808,7 @@ class Source(pd.DataFrame):
 
         # Plotting expected frequencies (line) versus found ones (bars)
         if show_plot:
-            _plot_dig_(df, x=np.arange(0, 100), y_Exp=df.Expected,
+            _plot_dig_(df, x=arange(0, 100), y_Exp=df.Expected,
                        y_Found=df.Found, N=N, figsize=(15, 5),
                        conf_Z=conf, text_x=True)
         if ret_df:
@@ -974,10 +843,10 @@ class Source(pd.DataFrame):
         df['Percent'] = df.ZN / df.ZN.sum()
         df.columns.values[1] = 'Summ'
         df = df[['Sum', 'Percent']]
-        df['AbsDif'] = np.absolute(df.Percent - li)
+        df['AbsDif'] = (df.Percent - li).abs()
 
         # Populate dict with the most relevant entries
-        # self.maps[dig_name] = np.array(_inform_and_map_(s, inform,
+        # self.maps[dig_name] = array(_inform_and_map_(s, inform,
         #                                high_Z=top, conf=None)).astype(int)
         if self.verbose:
             # N = len(self)
@@ -1015,7 +884,7 @@ class Source(pd.DataFrame):
 
         dup_count.sort_values('Count', ascending=False, inplace=True)
 
-        self.maps['dup'] = dup_count.index[:top_Rep].values  # np.array
+        self.maps['dup'] = dup_count.index[:top_Rep].values  # array
 
         if self.verbose:
             print(f'\nFound {len(dup_count)} duplicated entries.\n'
@@ -1037,10 +906,10 @@ class Mantissas(object):
 
     def __init__(self, data):
 
-        data = pd.Series(_check_num_array(data))
+        data = Series(_check_num_array(data))
         data = data.dropna().loc[data != 0].abs()
         
-        self.data = pd.DataFrame({'Mantissa': _getMantissas_(np.abs(data))})
+        self.data = DataFrame({'Mantissa': _getMantissas_(data.abs())})
 
         self.stats = {'Mean': self.data.Mantissa.mean(),
                       'Var': self.data.Mantissa.var(),
@@ -1080,8 +949,8 @@ class Mantissas(object):
         figsize -> tuple that sets the figure size
         '''
         ld = len(self.data)
-        x = np.arange(1, ld + 1)
-        n = np.ones(ld) / ld
+        x = arange(1, ld + 1)
+        n = ones(ld) / ld
         fig = plt.figure(figsize=figsize)
         ax = fig.add_subplot(111)
         ax.plot(x, self.data.Mantissa.sort_values(), linestyle='--',
@@ -1114,8 +983,8 @@ class Mantissas(object):
             matplotlib.
         '''
         if self.stats.get('gravity_center') is None:
-            self.data['mant_x'] = np.cos(2 * np.pi * self.data.Mantissa)
-            self.data['mant_y'] = np.sin(2 * np.pi * self.data.Mantissa)
+            self.data['mant_x'] = cos(2 * pi * self.data.Mantissa)
+            self.data['mant_y'] = sin(2 * pi * self.data.Mantissa)
             self.stats['gravity_center'] = (self.data.mant_x.mean(),
                                             self.data.mant_y.mean())
         fig = plt.figure(figsize=(figsize,figsize))
@@ -1141,7 +1010,7 @@ class Mantissas(object):
         plt.show(block=False);
 
 
-class Roll_mad(pd.Series):
+class Roll_mad(Series):
     '''
     Applies the MAD to sequential subsets of the Series, returning another
     Series.
@@ -1178,7 +1047,7 @@ class Roll_mad(pd.Series):
 
         Exp, ind = _prep_to_roll_(start, test)
 
-        pd.Series.__init__(self, start[digs_dict[test]].rolling(
+        Series.__init__(self, start[digs_dict[test]].rolling(
             window=window).apply(_mad_to_roll_, args=(Exp, ind), raw=False))
 
         self.dropna(inplace=True)
@@ -1196,7 +1065,7 @@ class Roll_mad(pd.Series):
         plt.show(block=False)
 
 
-class Roll_mse(pd.Series):
+class Roll_mse(Series):
     '''
     Applies the MSE to sequential subsets of the Series, returning another
     Series.
@@ -1233,7 +1102,7 @@ class Roll_mse(pd.Series):
 
         Exp, ind = _prep_to_roll_(start, test)
 
-        pd.Series.__init__(self, start[digs_dict[test]].rolling(
+        Series.__init__(self, start[digs_dict[test]].rolling(
             window=window).apply(_mse_to_roll_, args=(Exp, ind), raw=False))
 
         self.dropna(inplace=True)
@@ -1243,397 +1112,6 @@ class Roll_mse(pd.Series):
         ax.set_facecolor(colors['b'])
         ax.plot(self, color=colors['m'])
         plt.show(block=False)
-
-
-def _Z_score(frame, N):
-    '''
-    Returns the Z statistics for the proportions assessed
-
-    frame -> DataFrame with the expected proportions and the already calculated
-            Absolute Diferences between the found and expeccted proportions
-    N -> sample size
-    '''
-    return (frame.AbsDif - (1 / (2 * N))) / np.sqrt(
-           (frame.Expected * (1. - frame.Expected)) / N)
-
-
-def _chi_square_(frame, ddf, confidence, verbose=True):
-    '''
-    Returns the chi-square statistic of the found distributions and compares
-    it with the critical chi-square of such a sample, according to the
-    confidence level chosen and the degrees of freedom - len(sample) -1.
-
-    Parameters
-    ----------
-    frame:      DataFrame with Found, Expected and their difference columns.
-
-    ddf:        Degrees of freedom to consider.
-
-    confidence: Confidence level - confs dict.
-
-    verbose:     prints the chi-squre result and compares to the critical
-    chi-square for the sample. Defaults to True.
-    '''
-    if confidence is None:
-        print('\nChi-square test needs confidence other than None.')
-        return
-    else:
-        exp_counts = frame.Counts.sum() * frame.Expected
-        dif_counts = frame.Counts - exp_counts
-        found_chi = (dif_counts ** 2 / exp_counts).sum()
-        crit_chi = crit_chi2[ddf][confidence]
-        if verbose:
-            print(f"\nThe Chi-square statistic is {found_chi:.4f}.\n"
-                  f"Critical Chi-square for this series: {crit_chi}.")
-        return (found_chi, crit_chi)
-
-
-def _chi_square_2(frame):
-    '''
-    Returns the chi-square statistic of the found distributions
-
-    Parameters
-    ----------
-    frame:      DataFrame with Found, Expected and their difference columns.
-
-    '''
-    exp_counts = frame.Counts.sum() * frame.Expected
-    dif_counts = frame.Counts - exp_counts
-    return (dif_counts ** 2 / exp_counts).sum()
-
-
-def _KS_(frame, confidence, N, verbose=True):
-    '''
-    Returns the Kolmogorov-Smirnov test of the found distributions
-    and compares it with the critical chi-square of such a sample,
-    according to the confidence level chosen.
-
-    Parameters
-    ----------
-    frame: DataFrame with Foud and Expected distributions.
-
-    confidence: Confidence level - confs dict.
-
-    N: Sample size
-
-    verbose: prints the KS result and the critical value for the sample.
-        Defaults to True.
-    '''
-    if confidence is None:
-        print('\nKolmogorov-Smirnov test needs confidence other than None.')
-        return
-    else:
-        # sorting and calculating the cumulative distribution
-        ks_frame = frame.sort_index()[['Found', 'Expected']].cumsum()
-        # finding the supremum - the largest cumul dist difference
-        suprem = ((ks_frame.Found - ks_frame.Expected).abs()).max()
-        # calculating the crittical value according to confidence
-        crit_KS = KS_crit[confidence] / np.sqrt(N)
-
-        if verbose:
-            print(f"\nThe Kolmogorov-Smirnov statistic is {suprem:.4f}.\n"
-                  f"Critical K-S for this series: {crit_KS:.4f}")
-        return (suprem, crit_KS)
-
-
-def _KS_2(frame):
-    '''
-    Returns the Kolmogorov-Smirnov test of the found distributions.
-
-    Parameters
-    ----------
-    frame: DataFrame with Foud and Expected distributions.
-    '''
-    # sorting and calculating the cumulative distribution
-    ks_frame = frame.sort_index()[['Found', 'Expected']].cumsum()
-    # finding the supremum - the largest cumul dist difference
-    return ((ks_frame.Found - ks_frame.Expected).abs()).max()
-
-
-def _mad_(frame, test, verbose=True):
-    '''
-    Returns the Mean Absolute Deviation (MAD) between the found and the
-    expected proportions.
-
-    Parameters
-    ----------
-
-    frame: DataFrame with the Absolute Deviations already calculated.
-
-    test: Test to compute the MAD from (F1D, SD, F2D...)
-
-    verbose: prints the MAD result and compares to limit values of
-        conformity. Defaults to True.
-    '''
-    mad = frame.AbsDif.mean()
-
-    if verbose:
-        print(f"\nThe Mean Absolute Deviation is {mad}")
-
-        if test != -2:
-            print(f"For the {mad_dict[digs_dict[test]]}:\n\
-            - 0.0000 to {mad_dict[test][0]}: Close Conformity\n\
-            - {mad_dict[test][0]} to {mad_dict[test][1]}: Acceptable Conformity\n\
-            - {mad_dict[test][1]} to {mad_dict[test][2]}: Marginally Acceptable Conformity\n\
-            - Above {mad_dict[test][2]}: Nonconformity")
-        else:
-            pass
-    return mad
-
-
-def _mse_(frame, verbose=True):
-    '''
-    Returns the test's Mean Square Error
-
-    frame -> DataFrame with the already computed Absolute Deviations between
-            the found and expected proportions
-
-    verbose -> Prints the MSE. Defaults to True. If False, returns MSE.
-    '''
-    mse = (frame.AbsDif ** 2).mean()
-
-    if verbose:
-        print(f"\nMean Square Error = {mse}")
-
-    return mse
-
-
-def _getMantissas_(arr):
-    '''
-    Returns the  mantissas, the non-integer part of the log of a number.
-
-    arr: np.array of integers or floats ---> np.array of floats
-    '''
-    log_a = np.abs(np.log10(arr))
-    return log_a - log_a.astype(int)  # the number - its integer part
-
-
-def _lt_(num=False):
-    '''
-    Creates an array with the possible last two digits
-
-    Parameters
-    ----------
-
-    num: returns numeric (ints) values. Defaluts to False,
-        which returns strings.
-    '''
-    if num:
-        n = np.arange(0, 100)
-    else:
-        n = np.arange(0, 100).astype(str)
-        n[:10] = np.array(['00', '01', '02', '03', '04', '05',
-                           '06', '07', '08', '09'])
-    return n
-
-
-def _plot_expected_(df, digs):
-    '''
-    Plots the Expected Benford Distributions
-
-    df   -> DataFrame with the Expected Proportions
-    digs -> Test's digit
-    '''
-    if digs in [1, 2, 3]:
-        y_max = (df.Expected.max() + (10 ** -(digs) / 3)) * 100
-        fig, ax = plt.subplots(figsize=(2 * (digs ** 2 + 5), 1.5 *
-                                        (digs ** 2 + 5)))
-    elif digs == 22:
-        y_max = 13.
-        fig, ax = plt.subplots(figsize=(14, 10.5))
-    elif digs == -2:
-        y_max = 1.1
-        fig, ax = plt.subplots(figsize=(15, 8))
-    plt.title('Expected Benford Distributions', size='xx-large')
-    plt.xlabel(df.index.name, size='x-large')
-    plt.ylabel('Distribution (%)', size='x-large')
-    ax.set_facecolor(colors['b'])
-    ax.set_ylim(0, y_max)
-    ax.bar(df.index, df.Expected * 100, color=colors['t'], align='center')
-    ax.set_xticks(df.index)
-    ax.set_xticklabels(df.index)
-    plt.show(block=False)
-
-def _get_plot_args(digs):
-    '''
-    Gets the correct arguments for the plotting functions, depending on the
-    the test (digs) chosen.
-    '''
-    if digs in [1, 2, 3]:
-        text_x = False
-        n, m = 10 ** (digs - 1), 10 ** (digs)
-        x = np.arange(n, m)
-        figsize = (2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5))
-    elif digs == 22:
-        text_x = False
-        x = np.arange(10)
-        figsize = (14, 10)
-    else:
-        text_x = True
-        x = np.arange(100)
-        figsize = (15, 7)
-    return x, figsize, text_x
-    
-
-def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
-    '''
-    Plots the digits tests results
-
-    df -> DataFrame with the data to be plotted
-    x -> sequence to be used in the x axis
-    y_Exp -> sequence of the expected proportions to be used in the y axis
-        (line)
-    y_Found -> sequence of the found proportions to be used in the y axis
-        (bars)
-    N -> lenght of sequence, to be used when plotting the confidence levels
-    figsize - > tuple to state the size of the plot figure
-    conf_Z -> Confidence level
-    text_x -> Forces to show all x ticks labels. Defaluts to True.
-    '''
-    if len(x) > 10:
-        rotation = 90
-    else:
-        rotation = 0
-    fig, ax = plt.subplots(figsize=figsize)
-    plt.title('Expected vs. Found Distributions', size='xx-large')
-    plt.xlabel('Digits', size='x-large')
-    plt.ylabel('Distribution (%)', size='x-large')
-    if conf_Z is not None:
-        sig = conf_Z * np.sqrt(y_Exp * (1 - y_Exp) / N)
-        upper = y_Exp + sig + (1 / (2 * N))
-        lower_zeros = np.array([0]*len(upper))
-        lower = np.maximum(y_Exp - sig - (1 / (2 * N)), lower_zeros)
-        u = (y_Found < lower) | (y_Found > upper)
-        c = np.array([colors['m']] * len(u))
-        c[u] = colors['af']
-        lower *= 100.
-        upper *= 100.
-        ax.plot(x, upper, color=colors['s'], zorder=5)
-        ax.plot(x, lower, color=colors['s'], zorder=5)
-        ax.fill_between(x, upper, lower, color=colors['s'],
-                        alpha=.3, label='Conf')
-    else:
-        c = colors['m']
-    ax.bar(x, y_Found * 100., color=c, label='Found', zorder=3, align='center')
-    ax.plot(x, y_Exp * 100., color=colors['s'], linewidth=2.5,
-            label='Benford', zorder=4)
-    ax.set_xticks(x)
-    ax.set_xticklabels(x, rotation=rotation)
-    ax.set_facecolor(colors['b'])
-    if text_x:
-        ind = np.array(df.index).astype(str)
-        ind[:10] = np.array(['00', '01', '02', '03', '04', '05',
-                             '06', '07', '08', '09'])
-        plt.xticks(x, ind, rotation='vertical')
-    ax.legend()
-    ax.set_ylim(0, max([y_Exp.max() * 100, y_Found.max() * 100]) + 10 / len(x))
-    ax.set_xlim(x[0] - 1, x[-1] + 1)
-    plt.show(block=False)
-
-
-def _plot_sum_(df, figsize, li, text_x=False):
-    '''
-    Plots the summation test results
-
-    df -> DataFrame with the data to be plotted
-
-    figsize - > tuple to state the size of the plot figure
-
-    li -> values with which to draw the horizontal line
-    '''
-    x = df.index
-    rotation = 90 if len(x) > 10 else 0
-    fig = plt.figure(figsize=figsize)
-    ax = fig.add_subplot(111)
-    plt.title('Expected vs. Found Sums')
-    plt.xlabel('Digits')
-    plt.ylabel('Sums')
-    ax.bar(x, df.Percent, color=colors['m'],
-           label='Found Sums', zorder=3, align='center')
-    ax.axhline(li, color=colors['s'], linewidth=2, label='Expected', zorder=4)
-    ax.set_xticks(x)
-    ax.set_xticklabels(x, rotation=rotation)
-    ax.set_facecolor(colors['b'])
-    if text_x:
-        ind = np.array(x).astype(str)
-        ind[:10] = np.array(['00', '01', '02', '03', '04', '05',
-                             '06', '07', '08', '09'])
-        plt.xticks(x, ind, rotation='vertical')
-    ax.legend()
-    plt.show(block=False)
-
-
-def _set_N_(len_df, limit_N):
-    # Assigning to N the superior limit or the lenght of the series
-    if limit_N is None or limit_N > len_df:
-        return len_df
-    # Check on limit_N being a positive integer
-    else:
-        if limit_N < 0 or not isinstance(limit_N, int):
-            raise ValueError("limit_N must be None or a positive integer.")
-        else:
-            return limit_N
-
-
-def _test_(digs):
-    '''
-    Returns the base instance for the proper test to be performed
-    depending on the digit
-    '''
-    if digs in [1, 2, 3]:
-        return First(digs, plot=False)
-    elif digs == 22:
-        return Second(plot=False)
-    else:
-        return LastTwo(num=True, plot=False)
-
-
-def _input_data_(given):
-    '''
-    '''
-    if type(given) == pd.Series:
-        data = chosen = given
-    elif type(given) == np.ndarray:
-        data = given
-        chosen = pd.Series(given)
-    elif type(given) == tuple:
-        if (type(given[0]) != pd.DataFrame) | (type(given[1]) != str):
-            raise TypeError('The data tuple must be composed of a pandas '
-                            'DataFrame and the name (str) of the chosen '
-                            'column, in that order.')
-        data = given[0]
-        chosen = given[0][given[1]]
-    else:
-        raise TypeError("Wrong data input type. Check docstring.")
-    return data, chosen
-
-
-def _prep_(data, digs, limit_N, simple=False, confidence=None):
-    '''
-    Transforms the original number sequence into a DataFrame reduced
-    by the ocurrences of the chosen digits, creating other computed
-    columns
-    '''
-    N = _set_N_(len(data), limit_N=limit_N)
-
-    # get the number of occurrences of the digits
-    v = data.value_counts()
-    # get their relative frequencies
-    p = data.value_counts(normalize=True)
-    # crate dataframe from them
-    dd = pd.DataFrame({'Counts': v, 'Found': p}).sort_index()
-    # join the dataframe with the one of expected Benford's frequencies
-    dd = _test_(digs).join(dd).fillna(0)
-    # create column with absolute differences
-    dd['Dif'] = dd.Found - dd.Expected
-    dd['AbsDif'] = np.absolute(dd.Dif)
-    if simple:
-        del dd['Dif']
-        return dd
-    else:
-        if confidence is not None:
-            dd['Z_score'] = _Z_score(dd, N)
-        return N, dd
 
 
 def first_digits(data, digs, decimals=2, sign='all', verbose=True,
@@ -2010,47 +1488,13 @@ def mad_summ(data, test, decimals=2, sign='all'):
 
     start = Source(data, sign=sign, decimals=decimals, verbose=False)
     temp = start.loc[start.ZN >= 10 ** (test - 1)]
-    temp[digs_dict[test]] = (temp.ZN // 10 ** ((np.log10(temp.ZN).astype(
+    temp[digs_dict[test]] = (temp.ZN // 10 ** ((log10(temp.ZN).astype(
                                                 int)) - (test - 1))).astype(
                                                     int)
     li = 1. / (9 * (10 ** (test - 1)))
 
     df = temp.groupby(digs_dict[test]).sum()
-    return np.mean(np.absolute(df.ZN / df.ZN.sum() - li))
-
-
-def _prep_to_roll_(start, test):
-    '''
-    Used by the rolling mad and rolling mean, prepares each test and
-    respective expected proportions for later application to the Series subset
-    '''
-    if test in [1, 2, 3]:
-        start[digs_dict[test]] = start.ZN // 10 ** ((
-            np.log10(start.ZN).astype(int)) - (test - 1))
-        start = start.loc[start.ZN >= 10 ** (test - 1)]
-
-        ind = np.arange(10 ** (test - 1), 10 ** test)
-        Exp = np.log10(1 + (1. / ind))
-
-    elif test == 22:
-        start[digs_dict[test]] = (start.ZN // 10 ** ((
-            np.log10(start.ZN)).astype(int) - 1)) % 10
-        start = start.loc[start.ZN >= 10]
-
-        Expec = np.log10(1 + (1. / np.arange(10, 100)))
-        temp = pd.DataFrame({'Expected': Expec, 'Sec_Dig':
-                             np.array(list(range(10)) * 9)})
-        Exp = temp.groupby('Sec_Dig').sum().values.reshape(10,)
-        ind = np.arange(0, 10)
-
-    else:
-        start[digs_dict[test]] = start.ZN % 100
-        start = start.loc[start.ZN >= 1000]
-
-        ind = np.arange(0, 100)
-        Exp = np.array([1 / 99.] * 100)
-
-    return Exp, ind
+    return mean(abs(df.ZN / df.ZN.sum() - li))
 
 
 def rolling_mad(data, test, window, decimals=2, sign='all', show_plot=False):
@@ -2088,19 +1532,6 @@ def rolling_mad(data, test, window, decimals=2, sign='all', show_plot=False):
     return r_mad
 
 
-def _mad_to_roll_(arr, Exp, ind):
-    '''
-    Mean Absolute Deviation used in the rolling function
-    '''
-    prop = pd.Series(arr)
-    prop = prop.value_counts(normalize=True).sort_index()
-
-    if len(prop) < len(Exp):
-        prop = prop.reindex(ind).fillna(0)
-
-    return np.absolute(prop - Exp).mean()
-
-
 def rolling_mse(data, test, window, decimals=2, sign='all', show_plot=False):
     '''
     Applies the MSE to sequential subsets of the Series, returning another
@@ -2135,19 +1566,6 @@ def rolling_mse(data, test, window, decimals=2, sign='all', show_plot=False):
     return r_mse
 
 
-def _mse_to_roll_(arr, Exp, ind):
-    '''
-    Mean Squared Error used in the rolling function
-    '''
-    prop = pd.Series(arr)
-    temp = prop.value_counts(normalize=True).sort_index()
-
-    if len(temp) < len(Exp):
-        temp = temp.reindex(ind).fillna(0)
-
-    return ((temp - Exp) ** 2).mean()
-
-
 def duplicates(data, top_Rep=20, verbose=True, inform=None):
     '''
     Performs a duplicates test and maps the duplicates count in descending
@@ -2170,9 +1588,9 @@ def duplicates(data, top_Rep=20, verbose=True, inform=None):
     if top_Rep is not None and not isinstance(top_Rep, int):
         raise ValueError('The top_Rep parameter must be an int or None.')
 
-    if not isinstance(data, pd.Series):
+    if not isinstance(data, Series):
         try:
-            data = pd.Series(data)
+            data = Series(data)
         except ValueError:
             print('\ndata must be a numpy Ndarray or a pandas Series.')
 
@@ -2270,214 +1688,3 @@ def second_order(data, test, decimals=2, sign='all', verbose=True, MAD=False,
         data.last_two_digits(MAD=MAD, confidence=confidence, high_Z=high_Z,
                              limit_N=limit_N, MSE=MSE, show_plot=show_plot)
     return data
-
-
-def _check_digs_(digs):
-    '''
-    Chhecks the possible values for the digs of the First Digits test1
-    '''
-    if digs not in [1, 2, 3]:
-        raise ValueError("The value assigned to the parameter -digs- "
-                         f"was {digs}. Value must be 1, 2 or 3.")
-
-
-def _check_test_(test):
-    '''
-    Checks the test chosen, both for int or str values
-    '''
-    if isinstance(test, int):
-        if test in digs_dict.keys():
-            return test
-        else:
-            raise ValueError(f'Test was set to {test}. Should be one of '
-                             f'{digs_dict.keys()}')
-    elif isinstance(test, str):
-        if test in rev_digs.keys():
-            return rev_digs[test]
-        else:
-            raise ValueError(f'Test was set to {test}. Should be one of '
-                             f'{rev_digs.keys()}')
-    else:
-        raise ValueError('Wrong value chosen for test parameter. Possible '
-                         f'values are\n {list(digs_dict.keys())} for ints and'
-                         f'\n {list(rev_digs.keys())} for strings.')
-
-def _check_confidence_(confidence):
-    '''
-    '''
-    if confidence not in confs.keys():
-        raise ValueError("Value of parameter -confidence- must be one of the "
-                         f"following:\n {list(confs.keys())}")
-    return confidence
-
-def _check_high_Z_(high_Z):
-    '''
-    '''
-    if not high_Z in ['pos', 'all']:
-        if not isinstance(high_Z, int):
-            raise ValueError("The parameter -high_Z- should be 'pos', "
-                             "'all' or an int.")
-    return high_Z
-
-def _check_num_array(data):
-    '''
-    '''
-    if (not isinstance(data, np.ndarray)) & (not isinstance(data, pd.Series)):
-        print('\n`data` not a numpy NDarray nor a pandas Series.'
-                ' Trying to convert...')
-        try:
-            data = np.array(data)
-        except:
-            raise ValueError('Could not convert data. Check input.')
-        print('\nConversion successful.')
-    elif (data.dtype == int) | (not data.dtype == float):
-        print("\n`data` type not int nor float. Trying to convert...")
-        try:
-            data = data.astype(float)
-        except:
-            raise ValueError('Could not convert data. Check input.')
-    return data
-
-
-def _subtract_sorted_(data):
-    '''
-    Subtracts the sorted sequence elements from each other, discarding zeros.
-    Used in the Second Order test
-    '''
-    sec = data.copy()
-    sec.sort_values(inplace=True)
-    sec = sec - sec.shift(1)
-    sec = sec.loc[sec != 0]
-    return sec
-
-
-def _inform_(df, high_Z, conf):
-    '''
-    Selects and sorts by the Z_stats chosen to be considered, informing or not.
-    '''
-
-    if isinstance(high_Z, int):
-        if conf is not None:
-            dd = df[['Expected', 'Found', 'Z_score'
-                     ]].sort_values('Z_score', ascending=False).head(high_Z)
-            print(f'\nThe entries with the top {high_Z} Z scores are:\n')
-        # Summation Test
-        else:
-            dd = df[['Expected', 'Found', 'AbsDif'
-                     ]].sort_values('AbsDif', ascending=False
-                                    ).head(high_Z)
-            print(f'\nThe entries with the top {high_Z} absolute deviations '
-                  'are:\n')
-    else:
-        if high_Z == 'pos':
-            m1 = df.Dif > 0
-            m2 = df.Z_score > conf
-            dd = df[['Expected', 'Found', 'Z_score'
-                     ]].loc[m1 & m2].sort_values('Z_score', ascending=False)
-            print('\nThe entries with the significant positive '
-                  'deviations are:\n')
-        elif high_Z == 'neg':
-            m1 = df.Dif < 0
-            m2 = df.Z_score > conf
-            dd = df[['Expected', 'Found', 'Z_score'
-                     ]].loc[m1 & m2].sort_values('Z_score', ascending=False)
-            print('\nThe entries with the significant negative '
-                  'deviations are:\n')
-        else:
-            dd = df[['Expected', 'Found', 'Z_score'
-                     ]].loc[df.Z_score > conf].sort_values('Z_score',
-                                                           ascending=False)
-            print('\nThe entries with the significant deviations are:\n')
-    print(dd)
-
-def _report_MAD_(digs, MAD):
-    '''
-    Reports the test Mean Absolut Deviation and compares it to critical values
-    '''
-    print(f'Mean Absolute Deviation: {MAD:.6f}')
-    if digs != -2:
-        mads = mad_dict[digs]
-        if MAD <= mads[0]:
-            print(f'MAD <= {mads[0]:.6f}: Close conformity.\n')
-        elif MAD <= mads[1]:
-            print(f'{mads[0]:.6f} < MAD <= {mads[1]:.6f}: '
-                  'Acceptable conformity.\n')
-        elif MAD <= mads[2]:
-            print(f'{mads[1]:.6f} < MAD <= {mads[2]:.6f}: '
-                  'Marginally Acceptable conformity.\n')
-        else:
-            print(f'MAD > {mads[2]:.6f}: Nonconformity.\n')
-    else:
-        print("There is no conformity check for this test's MAD.\n")
-
-def _report_KS_(KS, crit_KS):
-    '''
-    Reports the test Kolmogorov-Smirnov statistic and compares it to critical
-    values, depending on the confidence level
-    '''
-    result = 'PASS' if KS <= crit_KS else 'FAIL'
-    print(f"\n\tKolmogorov-Smirnov: {KS:.6f}",
-          f"\n\tCritical value: {crit_KS:.6f} -- {result}")
-
-def _report_chi2_(chi2, crit_chi2):
-    '''
-    Reports the test Chi-square statistic and compares it to critical values,
-    depending on the confidence level
-    '''
-    result = 'PASS' if chi2 <= crit_chi2 else 'FAIL'
-    print(f"\n\tChi square: {chi2:.6f}",
-          f"\n\tCritical value: {crit_chi2:.6f} -- {result}")
-
-def _report_Z_(df, high_Z, crit_Z):
-    '''
-    Reports the test Z scores and compares them to a critical value,
-    depending on the confidence level
-    '''
-    print(f"\n\tCritical Z-score:{crit_Z}.")
-    _inform_(df, high_Z, crit_Z)
-
-def _report_summ_(test, high_diff):
-    '''
-    Reports the Summation Test Absolute Differences between the Found and
-    the Expected proportions
-
-    '''
-    if high_diff is not None:
-        print(f'\nThe top {high_diff} Absolute Differences are:\n')
-        print(test.sort_values('AbsDif', ascending=False).head(high_diff))
-    else:
-        print('\nThe top Absolute Differences are:\n')
-        print(test.sort_values('AbsDif', ascending=False))
-    
-
-def _report_test_(test, high=None, crit_vals=None):
-    '''
-    Main report function. Receives the parameters to report with, initiates
-    the process, and calls the right reporting helper function(s), depending
-    on the Test.
-    '''
-    print('\n', f'  {test.name}  '.center(50, '#'), '\n')
-    if not 'Summation' in test.name:
-        _report_MAD_(test.digs, test.MAD)
-        if test.confidence is not None:
-            print(f"For confidence level {test.confidence}%: ")
-            _report_KS_(test.KS, crit_vals['KS'])
-            _report_chi2_(test.chi_square, crit_vals['chi2'])
-            _report_Z_(test, high, crit_vals['Z'])
-        else:
-            print('Confidence is currently `None`. Set the confidence level, '
-                    'so as to generate comparable critical values.' )
-            if isinstance(high, int):
-                _inform_(test, high, None)
-    else:
-        _report_summ_(test, high)
-
-
-def _deprecate_inform_(verbose, inform):
-    if inform is None:
-        return verbose
-    else:
-        warnings.warn('The parameter `inform` will be deprecated in future '
-                      'versions. Use `verbose` instead.',
-                      FutureWarning)
-        return inform
