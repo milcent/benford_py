@@ -126,6 +126,7 @@ def _plot_sum_(df, figsize, li, text_x=False):
     plt.ylabel('Sums')
     ax.bar(x, df.Percent, color=colors['m'],
            label='Found Sums', zorder=3, align='center')
+    ax.set_xlim(x[0] - 1, x[-1] + 1)
     ax.axhline(li, color=colors['s'], linewidth=2, label='Expected', zorder=4)
     ax.set_xticks(x)
     ax.set_xticklabels(x, rotation=rotation)
