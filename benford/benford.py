@@ -265,7 +265,114 @@ class Summ(DataFrame):
         _report_test_(self, high_diff)
         if show_plot:
             self.show_plot()
+
+class Mantissas(object):
+    '''
+    Returns a Series with the data mantissas,
+
+    Parameters
+    ----------
+    data: sequence to compute mantissas from, numpy 1D array, pandas
+        Series of pandas DataFrame column.
+    '''
+
+    def __init__(self, data):
+
+        data = Series(_check_num_array(data))
+        data = data.dropna().loc[data != 0].abs()
         
+        self.data = DataFrame({'Mantissa': _getMantissas_(data.abs())})
+
+        self.stats = {'Mean': self.data.Mantissa.mean(),
+                      'Var': self.data.Mantissa.var(),
+                      'Skew': self.data.Mantissa.skew(),
+                      'Kurt': self.data.Mantissa.kurt()}
+
+    def report(self):
+        '''
+        Shows the Mantissas test stats
+        '''
+        print("\n", '  Mantissas Test  '.center(52, '#'))
+        print(f"\nThe Mantissas MEAN is      {self.stats['Mean']:.6f}."
+              "\tRef: 0.5")
+        print(f"The Mantissas VARIANCE is  {self.stats['Var']:.6f}."
+              "\tRef: 0.08333")
+        print(f"The Mantissas SKEWNESS is  {self.stats['Skew']:.6f}."
+              "\tRef: 0.0")
+        print(f"The Mantissas KURTOSIS is  {self.stats['Kurt']:.6f}."
+              "\tRef: -1.2\n")
+
+    def show_plot(self, figsize=(12, 6)):
+        '''
+        plots the ordered mantissas and a line with the expected
+                inclination. Defaults to True.
+
+        Parameters
+        ----------
+
+        figsize -> tuple that sets the figure size
+        '''
+        ld = len(self.data)
+        x = arange(1, ld + 1)
+        n = ones(ld) / ld
+        fig = plt.figure(figsize=figsize)
+        ax = fig.add_subplot(111)
+        ax.plot(x, self.data.Mantissa.sort_values(), linestyle='--',
+                color=colors['s'], linewidth=3, label='Mantissas')
+        ax.plot(x, n.cumsum(), color=colors['m'],
+                linewidth=2, label='Expected')
+        plt.ylim((0, 1.))
+        plt.xlim((1, ld + 1))
+        ax.set_facecolor(colors['b'])
+        ax.set_title("Ordered Mantissas")
+        plt.legend(loc='upper left')
+        plt.show();
+
+    def arc_test(self, decimals=2, grid=True, figsize=12):
+        '''
+        Add two columns to Mantissas's DataFrame equal to their "X" and "Y"
+        coordinates, plots its to a scatter plot and calculates the gravity
+        center of the circle.
+
+        Parameters
+        ----------
+
+        decimals -> number of decimal places for displaying the gravity center.
+            Defaults to 2.
+        
+        grid -> show grid of the plot. Defaluts to True.
+        
+        figsize -> size of the figure to be displayed. Since it is a square,
+            there is no need to provide a tuple, like is usually the case with
+            matplotlib.
+        '''
+        if self.stats.get('gravity_center') is None:
+            self.data['mant_x'] = cos(2 * pi * self.data.Mantissa)
+            self.data['mant_y'] = sin(2 * pi * self.data.Mantissa)
+            self.stats['gravity_center'] = (self.data.mant_x.mean(),
+                                            self.data.mant_y.mean())
+        fig = plt.figure(figsize=(figsize,figsize))
+        ax = plt.subplot()
+        ax.set_facecolor(colors['b'])
+        ax.scatter(self.data.mant_x, self.data.mant_y, label= "ARC TEST",
+                   color=colors['m'])
+        ax.scatter(self.stats['gravity_center'][0], self.stats['gravity_center'][1],
+                   color=colors['s']) 
+        text_annotation = Annotation(
+                    "  Gravity Center: "
+                    f"x({round(self.stats['gravity_center'][0], decimals)}),"
+                    f" y({round(self.stats['gravity_center'][1], decimals)})", 
+                    xy=(self.stats['gravity_center'][0] - 0.65,
+                        self.stats['gravity_center'][1] - 0.1),
+                    xycoords='data')
+        ax.add_artist(text_annotation)
+        ax.grid(True, which='both')
+        ax.axhline(y=0, color='k')
+        ax.axvline(x=0, color='k')
+        ax.legend(loc = 'lower left')
+        ax.set_title("Mantissas Arc Test")
+        plt.show();
+
 class Benford(object):
     '''
     Initializes a Benford Analysis object and computes the proportions for
