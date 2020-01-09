@@ -951,7 +951,7 @@ class Source(DataFrame):
         # s.drop(0, inplace=True)
         df['Percent'] = df.ZN / df.ZN.sum()
         df.columns.values[1] = 'Summ'
-        df = df[['Sum', 'Percent']]
+        df = df[['Summ', 'Percent']]
         df['AbsDif'] = (df.Percent - li).abs()
 
         # Populate dict with the most relevant entries
