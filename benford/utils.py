@@ -1,7 +1,8 @@
 from pandas import Series, DataFrame
-from numpy import array, arange, log10
-from .expected import First, Second, LastTwo
+from numpy import array, arange, log10, ndarray
+from .expected import _test_
 from .constants import digs_dict
+from .stats import _Z_score
 
 
 def _set_N_(len_df, limit_N):
@@ -14,38 +15,6 @@ def _set_N_(len_df, limit_N):
             raise ValueError("limit_N must be None or a positive integer.")
         else:
             return limit_N
-
-
-def _test_(digs):
-    '''
-    Returns the base instance for the proper test to be performed
-    depending on the digit
-    '''
-    if digs in [1, 2, 3]:
-        return First(digs, plot=False)
-    elif digs == 22:
-        return Second(plot=False)
-    else:
-        return LastTwo(num=True, plot=False)
-
-
-def _lt_(num=False):
-    '''
-    Creates an array with the possible last two digits
-
-    Parameters
-    ----------
-
-    num: returns numeric (ints) values. Defaluts to False,
-        which returns strings.
-    '''
-    if num:
-        n = arange(0, 100)
-    else:
-        n = arange(0, 100).astype(str)
-        n[:10] = array(['00', '01', '02', '03', '04', '05',
-                           '06', '07', '08', '09'])
-    return n
 
 
 def _getMantissas_(arr):
@@ -101,73 +70,6 @@ def _prep_(data, digs, limit_N, simple=False, confidence=None):
         if confidence is not None:
             dd['Z_score'] = _Z_score(dd, N)
         return N, dd
-
-def _check_digs_(digs):
-    '''
-    Chhecks the possible values for the digs of the First Digits test1
-    '''
-    if digs not in [1, 2, 3]:
-        raise ValueError("The value assigned to the parameter -digs- "
-                         f"was {digs}. Value must be 1, 2 or 3.")
-
-
-def _check_test_(test):
-    '''
-    Checks the test chosen, both for int or str values
-    '''
-    if isinstance(test, int):
-        if test in digs_dict.keys():
-            return test
-        else:
-            raise ValueError(f'Test was set to {test}. Should be one of '
-                             f'{digs_dict.keys()}')
-    elif isinstance(test, str):
-        if test in rev_digs.keys():
-            return rev_digs[test]
-        else:
-            raise ValueError(f'Test was set to {test}. Should be one of '
-                             f'{rev_digs.keys()}')
-    else:
-        raise ValueError('Wrong value chosen for test parameter. Possible '
-                         f'values are\n {list(digs_dict.keys())} for ints and'
-                         f'\n {list(rev_digs.keys())} for strings.')
-
-def _check_confidence_(confidence):
-    '''
-    '''
-    if confidence not in confs.keys():
-        raise ValueError("Value of parameter -confidence- must be one of the "
-                         f"following:\n {list(confs.keys())}")
-    return confidence
-
-def _check_high_Z_(high_Z):
-    '''
-    '''
-    if not high_Z in ['pos', 'all']:
-        if not isinstance(high_Z, int):
-            raise ValueError("The parameter -high_Z- should be 'pos', "
-                             "'all' or an int.")
-    return high_Z
-
-def _check_num_array(data):
-    '''
-    '''
-    if (not isinstance(data, array)) & (not isinstance(data, Series)):
-        print('\n`data` not a numpy NDarray nor a pandas Series.'
-                ' Trying to convert...')
-        try:
-            data = array(data)
-        except:
-            raise ValueError('Could not convert data. Check input.')
-        print('\nConversion successful.')
-    elif (data.dtype == int) | (not data.dtype == float):
-        print("\n`data` type not int nor float. Trying to convert...")
-        try:
-            data = data.astype(float)
-        except:
-            raise ValueError('Could not convert data. Check input.')
-    return data
-
 
 def _subtract_sorted_(data):
     '''

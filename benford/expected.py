@@ -1,6 +1,6 @@
 from pandas import DataFrame
 from numpy import array, arange, log10
-from .utils import _check_digs_
+from .checks import _check_digs_
 from .viz import _plot_expected_
 
 
@@ -75,3 +75,34 @@ class LastTwo(DataFrame):
         self.set_index('Last_2_Dig', inplace=True)
         if plot:
             _plot_expected_(self, -2)
+
+def _test_(digs):
+    '''
+    Returns the base instance for the proper test to be performed
+    depending on the digit
+    '''
+    if digs in [1, 2, 3]:
+        return First(digs, plot=False)
+    elif digs == 22:
+        return Second(plot=False)
+    else:
+        return LastTwo(num=True, plot=False)
+
+
+def _lt_(num=False):
+    '''
+    Creates an array with the possible last two digits
+
+    Parameters
+    ----------
+
+    num: returns numeric (ints) values. Defaluts to False,
+        which returns strings.
+    '''
+    if num:
+        n = arange(0, 100)
+    else:
+        n = arange(0, 100).astype(str)
+        n[:10] = array(['00', '01', '02', '03', '04', '05',
+                           '06', '07', '08', '09'])
+    return n

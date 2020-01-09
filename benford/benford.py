@@ -27,12 +27,14 @@ from numpy import array, arange, log10, ones, abs, cos, sin, pi, sqrt, mean
 import matplotlib.pyplot as plt
 from matplotlib.text import Annotation
 import warnings
-from .constants import names, confs, digs_dict, rev_digs, sec_order_dict,\
-    mad_dict, crit_chi2, KS_crit, colors
-from .utils import _test_, _set_N_, _check_confidence_, _check_high_Z_, \
-    _input_data_, _prep_, _check_digs_, _check_test_, _check_num_array, \
-    _subtract_sorted_, _prep_to_roll_, _mad_to_roll_, _mse_to_roll_, _lt_, \
-    _getMantissas_
+from .constants import confs, digs_dict, sec_order_dict, rev_digs, names, \
+    mad_dict, colors, crit_chi2, KS_crit
+from .checks import _check_digs_, _check_confidence_, _check_test_, \
+    _check_num_array, _check_high_Z_
+from .utils import  _set_N_, _input_data_, _prep_, \
+    _subtract_sorted_, _prep_to_roll_, _mad_to_roll_, _mse_to_roll_, \
+     _getMantissas_
+from .expected import First, Second, LastTwo, _test_
 from .viz import _get_plot_args, _plot_dig_, _plot_sum_
 from .reports import _inform_, _report_MAD_, _report_summ_, _report_KS_,\
     _report_Z_, _report_chi2_, _report_test_, _deprecate_inform_

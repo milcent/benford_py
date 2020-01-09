@@ -1,5 +1,5 @@
 import warnings
-
+from .constants import mad_dict
 
 def _inform_(df, high_Z, conf):
     '''
