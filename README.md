@@ -7,7 +7,11 @@
 - New Mantissas object, with methods `report`, `show_plot` and `arc_test`, which shows the [Arc Test and Plot](https://github.com/milcent/benford_py/pull/24) (the latter thanks to @im-alexandre);
 - Future Deprecation of the `inform` parameter in favor of `verbose` or `report`, dependeing on the caase; and
 - Whole new Benford class, which holds the initial tests (First Digit,
-Second Digit, First Two Digits, First Three Digits and Last Two Digits) at instantiation, but may also hold all the Second Order tests, Summation tests and Mantissas tests. All statistics are computed and stored for each test as applicable, and the confidence level may be reset for all tests or individually. Reports can then be called on each test, along with the respective plot. See the "Benford Class" section of the [Demo Notebook](https://github.com/milcent/benford_py/blob/master/Demo.ipynb) for more details
+Second Digit, First Two Digits, First Three Digits and Last Two Digits) at instantiation, but may also hold all the Second Order tests, Summation tests and Mantissas tests. All statistics are computed and stored for each test as applicable, and the confidence level may be reset for all tests or individually. Reports can then be called on each test, along with the respective plot. See the "Benford Class" section of the [Demo Notebook](https://github.com/milcent/benford_py/blob/master/Demo.ipynb) for more details.
+
+<p align="center">
+  <img alt="New Benford Instance" src="https://github.com/milcent/benford_py/blob/master/img/Benford_Instance.png">
+</p>
 
 ## On the RoadMap
 
