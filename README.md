@@ -4,7 +4,7 @@
 
 ## New in this version
 
-### Bug fixes (see [release notes]())
+### Bug fixes (see [release notes](https://github.com/milcent/benford_py/releases/tag/v0.2.1))
 
 ## New in version 0.2.0
 
