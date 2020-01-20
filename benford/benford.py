@@ -680,7 +680,7 @@ class Source(pd.DataFrame):
                     linewidth=2)
             plt.ylim((0, 1.))
             plt.xlim((1, N + 1))
-            plt.show()
+            plt.show(block=False)
 
     def first_digits(self, digs, confidence=None, high_Z='pos',
                      limit_N=None, MAD=False, MSE=False, chi_square=False,
@@ -1047,9 +1047,14 @@ class Mantissas(object):
                       'Skew': self.data.Mantissa.skew(),
                       'Kurt': self.data.Mantissa.kurt()}
 
-    def report(self):
+    def report(self, show_plot=True):
         '''
-        Shows the Mantissas test stats
+        Displays the Mantissas stats.
+
+        Paranmeters:
+        -----------
+        show_plot: shows the ordered mantissas plot and the Arc Test plot.
+            Defaults to True.
         '''
         print("\n", '  Mantissas Test  '.center(52, '#'))
         print(f"\nThe Mantissas MEAN is      {self.stats['Mean']:.6f}."
@@ -1060,6 +1065,9 @@ class Mantissas(object):
               "\tRef: 0.0")
         print(f"The Mantissas KURTOSIS is  {self.stats['Kurt']:.6f}."
               "\tRef: -1.2\n")
+        if show_plot:
+            self.show_plot()
+            self.arc_test()
 
     def show_plot(self, figsize=(12, 6)):
         '''
@@ -1085,7 +1093,7 @@ class Mantissas(object):
         ax.set_facecolor(colors['b'])
         ax.set_title("Ordered Mantissas")
         plt.legend(loc='upper left')
-        plt.show();
+        plt.show(block=False);
 
     def arc_test(self, decimals=2, grid=True, figsize=12):
         '''
@@ -1130,7 +1138,7 @@ class Mantissas(object):
         ax.axvline(x=0, color='k')
         ax.legend(loc = 'lower left')
         ax.set_title("Mantissas Arc Test")
-        plt.show();
+        plt.show(block=False);
 
 
 class Roll_mad(pd.Series):
@@ -1185,7 +1193,7 @@ class Roll_mad(pd.Series):
             plt.axhline(y=mad_dict[test][0], color=colors['af'], linewidth=3)
             plt.axhline(y=mad_dict[test][1], color=colors['h2'], linewidth=3)
             plt.axhline(y=mad_dict[test][2], color=colors['s'], linewidth=3)
-        plt.show()
+        plt.show(block=False)
 
 
 class Roll_mse(pd.Series):
@@ -1234,7 +1242,7 @@ class Roll_mse(pd.Series):
         fig, ax = plt.subplots(figsize=figsize)
         ax.set_facecolor(colors['b'])
         ax.plot(self, color=colors['m'])
-        plt.show()
+        plt.show(block=False)
 
 
 def _Z_score(frame, N):
@@ -1444,7 +1452,7 @@ def _plot_expected_(df, digs):
     ax.bar(df.index, df.Expected * 100, color=colors['t'], align='center')
     ax.set_xticks(df.index)
     ax.set_xticklabels(df.index)
-    plt.show()
+    plt.show(block=False)
 
 def _get_plot_args(digs):
     '''
@@ -1520,7 +1528,7 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     ax.legend()
     ax.set_ylim(0, max([y_Exp.max() * 100, y_Found.max() * 100]) + 10 / len(x))
     ax.set_xlim(x[0] - 1, x[-1] + 1)
-    plt.show()
+    plt.show(block=False)
 
 
 def _plot_sum_(df, figsize, li, text_x=False):
@@ -1552,7 +1560,7 @@ def _plot_sum_(df, figsize, li, text_x=False):
                              '06', '07', '08', '09'])
         plt.xticks(x, ind, rotation='vertical')
     ax.legend()
-    plt.show()
+    plt.show(block=False)
 
 
 def _set_N_(len_df, limit_N):
