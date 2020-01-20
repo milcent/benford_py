@@ -30,8 +30,11 @@ def _getMantissas_(arr):
 def _input_data_(given):
     '''
     '''
-    if (type(given) == Series) | (type(given) == ndarray):
+    if type(given) == Series:
         data = chosen = given
+    elif type(given) == ndarray:
+        data = given
+        chosen = Series(given)
     elif type(given) == tuple:
         if (type(given[0]) != DataFrame) | (type(given[1]) != str):
             raise TypeError('The data tuple must be composed of a pandas '
