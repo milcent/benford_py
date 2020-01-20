@@ -1583,13 +1583,16 @@ def _test_(digs):
 def _input_data_(given):
     '''
     '''
-    if (type(given) == pd.Series) | (type(given) == np.ndarray):
+    if type(given) == pd.Series:
         data = chosen = given
+    elif type(given) == np.ndarray:
+        data = given
+        chosen = pd.Series(given)
     elif type(given) == tuple:
         if (type(given[0]) != pd.DataFrame) | (type(given[1]) != str):
             raise TypeError('The data tuple must be composed of a pandas '
                             'DataFrame and the name (str) of the chosen '
-                            'column, in that order')
+                            'column, in that order.')
         data = given[0]
         chosen = given[0][given[1]]
     else:
