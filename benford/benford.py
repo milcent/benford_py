@@ -326,7 +326,7 @@ class Mantissas(object):
         ax.set_facecolor(colors['b'])
         ax.set_title("Ordered Mantissas")
         plt.legend(loc='upper left')
-        plt.show();
+        plt.show(block=False);
 
     def arc_test(self, decimals=2, grid=True, figsize=12):
         '''
@@ -371,7 +371,7 @@ class Mantissas(object):
         ax.axvline(x=0, color='k')
         ax.legend(loc = 'lower left')
         ax.set_title("Mantissas Arc Test")
-        plt.show();
+        plt.show(block=False);
 
 class Benford(object):
     '''

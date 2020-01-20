@@ -28,7 +28,7 @@ def _plot_expected_(df, digs):
     ax.bar(df.index, df.Expected * 100, color=colors['t'], align='center')
     ax.set_xticks(df.index)
     ax.set_xticklabels(df.index)
-    plt.show()
+    plt.show(block=False)
 
 def _get_plot_args(digs):
     '''
@@ -104,7 +104,7 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     ax.legend()
     ax.set_ylim(0, max([y_Exp.max() * 100, y_Found.max() * 100]) + 10 / len(x))
     ax.set_xlim(x[0] - 1, x[-1] + 1)
-    plt.show()
+    plt.show(block=False)
 
 
 def _plot_sum_(df, figsize, li, text_x=False):
@@ -137,4 +137,4 @@ def _plot_sum_(df, figsize, li, text_x=False):
                              '06', '07', '08', '09'])
         plt.xticks(x, ind, rotation='vertical')
     ax.legend()
-    plt.show()
+    plt.show(block=False)
