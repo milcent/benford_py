@@ -1047,9 +1047,14 @@ class Mantissas(object):
                       'Skew': self.data.Mantissa.skew(),
                       'Kurt': self.data.Mantissa.kurt()}
 
-    def report(self):
+    def report(self, show_plot=True):
         '''
-        Shows the Mantissas test stats
+        Displays the Mantissas stats.
+
+        Paranmeters:
+        -----------
+        show_plot: shows the ordered mantissas plot and the Arc Test plot.
+            Defaults to True.
         '''
         print("\n", '  Mantissas Test  '.center(52, '#'))
         print(f"\nThe Mantissas MEAN is      {self.stats['Mean']:.6f}."
@@ -1060,6 +1065,9 @@ class Mantissas(object):
               "\tRef: 0.0")
         print(f"The Mantissas KURTOSIS is  {self.stats['Kurt']:.6f}."
               "\tRef: -1.2\n")
+        if show_plot:
+            self.show_plot()
+            self.arc_test()
 
     def show_plot(self, figsize=(12, 6)):
         '''
