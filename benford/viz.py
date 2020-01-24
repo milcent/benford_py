@@ -1,4 +1,4 @@
-from numpy import array, arange, maximum, sqrt
+from numpy import array, arange, maximum, sqrt, ones
 import matplotlib.pyplot as plt
 from .constants import colors
 
@@ -135,3 +135,50 @@ def plot_sum(df, figsize, li, text_x=False):
         plt.xticks(x, ind, rotation='vertical')
     ax.legend()
     plt.show(block=False)
+
+def plot_ordered_mantissas(col, figsize=(12, 6)):
+    """
+    
+    Args:
+        col: column of mantissas to plot
+        figsize: sets the dimensions of the plot figure
+    """
+    ld = len(col)
+    x = arange(1, ld + 1)
+    n = ones(ld) / ld
+    fig = plt.figure(figsize=figsize)
+    ax = fig.add_subplot(111)
+    ax.plot(x, col.sort_values(), linestyle='--',
+            color=colors['s'], linewidth=3, label='Mantissas')
+    ax.plot(x, n.cumsum(), color=colors['m'],
+            linewidth=2, label='Expected')
+    plt.ylim((0, 1.))
+    plt.xlim((1, ld + 1))
+    ax.set_facecolor(colors['b'])
+    ax.set_title("Ordered Mantissas")
+    plt.legend(loc='upper left')
+    plt.show(block=False);
+
+def plot_mantissa_arc_test(df, stats, decimals=2, grid=True, figsize=12):
+    """"""
+    fig = plt.figure(figsize=(figsize,figsize))
+    ax = plt.subplot()
+    ax.set_facecolor(colors['b'])
+    ax.scatter(df.mant_x, df.mant_y, label= "ARC TEST",
+                color=colors['m'])
+    ax.scatter(stats['gravity_center'][0], stats['gravity_center'][1],
+                color=colors['s']) 
+    text_annotation = Annotation(
+                "  Gravity Center: "
+                f"x({round(stats['gravity_center'][0], decimals)}),"
+                f" y({round(stats['gravity_center'][1], decimals)})", 
+                xy=(stats['gravity_center'][0] - 0.65,
+                    stats['gravity_center'][1] - 0.1),
+                xycoords='data')
+    ax.add_artist(text_annotation)
+    ax.grid(True, which='both')
+    ax.axhline(y=0, color='k')
+    ax.axvline(x=0, color='k')
+    ax.legend(loc = 'lower left')
+    ax.set_title("Mantissas Arc Test")
+    plt.show(block=False);

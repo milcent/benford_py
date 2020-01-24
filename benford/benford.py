@@ -35,7 +35,8 @@ from .utils import  _set_N_, input_data, prepare, \
     subtract_sorted, prep_to_roll, mad_to_roll, mse_to_roll, \
      get_mantissas
 from .expected import First, Second, LastTwo, _test_
-from .viz import _get_plot_args, plot_digs, plot_sum
+from .viz import _get_plot_args, plot_digs, plot_sum, plot_ordered_mantissas,\
+    plot_mantissa_arc_test
 from .reports import _inform_, _report_mad_, _report_summ_, _report_KS_,\
     _report_Z_, _report_chi2_, _report_test_, _deprecate_inform_,\
     _report_mantissa_
@@ -293,21 +294,7 @@ class Mantissas(object):
         Args:
             figsize (tuple): figure size dimensions
         """
-        ld = len(self.data)
-        x = arange(1, ld + 1)
-        n = ones(ld) / ld
-        fig = plt.figure(figsize=figsize)
-        ax = fig.add_subplot(111)
-        ax.plot(x, self.data.Mantissa.sort_values(), linestyle='--',
-                color=colors['s'], linewidth=3, label='Mantissas')
-        ax.plot(x, n.cumsum(), color=colors['m'],
-                linewidth=2, label='Expected')
-        plt.ylim((0, 1.))
-        plt.xlim((1, ld + 1))
-        ax.set_facecolor(colors['b'])
-        ax.set_title("Ordered Mantissas")
-        plt.legend(loc='upper left')
-        plt.show(block=False);
+        plot_ordered_mantissas(self.data.Mantissa, figsize=figsize)
 
     def arc_test(self, decimals=2, grid=True, figsize=12):
         """Adds two columns to Mantissas's DataFrame equal to their "X" and "Y"
@@ -327,27 +314,9 @@ class Mantissas(object):
             self.data['mant_y'] = sin(2 * pi * self.data.Mantissa)
             self.stats['gravity_center'] = (self.data.mant_x.mean(),
                                             self.data.mant_y.mean())
-        fig = plt.figure(figsize=(figsize,figsize))
-        ax = plt.subplot()
-        ax.set_facecolor(colors['b'])
-        ax.scatter(self.data.mant_x, self.data.mant_y, label= "ARC TEST",
-                   color=colors['m'])
-        ax.scatter(self.stats['gravity_center'][0], self.stats['gravity_center'][1],
-                   color=colors['s']) 
-        text_annotation = Annotation(
-                    "  Gravity Center: "
-                    f"x({round(self.stats['gravity_center'][0], decimals)}),"
-                    f" y({round(self.stats['gravity_center'][1], decimals)})", 
-                    xy=(self.stats['gravity_center'][0] - 0.65,
-                        self.stats['gravity_center'][1] - 0.1),
-                    xycoords='data')
-        ax.add_artist(text_annotation)
-        ax.grid(True, which='both')
-        ax.axhline(y=0, color='k')
-        ax.axvline(x=0, color='k')
-        ax.legend(loc = 'lower left')
-        ax.set_title("Mantissas Arc Test")
-        plt.show(block=False);
+        
+        plot_mantissa_arc_test(self.data, self.stats, decimals=decimals, 
+                               grid=grid, figsize=figsize)
 
 class Benford(object):
     """Initializes a Benford Analysis object and computes the proportions for
@@ -619,16 +588,8 @@ class Source(DataFrame):
             print(f"The Mantissas KURTOSIS is {p.Mant.kurt()}. \tRef: -1.2.")
 
         if plot:
-            N = len(p)
-            p['x'] = arange(1, N + 1)
-            n = ones(N) / N
-            fig = plt.figure(figsize=figsize)
-            ax = fig.add_subplot(111)
-            ax.plot(p.x, p.Mant, 'r-', p.x, n.cumsum(), 'b--',
-                    linewidth=2)
-            plt.ylim((0, 1.))
-            plt.xlim((1, N + 1))
-            plt.show(block=False)
+            plot_ordered_mantissas(self.Mant, figsize=figsize)
+
 
     def first_digits(self, digs, confidence=None, high_Z='pos',
                      limit_N=None, MAD=False, MSE=False, chi_square=False,
