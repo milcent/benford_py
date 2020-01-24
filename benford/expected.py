@@ -1,7 +1,7 @@
 from pandas import DataFrame
 from numpy import array, arange, log10
 from .checks import _check_digs_
-from .viz import _plot_expected_
+from .viz import plot_expected
 
 
 class First(DataFrame):
@@ -26,7 +26,7 @@ class First(DataFrame):
         self.index.names = [dig_name]
 
         if plot:
-            _plot_expected_(self, digs)
+            plot_expected(self, digs)
 
 
 class Second(DataFrame):
@@ -47,7 +47,7 @@ class Second(DataFrame):
         DataFrame.__init__(self, df.groupby('Sec_Dig').sum())
 
         if plot:
-            _plot_expected_(self, 22)
+            plot_expected(self, 22)
 
 
 class LastTwo(DataFrame):
@@ -64,7 +64,7 @@ class LastTwo(DataFrame):
                               'Last_2_Dig': _lt_(num=num)})
         self.set_index('Last_2_Dig', inplace=True)
         if plot:
-            _plot_expected_(self, -2)
+            plot_expected(self, -2)
 
 def _test_(digs):
     """Chooses the Exxpected class to be used in a test

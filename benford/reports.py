@@ -39,7 +39,7 @@ def _inform_(df, high_Z, conf):
             print('\nThe entries with the significant deviations are:\n')
     print(dd)
 
-def _report_MAD_(digs, MAD):
+def _report_mad_(digs, MAD):
     """Reports the test Mean Absolut Deviation and compares it to critical values
     """
     print(f'Mean Absolute Deviation: {MAD:.6f}')
@@ -101,7 +101,7 @@ def _report_test_(test, high=None, crit_vals=None):
     """
     print('\n', f'  {test.name}  '.center(50, '#'), '\n')
     if not 'Summation' in test.name:
-        _report_MAD_(test.digs, test.MAD)
+        _report_mad_(test.digs, test.MAD)
         if test.confidence is not None:
             print(f"For confidence level {test.confidence}%: ")
             _report_KS_(test.KS, crit_vals['KS'])

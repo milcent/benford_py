@@ -2,7 +2,7 @@ from pandas import Series, DataFrame
 from numpy import array, arange, log10, ndarray
 from .expected import _test_
 from .constants import digs_dict
-from .stats import _Z_score
+from .stats import Z_score
 
 
 def _set_N_(len_df, limit_N):
@@ -18,7 +18,7 @@ def _set_N_(len_df, limit_N):
             return limit_N
 
 
-def _getMantissas_(arr):
+def get_mantissas(arr):
     """Computes the  mantissas, the non-integer part of the log of a number.
     
     Args:
@@ -31,8 +31,8 @@ def _getMantissas_(arr):
     return log_a - log_a.astype(int)  # the number - its integer part
 
 
-def _input_data_(given):
-    """Internalizes and transform the input data
+def input_data(given):
+    """Internalizes and transforms the input data
     
     Args:
         given: ndarray, Series or tuple with DataFrame and name of the
@@ -59,7 +59,7 @@ def _input_data_(given):
     return data, chosen
 
 
-def _prep_(data, digs, limit_N, simple=False, confidence=None):
+def prepare(data, digs, limit_N, simple=False, confidence=None):
     """Transforms the original number sequence into a DataFrame reduced
     by the ocurrences of the chosen digits, creating other computed
     columns
@@ -82,10 +82,10 @@ def _prep_(data, digs, limit_N, simple=False, confidence=None):
         return dd
     else:
         if confidence is not None:
-            dd['Z_score'] = _Z_score(dd, N)
+            dd['Z_score'] = Z_score(dd, N)
         return N, dd
 
-def _subtract_sorted_(data):
+def subtract_sorted(data):
     """Subtracts the sorted sequence elements from each other, discarding zeros.
     Used in the Second Order test
     """
@@ -95,7 +95,7 @@ def _subtract_sorted_(data):
     sec = sec.loc[sec != 0]
     return sec
 
-def _prep_to_roll_(start, test):
+def prep_to_roll(start, test):
     """Used by the rolling mad and rolling mean, prepares each test and
     respective expected proportions for later application to the Series subset
     """
@@ -127,7 +127,7 @@ def _prep_to_roll_(start, test):
 
     return Exp, ind
 
-def _mad_to_roll_(arr, Exp, ind):
+def mad_to_roll(arr, Exp, ind):
     """Mean Absolute Deviation used in the rolling function
     """
     prop = Series(arr)
@@ -138,7 +138,7 @@ def _mad_to_roll_(arr, Exp, ind):
 
     return abs(prop - Exp).mean()
 
-def _mse_to_roll_(arr, Exp, ind):
+def mse_to_roll(arr, Exp, ind):
     """Mean Squared Error used in the rolling function
     """
     prop = Series(arr)

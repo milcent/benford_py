@@ -2,7 +2,7 @@ from numpy import sqrt
 # from .constants import digs_dict, confs, crit_chi2, KS_crit, mad_dict
 
 
-def _Z_score(frame, N):
+def Z_score(frame, N):
     """Computes the Z statistics for the proportions studied
 
     Args:
@@ -17,7 +17,7 @@ def _Z_score(frame, N):
            (frame.Expected * (1. - frame.Expected)) / N)
 
 
-def _chi_square_(frame, ddf, confidence, verbose=True):
+def chi_square(frame, ddf, confidence, verbose=True):
     """Comnputes the chi-square statistic of the found distributions and compares
     it with the critical chi-square of such a sample, according to the
     confidence level chosen and the degrees of freedom - len(sample) -1.
@@ -49,7 +49,7 @@ def _chi_square_(frame, ddf, confidence, verbose=True):
         return (found_chi, crit_chi)
 
 
-def _chi_square_2(frame):
+def chi_square_2(frame):
     """Computes the chi-square statistic of the found distributions
 
     Args:
@@ -63,7 +63,7 @@ def _chi_square_2(frame):
     return (dif_counts ** 2 / exp_counts).sum()
 
 
-def _KS_(frame, confidence, N, verbose=True):
+def KS(frame, confidence, N, verbose=True):
     """Computes the Kolmogorov-Smirnov test of the found distributions
     and compares it with the critical chi-square of such a sample,
     according to the confidence level chosen.
@@ -97,7 +97,7 @@ def _KS_(frame, confidence, N, verbose=True):
         return (suprem, crit_KS)
 
 
-def _KS_2(frame):
+def KS_2(frame):
     """Computes the Kolmogorov-Smirnov test of the found distributions
     
     Args:
@@ -113,7 +113,7 @@ def _KS_2(frame):
     return ((ks_frame.Found - ks_frame.Expected).abs()).max()
 
 
-def _mad_(frame, test, verbose=True):
+def mad(frame, test, verbose=True):
     """Computes the Mean Absolute Deviation (MAD) between the found and the
     expected proportions.
 
@@ -143,7 +143,7 @@ def _mad_(frame, test, verbose=True):
     return mad
 
 
-def _mse_(frame, verbose=True):
+def mse(frame, verbose=True):
     """Computes the test's Mean Square Error
 
     Args:

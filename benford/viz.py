@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from .constants import colors
 
 
-def _plot_expected_(df, digs):
+def plot_expected(df, digs):
     """Plots the Expected Benford Distributions
 
     Args:
@@ -50,7 +50,7 @@ def _get_plot_args(digs):
     return x, figsize, text_x
     
 
-def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
+def plot_digs(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     """Plots the digits tests results
 
     Args:
@@ -106,7 +106,7 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     plt.show(block=False)
 
 
-def _plot_sum_(df, figsize, li, text_x=False):
+def plot_sum(df, figsize, li, text_x=False):
     """Plots the summation test results
 
     Args:

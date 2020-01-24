@@ -31,15 +31,15 @@ from .constants import confs, digs_dict, sec_order_dict, rev_digs, names, \
     mad_dict, colors, crit_chi2, KS_crit
 from .checks import _check_digs_, _check_confidence_, _check_test_, \
     _check_num_array, _check_high_Z_
-from .utils import  _set_N_, _input_data_, _prep_, \
-    _subtract_sorted_, _prep_to_roll_, _mad_to_roll_, _mse_to_roll_, \
-     _getMantissas_
+from .utils import  _set_N_, input_data, prepare, \
+    subtract_sorted, prep_to_roll, mad_to_roll, mse_to_roll, \
+     get_mantissas
 from .expected import First, Second, LastTwo, _test_
-from .viz import _get_plot_args, _plot_dig_, _plot_sum_
-from .reports import _inform_, _report_MAD_, _report_summ_, _report_KS_,\
+from .viz import _get_plot_args, plot_digs, plot_sum
+from .reports import _inform_, _report_mad_, _report_summ_, _report_KS_,\
     _report_Z_, _report_chi2_, _report_test_, _deprecate_inform_
-from .stats import _Z_score, _chi_square_, _chi_square_2, _KS_, _KS_2, \
-    _mad_, _mse_
+from .stats import Z_score, chi_square, chi_square_2, KS, KS_2, \
+    mad, mse
 
 class Base(DataFrame):
     """Internalizes and prepares the data for Analysis.
@@ -136,13 +136,13 @@ class Test(DataFrame):
         self['AbsDif'] = self.Dif.abs()
         #: Number of records in the sample to consider in computations
         self.N = _set_N_(len(base), limit_N)
-        self['Z_score'] = _Z_score(self, self.N)
+        self['Z_score'] = Z_score(self, self.N)
         #: Degrees of Freedom to look up for the critical chi-square value
         self.ddf = len(self) - 1
         #: Chi-square statistic for the given test
-        self.chi_square = _chi_square_2(self)
+        self.chi_square = chi_square_2(self)
         #: Kolmogorov-Smirnov statistic for the given test
-        self.KS = _KS_2(self)
+        self.KS = KS_2(self)
         #: Mean Absolute Deviation for the given test
         self.MAD = self.AbsDif.mean()
         #: Confidence level to consider when setting some critical values
@@ -186,7 +186,7 @@ class Test(DataFrame):
         """Draws the test plot.
         """
         x, figsize, text_x = _get_plot_args(self.digs)
-        _plot_dig_(self, x=x, y_Exp=self.Expected, y_Found=self.Found,
+        plot_digs(self, x=x, y_Exp=self.Expected, y_Found=self.Found,
                     N=self.N, figsize=figsize, conf_Z=confs[self.confidence],
                     text_x=text_x
                     )
@@ -238,7 +238,7 @@ class Summ(DataFrame):
     def show_plot(self):
         """Draws the Summation test plot"""
         figsize=(2 * (self.digs ** 2 + 5), 1.5 * (self.digs ** 2 + 5))
-        _plot_sum_(self, figsize, self.expected)
+        plot_sum(self, figsize, self.expected)
     
     def report(self, high_diff=None, show_plot=True):
         """Gives the report on the Summation test.
@@ -265,7 +265,7 @@ class Mantissas(object):
         data = Series(_check_num_array(data))
         data = data.dropna().loc[data != 0].abs()
         #: (DataFrame): pandas DataFrame with the mantissas
-        self.data = DataFrame({'Mantissa': _getMantissas_(data.abs())})
+        self.data = DataFrame({'Mantissa': get_mantissas(data.abs())})
         # (dict): Dictionary with the mantissas statistics 
         self.stats = {'Mean': self.data.Mantissa.mean(),
                       'Var': self.data.Mantissa.var(),
@@ -403,7 +403,7 @@ class Benford(object):
     def __init__(self, data, decimals=2, sign='all', confidence=95,
                  mantissas=False, sec_order=False, summation=False,
                  limit_N=None, verbose=True):
-        self.data, self.chosen = _input_data_(data)
+        self.data, self.chosen = input_data(data)
         self.decimals = decimals
         self.sign = sign
         self.confidence = _check_confidence_(confidence)
@@ -501,7 +501,7 @@ class Benford(object):
         Order can also be called separately, through the method sec_order().
         """
         #: Base instance of the differences between the ordered sample
-        self.base_sec = Base(_subtract_sorted_(self.chosen),
+        self.base_sec = Base(subtract_sorted(self.chosen),
                              decimals=self.decimals, sign=self.sign)
         for key, val in digs_dict.items():
             test = Test(self.base_sec.loc[self.base_sec[val] != -1],
@@ -582,7 +582,7 @@ class Source(DataFrame):
             print(f"\nInitialized sequence with {len(self)} registries.")
 
         if sec_order:
-            self.Seq = _subtract_sorted_(self.Seq.copy())
+            self.Seq = subtract_sorted(self.Seq.copy())
             self.dropna(inplace=True)
             self.reset_index(inplace=True)
             if verbose:
@@ -615,7 +615,7 @@ class Source(DataFrame):
                 inclination. Defaults to True.
             figsize: tuple that sets the figure dimensions.
         """
-        self['Mant'] = _getMantissas_(self.Seq.abs())
+        self['Mant'] = get_mantissas(self.Seq.abs())
         if report:
             p = self[['Seq', 'Mant']]
             p = p.loc[p.Seq > 0].sort_values('Mant')
@@ -689,10 +689,10 @@ class Source(DataFrame):
         if simple:
             self.verbose = False
             show_plot = False
-            df = _prep_(temp[digs_dict[digs]], digs, limit_N=limit_N,
+            df = prepare(temp[digs_dict[digs]], digs, limit_N=limit_N,
                         simple=True, confidence=None)
         else:
-            N, df = _prep_(temp[digs_dict[digs]], digs, limit_N=limit_N,
+            N, df = prepare(temp[digs_dict[digs]], digs, limit_N=limit_N,
                            simple=False, confidence=confidence)
 
         if self.verbose:
@@ -704,25 +704,25 @@ class Source(DataFrame):
 
         # Mean absolute difference
         if MAD:
-            self.MAD = _mad_(df, test=digs, verbose=self.verbose)
+            self.MAD = mad(df, test=digs, verbose=self.verbose)
 
         # Mean Square Error
         if MSE:
-            self.MSE = _mse_(df, verbose=self.verbose)
+            self.MSE = mse(df, verbose=self.verbose)
 
         # Chi-square statistic
         if chi_square:
-            self.chi_square = _chi_square_(df, ddf=len(df) - 1,
+            self.chi_square = chi_square(df, ddf=len(df) - 1,
                                            confidence=confidence,
                                            verbose=self.verbose)
         # KS test
         if KS:
-            self.KS = _KS_(df, confidence=confidence, N=len(temp),
+            self.KS = KS(df, confidence=confidence, N=len(temp),
                            verbose=self.verbose)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
-            _plot_dig_(df, x=x, y_Exp=df.Expected, y_Found=df.Found, N=N,
+            plot_digs(df, x=x, y_Exp=df.Expected, y_Found=df.Found, N=N,
                        figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)),
                        conf_Z=confs[confidence])
         if ret_df:
@@ -772,10 +772,10 @@ class Source(DataFrame):
         if simple:
             self.verbose = False
             show_plot = False
-            df = _prep_(temp['SD'], 22, limit_N=limit_N, simple=True,
+            df = prepare(temp['SD'], 22, limit_N=limit_N, simple=True,
                         confidence=None)
         else:
-            N, df = _prep_(temp['SD'], 22, limit_N=limit_N, simple=False,
+            N, df = prepare(temp['SD'], 22, limit_N=limit_N, simple=False,
                            confidence=confidence)
 
         if self.verbose:
@@ -786,24 +786,24 @@ class Source(DataFrame):
 
         # Mean absolute difference
         if MAD:
-            self.MAD = _mad_(df, test=22, verbose=self.verbose)
+            self.MAD = mad(df, test=22, verbose=self.verbose)
 
         # Mean Square Error
         if MSE:
-            self.MSE = _mse_(df, verbose=self.verbose)
+            self.MSE = mse(df, verbose=self.verbose)
 
         # Chi-square statistic
         if chi_square:
-            self.chi_square = _chi_square_(df, ddf=9, confidence=confidence,
+            self.chi_square = chi_square(df, ddf=9, confidence=confidence,
                                            verbose=self.verbose)
         # KS test
         if KS:
-            self.KS = _KS_(df, confidence=confidence, N=len(temp),
+            self.KS = KS(df, confidence=confidence, N=len(temp),
                            verbose=self.verbose)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
-            _plot_dig_(df, x=arange(0, 10), y_Exp=df.Expected,
+            plot_digs(df, x=arange(0, 10), y_Exp=df.Expected,
                        y_Found=df.Found, N=N, figsize=(10, 6), conf_Z=conf)
         if ret_df:
             return df
@@ -848,10 +848,10 @@ class Source(DataFrame):
         if simple:
             self.verbose = False
             show_plot = False
-            df = _prep_(temp['L2D'], -2, limit_N=limit_N, simple=True,
+            df = prepare(temp['L2D'], -2, limit_N=limit_N, simple=True,
                         confidence=None)
         else:
-            N, df = _prep_(temp['L2D'], -2, limit_N=limit_N, simple=False,
+            N, df = prepare(temp['L2D'], -2, limit_N=limit_N, simple=False,
                            confidence=confidence)
 
         if self.verbose:
@@ -862,24 +862,24 @@ class Source(DataFrame):
 
         # Mean absolute difference
         if MAD:
-            self.MAD = _mad_(df, test=-2, verbose=self.verbose)
+            self.MAD = mad(df, test=-2, verbose=self.verbose)
 
         # Mean Square Error
         if MSE:
-            self.MSE = _mse_(df, verbose=self.verbose)
+            self.MSE = mse(df, verbose=self.verbose)
 
         # Chi-square statistic
         if chi_square:
-            self.chi_square = _chi_square_(df, ddf=99, confidence=confidence,
+            self.chi_square = chi_square(df, ddf=99, confidence=confidence,
                                            verbose=self.verbose)
         # KS test
         if KS:
-            self.KS = _KS_(df, confidence=confidence, N=len(temp),
+            self.KS = KS(df, confidence=confidence, N=len(temp),
                            verbose=self.verbose)
 
         # Plotting expected frequencies (line) versus found ones (bars)
         if show_plot:
-            _plot_dig_(df, x=arange(0, 100), y_Exp=df.Expected,
+            plot_digs(df, x=arange(0, 100), y_Exp=df.Expected,
                        y_Found=df.Found, N=N, figsize=(15, 5),
                        conf_Z=conf, text_x=True)
         if ret_df:
@@ -925,7 +925,7 @@ class Source(DataFrame):
             print(df[:top])
 
         if show_plot:
-            _plot_sum_(df, figsize=(
+            plot_sum(df, figsize=(
                        2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)), li=li)
 
         if ret_df:
@@ -1115,10 +1115,10 @@ class Roll_mad(Series):
         if not isinstance(data, Source):
             start = Source(data, sign=sign, decimals=decimals, verbose=False)
 
-        Exp, ind = _prep_to_roll_(start, test)
+        Exp, ind = prep_to_roll(start, test)
 
         Series.__init__(self, start[digs_dict[test]].rolling(
-            window=window).apply(_mad_to_roll_, args=(Exp, ind), raw=False))
+            window=window).apply(mad_to_roll, args=(Exp, ind), raw=False))
 
         self.dropna(inplace=True)
         #: the test (F1D, SD, F2D...) used for the MAD calculation and critical values
@@ -1167,10 +1167,10 @@ class Roll_mse(Series):
         if not isinstance(data, Source):
             start = Source(data, sign=sign, decimals=decimals, verbose=False)
 
-        Exp, ind = _prep_to_roll_(start, test)
+        Exp, ind = prep_to_roll(start, test)
 
         Series.__init__(self, start[digs_dict[test]].rolling(
-            window=window).apply(_mse_to_roll_, args=(Exp, ind), raw=False))
+            window=window).apply(mse_to_roll, args=(Exp, ind), raw=False))
 
         self.dropna(inplace=True)
 
