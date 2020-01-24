@@ -2,9 +2,8 @@ import warnings
 from .constants import mad_dict
 
 def _inform_(df, high_Z, conf):
-    '''
-    Selects and sorts by the Z_stats chosen to be considered, informing or not.
-    '''
+    """Selects and sorts by the Z_stats chosen to be considered, informing or not.
+    """
 
     if isinstance(high_Z, int):
         if conf is not None:
@@ -41,9 +40,8 @@ def _inform_(df, high_Z, conf):
     print(dd)
 
 def _report_MAD_(digs, MAD):
-    '''
-    Reports the test Mean Absolut Deviation and compares it to critical values
-    '''
+    """Reports the test Mean Absolut Deviation and compares it to critical values
+    """
     print(f'Mean Absolute Deviation: {MAD:.6f}')
     if digs != -2:
         mads = mad_dict[digs]
@@ -61,37 +59,33 @@ def _report_MAD_(digs, MAD):
         print("There is no conformity check for this test's MAD.\n")
 
 def _report_KS_(KS, crit_KS):
-    '''
-    Reports the test Kolmogorov-Smirnov statistic and compares it to critical
+    """Reports the test Kolmogorov-Smirnov statistic and compares it to critical
     values, depending on the confidence level
-    '''
+    """
     result = 'PASS' if KS <= crit_KS else 'FAIL'
     print(f"\n\tKolmogorov-Smirnov: {KS:.6f}",
           f"\n\tCritical value: {crit_KS:.6f} -- {result}")
 
 def _report_chi2_(chi2, crit_chi2):
-    '''
-    Reports the test Chi-square statistic and compares it to critical values,
+    """Reports the test Chi-square statistic and compares it to critical values,
     depending on the confidence level
-    '''
+    """
     result = 'PASS' if chi2 <= crit_chi2 else 'FAIL'
     print(f"\n\tChi square: {chi2:.6f}",
           f"\n\tCritical value: {crit_chi2:.6f} -- {result}")
 
 def _report_Z_(df, high_Z, crit_Z):
-    '''
-    Reports the test Z scores and compares them to a critical value,
+    """Reports the test Z scores and compares them to a critical value,
     depending on the confidence level
-    '''
+    """
     print(f"\n\tCritical Z-score:{crit_Z}.")
     _inform_(df, high_Z, crit_Z)
 
 def _report_summ_(test, high_diff):
-    '''
-    Reports the Summation Test Absolute Differences between the Found and
+    """Reports the Summation Test Absolute Differences between the Found and
     the Expected proportions
 
-    '''
+    """
     if high_diff is not None:
         print(f'\nThe top {high_diff} Absolute Differences are:\n')
         print(test.sort_values('AbsDif', ascending=False).head(high_diff))
@@ -101,11 +95,10 @@ def _report_summ_(test, high_diff):
     
 
 def _report_test_(test, high=None, crit_vals=None):
-    '''
-    Main report function. Receives the parameters to report with, initiates
+    """Main report function. Receives the Args: to report with, initiates
     the process, and calls the right reporting helper function(s), depending
     on the Test.
-    '''
+    """
     print('\n', f'  {test.name}  '.center(50, '#'), '\n')
     if not 'Summation' in test.name:
         _report_MAD_(test.digs, test.MAD)
@@ -124,6 +117,10 @@ def _report_test_(test, high=None, crit_vals=None):
 
 
 def _deprecate_inform_(verbose, inform):
+    """
+    Raises:
+        FutureWarning: if the arg `inform` is used (to be deprecated).    
+    """
     if inform is None:
         return verbose
     else:

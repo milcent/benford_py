@@ -6,6 +6,7 @@ from .stats import _Z_score
 
 
 def _set_N_(len_df, limit_N):
+    """"""
     # Assigning to N the superior limit or the lenght of the series
     if limit_N is None or limit_N > len_df:
         return len_df
@@ -18,18 +19,29 @@ def _set_N_(len_df, limit_N):
 
 
 def _getMantissas_(arr):
-    '''
-    Returns the  mantissas, the non-integer part of the log of a number.
-
-    arr: array of integers or floats ---> array of floats
-    '''
+    """Computes the  mantissas, the non-integer part of the log of a number.
+    
+    Args:
+        arr: array of integers or floats
+    
+    Returns:
+        Array of floats withe logs mantissas
+    """
     log_a = abs(log10(arr))
     return log_a - log_a.astype(int)  # the number - its integer part
 
 
 def _input_data_(given):
-    '''
-    '''
+    """Internalizes and transform the input data
+    
+    Args:
+        given: ndarray, Series or tuple with DataFrame and name of the
+            column to analyze
+    
+    Returns:
+        The raw inputed data and the result of its first pre-processing,
+            when required.
+    """
     if type(given) == Series:
         data = chosen = given
     elif type(given) == ndarray:
@@ -48,11 +60,10 @@ def _input_data_(given):
 
 
 def _prep_(data, digs, limit_N, simple=False, confidence=None):
-    '''
-    Transforms the original number sequence into a DataFrame reduced
+    """Transforms the original number sequence into a DataFrame reduced
     by the ocurrences of the chosen digits, creating other computed
     columns
-    '''
+    """
     N = _set_N_(len(data), limit_N=limit_N)
 
     # get the number of occurrences of the digits
@@ -75,10 +86,9 @@ def _prep_(data, digs, limit_N, simple=False, confidence=None):
         return N, dd
 
 def _subtract_sorted_(data):
-    '''
-    Subtracts the sorted sequence elements from each other, discarding zeros.
+    """Subtracts the sorted sequence elements from each other, discarding zeros.
     Used in the Second Order test
-    '''
+    """
     sec = data.copy()
     sec.sort_values(inplace=True)
     sec = sec - sec.shift(1)
@@ -86,10 +96,9 @@ def _subtract_sorted_(data):
     return sec
 
 def _prep_to_roll_(start, test):
-    '''
-    Used by the rolling mad and rolling mean, prepares each test and
+    """Used by the rolling mad and rolling mean, prepares each test and
     respective expected proportions for later application to the Series subset
-    '''
+    """
     if test in [1, 2, 3]:
         start[digs_dict[test]] = start.ZN // 10 ** ((
             log10(start.ZN).astype(int)) - (test - 1))
@@ -119,9 +128,8 @@ def _prep_to_roll_(start, test):
     return Exp, ind
 
 def _mad_to_roll_(arr, Exp, ind):
-    '''
-    Mean Absolute Deviation used in the rolling function
-    '''
+    """Mean Absolute Deviation used in the rolling function
+    """
     prop = Series(arr)
     prop = prop.value_counts(normalize=True).sort_index()
 
@@ -131,9 +139,8 @@ def _mad_to_roll_(arr, Exp, ind):
     return abs(prop - Exp).mean()
 
 def _mse_to_roll_(arr, Exp, ind):
-    '''
-    Mean Squared Error used in the rolling function
-    '''
+    """Mean Squared Error used in the rolling function
+    """
     prop = Series(arr)
     temp = prop.value_counts(normalize=True).sort_index()
 

@@ -3,34 +3,38 @@ from numpy import sqrt
 
 
 def _Z_score(frame, N):
-    '''
-    Returns the Z statistics for the proportions assessed
+    """Computes the Z statistics for the proportions studied
 
-    frame -> DataFrame with the expected proportions and the already calculated
+    Args:
+        frame: DataFrame with the expected proportions and the already calculated
             Absolute Diferences between the found and expeccted proportions
-    N -> sample size
-    '''
+        N: sample size
+    
+    Returns:
+        Series of computed Z scores
+    """
     return (frame.AbsDif - (1 / (2 * N))) / sqrt(
            (frame.Expected * (1. - frame.Expected)) / N)
 
 
 def _chi_square_(frame, ddf, confidence, verbose=True):
-    '''
-    Returns the chi-square statistic of the found distributions and compares
+    """Comnputes the chi-square statistic of the found distributions and compares
     it with the critical chi-square of such a sample, according to the
     confidence level chosen and the degrees of freedom - len(sample) -1.
 
-    Parameters
-    ----------
-    frame:      DataFrame with Found, Expected and their difference columns.
-
-    ddf:        Degrees of freedom to consider.
-
-    confidence: Confidence level - confs dict.
-
-    verbose:     prints the chi-squre result and compares to the critical
-    chi-square for the sample. Defaults to True.
-    '''
+    Args:
+        frame: DataFrame with Found, Expected and their difference columns.
+        ddf: Degrees of freedom to consider.
+        confidence: Confidence level to look up critical value.
+        verbose: prints the chi-squre result and compares to the critical
+            chi-square for the sample. Defaults to True.
+    
+    Returns:
+        The computed Chi square statistic and the critical chi square
+            (according) to the degrees of freedom and confidence level,
+            for comparison
+        None if confidence is None
+    """
     if confidence is None:
         print('\nChi-square test needs confidence other than None.')
         return
@@ -46,36 +50,36 @@ def _chi_square_(frame, ddf, confidence, verbose=True):
 
 
 def _chi_square_2(frame):
-    '''
-    Returns the chi-square statistic of the found distributions
+    """Computes the chi-square statistic of the found distributions
 
-    Parameters
-    ----------
-    frame:      DataFrame with Found, Expected and their difference columns.
+    Args:
+        frame: DataFrame with Found, Expected and their difference columns.
 
-    '''
+    Returns:
+        The computed Chi square statistic 
+    """
     exp_counts = frame.Counts.sum() * frame.Expected
     dif_counts = frame.Counts - exp_counts
     return (dif_counts ** 2 / exp_counts).sum()
 
 
 def _KS_(frame, confidence, N, verbose=True):
-    '''
-    Returns the Kolmogorov-Smirnov test of the found distributions
+    """Computes the Kolmogorov-Smirnov test of the found distributions
     and compares it with the critical chi-square of such a sample,
     according to the confidence level chosen.
 
-    Parameters
-    ----------
-    frame: DataFrame with Foud and Expected distributions.
-
-    confidence: Confidence level - confs dict.
-
-    N: Sample size
-
-    verbose: prints the KS result and the critical value for the sample.
-        Defaults to True.
-    '''
+    Args:
+        frame: DataFrame with Foud and Expected distributions.
+        confidence: Confidence level to look up critical value.
+        N: Sample size
+        verbose: prints the KS result and the critical value for the sample.
+            Defaults to True.
+    
+    Returns:
+        The Suprem, which is the greatest absolute difference between the
+            Found end th expected proportions, and the Kolmogorov-Smirnov
+            critical value according to the confidence level, for ccomparison
+    """
     if confidence is None:
         print('\nKolmogorov-Smirnov test needs confidence other than None.')
         return
@@ -94,13 +98,15 @@ def _KS_(frame, confidence, N, verbose=True):
 
 
 def _KS_2(frame):
-    '''
-    Returns the Kolmogorov-Smirnov test of the found distributions.
-
-    Parameters
-    ----------
-    frame: DataFrame with Foud and Expected distributions.
-    '''
+    """Computes the Kolmogorov-Smirnov test of the found distributions
+    
+    Args:
+        frame: DataFrame with Foud and Expected distributions.
+    
+    Returns:
+        The Suprem, which is the greatest absolute difference between the
+            Found end th expected proportions
+    """
     # sorting and calculating the cumulative distribution
     ks_frame = frame.sort_index()[['Found', 'Expected']].cumsum()
     # finding the supremum - the largest cumul dist difference
@@ -108,20 +114,19 @@ def _KS_2(frame):
 
 
 def _mad_(frame, test, verbose=True):
-    '''
-    Returns the Mean Absolute Deviation (MAD) between the found and the
+    """Computes the Mean Absolute Deviation (MAD) between the found and the
     expected proportions.
 
-    Parameters
-    ----------
-
-    frame: DataFrame with the Absolute Deviations already calculated.
-
-    test: Test to compute the MAD from (F1D, SD, F2D...)
-
-    verbose: prints the MAD result and compares to limit values of
-        conformity. Defaults to True.
-    '''
+    Args:
+        frame: DataFrame with the Absolute Deviations already calculated.
+        test: Test to compute the MAD from (F1D, SD, F2D...)
+        verbose: prints the MAD result and compares to limit values of
+            conformity. Defaults to True.
+    
+    Returns:
+        The Mean of the Absolute Deviations between the found and expected
+            proportions. 
+    """
     mad = frame.AbsDif.mean()
 
     if verbose:
@@ -139,14 +144,17 @@ def _mad_(frame, test, verbose=True):
 
 
 def _mse_(frame, verbose=True):
-    '''
-    Returns the test's Mean Square Error
+    """Computes the test's Mean Square Error
 
-    frame -> DataFrame with the already computed Absolute Deviations between
+    Args:
+        frame: DataFrame with the already computed Absolute Deviations between
             the found and expected proportions
-
-    verbose -> Prints the MSE. Defaults to True. If False, returns MSE.
-    '''
+        verbose: Prints the MSE. Defaults to True.
+    
+    Returns:
+        Mean of the squared differences between the found and the expected
+            proportions.
+    """
     mse = (frame.AbsDif ** 2).mean()
 
     if verbose:

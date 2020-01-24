@@ -4,12 +4,12 @@ from .constants import colors
 
 
 def _plot_expected_(df, digs):
-    '''
-    Plots the Expected Benford Distributions
+    """Plots the Expected Benford Distributions
 
-    df   -> DataFrame with the Expected Proportions
-    digs -> Test's digit
-    '''
+    Args:
+        df: DataFrame with the Expected Proportions
+        digs: Test's digit
+    """
     if digs in [1, 2, 3]:
         y_max = (df.Expected.max() + (10 ** -(digs) / 3)) * 100
         fig, ax = plt.subplots(figsize=(2 * (digs ** 2 + 5), 1.5 *
@@ -31,10 +31,9 @@ def _plot_expected_(df, digs):
     plt.show(block=False)
 
 def _get_plot_args(digs):
-    '''
-    Gets the correct arguments for the plotting functions, depending on the
+    """Selects the correct arguments for the plotting functions, depending on the
     the test (digs) chosen.
-    '''
+    """
     if digs in [1, 2, 3]:
         text_x = False
         n, m = 10 ** (digs - 1), 10 ** (digs)
@@ -52,20 +51,20 @@ def _get_plot_args(digs):
     
 
 def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
-    '''
-    Plots the digits tests results
+    """Plots the digits tests results
 
-    df -> DataFrame with the data to be plotted
-    x -> sequence to be used in the x axis
-    y_Exp -> sequence of the expected proportions to be used in the y axis
-        (line)
-    y_Found -> sequence of the found proportions to be used in the y axis
-        (bars)
-    N -> lenght of sequence, to be used when plotting the confidence levels
-    figsize - > tuple to state the size of the plot figure
-    conf_Z -> Confidence level
-    text_x -> Forces to show all x ticks labels. Defaluts to True.
-    '''
+    Args:
+        df: DataFrame with the data to be plotted
+        x: sequence to be used in the x axis
+        y_Exp: sequence of the expected proportions to be used in the y axis
+            (line)
+        y_Found: sequence of the found proportions to be used in the y axis
+            (bars)
+        N: lenght of sequence, to be used when plotting the confidence levels
+        figsize: tuple to state the size of the plot figure
+        conf_Z: Confidence level
+        text_x: Forces to show all x ticks labels. Defaluts to True.
+    """
     if len(x) > 10:
         rotation = 90
     else:
@@ -108,15 +107,13 @@ def _plot_dig_(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
 
 
 def _plot_sum_(df, figsize, li, text_x=False):
-    '''
-    Plots the summation test results
+    """Plots the summation test results
 
-    df -> DataFrame with the data to be plotted
-
-    figsize - > tuple to state the size of the plot figure
-
-    li -> values with which to draw the horizontal line
-    '''
+    Args:
+        df: DataFrame with the data to be plotted
+        figsize: sets the dimensions of the plot figure
+        li -> value with which to draw the horizontal line
+    """
     x = df.index
     rotation = 90 if len(x) > 10 else 0
     fig = plt.figure(figsize=figsize)

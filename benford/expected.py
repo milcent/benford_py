@@ -5,20 +5,16 @@ from .viz import _plot_expected_
 
 
 class First(DataFrame):
-    '''
-     Returns the expected probabilities of the First, First Two, or
+    """Holds the expected probabilities of the First, First Two, or
      First Three digits according to Benford's distribution.
 
-    Parameters
-    ----------
-
-    digs-> 1, 2 or 3 - tells which of the first digits to consider:
+    Args:
+        digs: 1, 2 or 3 - tells which of the first digits to consider:
             1 for the First Digit, 2 for the First Two Digits and 3 for
             the First Three Digits.
-
-    plot-> option to plot a bar chart of the Expected proportions.
+        plot: option to plot a bar chart of the Expected proportions.
             Defaults to True.
-    '''
+    """
 
     def __init__(self, digs, plot=True):
         _check_digs_(digs)
@@ -34,16 +30,13 @@ class First(DataFrame):
 
 
 class Second(DataFrame):
-    '''
-    Returns the expected probabilities of the Second Digits
+    """Holds the expected probabilities of the Second Digits
     according to Benford's distribution.
 
-    Parameters
-    ----------
-
-    plot: option to plot a bar chart of the Expected proportions.
-        Defaults to True.
-    '''
+    Args:
+        plot: option to plot a bar chart of the Expected proportions.
+            Defaults to True.
+    """
     def __init__(self, plot=True):
         a = arange(10, 100)
         Expe = log10(1 + (1. / a))
@@ -58,16 +51,13 @@ class Second(DataFrame):
 
 
 class LastTwo(DataFrame):
-    '''
-    Returns the expected probabilities of the Last Two Digits
+    """Holds the expected probabilities of the Last Two Digits
     according to Benford's distribution.
 
-    Parameters
-    ----------
-
-    plot: option to plot a bar chart of the Expected proportions.
-        Defaults to True.
-    '''
+    Args:
+        plot: option to plot a bar chart of the Expected proportions.
+            Defaults to True.
+    """
     def __init__(self, num=False, plot=True):
         exp = array([1 / 99.] * 100)
         DataFrame.__init__(self, {'Expected': exp,
@@ -77,10 +67,14 @@ class LastTwo(DataFrame):
             _plot_expected_(self, -2)
 
 def _test_(digs):
-    '''
-    Returns the base instance for the proper test to be performed
-    depending on the digit
-    '''
+    """Chooses the Exxpected class to be used in a test
+
+    Args:
+        digs: the int corresponding to the Expected class to be instantiated
+    
+    Returns:
+        the Expected instance forthe propoer test to be performed
+    """
     if digs in [1, 2, 3]:
         return First(digs, plot=False)
     elif digs == 22:
@@ -90,15 +84,16 @@ def _test_(digs):
 
 
 def _lt_(num=False):
-    '''
-    Creates an array with the possible last two digits
+    """Creates an array with the possible last two digits
 
-    Parameters
-    ----------
-
-    num: returns numeric (ints) values. Defaluts to False,
-        which returns strings.
-    '''
+    Args:
+        num: returns numeric (ints) values. Defaluts to False,
+            which returns strings.
+    
+    Returns:
+        Array of ints or str, in any case representing all 100 possible
+            combinations of last two digits
+    """
     if num:
         n = arange(0, 100)
     else:

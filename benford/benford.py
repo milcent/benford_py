@@ -1,4 +1,4 @@
-'''
+"""
 Benford_py for Python is a module for application of Benford's Law
 to a sequence of numbers.
 
@@ -20,7 +20,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 
 from pandas import Series, DataFrame
 from numpy import array, arange, log10, ones, abs, cos, sin, pi, sqrt, mean 
@@ -42,25 +42,23 @@ from .stats import _Z_score, _chi_square_, _chi_square_2, _KS_, _KS_2, \
     _mad_, _mse_
 
 class Base(DataFrame):
-    '''
-    Internalizes and prepares the data for Analysis.
+    """Internalizes and prepares the data for Analysis.
 
-    Parameters
-    ----------
-
-    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
-        a pandas Series or a pandas DataFrame column, with values being
-        integers or floats.
-
-    decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will remove the zeros
-        and consider up to the fifth decimal place to the right, but will
-        loose performance.
-
-    sign: tells which portion of the data to consider. pos: only the positive
-        entries; neg: only negative entries; all: all entries but zeros.
-        Defaults to all.`
-    '''
+    Args:
+        data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+            a pandas Series or a pandas DataFrame column, with values being
+            integers or floats.
+        decimals: number of decimal places to consider. Defaluts to 2.
+            If integers, set to 0. If set to -infer-, it will remove the zeros
+            and consider up to the fifth decimal place to the right, but will
+            loose performance.
+        sign: tells which portion of the data to consider. pos: only the positive
+            entries; neg: only negative entries; all: all entries but zeros.
+            Defaults to all.`
+    
+    Raises:
+        TypeError: if not receiving `int` or `float` as input.
+    """
     def __init__(self, data, decimals, sign='all', sec_order=False):
 
         DataFrame.__init__(self, {'Seq': data})
@@ -111,25 +109,19 @@ class Base(DataFrame):
 
 
 class Test(DataFrame):
-    '''
-    Transforms the original number sequence into a DataFrame reduced
+    """Transforms the original number sequence into a DataFrame reduced
     by the ocurrences of the chosen digits, creating other computed
     columns
 
-    Parameters
-    ----------
-
-    base: The Base object with the data prepared for Analysis
-
-    digs: Tells which test to perform -> 1: first digit; 2: first two digits;
-        3: furst three digits; 22: second digit; -2: last two digits.
-    
-    confidence: confidence level to draw lower and upper limits when
-        plotting and to limit the top deviations to show.
-
-    limit_N: sets a limit to N as the sample size for the calculation of
-            the Z scores if the sample is too big. Defaults to None.
-    '''
+    Args:
+        base: The Base object with the data prepared for Analysis
+        digs: Tells which test to perform: 1: first digit; 2: first two digits;
+            3: furst three digits; 22: second digit; -2: last two digits.
+        confidence: confidence level to draw lower and upper limits when
+            plotting and to limit the top deviations to show.
+        limit_N: sets a limit to N as the sample size for the calculation of
+                the Z scores if the sample is too big. Defaults to None.
+    """
 
     def __init__(self, base, digs, confidence, limit_N=None, sec_order=False):
         # create a separated Expected distributions object
@@ -142,14 +134,22 @@ class Test(DataFrame):
         # create column with absolute differences
         self['Dif'] = self.Found - self.Expected
         self['AbsDif'] = self.Dif.abs()
+        #: Number of records in the sample to consider in computations
         self.N = _set_N_(len(base), limit_N)
         self['Z_score'] = _Z_score(self, self.N)
-        self.chi_square = _chi_square_2(self)
-        self.KS = _KS_2(self)
-        self.MAD = self.AbsDif.mean()
+        #: Degrees of Freedom to look up for the critical chi-square value
         self.ddf = len(self) - 1
+        #: Chi-square statistic for the given test
+        self.chi_square = _chi_square_2(self)
+        #: Kolmogorov-Smirnov statistic for the given test
+        self.KS = _KS_2(self)
+        #: Mean Absolute Deviation for the given test
+        self.MAD = self.AbsDif.mean()
+        #: Confidence level to consider when setting some critical values
         self.confidence = confidence
+        # (int): numerical representation of the test at hand 
         self.digs = digs
+        # (bool): True if the test is a Secnd Order one 
         self.sec_order = sec_order
 
         if sec_order:
@@ -158,19 +158,15 @@ class Test(DataFrame):
             self.name = names[digs_dict[digs]]
     
     def update_confidence(self, new_conf, check=True):
-        '''
-        Sets a new confidence level for the Benford object, so as to be used to
+        """Sets a new confidence level for the Benford object, so as to be used to
         produce critical values for the tests
 
-        Parameters
-        ----------
-
-        new_conf -> new confidence level to draw lower and upper limits when
-            plotting and to limit the top deviations to show, as well as to
-            calculate critical values for the tests' statistics.
-        
-        check -> checks the value provided for the confidence. Defaults to True
-        '''
+        Args:
+            new_conf: new confidence level to draw lower and upper limits when
+                plotting and to limit the top deviations to show, as well as to
+                calculate critical values for the tests' statistics.
+            check: checks the value provided for the confidence. Defaults to True
+        """
         if check:
             self.confidence = _check_confidence_(new_conf)
         else:
@@ -178,10 +174,8 @@ class Test(DataFrame):
 
     @property
     def critical_values(self):
-        '''
-        Returns a dict with the critical values for the test at hand, according
-        to the current confidence level.
-        '''
+        """dict: a dictionary with the critical values for the test at hand,
+        according to the current confidence level."""
         return {'Z': confs[self.confidence],
                 'KS': KS_crit[self.confidence] / (self.N ** 0.5),
                 'chi2': crit_chi2[self.ddf][self.confidence],
@@ -189,9 +183,8 @@ class Test(DataFrame):
                 }
 
     def show_plot(self):
-        '''
-        Draws the test plot.
-        '''
+        """Draws the test plot.
+        """
         x, figsize, text_x = _get_plot_args(self.digs)
         _plot_dig_(self, x=x, y_Exp=self.Expected, y_Found=self.Found,
                     N=self.N, figsize=figsize, conf_Z=confs[self.confidence],
@@ -199,37 +192,31 @@ class Test(DataFrame):
                     )
 
     def report(self, high_Z='pos', show_plot=True):
-        '''
-        Handles the report especific to the test, considering its statistics
+        """Handles the report especific to the test, considering its statistics
         and according to the current confidence level.
 
-        Parameters
-        ----------
-        high_Z: chooses which Z scores to be used when displaying results,
-            according to the confidence level chosen. Defaluts to 'pos',
-            which will highlight only values higher than the expexted
-            frequencies; 'all' will highlight both extremes (positive and
-            negative); and an integer, which will use the first n entries,
-            positive and negative, regardless of whether Z is higher than
-            the critical value or not.
-        show_plot: calls the show_plot method, to draw the test plot
-        '''
+        Args:
+            high_Z: chooses which Z scores to be used when displaying results,
+                according to the confidence level chosen. Defaluts to 'pos',
+                which will highlight only values higher than the expexted
+                frequencies; 'all' will highlight both extremes (positive and
+                negative); and an integer, which will use the first n entries,
+                positive and negative, regardless of whether Z is higher than
+                the critical value or not.
+            show_plot: calls the show_plot method, to draw the test plot
+        """
         high_Z = _check_high_Z_(high_Z)
         _report_test_(self, high_Z, self.critical_values)
         if show_plot:
             self.show_plot()
 
 class Summ(DataFrame):
-    '''
-    Gets the base object and outputs a Summation test object
+    """Gets the base object and outputs a Summation test object
 
-    Parameters
-    ----------
-    base: The Base object with the data prepared for Analysis
-
-    test: The test for which to compute the summation
-
-    '''
+    Args:
+       base: The Base object with the data prepared for Analysis
+       test: The test for which to compute the summation
+    """
     def __init__(self, base, test):
         super(Summ, self).__init__(base.abs()
                                    .groupby(test)[['Seq']]
@@ -239,64 +226,59 @@ class Summ(DataFrame):
         self.expected = 1 / len(self)
         self['AbsDif'] = (self.Percent - self.expected).abs()
         self.index = self.index.astype(int)
+        #: Mean Absolute Deviation for the test
         self.MAD = self.AbsDif.mean()
+        #: Confidence level to consider when setting some critical values
         self.confidence = None
+        # (int): numerical representation of the test at hand 
         self.digs = rev_digs[test]
+        # (str): the name of the Summation test. 
         self.name = names[f'{test}_Summ']
 
     def show_plot(self):
-        '''
-        Draws the Summation test plot.
-        '''
+        """Draws the Summation test plot"""
         figsize=(2 * (self.digs ** 2 + 5), 1.5 * (self.digs ** 2 + 5))
         _plot_sum_(self, figsize, self.expected)
     
     def report(self, high_diff=None, show_plot=True):
-        '''
-        Gives the report on the Summation test.
-        -----------
-        Parameters
-
-        high_diff: Number of records to show after ordering by the absolute
-            differences between the found and the expected proportions
+        """Gives the report on the Summation test.
         
-        show_plot: calls the show_plot method, to draw the Summation test plot
-        '''
+        Args:
+            high_diff: Number of records to show after ordering by the absolute
+                differences between the found and the expected proportions      
+            show_plot: calls the show_plot method, to draw the Summation test plot
+        """
         _report_test_(self, high_diff)
         if show_plot:
             self.show_plot()
 
 class Mantissas(object):
-    '''
-    Returns a Series with the data mantissas,
+    """Computes and holds the mantissas of the logarithms of the records
 
-    Parameters
-    ----------
-    data: sequence to compute mantissas from, numpy 1D array, pandas
-        Series of pandas DataFrame column.
-    '''
+    Args:
+        data: sequence to compute mantissas from. numpy 1D array, pandas
+            Series of pandas DataFrame column.
+    """
 
     def __init__(self, data):
 
         data = Series(_check_num_array(data))
         data = data.dropna().loc[data != 0].abs()
-        
+        #: (DataFrame): pandas DataFrame with the mantissas
         self.data = DataFrame({'Mantissa': _getMantissas_(data.abs())})
-
+        # (dict): Dictionary with the mantissas statistics 
         self.stats = {'Mean': self.data.Mantissa.mean(),
                       'Var': self.data.Mantissa.var(),
                       'Skew': self.data.Mantissa.skew(),
                       'Kurt': self.data.Mantissa.kurt()}
 
     def report(self, show_plot=True):
-        '''
-        Displays the Mantissas test stats.
+        """Displays the Mantissas test stats.
 
-        Parameters
-        ----------
-        show_plot: shows the Ordered Mantissas plot and the Arc Test plot.
-            Defaults to True.
-        '''
+        Args:
+            show_plot: shows the Ordered Mantissas plot and the Arc Test plot.
+                Defaults to True.
+        """
         print("\n", '  Mantissas Test  '.center(52, '#'))
         print(f"\nThe Mantissas MEAN is      {self.stats['Mean']:.6f}."
               "\tRef: 0.5")
@@ -311,15 +293,12 @@ class Mantissas(object):
             self.arc_test()
 
     def show_plot(self, figsize=(12, 6)):
-        '''
-        plots the ordered mantissas and a line with the expected
-                inclination. Defaults to True.
+        """Plots the ordered mantissas and a line with the expected
+        inclination.
 
-        Parameters
-        ----------
-
-        figsize -> tuple that sets the figure size
-        '''
+        Args:
+            figsize (tuple): figure size dimensions
+        """
         ld = len(self.data)
         x = arange(1, ld + 1)
         n = ones(ld) / ld
@@ -337,23 +316,18 @@ class Mantissas(object):
         plt.show(block=False);
 
     def arc_test(self, decimals=2, grid=True, figsize=12):
-        '''
-        Add two columns to Mantissas's DataFrame equal to their "X" and "Y"
+        """Adds two columns to Mantissas's DataFrame equal to their "X" and "Y"
         coordinates, plots its to a scatter plot and calculates the gravity
         center of the circle.
 
-        Parameters
-        ----------
-
-        decimals -> number of decimal places for displaying the gravity center.
-            Defaults to 2.
-        
-        grid -> show grid of the plot. Defaluts to True.
-        
-        figsize -> size of the figure to be displayed. Since it is a square,
-            there is no need to provide a tuple, like is usually the case with
-            matplotlib.
-        '''
+        Args:
+            decimals: number of decimal places for displaying the gravity center.
+                Defaults to 2.
+            grid: show grid of the plot. Defaluts to True.
+            figsize (int): size of the figure to be displayed. Since it is a square,
+                there is no need to provide a tuple, like is usually the case with
+                matplotlib.
+        """
         if self.stats.get('gravity_center') is None:
             self.data['mant_x'] = cos(2 * pi * self.data.Mantissa)
             self.data['mant_y'] = sin(2 * pi * self.data.Mantissa)
@@ -382,47 +356,49 @@ class Mantissas(object):
         plt.show(block=False);
 
 class Benford(object):
-    '''
-    Initializes a Benford Analysis object and computes the proportions for
+    """Initializes a Benford Analysis object and computes the proportions for
     the digits. The tets dataFrames are atributes, i.e., obj.F1D is the First
     Digit DataFrame, the obj.F2D,the First Two Digits one, and so one, F3D for
     First Three Digits, SD for Second  Digit and L2D for Last Two Digits.
 
-    Parameters
-    ----------
-    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
-        a pandas Series or a tuple with a pandas DataFrame and the name (str)
-        of the chosen column. Values must be integers or floats.
-
-    decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will remove the zeros
-        and consider up to the fifth decimal place to the right, but will
-        loose performance.
-
-    sign: tells which portion of the data to consider. pos: only the positive
-        entries; neg: only negative entries; all: all entries but zeros.
-        Defaults to all.
-    
-    confidence: confidence level to draw lower and upper limits when
+    Args:
+        data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+            a pandas Series or a tuple with a pandas DataFrame and the name (str)
+            of the chosen column. Values must be integers or floats.
+        decimals: number of decimal places to consider. Defaluts to 2.
+            If integers, set to 0. If set to -infer-, it will remove the zeros
+            and consider up to the fifth decimal place to the right, but will
+            loose performance.
+        sign: tells which portion of the data to consider. pos: only the positive
+            entries; neg: only negative entries; all: all entries but zeros.
+            Defaults to all.
+        confidence: confidence level to draw lower and upper limits when
             plotting and to limit the top deviations to show, as well as to
             calculate critical values for the tests' statistics. Defaults to 95.
+        sec_order: runs the Second Order tests, which are the Benford's tests
+            performed on the differences between the ordered sample (a value minus
+            the one before it, and so on). If the original series is Benford-
+            compliant, this new sequence should aldo follow Beford. The Second
+            Order can also be called separately, through the method sec_order().
+        summation: creates the Summation DataFrames for the First, First Two, and
+            First Three Digits. The summation tests can also be called separately,
+            through the method summation().
+        limit_N: sets a limit to N as the sample size for the calculation of
+            the Z scores if the sample is too big. Defaults to None.
+        verbose: gives some information about the data and the registries used
+            and discarded for each test.
 
-    sec_order: runs the Second Order tests, which are the Benford's tests
-        performed on the differences between the ordered sample (a value minus
-        the one before it, and so on). If the original series is Benford-
-        compliant, this new sequence should aldo follow Beford. The Second
-        Order can also be called separately, through the method sec_order().
-
-    summation: creates the Summation DataFrames for the First, First Two, and
-        First Three Digits. The summation tests can also be called separately,
-        through the method summation().
-
-    limit_N: sets a limit to N as the sample size for the calculation of
-        the Z scores if the sample is too big. Defaults to None.
-
-    verbose: gives some information about the data and the registries used
-        and discarded for each test.
-    '''
+    Attributes:
+        data: the raw data provided for the analysis
+        chosen: the column of the DataFrame to be analysed or the data itself
+        sign (str): which number sign(s) to include in the analysis
+        confidence: current confidence level
+        limit_N (int): sample size to use in computations
+        verbose (bool): verbose or not
+        base: the Base, pre-processed object
+        tests (:obj:`list` of :obj:`str`): keeps track of the tests the
+            instance has
+    """
 
     def __init__(self, data, decimals=2, sign='all', confidence=95,
                  mantissas=False, sec_order=False, summation=False,
@@ -465,19 +441,21 @@ class Benford(object):
             self.summation()
     
     def update_confidence(self, new_conf, tests=None):
-        '''
-        Sets a new confidence level for the Benford object, so as to be used to
-        produce critical values for the tests
+        """Sets (a) new confidence level(s) for the Benford object, so as to be
+        used to produce critical values for the tests.
 
-        Parameters
-        ----------
-        new_conf -> new confidence level to draw lower and upper limits when
-            plotting and to limit the top deviations to show, as well as to
-            calculate critical values for the tests' statistics.
-        tests -> list of tests names (strings) to have their confidence updated.
-            If only one, provide a one-element list, like ['F1D']. Defauts to
-            None, in which case it will use the instance .test list attribute.
-        '''
+        Args:
+            new_conf: new confidence level to draw lower and upper limits when
+                plotting and to limit the top deviations to show, as well as to
+                calculate critical values for the tests' statistics.
+            tests (:obj:`list` of :obj:`str`): list of tests names (strings) to
+                have their confidence updated. If only one, provide a one-element
+                list, like ['F1D']. Defauts to None, in which case it will use
+                the instance .test list attribute.
+        
+        Raises:
+            ValueError: if the test argument is not a `list` or `None`.
+        """
         self.confidence = _check_confidence_(new_conf)
         if tests is None:
             tests = self.tests
@@ -496,9 +474,8 @@ class Benford(object):
     
     @property
     def all_confidences(self):
-        '''
-        Returns the confidence level for the instance's tests, when applicable 
-        '''
+        """dict: a dictionary the confidence level for the instance's tests,
+        when applicable."""
         con_dic= {}
         for key in self.tests:
             try:
@@ -508,8 +485,7 @@ class Benford(object):
         return con_dic
 
     def mantissas(self):
-        """ 
-        Adds a Mantissas object to the tests, with all its statistics and
+        """Adds a Mantissas object to the tests, with all its statistics and
         plotting capabilities. 
         """
         self.Mantissas = Mantissas(self.base.Seq)
@@ -518,13 +494,13 @@ class Benford(object):
             print('\nAdded Mantissas test.')
 
     def sec_order(self):
-        '''
-        Runs the Second Order tests, which are the Benford's tests
+        """Runs the Second Order tests, which are the Benford's tests
         performed on the differences between the ordered sample (a value minus
         the one before it, and so on). If the original series is Benford-
         compliant, this new sequence should aldo follow Beford. The Second
         Order can also be called separately, through the method sec_order().
-        '''
+        """
+        #: Base instance of the differences between the ordered sample
         self.base_sec = Base(_subtract_sorted_(self.chosen),
                              decimals=self.decimals, sign=self.sign)
         for key, val in digs_dict.items():
@@ -545,9 +521,7 @@ class Benford(object):
                   f' tests:\n{self._discarded_sec}')
 
     def summation(self):
-        '''
-        Creates Summation test DataFrames from Base object
-        '''
+        """Creates Summation test DataFrames from Base object"""
         for test in ['F1D', 'F2D', 'F3D']:
             t =  f'{test}_Summ'
             setattr(self, t, Summ(self.base, test))
@@ -558,31 +532,28 @@ class Benford(object):
 
 
 class Source(DataFrame):
-    '''
-    Prepares the data for Analysis. pandas DataFrame subclass.
+    """Prepares the data for Analysis. pandas DataFrame subclass.
 
-    Parameters
-    ----------
-
-    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
-        a pandas Series or a pandas DataFrame column, with values being
-        integers or floats.
-
-    decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will remove the zeros
-        and consider up to the fifth decimal place to the right, but will
-        loose performance.
-
-    sign: tells which portion of the data to consider. pos: only the positive
-        entries; neg: only negative entries; all: all entries but zeros.
-        Defaults to all.`
-
-    sec_order: choice for the Second Order Test, which cumputes the
-        differences between the ordered entries before running the Tests.
-
-    verbose: tells the number of registries that are being subjected to
-        the analysis; defaults to True
-    '''
+    Args:
+        data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+            a pandas Series or a pandas DataFrame column, with values being
+            integers or floats.
+        decimals: number of decimal places to consider. Defaluts to 2.
+            If integers, set to 0. If set to -infer-, it will remove the zeros
+            and consider up to the fifth decimal place to the right, but will
+            loose performance.
+        sign: tells which portion of the data to consider. pos: only the positive
+            entries; neg: only negative entries; all: all entries but zeros.
+            Defaults to all.
+        sec_order: choice for the Second Order Test, which cumputes the
+            differences between the ordered entries before running the Tests.
+        verbose: tells the number of registries that are being subjected to
+            the analysis; defaults to True.
+    
+    Raises:
+        ValueError: if the `sign` arg is not in ['all', 'pos', 'neg']
+        TypeError: if not receiving `int` or `float` as input.
+    """
 
     def __init__(self, data, decimals=2, sign='all', sec_order=False,
                  verbose=True, inform=None):
@@ -605,7 +576,7 @@ class Source(DataFrame):
             self.Seq = self.Seq.loc[self.Seq != 0]
 
         self.dropna(inplace=True)
-
+        #: (bool): verbose or not
         self.verbose = _deprecate_inform_(verbose, inform)
         if self.verbose:
             print(f"\nInitialized sequence with {len(self)} registries.")
@@ -634,19 +605,16 @@ class Source(DataFrame):
                 self['ZN'] = (ab * (10 ** decimals)).astype(int)
 
     def mantissas(self, report=True, plot=True, figsize=(15, 8)):
-        '''
-        Calculates the mantissas, their mean and variance, and compares them
+        """Calculates the mantissas, their mean and variance, and compares them
         with the mean and variance of a Benford's sequence.
 
-        Parameters
-        ----------
-        report: prints the mamtissas mean, variance, skewness and kurtosis
-            for the sequence studied, along with reference values.
-        plot: plots the ordered mantissas and a line with the expected
-            inclination. Defaults to True.
-
-        figsize -> tuple that sets the figure size
-        '''
+        Args:
+            report: prints the mamtissas mean, variance, skewness and kurtosis
+                for the sequence studied, along with reference values.
+            plot: plots the ordered mantissas and a line with the expected
+                inclination. Defaults to True.
+            figsize: tuple that sets the figure dimensions.
+        """
         self['Mant'] = _getMantissas_(self.Seq.abs())
         if report:
             p = self[['Seq', 'Mant']]
@@ -671,49 +639,41 @@ class Source(DataFrame):
     def first_digits(self, digs, confidence=None, high_Z='pos',
                      limit_N=None, MAD=False, MSE=False, chi_square=False,
                      KS=False, show_plot=True, simple=False, ret_df=False):
-        '''
-        Performs the Benford First Digits test with the series of
+        """Performs the Benford First Digits test with the series of
         numbers provided, and populates the mapping dict for future
         selection of the original series.
 
-        Parameters
-        ----------
+        Args:
+            digs: number of first digits to consider. Must be 1 (first digit),
+                2 (first two digits) or 3 (first three digits).
+            verbose: tells the number of registries that are being subjected to
+                the analysis; defaults to True
+            digs: number of first digits to consider. Must be 1 (first digit),
+                2 (first two digits) or 3 (first three digits).
+            confidence: confidence level to draw lower and upper limits when
+                plotting and to limit the top deviations to show, as well as to
+                calculate critical values for the tests' statistics. Defaults to None.
+            high_Z: chooses which Z scores to be used when displaying results,
+                according to the confidence level chosen. Defaluts to 'pos',
+                which will highlight only values higher than the expexted
+                frequencies; 'all' will highlight both extremes (positive and
+                negative); and an integer, which will use the first n entries,
+                positive and negative, regardless of whether Z is higher than
+                the confidence or not.
+            limit_N: sets a limit to N as the sample size for the calculation of
+                the Z scores if the sample is too big. Defaults to None.
+            MAD: calculates the Mean Absolute Difference between the
+                found and the expected distributions; defaults to False.
+            MSE: calculates the Mean Square Error of the sample; defaults to
+                False.
+            show_plot: draws the test plot. Defaults to True.
+            ret_df: returns the test DataFrame. Defaults to False. True if run by
+                the test function.
 
-        digs -> number of first digits to consider. Must be 1 (first digit),
-            2 (first two digits) or 3 (first three digits).
-
-        verbose: tells the number of registries that are being subjected to
-            the analysis; defaults to True
-
-        digs: number of first digits to consider. Must be 1 (first digit),
-            2 (first two digits) or 3 (first three digits).
-
-        confidence: confidence level to draw lower and upper limits when
-            plotting and to limit the top deviations to show, as well as to
-            calculate critical values for the tests' statistics. Defaults to None.
-
-        high_Z: chooses which Z scores to be used when displaying results,
-            according to the confidence level chosen. Defaluts to 'pos',
-            which will highlight only values higher than the expexted
-            frequencies; 'all' will highlight both extremes (positive and
-            negative); and an integer, which will use the first n entries,
-            positive and negative, regardless of whether Z is higher than
-            the confidence or not.
-
-        limit_N: sets a limit to N as the sample size for the calculation of
-            the Z scores if the sample is too big. Defaults to None.
-
-        MAD: calculates the Mean Absolute Difference between the
-            found and the expected distributions; defaults to False.
-
-        MSE: calculates the Mean Square Error of the sample; defaults to
-            False.
-
-        show_plot: draws the test plot. Defaults to True.
-
-        ret_df: returns the test DataFrame. Defaults to False. True if run by
-            the test function.
-        '''
+        Returns:
+            DataFrame with the Expected and Found proportions, and the Z scores of
+                the differences
+        """
         # Check on the possible values for confidence levels
         confidence = _check_confidence_(confidence)
         # Check on possible digits
@@ -771,39 +731,36 @@ class Source(DataFrame):
     def second_digit(self, confidence=None, high_Z='pos',
                      limit_N=None, MAD=False, MSE=False, chi_square=False,
                      KS=False, show_plot=True, simple=False, ret_df=False):
-        '''
-        Performs the Benford Second Digit test with the series of
+        """Performs the Benford Second Digit test with the series of
         numbers provided.
 
-        verbose-> tells the number of registries that are being subjected to
-            the analysis; defaults to True
-
-        MAD: calculates the Mean Absolute Difference between the
-            found and the expected distributions; defaults to False.
-
-        confidence: confidence level to draw lower and upper limits when
-            plotting and to limit the top deviations to show, as well as to
-            calculate critical values for the tests' statistics. Defaults to None.
-
-        high_Z: chooses which Z scores to be used when displaying results,
-            according to the confidence level chosen. Defaluts to 'pos',
-            which will highlight only values higher than the expexted
-            frequencies; 'all' will highlight both extremes (positive and
-            negative); and an integer, which will use the first n entries,
-            positive and negative, regardless of whether Z is higher than
-            the confidence or not.
-
-        limit_N: sets a limit to N as the sample size for the calculation of
-            the Z scores if the sample is too big. Defaults to None.
-
-        MSE: calculates the Mean Square Error of the sample; defaults to
-            False.
-
-        show_plot: draws the test plot.
-
-        ret_df: returns the test DataFrame. Defaults to False. True if run by
-            the test function.
-        '''
+        Args:
+            verbose: tells the number of registries that are being subjected to
+                the analysis; defaults to True
+            MAD: calculates the Mean Absolute Difference between the
+                found and the expected distributions; defaults to False.
+            confidence: confidence level to draw lower and upper limits when
+                plotting and to limit the top deviations to show, as well as to
+                calculate critical values for the tests' statistics. Defaults to None.
+            high_Z: chooses which Z scores to be used when displaying results,
+                according to the confidence level chosen. Defaluts to 'pos',
+                which will highlight only values higher than the expexted
+                frequencies; 'all' will highlight both extremes (positive and
+                negative); and an integer, which will use the first n entries,
+                positive and negative, regardless of whether Z is higher than
+                the confidence or not.
+            limit_N: sets a limit to N as the sample size for the calculation of
+                the Z scores if the sample is too big. Defaults to None.
+            MSE: calculates the Mean Square Error of the sample; defaults to
+                False.
+            show_plot: draws the test plot.
+            ret_df: returns the test DataFrame. Defaults to False. True if run by
+                the test function.
+        
+        Returns:
+            DataFrame with the Expected and Found proportions, and the Z scores of
+                the differences
+        """
         confidence = _check_confidence_(confidence)
 
         conf = confs[confidence]
@@ -854,37 +811,34 @@ class Source(DataFrame):
     def last_two_digits(self, confidence=None, high_Z='pos',
                         limit_N=None, MAD=False, MSE=False, chi_square=False,
                         KS=False, show_plot=True, simple=False, ret_df=False):
-        '''
-        Performs the Benford Last Two Digits test with the series of
+        """Performs the Benford Last Two Digits test with the series of
         numbers provided.
 
-        verbose-> tells the number of registries that are being subjected to
-            the analysis; defaults to True
-
-        MAD: calculates the Mean Absolute Difference between the
-            found and the expected distributions; defaults to False.
-
-        confidence: confidence level to draw lower and upper limits when
-            plotting and to limit the top deviations to show, as well as to
-            calculate critical values for the tests' statistics. Defaults to None.
-
-        high_Z: chooses which Z scores to be used when displaying results,
-            according to the confidence level chosen. Defaluts to 'pos',
-            which will highlight only values higher than the expexted
-            frequencies; 'all' will highlight both extremes (positive and
-            negative); and an integer, which will use the first n entries,
-            positive and negative, regardless of whether Z is higher than
-            the confidence or not.
-
-        limit_N: sets a limit to N as the sample size for the calculation of
-            the Z scores if the sample is too big. Defaults to None.
-
-        MSE: calculates the Mean Square Error of the sample; defaults to
-            False.
-
-        show_plot: draws the test plot.
-
-        '''
+        Args:
+            verbose: tells the number of registries that are being subjected to
+                the analysis; defaults to True
+            MAD: calculates the Mean Absolute Difference between the
+                found and the expected distributions; defaults to False.
+            confidence: confidence level to draw lower and upper limits when
+                plotting and to limit the top deviations to show, as well as to
+                calculate critical values for the tests' statistics. Defaults to None.
+            high_Z: chooses which Z scores to be used when displaying results,
+                according to the confidence level chosen. Defaluts to 'pos',
+                which will highlight only values higher than the expexted
+                frequencies; 'all' will highlight both extremes (positive and
+                negative); and an integer, which will use the first n entries,
+                positive and negative, regardless of whether Z is higher than
+                the confidence or not.
+            limit_N: sets a limit to N as the sample size for the calculation of
+                the Z scores if the sample is too big. Defaults to None.
+            MSE: calculates the Mean Square Error of the sample; defaults to
+                False.
+            show_plot: draws the test plot.
+        
+        Returns:
+            DataFrame with the Expected and Found proportions, and the Z scores of
+                the differences
+        """
         confidence = _check_confidence_(confidence)
         conf = confs[confidence]
 
@@ -933,17 +887,19 @@ class Source(DataFrame):
 
     def summation(self, digs=2, top=20, show_plot=True,
                   ret_df=False):
-        '''
-        Performs the Summation test. In a Benford series, the sums of the
+        """Performs the Summation test. In a Benford series, the sums of the
         entries begining with the same digits tends to be the same.
 
-        digs -> tells the first digits to use. 1- first; 2- first two;
+        Args:
+            digs: tells the first digits to use. 1- first; 2- first two;
                 3- first three. Defaults to 2.
-
-        top -> choses how many top values to show. Defaults to 20.
-
-        show_plot -> plots the results. Defaults to True.
-        '''
+            top: choses how many top values to show. Defaults to 20.
+            show_plot: plots the results. Defaults to True.
+        
+        Returns:
+            DataFrame with the Expected and Found proportions, and their
+            absolute differences
+        """
         _check_digs_(digs)
 
         if digs == 1:
@@ -962,9 +918,6 @@ class Source(DataFrame):
         df = df[['Summ', 'Percent']]
         df['AbsDif'] = (df.Percent - li).abs()
 
-        # Populate dict with the most relevant entries
-        # self.maps[dig_name] = array(_inform_and_map_(s, inform,
-        #                                high_Z=top, conf=None)).astype(int)
         if self.verbose:
             # N = len(self)
             print(f"\nTest performed on {len(self)} registries.\n")
@@ -979,17 +932,24 @@ class Source(DataFrame):
             return df
 
     def duplicates(self, top_Rep=20, inform=None):
-        '''
-        Performs a duplicates test and maps the duplicates count in descending
+        """Performs a duplicates test and maps the duplicates count in descending
         order.
 
-        verbose -> tells how many duplicated entries were found and prints the
-            top numbers according to the top_Rep parameter. Defaluts to True.
-
-        top_Rep -> int or None. Chooses how many duplicated entries will be
-            shown withe the top repititions. Defaluts to 20. If None, returns
-            al the ordered repetitions.
-        '''
+        Args:
+            verbose: tells how many duplicated entries were found and prints the
+                top numbers according to the top_Rep parameter. Defaluts to True.
+            top_Rep: int or None. Chooses how many duplicated entries will be
+                shown withe the top repititions. Defaluts to 20. If None, returns
+                al the ordered repetitions.
+        
+        Returns:
+            DataFrame with the duplicated records and their occurrence counts,
+                in descending order (if verbose is False; if True, prints to
+                terminal).
+        
+        Raises:
+            ValueError: if the `top_Rep` arg is not int or None.
+        """
         if top_Rep is not None and not isinstance(top_Rep, int):
             raise ValueError('The top_Rep parameter must be an int or None.')
 
@@ -1001,14 +961,14 @@ class Source(DataFrame):
 
         dup_count.sort_values('Count', ascending=False, inplace=True)
 
-        self.maps['dup'] = dup_count.index[:top_Rep].values  # array
+        # self.maps['dup'] = dup_count.index[:top_Rep].values  # array
 
         if self.verbose:
             print(f'\nFound {len(dup_count)} duplicated entries.\n'
                   f'The entries with the {top_Rep} highest repitition counts are:')
             print(dup_count.head(top_Rep))
         else:
-            return dup_count(top_Rep)
+            return dup_count
 
 
 class Mantissas(object):
@@ -1128,32 +1088,25 @@ class Mantissas(object):
 
 
 class Roll_mad(Series):
-    '''
-    Applies the MAD to sequential subsets of the Series, returning another
+    """Applies the MAD to sequential subsets of the Series, returning another
     Series.
 
-    Parameters
-    ----------
-
-    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
-        a pandas Series or a pandas DataFrame column, with values being
-        integers or floats.
-
-    test: tells which test to use. 1: Fisrt Digits; 2: First Two Digits;
-        3: First Three Digits; 22: Second Digit; and -2: Last Two Digits.
-
-    window: size of the subset to be used.
-
+    Args:
+        data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+            a pandas Series or a pandas DataFrame column, with values being
+            integers or floats.
+        test: tells which test to use. 1: Fisrt Digits; 2: First Two Digits;
+            3: First Three Digits; 22: Second Digit; and -2: Last Two Digits.
+        window: size of the subset to be used.
         decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will remove the zeros
-        and consider up to the fifth decimal place to the right, but will
-        loose performance.
+            If integers, set to 0. If set to -infer-, it will remove the zeros
+            and consider up to the fifth decimal place to the right, but will
+            loose performance.
+        sign: tells which portion of the data to consider. pos: only the positive
+            entries; neg: only negative entries; all: all entries but zeros.
+            Defaults to all.
 
-
-    sign: tells which portion of the data to consider. pos: only the positive
-        entries; neg: only negative entries; all: all entries but zeros.
-        Defaults to all.
-    '''
+    """
 
     def __init__(self, data, test, window, decimals=2, sign='all'):
 
@@ -1168,47 +1121,44 @@ class Roll_mad(Series):
             window=window).apply(_mad_to_roll_, args=(Exp, ind), raw=False))
 
         self.dropna(inplace=True)
-
+        #: the test (F1D, SD, F2D...) used for the MAD calculation and critical values
         self.test = test
 
-    def show_plot(self, test, figsize=(15, 8)):
+    def show_plot(self, figsize=(15, 8)):
+        """Shows the rolling MAD plot
+        
+        Args:
+            figsize: the figure dimensions .
+        """
         fig, ax = plt.subplots(figsize=figsize)
         ax.set_facecolor(colors['b'])
         ax.plot(self, color=colors['m'])
-        if test != -2:
-            plt.axhline(y=mad_dict[test][0], color=colors['af'], linewidth=3)
-            plt.axhline(y=mad_dict[test][1], color=colors['h2'], linewidth=3)
-            plt.axhline(y=mad_dict[test][2], color=colors['s'], linewidth=3)
+        if self.test != -2:
+            plt.axhline(y=mad_dict[self.test][0], color=colors['af'], linewidth=3)
+            plt.axhline(y=mad_dict[self.test][1], color=colors['h2'], linewidth=3)
+            plt.axhline(y=mad_dict[self.test][2], color=colors['s'], linewidth=3)
         plt.show(block=False)
 
 
 class Roll_mse(Series):
-    '''
-    Applies the MSE to sequential subsets of the Series, returning another
+    """Applies the MSE to sequential subsets of the Series, returning another
     Series.
 
-    Parameters
-    ----------
-
-    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
-        a pandas Series or a pandas DataFrame column, with values being
-        integers or floats.
-
-    test: tells which test to use. 1: Fisrt Digits; 2: First Two Digits;
-        3: First Three Digits; 22: Second Digit; and -2: Last Two Digits.
-
-    window: size of the subset to be used.
-
-        decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will remove the zeros
-        and consider up to the fifth decimal place to the right, but will
-        loose performance.
-
-
-    sign: tells which portion of the data to consider. pos: only the positive
-        entries; neg: only negative entries; all: all entries but zeros.
-        Defaults to all.
-    '''
+    Args:
+        data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+            a pandas Series or a pandas DataFrame column, with values being
+            integers or floats.
+        test: tells which test to use. 1: Fisrt Digits; 2: First Two Digits;
+            3: First Three Digits; 22: Second Digit; and -2: Last Two Digits.
+        window: size of the subset to be used.
+            decimals: number of decimal places to consider. Defaluts to 2.
+            If integers, set to 0. If set to -infer-, it will remove the zeros
+            and consider up to the fifth decimal place to the right, but will
+            loose performance.
+        sign: tells which portion of the data to consider. 'pos': only the positive
+            entries; 'neg': only negative entries; 'all': all entries but zeros.
+            Defaults to 'all'.
+    """
 
     def __init__(self, data, test, window, decimals=2, sign='all'):
 
@@ -1225,6 +1175,11 @@ class Roll_mse(Series):
         self.dropna(inplace=True)
 
     def show_plot(self, figsize=(15, 8)):
+        """Shows the rolling MSE plot
+        
+        Args:
+            figsize: the figure dimensions.
+        """
         fig, ax = plt.subplots(figsize=figsize)
         ax.set_facecolor(colors['b'])
         ax.plot(self, color=colors['m'])
@@ -1235,65 +1190,54 @@ def first_digits(data, digs, decimals=2, sign='all', verbose=True,
                  confidence=None, high_Z='pos', limit_N=None,
                  MAD=False, MSE=False, chi_square=False, KS=False,
                  show_plot=True, inform=None):
-    '''
-    Performs the Benford First Digits test on the series of
+    """Performs the Benford First Digits test on the series of
     numbers provided.
 
-    Parameters
-    ----------
-
-    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
-        a pandas Series or a pandas DataFrame column, with values being
-        integers or floats.
-
-    decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will remove the zeros
-        and consider up to the fifth decimal place to the right, but will
-        loose performance.
-
-    sign: tells which portion of the data to consider. pos: only the positive
-        entries; neg: only negative entries; all: all entries but zeros.
-        Defaults to all.`
-
-    digs: number of first digits to consider. Must be 1 (first digit),
-        2 (first two digits) or 3 (first three digits).
-
-    verbose: tells the number of registries that are being subjected to
-        the analysis and returns tha analysis DataFrame sorted by the
-        highest Z score down. Defaults to True.
-
-    MAD: calculates the Mean Absolute Difference between the
-        found and the expected distributions; defaults to False.
-
-    confidence: confidence level to draw lower and upper limits when
-        plotting and to limit the top deviations to show. Defaults to None.
-
-    high_Z: chooses which Z scores to be used when displaying results,
-        according to the confidence level chosen. Defaluts to 'pos',
-        which will highlight only values higher than the expexted
-        frequencies; 'all' will highlight both extremes (positive and
-        negative); and an integer, which will use the first n entries,
-        positive and negative, regardless of whether Z is higher than
-        the confidence or not.
-
-    limit_N: sets a limit to N as the sample size for the calculation of
-        the Z scores if the sample is too big. Defaults to None.
-
-    MSE: calculates the Mean Square Error of the sample; defaults to
-        False.
-
-    chi_square: calculates the chi_square statistic of the sample and
-        compares it with a critical value, according to the confidence
-        level chosen and the series's degrees of freedom. Defaults to
-        False. Requires confidence != None.
-
-    KS: calculates the Kolmogorov-Smirnov test, comparing the cumulative
-        distribution of the sample with the Benford's, according to the
-        confidence level chosen. Defaults to False. Requires confidence
-        != None.
-
-    show_plot: draws the test plot.
-    '''
+    Args:
+        data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+            a pandas Series or a pandas DataFrame column, with values being
+            integers or floats.
+        decimals: number of decimal places to consider. Defaluts to 2.
+            If integers, set to 0. If set to -infer-, it will remove the zeros
+            and consider up to the fifth decimal place to the right, but will
+            loose performance.
+        sign: tells which portion of the data to consider. 'pos': only the positive
+            entries; 'neg': only negative entries; 'all': all entries but zeros.
+            Defaults to 'all'.
+        digs: number of first digits to consider. Must be 1 (first digit),
+            2 (first two digits) or 3 (first three digits).
+        verbose: tells the number of registries that are being subjected to
+            the analysis and returns tha analysis DataFrame sorted by the
+            highest Z score down. Defaults to True.
+        MAD: calculates the Mean Absolute Difference between the
+            found and the expected distributions; defaults to False.
+        confidence: confidence level to draw lower and upper limits when
+            plotting and to limit the top deviations to show. Defaults to None.
+        high_Z: chooses which Z scores to be used when displaying results,
+            according to the confidence level chosen. Defaluts to 'pos',
+            which will highlight only values higher than the expexted
+            frequencies; 'all' will highlight both extremes (positive and
+            negative); and an integer, which will use the first n entries,
+            positive and negative, regardless of whether Z is higher than
+            the confidence or not.
+        limit_N: sets a limit to N as the sample size for the calculation of
+            the Z scores if the sample is too big. Defaults to None.
+        MSE: calculates the Mean Square Error of the sample; defaults to
+            False.
+        chi_square: calculates the chi_square statistic of the sample and
+            compares it with a critical value, according to the confidence
+            level chosen and the series's degrees of freedom. Defaults to
+            False. Requires confidence != None.
+        KS: calculates the Kolmogorov-Smirnov test, comparing the cumulative
+            distribution of the sample with the Benford's, according to the
+            confidence level chosen. Defaults to False. Requires confidence
+            != None.
+        show_plot: draws the test plot.
+    
+    Returns:
+        DataFrame with the Expected and Found proportions, and the Z scores of
+            the differences if the confidence is not None.
+    """
     verbose = _deprecate_inform_(verbose, inform)
 
     if not isinstance(data, Source):
@@ -1315,63 +1259,52 @@ def second_digit(data, decimals=2, sign='all', verbose=True,
                  confidence=None, high_Z='pos', limit_N=None,
                  MAD=False, MSE=False, chi_square=False, KS=False,
                  show_plot=True, inform=None):
-    '''
-    Performs the Benford Second Digits test on the series of
+    """Performs the Benford Second Digits test on the series of
     numbers provided.
 
-    Parameters
-    ----------
+    Args:
+        data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+            a pandas Series or a pandas DataFrame column, with values being
+            integers or floats.
+        decimals: number of decimal places to consider. Defaluts to 2.
+            If integers, set to 0. If set to -infer-, it will remove the zeros
+            and consider up to the fifth decimal place to the right, but will
+            loose performance.
+        sign: tells which portion of the data to consider. 'pos': only the positive
+            entries; 'neg': only negative entries; 'all': all entries but zeros.
+            Defaults to 'all'.
+        verbose: tells the number of registries that are being subjected to
+            the analysis and returns tha analysis DataFrame sorted by the
+            highest Z score down. Defaults to True.
+        MAD: calculates the Mean Absolute Difference between the
+            found and the expected distributions; defaults to False.
+        confidence: confidence level to draw lower and upper limits when
+            plotting and to limit the top deviations to show. Defaults to None.
+        high_Z: chooses which Z scores to be used when displaying results,
+            according to the confidence level chosen. Defaluts to 'pos',
+            which will highlight only values higher than the expexted
+            frequencies; 'all' will highlight both extremes (positive and
+            negative); and an integer, which will use the first n entries,
+            positive and negative, regardless of whether Z is higher than
+            the confidence or not.
+        limit_N: sets a limit to N as the sample size for the calculation of
+            the Z scores if the sample is too big. Defaults to None.
+        MSE: calculates the Mean Square Error of the sample; defaults to
+            False.
+        chi_square: calculates the chi_square statistic of the sample and
+            compares it with a critical value, according to the confidence
+            level chosen and the series's degrees of freedom. Defaults to
+            False. Requires confidence != None.
+        KS: calculates the Kolmogorov-Smirnov test, comparing the cumulative
+            distribution of the sample with the Benford's, according to the
+            confidence level chosen. Defaults to False. Requires confidence
+            != None.
+        show_plot: draws the test plot.
 
-    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
-        a pandas Series or a pandas DataFrame column, with values being
-        integers or floats.
-
-    decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will remove the zeros
-        and consider up to the fifth decimal place to the right, but will
-        loose performance.
-
-    sign: tells which portion of the data to consider. pos: only the positive
-        entries; neg: only negative entries; all: all entries but zeros.
-        Defaults to all.`
-
-    verbose: tells the number of registries that are being subjected to
-        the analysis and returns tha analysis DataFrame sorted by the
-        highest Z score down. Defaults to True.
-
-    MAD: calculates the Mean Absolute Difference between the
-        found and the expected distributions; defaults to False.
-
-    confidence: confidence level to draw lower and upper limits when
-        plotting and to limit the top deviations to show. Defaults to None.
-
-    high_Z: chooses which Z scores to be used when displaying results,
-        according to the confidence level chosen. Defaluts to 'pos',
-        which will highlight only values higher than the expexted
-        frequencies; 'all' will highlight both extremes (positive and
-        negative); and an integer, which will use the first n entries,
-        positive and negative, regardless of whether Z is higher than
-        the confidence or not.
-
-    limit_N: sets a limit to N as the sample size for the calculation of
-        the Z scores if the sample is too big. Defaults to None.
-
-    MSE: calculates the Mean Square Error of the sample; defaults to
-        False.
-
-    chi_square: calculates the chi_square statistic of the sample and
-        compares it with a critical value, according to the confidence
-        level chosen and the series's degrees of freedom. Defaults to
-        False. Requires confidence != None.
-
-    KS: calculates the Kolmogorov-Smirnov test, comparing the cumulative
-        distribution of the sample with the Benford's, according to the
-        confidence level chosen. Defaults to False. Requires confidence
-        != None.
-
-    show_plot: draws the test plot.
-
-    '''
+    Returns:
+        DataFrame with the Expected and Found proportions, and the Z scores of
+            the differences if the confidence is not None.
+    """
     verbose = _deprecate_inform_(verbose, inform)
 
     if not isinstance(data, Source):
@@ -1392,63 +1325,52 @@ def last_two_digits(data, decimals=2, sign='all', verbose=True,
                     confidence=None, high_Z='pos', limit_N=None,
                     MAD=False, MSE=False, chi_square=False, KS=False,
                     show_plot=True, inform=None):
-    '''
-    Performs the Last Two Digits test on the series of
+    """Performs the Last Two Digits test on the series of
     numbers provided.
 
-    Parameters
-    ----------
+    Args:
+        data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+            a pandas Series or a pandas DataFrame column,with values being
+            integers or floats.
+        decimals: number of decimal places to consider. Defaluts to 2.
+            If integers, set to 0. If set to -infer-, it will remove the zeros
+            and consider up to the fifth decimal place to the right, but will
+            loose performance.
+        sign: tells which portion of the data to consider. 'pos': only the positive
+            entries; 'neg': only negative entries; 'all': all entries but zeros.
+            Defaults to 'all'.
+        verbose: tells the number of registries that are being subjected to
+            the analysis and returns tha analysis DataFrame sorted by the
+            highest Z score down. Defaults to True.
+        confidence: confidence level to draw lower and upper limits when
+            plotting and to limit the top deviations to show. Defaults to None.
+        high_Z: chooses which Z scores to be used when displaying results,
+            according to the confidence level chosen. Defaluts to 'pos',
+            which will highlight only values higher than the expexted
+            frequencies; 'all' will highlight both extremes (positive and
+            negative); and an integer, which will use the first n entries,
+            positive and negative, regardless of whether Z is higher than
+            the confidence or not.
+        limit_N: sets a limit to N as the sample size for the calculation of
+            the Z scores if the sample is too big. Defaults to None.
+        MAD: calculates the Mean Absolute Difference between the
+            found and the expected distributions; defaults to False.
+        MSE: calculates the Mean Square Error of the sample; defaults to
+            False.
+        chi_square: calculates the chi_square statistic of the sample and
+            compares it with a critical value, according to the confidence
+            level chosen and the series's degrees of freedom. Defaults to
+            False. Requires confidence != None.
+        KS: calculates the Kolmogorov-Smirnov test, comparing the cumulative
+            distribution of the sample with the Benford's, according to the
+            confidence level chosen. Defaults to False. Requires confidence
+            != None.
+        show_plot: draws the test plot.
 
-    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
-        a pandas Series or a pandas DataFrame column,with values being
-        integers or floats.
-
-    decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will remove the zeros
-        and consider up to the fifth decimal place to the right, but will
-        loose performance.
-
-    sign: tells which portion of the data to consider. pos: only the positive
-        entries; neg: only negative entries; all: all entries but zeros.
-        Defaults to all.`
-
-    verbose: tells the number of registries that are being subjected to
-        the analysis and returns tha analysis DataFrame sorted by the
-        highest Z score down. Defaults to True.
-
-    confidence: confidence level to draw lower and upper limits when
-        plotting and to limit the top deviations to show. Defaults to None.
-
-    high_Z: chooses which Z scores to be used when displaying results,
-        according to the confidence level chosen. Defaluts to 'pos',
-        which will highlight only values higher than the expexted
-        frequencies; 'all' will highlight both extremes (positive and
-        negative); and an integer, which will use the first n entries,
-        positive and negative, regardless of whether Z is higher than
-        the confidence or not.
-
-    limit_N: sets a limit to N as the sample size for the calculation of
-        the Z scores if the sample is too big. Defaults to None.
-
-    MAD: calculates the Mean Absolute Difference between the
-        found and the expected distributions; defaults to False.
-
-    MSE: calculates the Mean Square Error of the sample; defaults to
-        False.
-
-    chi_square: calculates the chi_square statistic of the sample and
-        compares it with a critical value, according to the confidence
-        level chosen and the series's degrees of freedom. Defaults to
-        False. Requires confidence != None.
-
-    KS: calculates the Kolmogorov-Smirnov test, comparing the cumulative
-        distribution of the sample with the Benford's, according to the
-        confidence level chosen. Defaults to False. Requires confidence
-        != None.
-
-    show_plot: draws the test plot.
-
-    '''
+    Returns:
+        DataFrame with the Expected and Found proportions, and the Z scores of
+            the differences if the confidence is not None.
+    """
     verbose = _deprecate_inform_(verbose, inform)
 
     if not isinstance(data, Source):
@@ -1467,20 +1389,20 @@ def last_two_digits(data, decimals=2, sign='all', verbose=True,
 
 
 def mantissas(data, report=True, show_plot=True, arc_test=True, inform=None):
-    '''
-    Returns a Series with the data mantissas,
+    """Extraxts the mantissas of the records logarithms
 
-    Parameters
-    ----------
-    data: sequence to compute mantissas from, numpy 1D array, pandas
-        Series of pandas DataFrame column.
-
-    report: prints the mamtissas mean, variance, skewness and kurtosis
-        for the sequence studied, along with reference values.
-
-    show_plot: plots the ordered mantissas and a line with the expected
-        inclination. Defaults to True.
-    '''
+    Args:
+        data: sequence to compute mantissas from, numpy 1D array, pandas Series
+            of pandas DataFrame column.
+        report: prints the mamtissas mean, variance, skewness and kurtosis
+            for the sequence studied, along with reference values.
+        show_plot: plots the ordered mantissas and a line with the expected
+            inclination. Defaults to True.
+        arc_test: draws the Arc Test plot. Defaluts to True.
+    
+    Returns:
+        Series with the data mantissas.
+    """
     report = _deprecate_inform_(report, inform)
 
     mant = Mantissas(data)
@@ -1495,27 +1417,24 @@ def mantissas(data, report=True, show_plot=True, arc_test=True, inform=None):
 
 def summation(data, digs=2, decimals=2, sign='all', top=20, verbose=True,
               show_plot=True, inform=None):
-    '''
-    Performs the Summation test. In a Benford series, the sums of the
+    """Performs the Summation test. In a Benford series, the sums of the
     entries begining with the same digits tends to be the same.
     Works only with the First Digits (1, 2 or 3) test.
 
-    Parameters
-    ----------
-
-    digs: tells the first digits to use: 1- first; 2- first two;
-        3- first three. Defaults to 2.
-
-    decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will remove the zeros
-        and consider up to the fifth decimal place to the right, but will
-        loose performance.
-
-    top: choses how many top values to show. Defaults to 20.
-
-    show_plot: plots the results. Defaults to True.
-
-    '''
+    Args:
+        digs: tells the first digits to use: 1- first; 2- first two;
+            3- first three. Defaults to 2.
+        decimals: number of decimal places to consider. Defaluts to 2.
+            If integers, set to 0. If set to -infer-, it will remove the zeros
+            and consider up to the fifth decimal place to the right, but will
+            loose performance.
+        top: choses how many top values to show. Defaults to 20.
+        show_plot: plots the results. Defaults to True.
+    
+    Returns:
+        DataFrame with the Summation test, whether sorted in descending order
+            (if verbose == True) or not.
+    """
     verbose = _deprecate_inform_(verbose, inform)
 
     if not isinstance(data, Source):
@@ -1530,28 +1449,23 @@ def summation(data, digs=2, decimals=2, sign='all', top=20, verbose=True,
 
 
 def mad(data, test, decimals=2, sign='all'):
-    '''
-    Returns the Mean Absolute Deviation of the Series
+    """Calculates the Mean Absolute Deviation of the Series
 
-    Parameters
-    ----------
-
-    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
-        a pandas Series or a pandas DataFrame column, with values being
-        integers or floats.
-
-    test: informs which base test to use for the mad.
-
-    decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will remove the zeros
-        and consider up to the fifth decimal place to the right, but will
-        loose performance.
-
-    sign: tells which portion of the data to consider. pos: only the positive
-        entries; neg: only negative entries; all: all entries but zeros.
-        Defaults to all.`
-
-    '''
+    Args:
+        data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+            a pandas Series or a pandas DataFrame column, with values being
+            integers or floats.
+        test: informs which base test to use for the mad.
+        decimals: number of decimal places to consider. Defaluts to 2.
+            If integers, set to 0. If set to -infer-, it will remove the zeros
+            and consider up to the fifth decimal place to the right, but will
+            loose performance.
+        sign: tells which portion of the data to consider. pos: only the positive
+            entries; neg: only negative entries; all: all entries but zeros.
+            Defaults to all.
+    Returns:
+        float: the Mean Absolute Deviation of the Series
+    """
     _check_test_(test)
     start = Source(data.values, sign=sign, decimals=decimals, verbose=False)
     if test in [1, 2, 3]:
@@ -1564,9 +1478,23 @@ def mad(data, test, decimals=2, sign='all'):
 
 
 def mse(data, test, decimals=2, sign='all'):
-    '''
-    Returns the Mean Squared Error of the Series
-    '''
+    """Calculates the Mean Squared Error of the Series
+
+    Args:
+        data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+            a pandas Series or a pandas DataFrame column, with values being
+            integers or floats.
+        test: informs which base test to use for the mad.
+        decimals: number of decimal places to consider. Defaluts to 2.
+            If integers, set to 0. If set to -infer-, it will remove the zeros
+            and consider up to the fifth decimal place to the right, but will
+            loose performance.
+        sign: tells which portion of the data to consider. pos: only the positive
+            entries; neg: only negative entries; all: all entries but zeros.
+            Defaults to all.
+    Returns:
+        float: the Mean Squared Error of the Series
+    """
     test = _check_test_(test)
     start = Source(data, sign=sign, decimals=decimals, verbose=False)
     if test in [1, 2, 3]:
@@ -1579,28 +1507,24 @@ def mse(data, test, decimals=2, sign='all'):
 
 
 def mad_summ(data, test, decimals=2, sign='all'):
-    '''
-    Returns the Mean Absolute Deviation of the Summation Test
+    """Calculate the Mean Absolute Deviation of the Summation Test
 
-    Parameters
-    ----------
-
-    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
-        a pandas Series or a pandas DataFrame column, with values being
-        integers or floats.
-
-    test: informs which base test to use for the summation mad.
-
-    decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will remove the zeros
-        and consider up to the fifth decimal place to the right, but will
-        loose performance.
-
-    sign: tells which portion of the data to consider. pos: only the positive
-        entries; neg: only negative entries; all: all entries but zeros.
-        Defaults to all.`
-
-    '''
+    Args:
+        data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+            a pandas Series or a pandas DataFrame column, with values being
+            integers or floats.
+        test: informs which base test to use for the summation mad.
+        decimals: number of decimal places to consider. Defaluts to 2.
+            If integers, set to 0. If set to -infer-, it will remove the zeros
+            and consider up to the fifth decimal place to the right, but will
+            loose performance.
+        sign: tells which portion of the data to consider. pos: only the positive
+            entries; neg: only negative entries; all: all entries but zeros.
+            Defaults to all.
+    
+    Returns:
+        float: the Mean Absolute Deviation of the Summation Test
+    """
     _check_digs_(test)
 
     start = Source(data, sign=sign, decimals=decimals, verbose=False)
@@ -1615,33 +1539,27 @@ def mad_summ(data, test, decimals=2, sign='all'):
 
 
 def rolling_mad(data, test, window, decimals=2, sign='all', show_plot=False):
-    '''
-    Applies the MAD to sequential subsets of the Series, returning another
-    Series.
+    """Applies the MAD to sequential subsets of the records.
 
-    Parameters
-    ----------
-
-    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
-        a pandas Series or a pandas DataFrame column, with values being
-        integers or floats.
-
-    test: tells which test to use. 1: Fisrt Digits; 2: First Two Digits;
-        3: First Three Digits; 22: Second Digit; and -2: Last Two Digits.
-
-    window: size of the subset to be used.
-
-    decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will remove the zeros
-        and consider up to the fifth decimal place to the right, but will
-        loose performance.
-
-    sign: tells which portion of the data to consider. pos: only the positive
-        entries; neg: only negative entries; all: all entries but zeros.
-        Defaults to all.
-
-    show_plot: draws the test plot.
-    '''
+    Args:
+        data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+            a pandas Series or a pandas DataFrame column, with values being
+            integers or floats.
+        test: tells which test to use. 1: Fisrt Digits; 2: First Two Digits;
+            3: First Three Digits; 22: Second Digit; and -2: Last Two Digits.
+        window: size of the subset to be used.
+        decimals: number of decimal places to consider. Defaluts to 2.
+            If integers, set to 0. If set to -infer-, it will remove the zeros
+            and consider up to the fifth decimal place to the right, but will
+            loose performance.
+        sign: tells which portion of the data to consider. pos: only the positive
+            entries; neg: only negative entries; all: all entries but zeros.
+            Defaults to all.
+        show_plot: draws the test plot.
+    
+    Returns:
+        Series with sequentially computed MADs.
+    """
     test = _check_test_(test)
     r_mad = Roll_mad(data, test, window, decimals, sign)
     if show_plot:
@@ -1650,33 +1568,27 @@ def rolling_mad(data, test, window, decimals=2, sign='all', show_plot=False):
 
 
 def rolling_mse(data, test, window, decimals=2, sign='all', show_plot=False):
-    '''
-    Applies the MSE to sequential subsets of the Series, returning another
-    Series.
+    """Applies the MSE to sequential subsets of the records.
 
-    Parameters
-    ----------
-
-    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
-        a pandas Series or a pandas DataFrame column, with values being
-        integers or floats.
-
-    test: tells which test to use. 1: Fisrt Digits; 2: First Two Digits;
-        3: First Three Digits; 22: Second Digit; and -2: Last Two Digits.
-
-    window: size of the subset to be used.
-
-    decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will remove the zeros
-        and consider up to the fifth decimal place to the right, but will
-        loose performance.
-
-    sign: tells which portion of the data to consider. pos: only the positive
-        entries; neg: only negative entries; all: all entries but zeros.
-        Defaults to all.
-
-    show_plot: draws the test plot.
-    '''
+    Args:
+        data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+            a pandas Series or a pandas DataFrame column, with values being
+            integers or floats.
+        test: tells which test to use. 1: Fisrt Digits; 2: First Two Digits;
+            3: First Three Digits; 22: Second Digit; and -2: Last Two Digits.
+        window: size of the subset to be used.
+        decimals: number of decimal places to consider. Defaluts to 2.
+            If integers, set to 0. If set to -infer-, it will remove the zeros
+            and consider up to the fifth decimal place to the right, but will
+            loose performance.
+        sign: tells which portion of the data to consider. pos: only the positive
+            entries; neg: only negative entries; all: all entries but zeros.
+            Defaults to all.
+        show_plot: draws the test plot.
+    
+    Returns:
+        Series with sequentially computed MSEs.
+    """
     r_mse = Roll_mse(data, test, window, decimals, sign)
     if show_plot:
         r_mse.show_plot()
@@ -1684,22 +1596,24 @@ def rolling_mse(data, test, window, decimals=2, sign='all', show_plot=False):
 
 
 def duplicates(data, top_Rep=20, verbose=True, inform=None):
-    '''
-    Performs a duplicates test and maps the duplicates count in descending
+    """Performs a duplicates test and maps the duplicates count in descending
     order.
 
-    Parameters
-    ----------
-    data: sequence to take the duplicates from. pandas Series or
-        numpy Ndarray.
-
-    verbose: tells how many duplicated entries were found and prints the
-        top numbers according to the top_Rep parameter. Defaluts to True.
-
-    top_Rep: chooses how many duplicated entries will be
-        shown withe the top repititions. int or None. Defaluts to 20.
-        If None, returns al the ordered repetitions.
-    '''
+    Args:
+        data: sequence to take the duplicates from. pandas Series or
+            numpy Ndarray.
+        verbose: tells how many duplicated entries were found and prints the
+            top numbers according to the top_Rep parameter. Defaluts to True.
+        top_Rep: chooses how many duplicated entries will be
+            shown withe the top repititions. int or None. Defaluts to 20.
+            If None, returns al the ordered repetitions.
+    
+    Returns:
+        DataFrame with the duplicated records and their respective counts
+    
+    Raises:
+        ValueError: if the `top_Rep` arg is not int or None.
+    """
     verbose = _deprecate_inform_(verbose, inform)
 
     if top_Rep is not None and not isinstance(top_Rep, int):
@@ -1728,66 +1642,55 @@ def duplicates(data, top_Rep=20, verbose=True, inform=None):
 def second_order(data, test, decimals=2, sign='all', verbose=True, MAD=False,
                  confidence=None, high_Z='pos', limit_N=None, MSE=False,
                  show_plot=True, inform=None):
-    '''
-    Performs the chosen test after subtracting the ordered sequence by itself.
+    """Performs the chosen test after subtracting the ordered sequence by itself.
     Hence Second Order.
 
-    Parameters
-    ----------
-
-    data: sequence of numbers to be evaluated. Must be a numpy 1D array,
-        a pandas Series or a pandas DataFrame column, with values being
-        integers or floats.
-
-    test: the test to be performed - 1 or 'F1D': First Digit; 2 or 'F2D':
-        First Two Digits; 3 or 'F3D': First three Digits; 22 or 'SD':
-        Second Digits; -2 or 'L2D': Last Two Digits.
-
-    decimals: number of decimal places to consider. Defaluts to 2.
-        If integers, set to 0. If set to -infer-, it will remove the zeros
-        and consider up to the fifth decimal place to the right, but will
-        loose performance.
-
-    sign: tells which portion of the data to consider. pos: only the positive
-        entries; neg: only negative entries; all: all entries but zeros.
-        Defaults to all.`
-
-    verbose: tells the number of registries that are being subjected to
-        the analysis and returns tha analysis DataFrame sorted by the
-        highest Z score down. Defaults to True.
-
-    MAD: calculates the Mean Absolute Difference between the
-        found and the expected distributions; defaults to False.
-
-    confidence: confidence level to draw lower and upper limits when
-        plotting and to limit the top deviations to show. Defaults to None.
-
-    high_Z: chooses which Z scores to be used when displaying results,
-        according to the confidence level chosen. Defaluts to 'pos',
-        which will highlight only values higher than the expexted
-        frequencies; 'all' will highlight both extremes (positive and
-        negative); and an integer, which will use the first n entries,
-        positive and negative, regardless of whether Z is higher than
-        the confidence or not.
-
-    limit_N: sets a limit to N as the sample size for the calculation of
-        the Z scores if the sample is too big. Defaults to None.
-
-    MSE: calculates the Mean Square Error of the sample; defaults to
-        False.
-
-    chi_square: calculates the chi_square statistic of the sample and
-        compares it with a critical value, according to the confidence
-        level chosen and the series's degrees of freedom. Defaults to
-        False. Requires confidence != None.
-
-    KS: calculates the Kolmogorov-Smirnov test, comparing the cumulative
-        distribution of the sample with the Benford's, according to the
-        confidence level chosen. Defaults to False. Requires confidence
-        != None.
-
-    show_plot: draws the test plot.
-    '''
+    Args:
+        data: sequence of numbers to be evaluated. Must be a numpy 1D array,
+            a pandas Series or a pandas DataFrame column, with values being
+            integers or floats.
+        test: the test to be performed - 1 or 'F1D': First Digit; 2 or 'F2D':
+            First Two Digits; 3 or 'F3D': First three Digits; 22 or 'SD':
+            Second Digits; -2 or 'L2D': Last Two Digits.
+        decimals: number of decimal places to consider. Defaluts to 2.
+            If integers, set to 0. If set to -infer-, it will remove the zeros
+            and consider up to the fifth decimal place to the right, but will
+            loose performance.
+        sign: tells which portion of the data to consider. pos: only the positive
+            entries; neg: only negative entries; all: all entries but zeros.
+            Defaults to all.
+        verbose: tells the number of registries that are being subjected to
+            the analysis and returns tha analysis DataFrame sorted by the
+            highest Z score down. Defaults to True.
+        MAD: calculates the Mean Absolute Difference between the
+            found and the expected distributions; defaults to False.
+        confidence: confidence level to draw lower and upper limits when
+            plotting and to limit the top deviations to show. Defaults to None.
+        high_Z: chooses which Z scores to be used when displaying results,
+            according to the confidence level chosen. Defaluts to 'pos',
+            which will highlight only values higher than the expexted
+            frequencies; 'all' will highlight both extremes (positive and
+            negative); and an integer, which will use the first n entries,
+            positive and negative, regardless of whether Z is higher than
+            the confidence or not.
+        limit_N: sets a limit to N as the sample size for the calculation of
+            the Z scores if the sample is too big. Defaults to None.
+        MSE: calculates the Mean Square Error of the sample; defaults to
+            False.
+        chi_square: calculates the chi_square statistic of the sample and
+            compares it with a critical value, according to the confidence
+            level chosen and the series's degrees of freedom. Defaults to
+            False. Requires confidence != None.
+        KS: calculates the Kolmogorov-Smirnov test, comparing the cumulative
+            distribution of the sample with the Benford's, according to the
+            confidence level chosen. Defaults to False. Requires confidence
+            != None.
+        show_plot: draws the test plot.
+    
+    Returns:
+        DataFrame of the test chosen, but applied on Second Order pre-
+            processed data.
+    """
     test = _check_test_(test)
 
     verbose = _deprecate_inform_(verbose, inform)
