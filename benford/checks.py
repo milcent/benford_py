@@ -45,7 +45,7 @@ def _check_high_Z_(high_Z):
                              "'all' or an int.")
     return high_Z
 
-def _check_num_array(data):
+def _check_num_array_(data):
     """"""
     if (not isinstance(data, ndarray)) & (not isinstance(data, Series)):
         print('\n`data` not a numpy NDarray nor a pandas Series.'
@@ -55,12 +55,10 @@ def _check_num_array(data):
         except:
             raise ValueError('Could not convert data. Check input.')
         print('\nConversion successful.')
-    elif (data.dtype == int) | (not data.dtype == float):
+    elif (data.dtype != int) & (data.dtype != float):
         print("\n`data` type not int nor float. Trying to convert...")
         try:
             data = data.astype(float)
         except:
             raise ValueError('Could not convert data. Check input.')
     return data
-
-

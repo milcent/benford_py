@@ -30,7 +30,7 @@ import warnings
 from .constants import confs, digs_dict, sec_order_dict, rev_digs, names, \
     mad_dict, colors, crit_chi2, KS_crit
 from .checks import _check_digs_, _check_confidence_, _check_test_, \
-    _check_num_array, _check_high_Z_
+    _check_num_array_, _check_high_Z_
 from .utils import  _set_N_, input_data, prepare, \
     subtract_sorted, prep_to_roll, mad_to_roll, mse_to_roll, \
      get_mantissas
@@ -262,7 +262,7 @@ class Mantissas(object):
 
     def __init__(self, data):
 
-        data = Series(_check_num_array(data))
+        data = Series(_check_num_array_(data))
         data = data.dropna().loc[data != 0].abs()
         #: (DataFrame): pandas DataFrame with the mantissas
         self.data = DataFrame({'Mantissa': get_mantissas(data.abs())})
