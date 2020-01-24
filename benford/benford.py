@@ -37,7 +37,8 @@ from .utils import  _set_N_, input_data, prepare, \
 from .expected import First, Second, LastTwo, _test_
 from .viz import _get_plot_args, plot_digs, plot_sum
 from .reports import _inform_, _report_mad_, _report_summ_, _report_KS_,\
-    _report_Z_, _report_chi2_, _report_test_, _deprecate_inform_
+    _report_Z_, _report_chi2_, _report_test_, _deprecate_inform_,\
+    _report_mantissa_
 from .stats import Z_score, chi_square, chi_square_2, KS, KS_2, \
     mad, mse
 
@@ -279,15 +280,8 @@ class Mantissas(object):
             show_plot: shows the Ordered Mantissas plot and the Arc Test plot.
                 Defaults to True.
         """
-        print("\n", '  Mantissas Test  '.center(52, '#'))
-        print(f"\nThe Mantissas MEAN is      {self.stats['Mean']:.6f}."
-              "\tRef: 0.5")
-        print(f"The Mantissas VARIANCE is  {self.stats['Var']:.6f}."
-              "\tRef: 0.08333")
-        print(f"The Mantissas SKEWNESS is  {self.stats['Skew']:.6f}."
-              "\tRef: 0.0")
-        print(f"The Mantissas KURTOSIS is  {self.stats['Kurt']:.6f}."
-              "\tRef: -1.2\n")
+        _report_mantissa_(self.stats)
+
         if show_plot:
             self.show_plot()
             self.arc_test()

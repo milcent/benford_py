@@ -115,6 +115,22 @@ def _report_test_(test, high=None, crit_vals=None):
     else:
         _report_summ_(test, high)
 
+def _report_mantissa_(stats):
+    """Prints the mantissas statistics and their respective reference values
+
+    Args:
+        stats (dict): 
+    """
+    print("\n", '  Mantissas Test  '.center(52, '#'))
+    print(f"\nThe Mantissas MEAN is      {stats['Mean']:.6f}."
+            "\tRef: 0.5")
+    print(f"The Mantissas VARIANCE is  {stats['Var']:.6f}."
+            "\tRef: 0.08333")
+    print(f"The Mantissas SKEWNESS is  {stats['Skew']:.6f}."
+            "\tRef: 0.0")
+    print(f"The Mantissas KURTOSIS is  {stats['Kurt']:.6f}."
+            "\tRef: -1.2\n")
+
 
 def _deprecate_inform_(verbose, inform):
     """
