@@ -24,8 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from pandas import Series, DataFrame
 from numpy import array, arange, log10, ones, abs, cos, sin, pi, sqrt, mean 
-import matplotlib.pyplot as plt
-from matplotlib.text import Annotation
 import warnings
 from .constants import confs, digs_dict, sec_order_dict, rev_digs, names, \
     mad_dict, colors, crit_chi2, KS_crit

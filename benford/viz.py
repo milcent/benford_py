@@ -1,5 +1,6 @@
 from numpy import array, arange, maximum, sqrt, ones
 import matplotlib.pyplot as plt
+from matplotlib.text import Annotation
 from .constants import colors
 
 
@@ -136,7 +137,7 @@ def plot_sum(df, figsize, li, text_x=False):
     ax.legend()
     plt.show(block=False)
 
-def plot_ordered_mantissas(col, figsize=(12, 6)):
+def plot_ordered_mantissas(col, figsize=(12, 12)):
     """
     
     Args:
