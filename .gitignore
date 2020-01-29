@@ -16,3 +16,8 @@ left*.*
 
 # Python egg metadata, regenerated from source files by setuptools.
 /*.egg-info
+
+# Sphinx docs rendered files
+_build
+_static
+_templates
