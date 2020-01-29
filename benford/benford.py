@@ -968,7 +968,7 @@ class Mantissas(object):
             self.show_plot()
             self.arc_test()
 
-    def show_plot(self, figsize=(12, 6)):
+    def show_plot(self, figsize=(12, 12)):
         '''
         plots the ordered mantissas and a line with the expected
                 inclination. Defaults to True.
