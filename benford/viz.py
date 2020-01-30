@@ -138,11 +138,12 @@ def plot_sum(df, figsize, li, text_x=False):
     plt.show(block=False)
 
 def plot_ordered_mantissas(col, figsize=(12, 12)):
-    """
+    """Plots the ordered mantissas and compares them to the expected, straight
+        line that should be formed in a Benford-cmpliant set.
     
     Args:
-        col: column of mantissas to plot
-        figsize: sets the dimensions of the plot figure
+        col (Series): column of mantissas to plot.
+        figsize (tuple): sets the dimensions of the plot figure.
     """
     ld = len(col)
     x = arange(1, ld + 1)
@@ -160,21 +161,31 @@ def plot_ordered_mantissas(col, figsize=(12, 12)):
     plt.legend(loc='upper left')
     plt.show(block=False);
 
-def plot_mantissa_arc_test(df, stats, decimals=2, grid=True, figsize=12):
-    """"""
+def plot_mantissa_arc_test(df, gravity_center, grid=True, figsize=12):
+    """Draws thee Mantissa Arc Test after computing X and Y circular coordinates
+    for every mantissa and the center of gravity for the set
+    
+    Args:
+        df (DataFrame): pandas DataFrame with the mantissas and the X and Y
+            coordinates.
+        gravity_center (tuple): coordinates for plottling the gravity center
+        grid (bool): show grid. Defaults to True.
+        figsize (int): figure dimensions. No need to be a tuple, since the
+            figure is a square.
+    """
     fig = plt.figure(figsize=(figsize,figsize))
     ax = plt.subplot()
     ax.set_facecolor(colors['b'])
     ax.scatter(df.mant_x, df.mant_y, label= "ARC TEST",
                 color=colors['m'])
-    ax.scatter(stats['gravity_center'][0], stats['gravity_center'][1],
+    ax.scatter(gravity_center[0], gravity_center[1],
                 color=colors['s']) 
     text_annotation = Annotation(
                 "  Gravity Center: "
-                f"x({round(stats['gravity_center'][0], decimals)}),"
-                f" y({round(stats['gravity_center'][1], decimals)})", 
-                xy=(stats['gravity_center'][0] - 0.65,
-                    stats['gravity_center'][1] - 0.1),
+                f"x({round(gravity_center[0], 3)}),"
+                f" y({round(gravity_center[1], 3)})", 
+                xy=(gravity_center[0] - 0.65,
+                    gravity_center[1] - 0.1),
                 xycoords='data')
     ax.add_artist(text_annotation)
     ax.grid(True, which='both')

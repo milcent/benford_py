@@ -1,0 +1,335 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>benford.utils &mdash; benford_py 0.2.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> benford_py
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">benford_py</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>benford.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for benford.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Series</span><span class="p">,</span> <span class="n">DataFrame</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">arange</span><span class="p">,</span> <span class="n">log10</span><span class="p">,</span> <span class="n">ndarray</span>
+<span class="kn">from</span> <span class="nn">.expected</span> <span class="kn">import</span> <span class="n">_test_</span>
+<span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">digs_dict</span>
+<span class="kn">from</span> <span class="nn">.stats</span> <span class="kn">import</span> <span class="n">Z_score</span>
+
+
+<span class="k">def</span> <span class="nf">_set_N_</span><span class="p">(</span><span class="n">len_df</span><span class="p">,</span> <span class="n">limit_N</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="c1"># Assigning to N the superior limit or the lenght of the series</span>
+    <span class="k">if</span> <span class="n">limit_N</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">limit_N</span> <span class="o">&gt;</span> <span class="n">len_df</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">len_df</span>
+    <span class="c1"># Check on limit_N being a positive integer</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">limit_N</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">limit_N</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;limit_N must be None or a positive integer.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">limit_N</span>
+
+
+<div class="viewcode-block" id="get_mantissas"><a class="viewcode-back" href="../../benford.html#benford.utils.get_mantissas">[docs]</a><span class="k">def</span> <span class="nf">get_mantissas</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the mantissas, the non-integer part of the log of a number.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        arr: array of integers or floats</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Array of floats withe logs mantissas</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">log_a</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">log10</span><span class="p">(</span><span class="n">arr</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">log_a</span> <span class="o">-</span> <span class="n">log_a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>  <span class="c1"># the number - its integer part</span></div>
+
+
+<div class="viewcode-block" id="input_data"><a class="viewcode-back" href="../../benford.html#benford.utils.input_data">[docs]</a><span class="k">def</span> <span class="nf">input_data</span><span class="p">(</span><span class="n">given</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Internalizes and transforms the input data</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        given: ndarray, Series or tuple with DataFrame and name of the</span>
+<span class="sd">            column to analyze</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The raw inputed data and the result of its first pre-processing,</span>
+<span class="sd">            when required.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">given</span><span class="p">)</span> <span class="o">==</span> <span class="n">Series</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">chosen</span> <span class="o">=</span> <span class="n">given</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">given</span><span class="p">)</span> <span class="o">==</span> <span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">given</span>
+        <span class="n">chosen</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">given</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">given</span><span class="p">)</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">given</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="n">DataFrame</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">given</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;The data tuple must be composed of a pandas &#39;</span>
+                            <span class="s1">&#39;DataFrame and the name (str) of the chosen &#39;</span>
+                            <span class="s1">&#39;column, in that order&#39;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">given</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">chosen</span> <span class="o">=</span> <span class="n">given</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">given</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Wrong data input type. Check docstring.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">chosen</span></div>
+
+
+<div class="viewcode-block" id="prepare"><a class="viewcode-back" href="../../benford.html#benford.utils.prepare">[docs]</a><span class="k">def</span> <span class="nf">prepare</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">digs</span><span class="p">,</span> <span class="n">limit_N</span><span class="p">,</span> <span class="n">simple</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Transforms the original number sequence into a DataFrame reduced</span>
+<span class="sd">    by the ocurrences of the chosen digits, creating other computed</span>
+<span class="sd">    columns</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">_set_N_</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">limit_N</span><span class="o">=</span><span class="n">limit_N</span><span class="p">)</span>
+
+    <span class="c1"># get the number of occurrences of the digits</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+    <span class="c1"># get their relative frequencies</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">value_counts</span><span class="p">(</span><span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># crate dataframe from them</span>
+    <span class="n">dd</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;Counts&#39;</span><span class="p">:</span> <span class="n">v</span><span class="p">,</span> <span class="s1">&#39;Found&#39;</span><span class="p">:</span> <span class="n">p</span><span class="p">})</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+    <span class="c1"># join the dataframe with the one of expected Benford&#39;s frequencies</span>
+    <span class="n">dd</span> <span class="o">=</span> <span class="n">_test_</span><span class="p">(</span><span class="n">digs</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dd</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># create column with absolute differences</span>
+    <span class="n">dd</span><span class="p">[</span><span class="s1">&#39;Dif&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dd</span><span class="o">.</span><span class="n">Found</span> <span class="o">-</span> <span class="n">dd</span><span class="o">.</span><span class="n">Expected</span>
+    <span class="n">dd</span><span class="p">[</span><span class="s1">&#39;AbsDif&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dd</span><span class="o">.</span><span class="n">Dif</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">simple</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">dd</span><span class="p">[</span><span class="s1">&#39;Dif&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">dd</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">confidence</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dd</span><span class="p">[</span><span class="s1">&#39;Z_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Z_score</span><span class="p">(</span><span class="n">dd</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">N</span><span class="p">,</span> <span class="n">dd</span></div>
+
+<div class="viewcode-block" id="subtract_sorted"><a class="viewcode-back" href="../../benford.html#benford.utils.subtract_sorted">[docs]</a><span class="k">def</span> <span class="nf">subtract_sorted</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Subtracts the sorted sequence elements from each other, discarding zeros.</span>
+<span class="sd">    Used in the Second Order test</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sec</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">sec</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">sec</span> <span class="o">=</span> <span class="n">sec</span> <span class="o">-</span> <span class="n">sec</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">sec</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sec</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">sec</span></div>
+
+<div class="viewcode-block" id="prep_to_roll"><a class="viewcode-back" href="../../benford.html#benford.utils.prep_to_roll">[docs]</a><span class="k">def</span> <span class="nf">prep_to_roll</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Used by the rolling mad and rolling mean, prepares each test and</span>
+<span class="sd">    respective expected proportions for later application to the Series subset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">test</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
+        <span class="n">start</span><span class="p">[</span><span class="n">digs_dict</span><span class="p">[</span><span class="n">test</span><span class="p">]]</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">ZN</span> <span class="o">//</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">((</span>
+            <span class="n">log10</span><span class="p">(</span><span class="n">start</span><span class="o">.</span><span class="n">ZN</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span><span class="n">test</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">start</span><span class="o">.</span><span class="n">ZN</span> <span class="o">&gt;=</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="n">test</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="n">test</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">test</span><span class="p">)</span>
+        <span class="n">Exp</span> <span class="o">=</span> <span class="n">log10</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">ind</span><span class="p">))</span>
+
+    <span class="k">elif</span> <span class="n">test</span> <span class="o">==</span> <span class="mi">22</span><span class="p">:</span>
+        <span class="n">start</span><span class="p">[</span><span class="n">digs_dict</span><span class="p">[</span><span class="n">test</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span><span class="o">.</span><span class="n">ZN</span> <span class="o">//</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">((</span>
+            <span class="n">log10</span><span class="p">(</span><span class="n">start</span><span class="o">.</span><span class="n">ZN</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">%</span> <span class="mi">10</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">start</span><span class="o">.</span><span class="n">ZN</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">]</span>
+
+        <span class="n">Expec</span> <span class="o">=</span> <span class="n">log10</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)))</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;Expected&#39;</span><span class="p">:</span> <span class="n">Expec</span><span class="p">,</span> <span class="s1">&#39;Sec_Dig&#39;</span><span class="p">:</span>
+                             <span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span> <span class="o">*</span> <span class="mi">9</span><span class="p">)})</span>
+        <span class="n">Exp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;Sec_Dig&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">10</span><span class="p">,)</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">start</span><span class="p">[</span><span class="n">digs_dict</span><span class="p">[</span><span class="n">test</span><span class="p">]]</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">ZN</span> <span class="o">%</span> <span class="mi">100</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">start</span><span class="o">.</span><span class="n">ZN</span> <span class="o">&gt;=</span> <span class="mi">1000</span><span class="p">]</span>
+
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">Exp</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">99.</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">Exp</span><span class="p">,</span> <span class="n">ind</span></div>
+
+<div class="viewcode-block" id="mad_to_roll"><a class="viewcode-back" href="../../benford.html#benford.utils.mad_to_roll">[docs]</a><span class="k">def</span> <span class="nf">mad_to_roll</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">Exp</span><span class="p">,</span> <span class="n">ind</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mean Absolute Deviation used in the rolling function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prop</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+    <span class="n">prop</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">value_counts</span><span class="p">(</span><span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">Exp</span><span class="p">):</span>
+        <span class="n">prop</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">prop</span> <span class="o">-</span> <span class="n">Exp</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="mse_to_roll"><a class="viewcode-back" href="../../benford.html#benford.utils.mse_to_roll">[docs]</a><span class="k">def</span> <span class="nf">mse_to_roll</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">Exp</span><span class="p">,</span> <span class="n">ind</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mean Squared Error used in the rolling function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prop</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">value_counts</span><span class="p">(</span><span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">Exp</span><span class="p">):</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">((</span><span class="n">temp</span> <span class="o">-</span> <span class="n">Exp</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Marcel Milcent
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

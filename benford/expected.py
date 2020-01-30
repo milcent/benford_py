@@ -6,7 +6,7 @@ from .viz import plot_expected
 
 class First(DataFrame):
     """Holds the expected probabilities of the First, First Two, or
-     First Three digits according to Benford's distribution.
+    First Three digits according to Benford's distribution.
 
     Args:
         digs: 1, 2 or 3 - tells which of the first digits to consider:

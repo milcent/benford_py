@@ -6,7 +6,7 @@ Dependent on pandas, numpy and matplotlib
 
 All logarithms ar in base 10: "log10"
 
-Copyright (C) 2014  Marcel Milcent
+Author:  Marcel Milcent
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -121,6 +121,17 @@ class Test(DataFrame):
             plotting and to limit the top deviations to show.
         limit_N: sets a limit to N as the sample size for the calculation of
                 the Z scores if the sample is too big. Defaults to None.
+    
+    Attributes:
+        N: Number of records in the sample to consider in computations
+        ddf: Degrees of Freedom to look up for the critical chi-square value
+        chi_square: Chi-square statistic for the given test
+        KS: Kolmogorov-Smirnov statistic for the given test
+        MAD: Mean Absolute Deviation for the given test
+        confidence: Confidence level to consider when setting some critical values
+        digs (int): numerical representation of the test at hand. 1: F1D; 2: F2D;
+            3: F3D; 22: SD; -2: L2D.
+        sec_order (bool): True if the test is a Second Order one 
     """
 
     def __init__(self, base, digs, confidence, limit_N=None, sec_order=False):
@@ -134,22 +145,14 @@ class Test(DataFrame):
         # create column with absolute differences
         self['Dif'] = self.Found - self.Expected
         self['AbsDif'] = self.Dif.abs()
-        #: Number of records in the sample to consider in computations
         self.N = _set_N_(len(base), limit_N)
         self['Z_score'] = Z_score(self, self.N)
-        #: Degrees of Freedom to look up for the critical chi-square value
         self.ddf = len(self) - 1
-        #: Chi-square statistic for the given test
         self.chi_square = chi_square_2(self)
-        #: Kolmogorov-Smirnov statistic for the given test
         self.KS = KS_2(self)
-        #: Mean Absolute Deviation for the given test
         self.MAD = self.AbsDif.mean()
-        #: Confidence level to consider when setting some critical values
         self.confidence = confidence
-        # (int): numerical representation of the test at hand 
         self.digs = digs
-        # (bool): True if the test is a Secnd Order one 
         self.sec_order = sec_order
 
         if sec_order:
@@ -175,7 +178,7 @@ class Test(DataFrame):
     @property
     def critical_values(self):
         """dict: a dictionary with the critical values for the test at hand,
-        according to the current confidence level."""
+            according to the current confidence level."""
         return {'Z': confs[self.confidence],
                 'KS': KS_crit[self.confidence] / (self.N ** 0.5),
                 'chi2': crit_chi2[self.ddf][self.confidence],
@@ -890,7 +893,7 @@ class Source(DataFrame):
 
         Args:
             verbose: tells how many duplicated entries were found and prints the
-                top numbers according to the top_Rep parameter. Defaluts to True.
+                top numbers according to the top_Rep argument. Defaluts to True.
             top_Rep: int or None. Chooses how many duplicated entries will be
                 shown withe the top repititions. Defaluts to 20. If None, returns
                 al the ordered repetitions.
@@ -904,7 +907,7 @@ class Source(DataFrame):
             ValueError: if the `top_Rep` arg is not int or None.
         """
         if top_Rep is not None and not isinstance(top_Rep, int):
-            raise ValueError('The top_Rep parameter must be an int or None.')
+            raise ValueError('The top_Rep argument must be an int or None.')
 
         dup = self[['Seq']][self.Seq.duplicated(keep=False)]
         dup_count = dup.groupby(self.Seq).count()
@@ -925,14 +928,17 @@ class Source(DataFrame):
 
 
 class Mantissas(object):
-    '''
+    """
     Returns a Series with the data mantissas,
 
-    Parameters
-    ----------
-    data: sequence to compute mantissas from, numpy 1D array, pandas
-        Series of pandas DataFrame column.
-    '''
+    Args:
+        data: sequence to compute mantissas from, numpy 1D array, pandas
+            Series of pandas DataFrame column.
+    Attributes:
+        data (DataFrame): holds the computed mantissas and, if the arc_test
+            is also called, the respecttive x and Y coordinates for the plot.
+        stats (dict): holds the relevant statistics about the data mantissas.
+    """
 
     def __init__(self, data):
 
@@ -947,14 +953,12 @@ class Mantissas(object):
                       'Kurt': self.data.Mantissa.kurt()}
 
     def report(self, show_plot=True):
-        '''
-        Displays the Mantissas stats.
+        """Displays the Mantissas stats.
 
-        Paranmeters:
-        -----------
-        show_plot: shows the ordered mantissas plot and the Arc Test plot.
-            Defaults to True.
-        '''
+        Args:
+            show_plot: shows the ordered mantissas plot and the Arc Test plot.
+                Defaults to True.
+        """
         print("\n", '  Mantissas Test  '.center(52, '#'))
         print(f"\nThe Mantissas MEAN is      {self.stats['Mean']:.6f}."
               "\tRef: 0.5")
@@ -969,75 +973,32 @@ class Mantissas(object):
             self.arc_test()
 
     def show_plot(self, figsize=(12, 12)):
-        '''
-        plots the ordered mantissas and a line with the expected
-                inclination. Defaults to True.
+        """Plots the ordered mantissas and compares them to the expected, straight
+        line that should be formed in a Benford-cmpliant set.
 
-        Parameters
-        ----------
-
-        figsize -> tuple that sets the figure size
-        '''
-        ld = len(self.data)
-        x = arange(1, ld + 1)
-        n = ones(ld) / ld
-        fig = plt.figure(figsize=figsize)
-        ax = fig.add_subplot(111)
-        ax.plot(x, self.data.Mantissa.sort_values(), linestyle='--',
-                color=colors['s'], linewidth=3, label='Mantissas')
-        ax.plot(x, n.cumsum(), color=colors['m'],
-                linewidth=2, label='Expected')
-        plt.ylim((0, 1.))
-        plt.xlim((1, ld + 1))
-        ax.set_facecolor(colors['b'])
-        ax.set_title("Ordered Mantissas")
-        plt.legend(loc='upper left')
-        plt.show(block=False);
-
-    def arc_test(self, decimals=2, grid=True, figsize=12):
-        '''
+        Args:
+            figsize: tuple that sets the figure size.
+        """
+        plot_ordered_mantissas(self.data.Mantissa, figsize=figsize)
+ 
+    def arc_test(self, grid=True, figsize=12):
+        """
         Add two columns to Mantissas's DataFrame equal to their "X" and "Y"
         coordinates, plots its to a scatter plot and calculates the gravity
         center of the circle.
 
-        Parameters
-        ----------
-
-        decimals -> number of decimal places for displaying the gravity center.
-            Defaults to 2.
-        
-        grid -> show grid of the plot. Defaluts to True.
-        
-        figsize -> size of the figure to be displayed. Since it is a square,
-            there is no need to provide a tuple, like is usually the case with
-            matplotlib.
-        '''
+        Args:
+            grid:show grid of the plot. Defaluts to True.
+            figsize: size of the figure to be displayed. Since it is a square,
+                there is no need to provide a tuple, like is usually the case with
+                matplotlib.
+        """
         if self.stats.get('gravity_center') is None:
             self.data['mant_x'] = cos(2 * pi * self.data.Mantissa)
             self.data['mant_y'] = sin(2 * pi * self.data.Mantissa)
             self.stats['gravity_center'] = (self.data.mant_x.mean(),
                                             self.data.mant_y.mean())
-        fig = plt.figure(figsize=(figsize,figsize))
-        ax = plt.subplot()
-        ax.set_facecolor(colors['b'])
-        ax.scatter(self.data.mant_x, self.data.mant_y, label= "ARC TEST",
-                   color=colors['m'])
-        ax.scatter(self.stats['gravity_center'][0], self.stats['gravity_center'][1],
-                   color=colors['s']) 
-        text_annotation = Annotation(
-                    "  Gravity Center: "
-                    f"x({round(self.stats['gravity_center'][0], decimals)}),"
-                    f" y({round(self.stats['gravity_center'][1], decimals)})", 
-                    xy=(self.stats['gravity_center'][0] - 0.65,
-                        self.stats['gravity_center'][1] - 0.1),
-                    xycoords='data')
-        ax.add_artist(text_annotation)
-        ax.grid(True, which='both')
-        ax.axhline(y=0, color='k')
-        ax.axvline(x=0, color='k')
-        ax.legend(loc = 'lower left')
-        ax.set_title("Mantissas Arc Test")
-        plt.show(block=False);
+        plot_mantissa_arc_test(self, stats['gravity_center'], figsize=figsize)
 
 
 class Roll_mad(Series):
@@ -1081,7 +1042,7 @@ class Roll_mad(Series):
         """Shows the rolling MAD plot
         
         Args:
-            figsize: the figure dimensions .
+            figsize: the figure dimensions.
         """
         fig, ax = plt.subplots(figsize=figsize)
         ax.set_facecolor(colors['b'])
@@ -1556,7 +1517,7 @@ def duplicates(data, top_Rep=20, verbose=True, inform=None):
         data: sequence to take the duplicates from. pandas Series or
             numpy Ndarray.
         verbose: tells how many duplicated entries were found and prints the
-            top numbers according to the top_Rep parameter. Defaluts to True.
+            top numbers according to the top_Rep argument. Defaluts to True.
         top_Rep: chooses how many duplicated entries will be
             shown withe the top repititions. int or None. Defaluts to 20.
             If None, returns al the ordered repetitions.
@@ -1570,7 +1531,7 @@ def duplicates(data, top_Rep=20, verbose=True, inform=None):
     verbose = _deprecate_inform_(verbose, inform)
 
     if top_Rep is not None and not isinstance(top_Rep, int):
-        raise ValueError('The top_Rep parameter must be an int or None.')
+        raise ValueError('The top_Rep argument must be an int or None.')
 
     if not isinstance(data, Series):
         try:

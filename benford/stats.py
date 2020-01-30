@@ -32,8 +32,7 @@ def chi_square(frame, ddf, confidence, verbose=True):
     Returns:
         The computed Chi square statistic and the critical chi square
             (according) to the degrees of freedom and confidence level,
-            for comparison
-        None if confidence is None
+            for comparison. None if confidence is None
     """
     if confidence is None:
         print('\nChi-square test needs confidence other than None.')
@@ -152,8 +151,7 @@ def mse(frame, verbose=True):
         verbose: Prints the MSE. Defaults to True.
     
     Returns:
-        Mean of the squared differences between the found and the expected
-            proportions.
+        Mean of the squared differences between the found and the expected proportions.
     """
     mse = (frame.AbsDif ** 2).mean()
 

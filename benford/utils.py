@@ -19,7 +19,7 @@ def _set_N_(len_df, limit_N):
 
 
 def get_mantissas(arr):
-    """Computes the  mantissas, the non-integer part of the log of a number.
+    """Computes the mantissas, the non-integer part of the log of a number.
     
     Args:
         arr: array of integers or floats
