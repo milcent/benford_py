@@ -438,7 +438,7 @@ class Benford(object):
     
     @property
     def all_confidences(self):
-        """dict: a dictionary the confidence level for the instance's tests,
+        """dict: a dictionary with a confidence level for each computed tests,
         when applicable."""
         con_dic= {}
         for key in self.tests:

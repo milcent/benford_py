@@ -147,7 +147,7 @@
 <span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">colors</span>
 
 
-<div class="viewcode-block" id="plot_expected"><a class="viewcode-back" href="../../benford.html#benford.viz.plot_expected">[docs]</a><span class="k">def</span> <span class="nf">plot_expected</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">digs</span><span class="p">):</span>
+<div class="viewcode-block" id="plot_expected"><a class="viewcode-back" href="../../api.html#benford.viz.plot_expected">[docs]</a><span class="k">def</span> <span class="nf">plot_expected</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">digs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Plots the Expected Benford Distributions</span>
 
 <span class="sd">    Args:</span>
@@ -194,7 +194,7 @@
     <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">figsize</span><span class="p">,</span> <span class="n">text_x</span>
     
 
-<div class="viewcode-block" id="plot_digs"><a class="viewcode-back" href="../../benford.html#benford.viz.plot_digs">[docs]</a><span class="k">def</span> <span class="nf">plot_digs</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y_Exp</span><span class="p">,</span> <span class="n">y_Found</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">figsize</span><span class="p">,</span> <span class="n">conf_Z</span><span class="p">,</span> <span class="n">text_x</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="plot_digs"><a class="viewcode-back" href="../../api.html#benford.viz.plot_digs">[docs]</a><span class="k">def</span> <span class="nf">plot_digs</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y_Exp</span><span class="p">,</span> <span class="n">y_Found</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">figsize</span><span class="p">,</span> <span class="n">conf_Z</span><span class="p">,</span> <span class="n">text_x</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Plots the digits tests results</span>
 
 <span class="sd">    Args:</span>
@@ -250,7 +250,7 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="plot_sum"><a class="viewcode-back" href="../../benford.html#benford.viz.plot_sum">[docs]</a><span class="k">def</span> <span class="nf">plot_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">figsize</span><span class="p">,</span> <span class="n">li</span><span class="p">,</span> <span class="n">text_x</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="plot_sum"><a class="viewcode-back" href="../../api.html#benford.viz.plot_sum">[docs]</a><span class="k">def</span> <span class="nf">plot_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">figsize</span><span class="p">,</span> <span class="n">li</span><span class="p">,</span> <span class="n">text_x</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Plots the summation test results</span>
 
 <span class="sd">    Args:</span>
@@ -280,7 +280,7 @@
     <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="plot_ordered_mantissas"><a class="viewcode-back" href="../../benford.html#benford.viz.plot_ordered_mantissas">[docs]</a><span class="k">def</span> <span class="nf">plot_ordered_mantissas</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">)):</span>
+<div class="viewcode-block" id="plot_ordered_mantissas"><a class="viewcode-back" href="../../api.html#benford.viz.plot_ordered_mantissas">[docs]</a><span class="k">def</span> <span class="nf">plot_ordered_mantissas</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">)):</span>
     <span class="sd">&quot;&quot;&quot;Plots the ordered mantissas and compares them to the expected, straight</span>
 <span class="sd">        line that should be formed in a Benford-cmpliant set.</span>
 <span class="sd">    </span>
@@ -304,7 +304,7 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">);</span></div>
 
-<div class="viewcode-block" id="plot_mantissa_arc_test"><a class="viewcode-back" href="../../benford.html#benford.viz.plot_mantissa_arc_test">[docs]</a><span class="k">def</span> <span class="nf">plot_mantissa_arc_test</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">gravity_center</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
+<div class="viewcode-block" id="plot_mantissa_arc_test"><a class="viewcode-back" href="../../api.html#benford.viz.plot_mantissa_arc_test">[docs]</a><span class="k">def</span> <span class="nf">plot_mantissa_arc_test</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">gravity_center</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Draws thee Mantissa Arc Test after computing X and Y circular coordinates</span>
 <span class="sd">    for every mantissa and the center of gravity for the set</span>
 <span class="sd">    </span>

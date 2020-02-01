@@ -145,7 +145,7 @@
 <span class="c1"># from .constants import digs_dict, confs, crit_chi2, KS_crit, mad_dict</span>
 
 
-<div class="viewcode-block" id="Z_score"><a class="viewcode-back" href="../../benford.html#benford.stats.Z_score">[docs]</a><span class="k">def</span> <span class="nf">Z_score</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+<div class="viewcode-block" id="Z_score"><a class="viewcode-back" href="../../api.html#benford.stats.Z_score">[docs]</a><span class="k">def</span> <span class="nf">Z_score</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Computes the Z statistics for the proportions studied</span>
 
 <span class="sd">    Args:</span>
@@ -160,7 +160,7 @@
            <span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">Expected</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">frame</span><span class="o">.</span><span class="n">Expected</span><span class="p">))</span> <span class="o">/</span> <span class="n">N</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="chi_square"><a class="viewcode-back" href="../../benford.html#benford.stats.chi_square">[docs]</a><span class="k">def</span> <span class="nf">chi_square</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">ddf</span><span class="p">,</span> <span class="n">confidence</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="chi_square"><a class="viewcode-back" href="../../api.html#benford.stats.chi_square">[docs]</a><span class="k">def</span> <span class="nf">chi_square</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">ddf</span><span class="p">,</span> <span class="n">confidence</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Comnputes the chi-square statistic of the found distributions and compares</span>
 <span class="sd">    it with the critical chi-square of such a sample, according to the</span>
 <span class="sd">    confidence level chosen and the degrees of freedom - len(sample) -1.</span>
@@ -191,7 +191,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">found_chi</span><span class="p">,</span> <span class="n">crit_chi</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="chi_square_2"><a class="viewcode-back" href="../../benford.html#benford.stats.chi_square_2">[docs]</a><span class="k">def</span> <span class="nf">chi_square_2</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
+<div class="viewcode-block" id="chi_square_2"><a class="viewcode-back" href="../../api.html#benford.stats.chi_square_2">[docs]</a><span class="k">def</span> <span class="nf">chi_square_2</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Computes the chi-square statistic of the found distributions</span>
 
 <span class="sd">    Args:</span>
@@ -205,7 +205,7 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">dif_counts</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">exp_counts</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="KS"><a class="viewcode-back" href="../../benford.html#benford.stats.KS">[docs]</a><span class="k">def</span> <span class="nf">KS</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">confidence</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="KS"><a class="viewcode-back" href="../../api.html#benford.stats.KS">[docs]</a><span class="k">def</span> <span class="nf">KS</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">confidence</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Computes the Kolmogorov-Smirnov test of the found distributions</span>
 <span class="sd">    and compares it with the critical chi-square of such a sample,</span>
 <span class="sd">    according to the confidence level chosen.</span>
@@ -239,7 +239,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">suprem</span><span class="p">,</span> <span class="n">crit_KS</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="KS_2"><a class="viewcode-back" href="../../benford.html#benford.stats.KS_2">[docs]</a><span class="k">def</span> <span class="nf">KS_2</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
+<div class="viewcode-block" id="KS_2"><a class="viewcode-back" href="../../api.html#benford.stats.KS_2">[docs]</a><span class="k">def</span> <span class="nf">KS_2</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Computes the Kolmogorov-Smirnov test of the found distributions</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
@@ -255,7 +255,7 @@
     <span class="k">return</span> <span class="p">((</span><span class="n">ks_frame</span><span class="o">.</span><span class="n">Found</span> <span class="o">-</span> <span class="n">ks_frame</span><span class="o">.</span><span class="n">Expected</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">())</span><span class="o">.</span><span class="n">max</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="mad"><a class="viewcode-back" href="../../benford.html#benford.stats.mad">[docs]</a><span class="k">def</span> <span class="nf">mad</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="mad"><a class="viewcode-back" href="../../api.html#benford.stats.mad">[docs]</a><span class="k">def</span> <span class="nf">mad</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Computes the Mean Absolute Deviation (MAD) between the found and the</span>
 <span class="sd">    expected proportions.</span>
 
@@ -285,7 +285,7 @@
     <span class="k">return</span> <span class="n">mad</span></div>
 
 
-<div class="viewcode-block" id="mse"><a class="viewcode-back" href="../../benford.html#benford.stats.mse">[docs]</a><span class="k">def</span> <span class="nf">mse</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="mse"><a class="viewcode-back" href="../../api.html#benford.stats.mse">[docs]</a><span class="k">def</span> <span class="nf">mse</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Computes the test&#39;s Mean Square Error</span>
 
 <span class="sd">    Args:</span>

@@ -184,7 +184,7 @@
 <span class="kn">from</span> <span class="nn">.stats</span> <span class="kn">import</span> <span class="n">Z_score</span><span class="p">,</span> <span class="n">chi_square</span><span class="p">,</span> <span class="n">chi_square_2</span><span class="p">,</span> <span class="n">KS</span><span class="p">,</span> <span class="n">KS_2</span><span class="p">,</span> \
     <span class="n">mad</span><span class="p">,</span> <span class="n">mse</span>
 
-<div class="viewcode-block" id="Base"><a class="viewcode-back" href="../../benford.html#benford.benford.Base">[docs]</a><span class="k">class</span> <span class="nc">Base</span><span class="p">(</span><span class="n">DataFrame</span><span class="p">):</span>
+<div class="viewcode-block" id="Base"><a class="viewcode-back" href="../../api.html#benford.benford.Base">[docs]</a><span class="k">class</span> <span class="nc">Base</span><span class="p">(</span><span class="n">DataFrame</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Internalizes and prepares the data for Analysis.</span>
 
 <span class="sd">    Args:</span>
@@ -251,7 +251,7 @@
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;L2D&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;L2D&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Test"><a class="viewcode-back" href="../../benford.html#benford.benford.Test">[docs]</a><span class="k">class</span> <span class="nc">Test</span><span class="p">(</span><span class="n">DataFrame</span><span class="p">):</span>
+<div class="viewcode-block" id="Test"><a class="viewcode-back" href="../../api.html#benford.benford.Test">[docs]</a><span class="k">class</span> <span class="nc">Test</span><span class="p">(</span><span class="n">DataFrame</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Transforms the original number sequence into a DataFrame reduced</span>
 <span class="sd">    by the ocurrences of the chosen digits, creating other computed</span>
 <span class="sd">    columns</span>
@@ -303,7 +303,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="n">digs_dict</span><span class="p">[</span><span class="n">digs</span><span class="p">]]</span>
     
-<div class="viewcode-block" id="Test.update_confidence"><a class="viewcode-back" href="../../benford.html#benford.benford.Test.update_confidence">[docs]</a>    <span class="k">def</span> <span class="nf">update_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_conf</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Test.update_confidence"><a class="viewcode-back" href="../../api.html#benford.benford.Test.update_confidence">[docs]</a>    <span class="k">def</span> <span class="nf">update_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_conf</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Sets a new confidence level for the Benford object, so as to be used to</span>
 <span class="sd">        produce critical values for the tests</span>
 
@@ -328,7 +328,7 @@
                 <span class="s1">&#39;MAD&#39;</span><span class="p">:</span> <span class="n">mad_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">digs</span><span class="p">]</span>
                 <span class="p">}</span>
 
-<div class="viewcode-block" id="Test.show_plot"><a class="viewcode-back" href="../../benford.html#benford.benford.Test.show_plot">[docs]</a>    <span class="k">def</span> <span class="nf">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Test.show_plot"><a class="viewcode-back" href="../../api.html#benford.benford.Test.show_plot">[docs]</a>    <span class="k">def</span> <span class="nf">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Draws the test plot.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">figsize</span><span class="p">,</span> <span class="n">text_x</span> <span class="o">=</span> <span class="n">_get_plot_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digs</span><span class="p">)</span>
@@ -337,7 +337,7 @@
                     <span class="n">text_x</span><span class="o">=</span><span class="n">text_x</span>
                     <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Test.report"><a class="viewcode-back" href="../../benford.html#benford.benford.Test.report">[docs]</a>    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">high_Z</span><span class="o">=</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Test.report"><a class="viewcode-back" href="../../api.html#benford.benford.Test.report">[docs]</a>    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">high_Z</span><span class="o">=</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Handles the report especific to the test, considering its statistics</span>
 <span class="sd">        and according to the current confidence level.</span>
 
@@ -356,7 +356,7 @@
         <span class="k">if</span> <span class="n">show_plot</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">show_plot</span><span class="p">()</span></div></div>
 
-<div class="viewcode-block" id="Summ"><a class="viewcode-back" href="../../benford.html#benford.benford.Summ">[docs]</a><span class="k">class</span> <span class="nc">Summ</span><span class="p">(</span><span class="n">DataFrame</span><span class="p">):</span>
+<div class="viewcode-block" id="Summ"><a class="viewcode-back" href="../../api.html#benford.benford.Summ">[docs]</a><span class="k">class</span> <span class="nc">Summ</span><span class="p">(</span><span class="n">DataFrame</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Gets the base object and outputs a Summation test object</span>
 
 <span class="sd">    Args:</span>
@@ -381,12 +381,12 @@
         <span class="c1"># (str): the name of the Summation test. </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{test}</span><span class="s1">_Summ&#39;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="Summ.show_plot"><a class="viewcode-back" href="../../benford.html#benford.benford.Summ.show_plot">[docs]</a>    <span class="k">def</span> <span class="nf">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Summ.show_plot"><a class="viewcode-back" href="../../api.html#benford.benford.Summ.show_plot">[docs]</a>    <span class="k">def</span> <span class="nf">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Draws the Summation test plot&quot;&quot;&quot;</span>
         <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digs</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">5</span><span class="p">),</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digs</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">5</span><span class="p">))</span>
         <span class="n">plot_sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figsize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected</span><span class="p">)</span></div>
     
-<div class="viewcode-block" id="Summ.report"><a class="viewcode-back" href="../../benford.html#benford.benford.Summ.report">[docs]</a>    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">high_diff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Summ.report"><a class="viewcode-back" href="../../api.html#benford.benford.Summ.report">[docs]</a>    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">high_diff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Gives the report on the Summation test.</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
@@ -462,7 +462,7 @@
         <span class="n">plot_mantissa_arc_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="n">decimals</span><span class="p">,</span> 
                                <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Benford"><a class="viewcode-back" href="../../benford.html#benford.benford.Benford">[docs]</a><span class="k">class</span> <span class="nc">Benford</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Benford"><a class="viewcode-back" href="../../api.html#benford.benford.Benford">[docs]</a><span class="k">class</span> <span class="nc">Benford</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Initializes a Benford Analysis object and computes the proportions for</span>
 <span class="sd">    the digits. The tets dataFrames are atributes, i.e., obj.F1D is the First</span>
 <span class="sd">    Digit DataFrame, the obj.F2D,the First Two Digits one, and so one, F3D for</span>
@@ -547,7 +547,7 @@
         <span class="k">if</span> <span class="n">summation</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">summation</span><span class="p">()</span>
     
-<div class="viewcode-block" id="Benford.update_confidence"><a class="viewcode-back" href="../../benford.html#benford.benford.Benford.update_confidence">[docs]</a>    <span class="k">def</span> <span class="nf">update_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_conf</span><span class="p">,</span> <span class="n">tests</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Benford.update_confidence"><a class="viewcode-back" href="../../api.html#benford.benford.Benford.update_confidence">[docs]</a>    <span class="k">def</span> <span class="nf">update_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_conf</span><span class="p">,</span> <span class="n">tests</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Sets (a) new confidence level(s) for the Benford object, so as to be</span>
 <span class="sd">        used to produce critical values for the tests.</span>
 
@@ -581,7 +581,7 @@
     
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">all_confidences</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;dict: a dictionary the confidence level for the instance&#39;s tests,</span>
+        <span class="sd">&quot;&quot;&quot;dict: a dictionary with a confidence level for each computed tests,</span>
 <span class="sd">        when applicable.&quot;&quot;&quot;</span>
         <span class="n">con_dic</span><span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tests</span><span class="p">:</span>
@@ -591,7 +591,7 @@
                 <span class="k">pass</span>
         <span class="k">return</span> <span class="n">con_dic</span>
 
-<div class="viewcode-block" id="Benford.mantissas"><a class="viewcode-back" href="../../benford.html#benford.benford.Benford.mantissas">[docs]</a>    <span class="k">def</span> <span class="nf">mantissas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Benford.mantissas"><a class="viewcode-back" href="../../api.html#benford.benford.Benford.mantissas">[docs]</a>    <span class="k">def</span> <span class="nf">mantissas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Adds a Mantissas object to the tests, with all its statistics and</span>
 <span class="sd">        plotting capabilities. </span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -600,7 +600,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Added Mantissas test.&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Benford.sec_order"><a class="viewcode-back" href="../../benford.html#benford.benford.Benford.sec_order">[docs]</a>    <span class="k">def</span> <span class="nf">sec_order</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Benford.sec_order"><a class="viewcode-back" href="../../api.html#benford.benford.Benford.sec_order">[docs]</a>    <span class="k">def</span> <span class="nf">sec_order</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Runs the Second Order tests, which are the Benford&#39;s tests</span>
 <span class="sd">        performed on the differences between the ordered sample (a value minus</span>
 <span class="sd">        the one before it, and so on). If the original series is Benford-</span>
@@ -627,7 +627,7 @@
                   <span class="s1">&#39;registries.</span><span class="se">\n\n</span><span class="s1">Number of discarded entries for second order&#39;</span>
                   <span class="sa">f</span><span class="s1">&#39; tests:</span><span class="se">\n</span><span class="si">{self._discarded_sec}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Benford.summation"><a class="viewcode-back" href="../../benford.html#benford.benford.Benford.summation">[docs]</a>    <span class="k">def</span> <span class="nf">summation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Benford.summation"><a class="viewcode-back" href="../../api.html#benford.benford.Benford.summation">[docs]</a>    <span class="k">def</span> <span class="nf">summation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Creates Summation test DataFrames from Base object&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;F1D&#39;</span><span class="p">,</span> <span class="s1">&#39;F2D&#39;</span><span class="p">,</span> <span class="s1">&#39;F3D&#39;</span><span class="p">]:</span>
             <span class="n">t</span> <span class="o">=</span>  <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{test}</span><span class="s1">_Summ&#39;</span>
@@ -638,7 +638,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Added Summation DataFrames to F1D, F2D and F3D Tests.&#39;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Source"><a class="viewcode-back" href="../../benford.html#benford.benford.Source">[docs]</a><span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="n">DataFrame</span><span class="p">):</span>
+<div class="viewcode-block" id="Source"><a class="viewcode-back" href="../../api.html#benford.benford.Source">[docs]</a><span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="n">DataFrame</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Prepares the data for Analysis. pandas DataFrame subclass.</span>
 
 <span class="sd">    Args:</span>
@@ -711,7 +711,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;ZN&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">ab</span> <span class="o">*</span> <span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="n">decimals</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Source.mantissas"><a class="viewcode-back" href="../../benford.html#benford.benford.Source.mantissas">[docs]</a>    <span class="k">def</span> <span class="nf">mantissas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">8</span><span class="p">)):</span>
+<div class="viewcode-block" id="Source.mantissas"><a class="viewcode-back" href="../../api.html#benford.benford.Source.mantissas">[docs]</a>    <span class="k">def</span> <span class="nf">mantissas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">8</span><span class="p">)):</span>
         <span class="sd">&quot;&quot;&quot;Calculates the mantissas, their mean and variance, and compares them</span>
 <span class="sd">        with the mean and variance of a Benford&#39;s sequence.</span>
 
@@ -735,7 +735,7 @@
             <span class="n">plot_ordered_mantissas</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Mant</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Source.first_digits"><a class="viewcode-back" href="../../benford.html#benford.benford.Source.first_digits">[docs]</a>    <span class="k">def</span> <span class="nf">first_digits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">digs</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high_Z</span><span class="o">=</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="Source.first_digits"><a class="viewcode-back" href="../../api.html#benford.benford.Source.first_digits">[docs]</a>    <span class="k">def</span> <span class="nf">first_digits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">digs</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high_Z</span><span class="o">=</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span>
                      <span class="n">limit_N</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">MAD</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">MSE</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chi_square</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                      <span class="n">KS</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">simple</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ret_df</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Performs the Benford First Digits test with the series of</span>
@@ -827,7 +827,7 @@
         <span class="k">if</span> <span class="n">ret_df</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">df</span></div>
 
-<div class="viewcode-block" id="Source.second_digit"><a class="viewcode-back" href="../../benford.html#benford.benford.Source.second_digit">[docs]</a>    <span class="k">def</span> <span class="nf">second_digit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high_Z</span><span class="o">=</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="Source.second_digit"><a class="viewcode-back" href="../../api.html#benford.benford.Source.second_digit">[docs]</a>    <span class="k">def</span> <span class="nf">second_digit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high_Z</span><span class="o">=</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span>
                      <span class="n">limit_N</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">MAD</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">MSE</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chi_square</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                      <span class="n">KS</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">simple</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ret_df</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Performs the Benford Second Digit test with the series of</span>
@@ -907,7 +907,7 @@
         <span class="k">if</span> <span class="n">ret_df</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">df</span></div>
 
-<div class="viewcode-block" id="Source.last_two_digits"><a class="viewcode-back" href="../../benford.html#benford.benford.Source.last_two_digits">[docs]</a>    <span class="k">def</span> <span class="nf">last_two_digits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high_Z</span><span class="o">=</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="Source.last_two_digits"><a class="viewcode-back" href="../../api.html#benford.benford.Source.last_two_digits">[docs]</a>    <span class="k">def</span> <span class="nf">last_two_digits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high_Z</span><span class="o">=</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span>
                         <span class="n">limit_N</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">MAD</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">MSE</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chi_square</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                         <span class="n">KS</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">simple</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ret_df</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Performs the Benford Last Two Digits test with the series of</span>
@@ -984,7 +984,7 @@
         <span class="k">if</span> <span class="n">ret_df</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">df</span></div>
 
-<div class="viewcode-block" id="Source.summation"><a class="viewcode-back" href="../../benford.html#benford.benford.Source.summation">[docs]</a>    <span class="k">def</span> <span class="nf">summation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">digs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<div class="viewcode-block" id="Source.summation"><a class="viewcode-back" href="../../api.html#benford.benford.Source.summation">[docs]</a>    <span class="k">def</span> <span class="nf">summation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">digs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                   <span class="n">ret_df</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Performs the Summation test. In a Benford series, the sums of the</span>
 <span class="sd">        entries begining with the same digits tends to be the same.</span>
@@ -1030,7 +1030,7 @@
         <span class="k">if</span> <span class="n">ret_df</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">df</span></div>
 
-<div class="viewcode-block" id="Source.duplicates"><a class="viewcode-back" href="../../benford.html#benford.benford.Source.duplicates">[docs]</a>    <span class="k">def</span> <span class="nf">duplicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_Rep</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">inform</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Source.duplicates"><a class="viewcode-back" href="../../api.html#benford.benford.Source.duplicates">[docs]</a>    <span class="k">def</span> <span class="nf">duplicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_Rep</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">inform</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Performs a duplicates test and maps the duplicates count in descending</span>
 <span class="sd">        order.</span>
 
@@ -1070,7 +1070,7 @@
             <span class="k">return</span> <span class="n">dup_count</span></div></div>
 
 
-<div class="viewcode-block" id="Mantissas"><a class="viewcode-back" href="../../benford.html#benford.benford.Mantissas">[docs]</a><span class="k">class</span> <span class="nc">Mantissas</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Mantissas"><a class="viewcode-back" href="../../api.html#benford.benford.Mantissas">[docs]</a><span class="k">class</span> <span class="nc">Mantissas</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a Series with the data mantissas,</span>
 
@@ -1095,7 +1095,7 @@
                       <span class="s1">&#39;Skew&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="o">.</span><span class="n">skew</span><span class="p">(),</span>
                       <span class="s1">&#39;Kurt&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="o">.</span><span class="n">kurt</span><span class="p">()}</span>
 
-<div class="viewcode-block" id="Mantissas.report"><a class="viewcode-back" href="../../benford.html#benford.benford.Mantissas.report">[docs]</a>    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Mantissas.report"><a class="viewcode-back" href="../../api.html#benford.benford.Mantissas.report">[docs]</a>    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Displays the Mantissas stats.</span>
 
 <span class="sd">        Args:</span>
@@ -1115,7 +1115,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">show_plot</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">arc_test</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Mantissas.show_plot"><a class="viewcode-back" href="../../benford.html#benford.benford.Mantissas.show_plot">[docs]</a>    <span class="k">def</span> <span class="nf">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">)):</span>
+<div class="viewcode-block" id="Mantissas.show_plot"><a class="viewcode-back" href="../../api.html#benford.benford.Mantissas.show_plot">[docs]</a>    <span class="k">def</span> <span class="nf">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">)):</span>
         <span class="sd">&quot;&quot;&quot;Plots the ordered mantissas and compares them to the expected, straight</span>
 <span class="sd">        line that should be formed in a Benford-cmpliant set.</span>
 
@@ -1124,7 +1124,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plot_ordered_mantissas</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span></div>
  
-<div class="viewcode-block" id="Mantissas.arc_test"><a class="viewcode-back" href="../../benford.html#benford.benford.Mantissas.arc_test">[docs]</a>    <span class="k">def</span> <span class="nf">arc_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
+<div class="viewcode-block" id="Mantissas.arc_test"><a class="viewcode-back" href="../../api.html#benford.benford.Mantissas.arc_test">[docs]</a>    <span class="k">def</span> <span class="nf">arc_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add two columns to Mantissas&#39;s DataFrame equal to their &quot;X&quot; and &quot;Y&quot;</span>
 <span class="sd">        coordinates, plots its to a scatter plot and calculates the gravity</span>
@@ -1144,7 +1144,7 @@
         <span class="n">plot_mantissa_arc_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stats</span><span class="p">[</span><span class="s1">&#39;gravity_center&#39;</span><span class="p">],</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Roll_mad"><a class="viewcode-back" href="../../benford.html#benford.benford.Roll_mad">[docs]</a><span class="k">class</span> <span class="nc">Roll_mad</span><span class="p">(</span><span class="n">Series</span><span class="p">):</span>
+<div class="viewcode-block" id="Roll_mad"><a class="viewcode-back" href="../../api.html#benford.benford.Roll_mad">[docs]</a><span class="k">class</span> <span class="nc">Roll_mad</span><span class="p">(</span><span class="n">Series</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Applies the MAD to sequential subsets of the Series, returning another</span>
 <span class="sd">    Series.</span>
 
@@ -1181,7 +1181,7 @@
         <span class="c1">#: the test (F1D, SD, F2D...) used for the MAD calculation and critical values</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="n">test</span>
 
-<div class="viewcode-block" id="Roll_mad.show_plot"><a class="viewcode-back" href="../../benford.html#benford.benford.Roll_mad.show_plot">[docs]</a>    <span class="k">def</span> <span class="nf">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">8</span><span class="p">)):</span>
+<div class="viewcode-block" id="Roll_mad.show_plot"><a class="viewcode-back" href="../../api.html#benford.benford.Roll_mad.show_plot">[docs]</a>    <span class="k">def</span> <span class="nf">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">8</span><span class="p">)):</span>
         <span class="sd">&quot;&quot;&quot;Shows the rolling MAD plot</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
@@ -1197,7 +1197,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Roll_mse"><a class="viewcode-back" href="../../benford.html#benford.benford.Roll_mse">[docs]</a><span class="k">class</span> <span class="nc">Roll_mse</span><span class="p">(</span><span class="n">Series</span><span class="p">):</span>
+<div class="viewcode-block" id="Roll_mse"><a class="viewcode-back" href="../../api.html#benford.benford.Roll_mse">[docs]</a><span class="k">class</span> <span class="nc">Roll_mse</span><span class="p">(</span><span class="n">Series</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Applies the MSE to sequential subsets of the Series, returning another</span>
 <span class="sd">    Series.</span>
 
@@ -1231,7 +1231,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Roll_mse.show_plot"><a class="viewcode-back" href="../../benford.html#benford.benford.Roll_mse.show_plot">[docs]</a>    <span class="k">def</span> <span class="nf">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">8</span><span class="p">)):</span>
+<div class="viewcode-block" id="Roll_mse.show_plot"><a class="viewcode-back" href="../../api.html#benford.benford.Roll_mse.show_plot">[docs]</a>    <span class="k">def</span> <span class="nf">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">8</span><span class="p">)):</span>
         <span class="sd">&quot;&quot;&quot;Shows the rolling MSE plot</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
@@ -1243,7 +1243,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="first_digits"><a class="viewcode-back" href="../../benford.html#benford.benford.first_digits">[docs]</a><span class="k">def</span> <span class="nf">first_digits</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">digs</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<div class="viewcode-block" id="first_digits"><a class="viewcode-back" href="../../api.html#benford.benford.first_digits">[docs]</a><span class="k">def</span> <span class="nf">first_digits</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">digs</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">confidence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high_Z</span><span class="o">=</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span> <span class="n">limit_N</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">MAD</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">MSE</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chi_square</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">KS</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inform</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1312,7 +1312,7 @@
         <span class="k">return</span> <span class="n">data</span><span class="p">[[</span><span class="s1">&#39;Counts&#39;</span><span class="p">,</span> <span class="s1">&#39;Found&#39;</span><span class="p">,</span> <span class="s1">&#39;Expected&#39;</span><span class="p">]]</span></div>
 
 
-<div class="viewcode-block" id="second_digit"><a class="viewcode-back" href="../../benford.html#benford.benford.second_digit">[docs]</a><span class="k">def</span> <span class="nf">second_digit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<div class="viewcode-block" id="second_digit"><a class="viewcode-back" href="../../api.html#benford.benford.second_digit">[docs]</a><span class="k">def</span> <span class="nf">second_digit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">confidence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high_Z</span><span class="o">=</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span> <span class="n">limit_N</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">MAD</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">MSE</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chi_square</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">KS</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inform</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1378,7 +1378,7 @@
         <span class="k">return</span> <span class="n">data</span><span class="p">[[</span><span class="s1">&#39;Counts&#39;</span><span class="p">,</span> <span class="s1">&#39;Found&#39;</span><span class="p">,</span> <span class="s1">&#39;Expected&#39;</span><span class="p">]]</span></div>
 
 
-<div class="viewcode-block" id="last_two_digits"><a class="viewcode-back" href="../../benford.html#benford.benford.last_two_digits">[docs]</a><span class="k">def</span> <span class="nf">last_two_digits</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<div class="viewcode-block" id="last_two_digits"><a class="viewcode-back" href="../../api.html#benford.benford.last_two_digits">[docs]</a><span class="k">def</span> <span class="nf">last_two_digits</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                     <span class="n">confidence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high_Z</span><span class="o">=</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span> <span class="n">limit_N</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="n">MAD</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">MSE</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chi_square</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">KS</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                     <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inform</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1445,7 +1445,7 @@
         <span class="k">return</span> <span class="n">data</span><span class="p">[[</span><span class="s1">&#39;Counts&#39;</span><span class="p">,</span> <span class="s1">&#39;Found&#39;</span><span class="p">,</span> <span class="s1">&#39;Expected&#39;</span><span class="p">]]</span></div>
 
 
-<div class="viewcode-block" id="mantissas"><a class="viewcode-back" href="../../benford.html#benford.benford.mantissas">[docs]</a><span class="k">def</span> <span class="nf">mantissas</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">report</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">arc_test</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inform</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="mantissas"><a class="viewcode-back" href="../../api.html#benford.benford.mantissas">[docs]</a><span class="k">def</span> <span class="nf">mantissas</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">report</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">arc_test</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inform</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Extraxts the mantissas of the records logarithms</span>
 
 <span class="sd">    Args:</span>
@@ -1472,7 +1472,7 @@
     <span class="k">return</span> <span class="n">mant</span></div>
 
 
-<div class="viewcode-block" id="summation"><a class="viewcode-back" href="../../benford.html#benford.benford.summation">[docs]</a><span class="k">def</span> <span class="nf">summation</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">digs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<div class="viewcode-block" id="summation"><a class="viewcode-back" href="../../api.html#benford.benford.summation">[docs]</a><span class="k">def</span> <span class="nf">summation</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">digs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
               <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inform</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Performs the Summation test. In a Benford series, the sums of the</span>
 <span class="sd">    entries begining with the same digits tends to be the same.</span>
@@ -1505,7 +1505,7 @@
         <span class="k">return</span> <span class="n">data</span></div>
 
 
-<div class="viewcode-block" id="mad"><a class="viewcode-back" href="../../benford.html#benford.benford.mad">[docs]</a><span class="k">def</span> <span class="nf">mad</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="mad"><a class="viewcode-back" href="../../api.html#benford.benford.mad">[docs]</a><span class="k">def</span> <span class="nf">mad</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates the Mean Absolute Deviation of the Series</span>
 
 <span class="sd">    Args:</span>
@@ -1534,7 +1534,7 @@
     <span class="k">return</span> <span class="n">start</span><span class="o">.</span><span class="n">MAD</span></div>
 
 
-<div class="viewcode-block" id="mse"><a class="viewcode-back" href="../../benford.html#benford.benford.mse">[docs]</a><span class="k">def</span> <span class="nf">mse</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="mse"><a class="viewcode-back" href="../../api.html#benford.benford.mse">[docs]</a><span class="k">def</span> <span class="nf">mse</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates the Mean Squared Error of the Series</span>
 
 <span class="sd">    Args:</span>
@@ -1563,7 +1563,7 @@
     <span class="k">return</span> <span class="n">start</span><span class="o">.</span><span class="n">MSE</span></div>
 
 
-<div class="viewcode-block" id="mad_summ"><a class="viewcode-back" href="../../benford.html#benford.benford.mad_summ">[docs]</a><span class="k">def</span> <span class="nf">mad_summ</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="mad_summ"><a class="viewcode-back" href="../../api.html#benford.benford.mad_summ">[docs]</a><span class="k">def</span> <span class="nf">mad_summ</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculate the Mean Absolute Deviation of the Summation Test</span>
 
 <span class="sd">    Args:</span>
@@ -1595,7 +1595,7 @@
     <span class="k">return</span> <span class="n">mean</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">ZN</span> <span class="o">/</span> <span class="n">df</span><span class="o">.</span><span class="n">ZN</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">-</span> <span class="n">li</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="rolling_mad"><a class="viewcode-back" href="../../benford.html#benford.benford.rolling_mad">[docs]</a><span class="k">def</span> <span class="nf">rolling_mad</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="rolling_mad"><a class="viewcode-back" href="../../api.html#benford.benford.rolling_mad">[docs]</a><span class="k">def</span> <span class="nf">rolling_mad</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Applies the MAD to sequential subsets of the records.</span>
 
 <span class="sd">    Args:</span>
@@ -1624,7 +1624,7 @@
     <span class="k">return</span> <span class="n">r_mad</span></div>
 
 
-<div class="viewcode-block" id="rolling_mse"><a class="viewcode-back" href="../../benford.html#benford.benford.rolling_mse">[docs]</a><span class="k">def</span> <span class="nf">rolling_mse</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="rolling_mse"><a class="viewcode-back" href="../../api.html#benford.benford.rolling_mse">[docs]</a><span class="k">def</span> <span class="nf">rolling_mse</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Applies the MSE to sequential subsets of the records.</span>
 
 <span class="sd">    Args:</span>
@@ -1652,7 +1652,7 @@
     <span class="k">return</span> <span class="n">r_mse</span></div>
 
 
-<div class="viewcode-block" id="duplicates"><a class="viewcode-back" href="../../benford.html#benford.benford.duplicates">[docs]</a><span class="k">def</span> <span class="nf">duplicates</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">top_Rep</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inform</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="duplicates"><a class="viewcode-back" href="../../api.html#benford.benford.duplicates">[docs]</a><span class="k">def</span> <span class="nf">duplicates</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">top_Rep</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inform</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Performs a duplicates test and maps the duplicates count in descending</span>
 <span class="sd">    order.</span>
 
@@ -1696,7 +1696,7 @@
     <span class="k">return</span> <span class="n">dup_count</span></div>
 
 
-<div class="viewcode-block" id="second_order"><a class="viewcode-back" href="../../benford.html#benford.benford.second_order">[docs]</a><span class="k">def</span> <span class="nf">second_order</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">MAD</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<div class="viewcode-block" id="second_order"><a class="viewcode-back" href="../../api.html#benford.benford.second_order">[docs]</a><span class="k">def</span> <span class="nf">second_order</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">MAD</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">confidence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high_Z</span><span class="o">=</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span> <span class="n">limit_N</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">MSE</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inform</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Performs the chosen test after subtracting the ordered sequence by itself.</span>

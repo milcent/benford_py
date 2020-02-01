@@ -12,21 +12,6 @@ benford.benford module
    :undoc-members:
    :show-inheritance:
 
-benford.checks module
----------------------
-
-.. automodule:: benford.checks
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-benford.constants module
-------------------------
-
-.. automodule:: benford.constants
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 benford.expected module
 -----------------------
@@ -36,13 +21,6 @@ benford.expected module
    :undoc-members:
    :show-inheritance:
 
-benford.reports module
-----------------------
-
-.. automodule:: benford.reports
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 benford.stats module
 --------------------
@@ -52,8 +30,6 @@ benford.stats module
    :undoc-members:
    :show-inheritance:
 
-benford.utils module
---------------------
 
 benford.viz module
 ------------------
@@ -63,11 +39,3 @@ benford.viz module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: benford
-   :members:
-   :undoc-members:
-   :show-inheritance:
