@@ -1,9 +1,6 @@
 benford package
 ===============
 
-Submodules
-----------
-
 benford.benford module
 ----------------------
 

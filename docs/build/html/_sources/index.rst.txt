@@ -2,9 +2,10 @@ Welcome to benford_py's documentation!
 ======================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: modules:
+   :maxdepth: 3
+   :caption: Contents:
 
+   modules
 
 
 Indices and tables
