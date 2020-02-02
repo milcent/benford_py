@@ -1,12 +1,17 @@
 # Benford for Python
 
-`current version = 0.2.1`
+`current version = 0.2.5`
 
 ## New in this version
 
+- Lib separated in submodules, for better organization, debugging, and further documentation and testing; and
+- Debuted documentation with sphinx and [ReadTheDocs](https://benford-py.readthedocs.io). Mostly the docstrings autodocs functionality for now, but better than nothing.
+
+### In version 0.2.1
+
 ### Bug fixes (see [release notes](https://github.com/milcent/benford_py/releases/tag/v0.2.1))
 
-## New in version 0.2.0
+## In version 0.2.0
 
 - New Mantissas object, with methods `report`, `show_plot` and `arc_test`, which shows the [Arc Test and Plot](https://github.com/milcent/benford_py/pull/24) (the latter thanks to @im-alexandre);
 - Future Deprecation of the `inform` parameter in favor of `verbose` or `report`, dependeing on the caase; and
