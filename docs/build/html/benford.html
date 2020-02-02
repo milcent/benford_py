@@ -1,0 +1,1772 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>benford package &mdash; benford_py 0.2.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> benford_py
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">benford package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-benford.benford">benford.benford module</a></li>
+<li><a class="reference internal" href="#module-benford.checks">benford.checks module</a></li>
+<li><a class="reference internal" href="#module-benford.constants">benford.constants module</a></li>
+<li><a class="reference internal" href="#module-benford.expected">benford.expected module</a></li>
+<li><a class="reference internal" href="#module-benford.reports">benford.reports module</a></li>
+<li><a class="reference internal" href="#module-benford.stats">benford.stats module</a></li>
+<li><a class="reference internal" href="#benford-utils-module">benford.utils module</a></li>
+<li><a class="reference internal" href="#module-benford.viz">benford.viz module</a></li>
+<li><a class="reference internal" href="#module-benford">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">benford_py</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>benford package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/benford.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="benford-package">
+<h1>benford package<a class="headerlink" href="#benford-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-benford.benford">
+<span id="benford-benford-module"></span><h2>benford.benford module<a class="headerlink" href="#module-benford.benford" title="Permalink to this headline">¶</a></h2>
+<p>Benford_py for Python is a module for application of Benford’s Law
+to a sequence of numbers.</p>
+<p>Dependent on pandas, numpy and matplotlib</p>
+<p>All logarithms ar in base 10: “log10”</p>
+<p>Author:  Marcel Milcent</p>
+<p>This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with this program.  If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
+<dl class="class">
+<dt id="benford.benford.Base">
+<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Base</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">decimals</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">sec_order=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Base"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Base" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.core.frame.DataFrame</span></code></p>
+<p>Internalizes and prepares the data for Analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – sequence of numbers to be evaluated. Must be a numpy 1D array,
+a pandas Series or a pandas DataFrame column, with values being
+integers or floats.</p></li>
+<li><p><strong>decimals</strong> – number of decimal places to consider. Defaluts to 2.
+If integers, set to 0. If set to -infer-, it will remove the zeros
+and consider up to the fifth decimal place to the right, but will
+loose performance.</p></li>
+<li><p><strong>sign</strong> – tells which portion of the data to consider. pos: only the positive
+entries; neg: only negative entries; all: all entries but zeros.
+Defaults to all.`</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – if not receiving <cite>int</cite> or <cite>float</cite> as input.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="benford.benford.Test">
+<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Test</code><span class="sig-paren">(</span><em class="sig-param">base</em>, <em class="sig-param">digs</em>, <em class="sig-param">confidence</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">sec_order=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.core.frame.DataFrame</span></code></p>
+<p>Transforms the original number sequence into a DataFrame reduced
+by the ocurrences of the chosen digits, creating other computed
+columns</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base</strong> – The Base object with the data prepared for Analysis</p></li>
+<li><p><strong>digs</strong> – Tells which test to perform: 1: first digit; 2: first two digits;
+3: furst three digits; 22: second digit; -2: last two digits.</p></li>
+<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+plotting and to limit the top deviations to show.</p></li>
+<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+the Z scores if the sample is too big. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="benford.benford.Test.N">
+<code class="sig-name descname">N</code><a class="headerlink" href="#benford.benford.Test.N" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of records in the sample to consider in computations</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="benford.benford.Test.ddf">
+<code class="sig-name descname">ddf</code><a class="headerlink" href="#benford.benford.Test.ddf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Degrees of Freedom to look up for the critical chi-square value</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="benford.benford.Test.chi_square">
+<code class="sig-name descname">chi_square</code><a class="headerlink" href="#benford.benford.Test.chi_square" title="Permalink to this definition">¶</a></dt>
+<dd><p>Chi-square statistic for the given test</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="benford.benford.Test.KS">
+<code class="sig-name descname">KS</code><a class="headerlink" href="#benford.benford.Test.KS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kolmogorov-Smirnov statistic for the given test</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="benford.benford.Test.MAD">
+<code class="sig-name descname">MAD</code><a class="headerlink" href="#benford.benford.Test.MAD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mean Absolute Deviation for the given test</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="benford.benford.Test.confidence">
+<code class="sig-name descname">confidence</code><a class="headerlink" href="#benford.benford.Test.confidence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Confidence level to consider when setting some critical values</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="benford.benford.Test.digs">
+<code class="sig-name descname">digs</code><a class="headerlink" href="#benford.benford.Test.digs" title="Permalink to this definition">¶</a></dt>
+<dd><p>numerical representation of the test at hand. 1: F1D; 2: F2D;
+3: F3D; 22: SD; -2: L2D.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="benford.benford.Test.sec_order">
+<code class="sig-name descname">sec_order</code><a class="headerlink" href="#benford.benford.Test.sec_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if the test is a Second Order one</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Test.update_confidence">
+<code class="sig-name descname">update_confidence</code><span class="sig-paren">(</span><em class="sig-param">new_conf</em>, <em class="sig-param">check=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Test.update_confidence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Test.update_confidence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets a new confidence level for the Benford object, so as to be used to
+produce critical values for the tests</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>new_conf</strong> – new confidence level to draw lower and upper limits when
+plotting and to limit the top deviations to show, as well as to
+calculate critical values for the tests’ statistics.</p></li>
+<li><p><strong>check</strong> – checks the value provided for the confidence. Defaults to True</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Test.critical_values">
+<em class="property">property </em><code class="sig-name descname">critical_values</code><a class="headerlink" href="#benford.benford.Test.critical_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>a dictionary with the critical values for the test at hand,
+according to the current confidence level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Test.show_plot">
+<code class="sig-name descname">show_plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Test.show_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Test.show_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws the test plot.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Test.report">
+<code class="sig-name descname">report</code><span class="sig-paren">(</span><em class="sig-param">high_Z='pos'</em>, <em class="sig-param">show_plot=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Test.report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Test.report" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handles the report especific to the test, considering its statistics
+and according to the current confidence level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>high_Z</strong> – chooses which Z scores to be used when displaying results,
+according to the confidence level chosen. Defaluts to ‘pos’,
+which will highlight only values higher than the expexted
+frequencies; ‘all’ will highlight both extremes (positive and
+negative); and an integer, which will use the first n entries,
+positive and negative, regardless of whether Z is higher than
+the critical value or not.</p></li>
+<li><p><strong>show_plot</strong> – calls the show_plot method, to draw the test plot</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="benford.benford.Summ">
+<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Summ</code><span class="sig-paren">(</span><em class="sig-param">base</em>, <em class="sig-param">test</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Summ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Summ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.core.frame.DataFrame</span></code></p>
+<p>Gets the base object and outputs a Summation test object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base</strong> – The Base object with the data prepared for Analysis</p></li>
+<li><p><strong>test</strong> – The test for which to compute the summation</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="benford.benford.Summ.MAD">
+<code class="sig-name descname">MAD</code><em class="property"> = None</em><a class="headerlink" href="#benford.benford.Summ.MAD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mean Absolute Deviation for the test</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="benford.benford.Summ.confidence">
+<code class="sig-name descname">confidence</code><em class="property"> = None</em><a class="headerlink" href="#benford.benford.Summ.confidence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Confidence level to consider when setting some critical values</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Summ.show_plot">
+<code class="sig-name descname">show_plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Summ.show_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Summ.show_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws the Summation test plot</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Summ.report">
+<code class="sig-name descname">report</code><span class="sig-paren">(</span><em class="sig-param">high_diff=None</em>, <em class="sig-param">show_plot=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Summ.report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Summ.report" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives the report on the Summation test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>high_diff</strong> – Number of records to show after ordering by the absolute
+differences between the found and the expected proportions</p></li>
+<li><p><strong>show_plot</strong> – calls the show_plot method, to draw the Summation test plot</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="benford.benford.Benford">
+<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Benford</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">confidence=95</em>, <em class="sig-param">mantissas=False</em>, <em class="sig-param">sec_order=False</em>, <em class="sig-param">summation=False</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Benford"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Benford" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Initializes a Benford Analysis object and computes the proportions for
+the digits. The tets dataFrames are atributes, i.e., obj.F1D is the First
+Digit DataFrame, the obj.F2D,the First Two Digits one, and so one, F3D for
+First Three Digits, SD for Second  Digit and L2D for Last Two Digits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – sequence of numbers to be evaluated. Must be a numpy 1D array,
+a pandas Series or a tuple with a pandas DataFrame and the name (str)
+of the chosen column. Values must be integers or floats.</p></li>
+<li><p><strong>decimals</strong> – number of decimal places to consider. Defaluts to 2.
+If integers, set to 0. If set to -infer-, it will remove the zeros
+and consider up to the fifth decimal place to the right, but will
+loose performance.</p></li>
+<li><p><strong>sign</strong> – tells which portion of the data to consider. pos: only the positive
+entries; neg: only negative entries; all: all entries but zeros.
+Defaults to all.</p></li>
+<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+plotting and to limit the top deviations to show, as well as to
+calculate critical values for the tests’ statistics. Defaults to 95.</p></li>
+<li><p><strong>sec_order</strong> – runs the Second Order tests, which are the Benford’s tests
+performed on the differences between the ordered sample (a value minus
+the one before it, and so on). If the original series is Benford-
+compliant, this new sequence should aldo follow Beford. The Second
+Order can also be called separately, through the method sec_order().</p></li>
+<li><p><strong>summation</strong> – creates the Summation DataFrames for the First, First Two, and
+First Three Digits. The summation tests can also be called separately,
+through the method summation().</p></li>
+<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+the Z scores if the sample is too big. Defaults to None.</p></li>
+<li><p><strong>verbose</strong> – gives some information about the data and the registries used
+and discarded for each test.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="benford.benford.Benford.data">
+<code class="sig-name descname">data</code><a class="headerlink" href="#benford.benford.Benford.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>the raw data provided for the analysis</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="benford.benford.Benford.chosen">
+<code class="sig-name descname">chosen</code><a class="headerlink" href="#benford.benford.Benford.chosen" title="Permalink to this definition">¶</a></dt>
+<dd><p>the column of the DataFrame to be analysed or the data itself</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="benford.benford.Benford.sign">
+<code class="sig-name descname">sign</code><a class="headerlink" href="#benford.benford.Benford.sign" title="Permalink to this definition">¶</a></dt>
+<dd><p>which number sign(s) to include in the analysis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="benford.benford.Benford.confidence">
+<code class="sig-name descname">confidence</code><a class="headerlink" href="#benford.benford.Benford.confidence" title="Permalink to this definition">¶</a></dt>
+<dd><p>current confidence level</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="benford.benford.Benford.limit_N">
+<code class="sig-name descname">limit_N</code><a class="headerlink" href="#benford.benford.Benford.limit_N" title="Permalink to this definition">¶</a></dt>
+<dd><p>sample size to use in computations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="benford.benford.Benford.verbose">
+<code class="sig-name descname">verbose</code><a class="headerlink" href="#benford.benford.Benford.verbose" title="Permalink to this definition">¶</a></dt>
+<dd><p>verbose or not</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="benford.benford.Benford.base">
+<code class="sig-name descname">base</code><a class="headerlink" href="#benford.benford.Benford.base" title="Permalink to this definition">¶</a></dt>
+<dd><p>the Base, pre-processed object</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="benford.benford.Benford.tests">
+<code class="sig-name descname">tests</code><a class="headerlink" href="#benford.benford.Benford.tests" title="Permalink to this definition">¶</a></dt>
+<dd><p>keeps track of the tests the
+instance has</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Benford.update_confidence">
+<code class="sig-name descname">update_confidence</code><span class="sig-paren">(</span><em class="sig-param">new_conf</em>, <em class="sig-param">tests=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Benford.update_confidence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Benford.update_confidence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets (a) new confidence level(s) for the Benford object, so as to be
+used to produce critical values for the tests.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>new_conf</strong> – new confidence level to draw lower and upper limits when
+plotting and to limit the top deviations to show, as well as to
+calculate critical values for the tests’ statistics.</p></li>
+<li><p><strong>tests</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – list of tests names (strings) to
+have their confidence updated. If only one, provide a one-element
+list, like [‘F1D’]. Defauts to None, in which case it will use
+the instance .test list attribute.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if the test argument is not a <cite>list</cite> or <cite>None</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Benford.all_confidences">
+<em class="property">property </em><code class="sig-name descname">all_confidences</code><a class="headerlink" href="#benford.benford.Benford.all_confidences" title="Permalink to this definition">¶</a></dt>
+<dd><p>a dictionary with a confidence level for each computed tests,
+when applicable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Benford.mantissas">
+<code class="sig-name descname">mantissas</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Benford.mantissas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Benford.mantissas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a Mantissas object to the tests, with all its statistics and
+plotting capabilities.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Benford.sec_order">
+<code class="sig-name descname">sec_order</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Benford.sec_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Benford.sec_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs the Second Order tests, which are the Benford’s tests
+performed on the differences between the ordered sample (a value minus
+the one before it, and so on). If the original series is Benford-
+compliant, this new sequence should aldo follow Beford. The Second
+Order can also be called separately, through the method sec_order().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Benford.summation">
+<code class="sig-name descname">summation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Benford.summation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Benford.summation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates Summation test DataFrames from Base object</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="benford.benford.Source">
+<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Source</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">sec_order=False</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.core.frame.DataFrame</span></code></p>
+<p>Prepares the data for Analysis. pandas DataFrame subclass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – sequence of numbers to be evaluated. Must be a numpy 1D array,
+a pandas Series or a pandas DataFrame column, with values being
+integers or floats.</p></li>
+<li><p><strong>decimals</strong> – number of decimal places to consider. Defaluts to 2.
+If integers, set to 0. If set to -infer-, it will remove the zeros
+and consider up to the fifth decimal place to the right, but will
+loose performance.</p></li>
+<li><p><strong>sign</strong> – tells which portion of the data to consider. pos: only the positive
+entries; neg: only negative entries; all: all entries but zeros.
+Defaults to all.</p></li>
+<li><p><strong>sec_order</strong> – choice for the Second Order Test, which cumputes the
+differences between the ordered entries before running the Tests.</p></li>
+<li><p><strong>verbose</strong> – tells the number of registries that are being subjected to
+the analysis; defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – if the <cite>sign</cite> arg is not in [‘all’, ‘pos’, ‘neg’]</p></li>
+<li><p><strong>TypeError</strong> – if not receiving <cite>int</cite> or <cite>float</cite> as input.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="benford.benford.Source.verbose">
+<code class="sig-name descname">verbose</code><em class="property"> = None</em><a class="headerlink" href="#benford.benford.Source.verbose" title="Permalink to this definition">¶</a></dt>
+<dd><p>verbose or not</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>(bool)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Source.mantissas">
+<code class="sig-name descname">mantissas</code><span class="sig-paren">(</span><em class="sig-param">report=True</em>, <em class="sig-param">plot=True</em>, <em class="sig-param">figsize=(15</em>, <em class="sig-param">8)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.mantissas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.mantissas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the mantissas, their mean and variance, and compares them
+with the mean and variance of a Benford’s sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>report</strong> – prints the mamtissas mean, variance, skewness and kurtosis
+for the sequence studied, along with reference values.</p></li>
+<li><p><strong>plot</strong> – plots the ordered mantissas and a line with the expected
+inclination. Defaults to True.</p></li>
+<li><p><strong>figsize</strong> – tuple that sets the figure dimensions.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Source.first_digits">
+<code class="sig-name descname">first_digits</code><span class="sig-paren">(</span><em class="sig-param">digs</em>, <em class="sig-param">confidence=None</em>, <em class="sig-param">high_Z='pos'</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">MAD=False</em>, <em class="sig-param">MSE=False</em>, <em class="sig-param">chi_square=False</em>, <em class="sig-param">KS=False</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">simple=False</em>, <em class="sig-param">ret_df=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.first_digits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.first_digits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the Benford First Digits test with the series of
+numbers provided, and populates the mapping dict for future
+selection of the original series.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>digs</strong> – number of first digits to consider. Must be 1 (first digit),
+2 (first two digits) or 3 (first three digits).</p></li>
+<li><p><strong>verbose</strong> – tells the number of registries that are being subjected to
+the analysis; defaults to True</p></li>
+<li><p><strong>digs</strong> – number of first digits to consider. Must be 1 (first digit),
+2 (first two digits) or 3 (first three digits).</p></li>
+<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+plotting and to limit the top deviations to show, as well as to
+calculate critical values for the tests’ statistics. Defaults to None.</p></li>
+<li><p><strong>high_Z</strong> – chooses which Z scores to be used when displaying results,
+according to the confidence level chosen. Defaluts to ‘pos’,
+which will highlight only values higher than the expexted
+frequencies; ‘all’ will highlight both extremes (positive and
+negative); and an integer, which will use the first n entries,
+positive and negative, regardless of whether Z is higher than
+the confidence or not.</p></li>
+<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+the Z scores if the sample is too big. Defaults to None.</p></li>
+<li><p><strong>MAD</strong> – calculates the Mean Absolute Difference between the
+found and the expected distributions; defaults to False.</p></li>
+<li><p><strong>MSE</strong> – calculates the Mean Square Error of the sample; defaults to
+False.</p></li>
+<li><p><strong>show_plot</strong> – draws the test plot. Defaults to True.</p></li>
+<li><p><strong>ret_df</strong> – returns the test DataFrame. Defaults to False. True if run by
+the test function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>DataFrame with the Expected and Found proportions, and the Z scores of</dt><dd><p>the differences</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Source.second_digit">
+<code class="sig-name descname">second_digit</code><span class="sig-paren">(</span><em class="sig-param">confidence=None</em>, <em class="sig-param">high_Z='pos'</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">MAD=False</em>, <em class="sig-param">MSE=False</em>, <em class="sig-param">chi_square=False</em>, <em class="sig-param">KS=False</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">simple=False</em>, <em class="sig-param">ret_df=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.second_digit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.second_digit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the Benford Second Digit test with the series of
+numbers provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>verbose</strong> – tells the number of registries that are being subjected to
+the analysis; defaults to True</p></li>
+<li><p><strong>MAD</strong> – calculates the Mean Absolute Difference between the
+found and the expected distributions; defaults to False.</p></li>
+<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+plotting and to limit the top deviations to show, as well as to
+calculate critical values for the tests’ statistics. Defaults to None.</p></li>
+<li><p><strong>high_Z</strong> – chooses which Z scores to be used when displaying results,
+according to the confidence level chosen. Defaluts to ‘pos’,
+which will highlight only values higher than the expexted
+frequencies; ‘all’ will highlight both extremes (positive and
+negative); and an integer, which will use the first n entries,
+positive and negative, regardless of whether Z is higher than
+the confidence or not.</p></li>
+<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+the Z scores if the sample is too big. Defaults to None.</p></li>
+<li><p><strong>MSE</strong> – calculates the Mean Square Error of the sample; defaults to
+False.</p></li>
+<li><p><strong>show_plot</strong> – draws the test plot.</p></li>
+<li><p><strong>ret_df</strong> – returns the test DataFrame. Defaults to False. True if run by
+the test function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>DataFrame with the Expected and Found proportions, and the Z scores of</dt><dd><p>the differences</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Source.last_two_digits">
+<code class="sig-name descname">last_two_digits</code><span class="sig-paren">(</span><em class="sig-param">confidence=None</em>, <em class="sig-param">high_Z='pos'</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">MAD=False</em>, <em class="sig-param">MSE=False</em>, <em class="sig-param">chi_square=False</em>, <em class="sig-param">KS=False</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">simple=False</em>, <em class="sig-param">ret_df=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.last_two_digits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.last_two_digits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the Benford Last Two Digits test with the series of
+numbers provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>verbose</strong> – tells the number of registries that are being subjected to
+the analysis; defaults to True</p></li>
+<li><p><strong>MAD</strong> – calculates the Mean Absolute Difference between the
+found and the expected distributions; defaults to False.</p></li>
+<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+plotting and to limit the top deviations to show, as well as to
+calculate critical values for the tests’ statistics. Defaults to None.</p></li>
+<li><p><strong>high_Z</strong> – chooses which Z scores to be used when displaying results,
+according to the confidence level chosen. Defaluts to ‘pos’,
+which will highlight only values higher than the expexted
+frequencies; ‘all’ will highlight both extremes (positive and
+negative); and an integer, which will use the first n entries,
+positive and negative, regardless of whether Z is higher than
+the confidence or not.</p></li>
+<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+the Z scores if the sample is too big. Defaults to None.</p></li>
+<li><p><strong>MSE</strong> – calculates the Mean Square Error of the sample; defaults to
+False.</p></li>
+<li><p><strong>show_plot</strong> – draws the test plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>DataFrame with the Expected and Found proportions, and the Z scores of</dt><dd><p>the differences</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Source.summation">
+<code class="sig-name descname">summation</code><span class="sig-paren">(</span><em class="sig-param">digs=2</em>, <em class="sig-param">top=20</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">ret_df=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.summation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.summation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the Summation test. In a Benford series, the sums of the
+entries begining with the same digits tends to be the same.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>digs</strong> – tells the first digits to use. 1- first; 2- first two;
+3- first three. Defaults to 2.</p></li>
+<li><p><strong>top</strong> – choses how many top values to show. Defaults to 20.</p></li>
+<li><p><strong>show_plot</strong> – plots the results. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>DataFrame with the Expected and Found proportions, and their
+absolute differences</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Source.duplicates">
+<code class="sig-name descname">duplicates</code><span class="sig-paren">(</span><em class="sig-param">top_Rep=20</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.duplicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.duplicates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a duplicates test and maps the duplicates count in descending
+order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>verbose</strong> – tells how many duplicated entries were found and prints the
+top numbers according to the top_Rep argument. Defaluts to True.</p></li>
+<li><p><strong>top_Rep</strong> – int or None. Chooses how many duplicated entries will be
+shown withe the top repititions. Defaluts to 20. If None, returns
+al the ordered repetitions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>DataFrame with the duplicated records and their occurrence counts,</dt><dd><p>in descending order (if verbose is False; if True, prints to
+terminal).</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if the <cite>top_Rep</cite> arg is not int or None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="benford.benford.Mantissas">
+<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Mantissas</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Mantissas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Mantissas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Returns a Series with the data mantissas,</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – sequence to compute mantissas from, numpy 1D array, pandas
+Series of pandas DataFrame column.</p>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="benford.benford.Mantissas.data">
+<code class="sig-name descname">data</code><a class="headerlink" href="#benford.benford.Mantissas.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>holds the computed mantissas and, if the arc_test
+is also called, the respecttive x and Y coordinates for the plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="benford.benford.Mantissas.stats">
+<code class="sig-name descname">stats</code><a class="headerlink" href="#benford.benford.Mantissas.stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>holds the relevant statistics about the data mantissas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">data</code><em class="property"> = None</em></dt>
+<dd><p>pandas DataFrame with the mantissas</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>(DataFrame)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Mantissas.report">
+<code class="sig-name descname">report</code><span class="sig-paren">(</span><em class="sig-param">show_plot=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Mantissas.report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Mantissas.report" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the Mantissas stats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>show_plot</strong> – shows the ordered mantissas plot and the Arc Test plot.
+Defaults to True.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Mantissas.show_plot">
+<code class="sig-name descname">show_plot</code><span class="sig-paren">(</span><em class="sig-param">figsize=(12</em>, <em class="sig-param">12)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Mantissas.show_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Mantissas.show_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the ordered mantissas and compares them to the expected, straight
+line that should be formed in a Benford-cmpliant set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>figsize</strong> – tuple that sets the figure size.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Mantissas.arc_test">
+<code class="sig-name descname">arc_test</code><span class="sig-paren">(</span><em class="sig-param">grid=True</em>, <em class="sig-param">figsize=12</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Mantissas.arc_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Mantissas.arc_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add two columns to Mantissas’s DataFrame equal to their “X” and “Y”
+coordinates, plots its to a scatter plot and calculates the gravity
+center of the circle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grid</strong> – show grid of the plot. Defaluts to True.</p></li>
+<li><p><strong>figsize</strong> – size of the figure to be displayed. Since it is a square,
+there is no need to provide a tuple, like is usually the case with
+matplotlib.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="benford.benford.Roll_mad">
+<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Roll_mad</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">test</em>, <em class="sig-param">window</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Roll_mad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Roll_mad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.core.series.Series</span></code></p>
+<p>Applies the MAD to sequential subsets of the Series, returning another
+Series.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – sequence of numbers to be evaluated. Must be a numpy 1D array,
+a pandas Series or a pandas DataFrame column, with values being
+integers or floats.</p></li>
+<li><p><strong>test</strong> – tells which test to use. 1: Fisrt Digits; 2: First Two Digits;
+3: First Three Digits; 22: Second Digit; and -2: Last Two Digits.</p></li>
+<li><p><strong>window</strong> – size of the subset to be used.</p></li>
+<li><p><strong>decimals</strong> – number of decimal places to consider. Defaluts to 2.
+If integers, set to 0. If set to -infer-, it will remove the zeros
+and consider up to the fifth decimal place to the right, but will
+loose performance.</p></li>
+<li><p><strong>sign</strong> – tells which portion of the data to consider. pos: only the positive
+entries; neg: only negative entries; all: all entries but zeros.
+Defaults to all.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="benford.benford.Roll_mad.test">
+<code class="sig-name descname">test</code><em class="property"> = None</em><a class="headerlink" href="#benford.benford.Roll_mad.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>the test (F1D, SD, F2D…) used for the MAD calculation and critical values</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="benford.benford.Roll_mad.show_plot">
+<code class="sig-name descname">show_plot</code><span class="sig-paren">(</span><em class="sig-param">figsize=(15</em>, <em class="sig-param">8)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Roll_mad.show_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Roll_mad.show_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shows the rolling MAD plot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>figsize</strong> – the figure dimensions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="benford.benford.Roll_mse">
+<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Roll_mse</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">test</em>, <em class="sig-param">window</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Roll_mse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Roll_mse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.core.series.Series</span></code></p>
+<p>Applies the MSE to sequential subsets of the Series, returning another
+Series.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – sequence of numbers to be evaluated. Must be a numpy 1D array,
+a pandas Series or a pandas DataFrame column, with values being
+integers or floats.</p></li>
+<li><p><strong>test</strong> – tells which test to use. 1: Fisrt Digits; 2: First Two Digits;
+3: First Three Digits; 22: Second Digit; and -2: Last Two Digits.</p></li>
+<li><p><strong>window</strong> – size of the subset to be used.
+decimals: number of decimal places to consider. Defaluts to 2.
+If integers, set to 0. If set to -infer-, it will remove the zeros
+and consider up to the fifth decimal place to the right, but will
+loose performance.</p></li>
+<li><p><strong>sign</strong> – tells which portion of the data to consider. ‘pos’: only the positive
+entries; ‘neg’: only negative entries; ‘all’: all entries but zeros.
+Defaults to ‘all’.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="benford.benford.Roll_mse.show_plot">
+<code class="sig-name descname">show_plot</code><span class="sig-paren">(</span><em class="sig-param">figsize=(15</em>, <em class="sig-param">8)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Roll_mse.show_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Roll_mse.show_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shows the rolling MSE plot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>figsize</strong> – the figure dimensions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.benford.first_digits">
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">first_digits</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">digs</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">confidence=None</em>, <em class="sig-param">high_Z='pos'</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">MAD=False</em>, <em class="sig-param">MSE=False</em>, <em class="sig-param">chi_square=False</em>, <em class="sig-param">KS=False</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#first_digits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.first_digits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the Benford First Digits test on the series of
+numbers provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – sequence of numbers to be evaluated. Must be a numpy 1D array,
+a pandas Series or a pandas DataFrame column, with values being
+integers or floats.</p></li>
+<li><p><strong>decimals</strong> – number of decimal places to consider. Defaluts to 2.
+If integers, set to 0. If set to -infer-, it will remove the zeros
+and consider up to the fifth decimal place to the right, but will
+loose performance.</p></li>
+<li><p><strong>sign</strong> – tells which portion of the data to consider. ‘pos’: only the positive
+entries; ‘neg’: only negative entries; ‘all’: all entries but zeros.
+Defaults to ‘all’.</p></li>
+<li><p><strong>digs</strong> – number of first digits to consider. Must be 1 (first digit),
+2 (first two digits) or 3 (first three digits).</p></li>
+<li><p><strong>verbose</strong> – tells the number of registries that are being subjected to
+the analysis and returns tha analysis DataFrame sorted by the
+highest Z score down. Defaults to True.</p></li>
+<li><p><strong>MAD</strong> – calculates the Mean Absolute Difference between the
+found and the expected distributions; defaults to False.</p></li>
+<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+plotting and to limit the top deviations to show. Defaults to None.</p></li>
+<li><p><strong>high_Z</strong> – chooses which Z scores to be used when displaying results,
+according to the confidence level chosen. Defaluts to ‘pos’,
+which will highlight only values higher than the expexted
+frequencies; ‘all’ will highlight both extremes (positive and
+negative); and an integer, which will use the first n entries,
+positive and negative, regardless of whether Z is higher than
+the confidence or not.</p></li>
+<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+the Z scores if the sample is too big. Defaults to None.</p></li>
+<li><p><strong>MSE</strong> – calculates the Mean Square Error of the sample; defaults to
+False.</p></li>
+<li><p><strong>chi_square</strong> – calculates the chi_square statistic of the sample and
+compares it with a critical value, according to the confidence
+level chosen and the series’s degrees of freedom. Defaults to
+False. Requires confidence != None.</p></li>
+<li><p><strong>KS</strong> – calculates the Kolmogorov-Smirnov test, comparing the cumulative
+distribution of the sample with the Benford’s, according to the
+confidence level chosen. Defaults to False. Requires confidence
+!= None.</p></li>
+<li><p><strong>show_plot</strong> – draws the test plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>DataFrame with the Expected and Found proportions, and the Z scores of</dt><dd><p>the differences if the confidence is not None.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.benford.second_digit">
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">second_digit</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">confidence=None</em>, <em class="sig-param">high_Z='pos'</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">MAD=False</em>, <em class="sig-param">MSE=False</em>, <em class="sig-param">chi_square=False</em>, <em class="sig-param">KS=False</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#second_digit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.second_digit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the Benford Second Digits test on the series of
+numbers provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – sequence of numbers to be evaluated. Must be a numpy 1D array,
+a pandas Series or a pandas DataFrame column, with values being
+integers or floats.</p></li>
+<li><p><strong>decimals</strong> – number of decimal places to consider. Defaluts to 2.
+If integers, set to 0. If set to -infer-, it will remove the zeros
+and consider up to the fifth decimal place to the right, but will
+loose performance.</p></li>
+<li><p><strong>sign</strong> – tells which portion of the data to consider. ‘pos’: only the positive
+entries; ‘neg’: only negative entries; ‘all’: all entries but zeros.
+Defaults to ‘all’.</p></li>
+<li><p><strong>verbose</strong> – tells the number of registries that are being subjected to
+the analysis and returns tha analysis DataFrame sorted by the
+highest Z score down. Defaults to True.</p></li>
+<li><p><strong>MAD</strong> – calculates the Mean Absolute Difference between the
+found and the expected distributions; defaults to False.</p></li>
+<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+plotting and to limit the top deviations to show. Defaults to None.</p></li>
+<li><p><strong>high_Z</strong> – chooses which Z scores to be used when displaying results,
+according to the confidence level chosen. Defaluts to ‘pos’,
+which will highlight only values higher than the expexted
+frequencies; ‘all’ will highlight both extremes (positive and
+negative); and an integer, which will use the first n entries,
+positive and negative, regardless of whether Z is higher than
+the confidence or not.</p></li>
+<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+the Z scores if the sample is too big. Defaults to None.</p></li>
+<li><p><strong>MSE</strong> – calculates the Mean Square Error of the sample; defaults to
+False.</p></li>
+<li><p><strong>chi_square</strong> – calculates the chi_square statistic of the sample and
+compares it with a critical value, according to the confidence
+level chosen and the series’s degrees of freedom. Defaults to
+False. Requires confidence != None.</p></li>
+<li><p><strong>KS</strong> – calculates the Kolmogorov-Smirnov test, comparing the cumulative
+distribution of the sample with the Benford’s, according to the
+confidence level chosen. Defaults to False. Requires confidence
+!= None.</p></li>
+<li><p><strong>show_plot</strong> – draws the test plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>DataFrame with the Expected and Found proportions, and the Z scores of</dt><dd><p>the differences if the confidence is not None.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.benford.last_two_digits">
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">last_two_digits</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">confidence=None</em>, <em class="sig-param">high_Z='pos'</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">MAD=False</em>, <em class="sig-param">MSE=False</em>, <em class="sig-param">chi_square=False</em>, <em class="sig-param">KS=False</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#last_two_digits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.last_two_digits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the Last Two Digits test on the series of
+numbers provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – sequence of numbers to be evaluated. Must be a numpy 1D array,
+a pandas Series or a pandas DataFrame column,with values being
+integers or floats.</p></li>
+<li><p><strong>decimals</strong> – number of decimal places to consider. Defaluts to 2.
+If integers, set to 0. If set to -infer-, it will remove the zeros
+and consider up to the fifth decimal place to the right, but will
+loose performance.</p></li>
+<li><p><strong>sign</strong> – tells which portion of the data to consider. ‘pos’: only the positive
+entries; ‘neg’: only negative entries; ‘all’: all entries but zeros.
+Defaults to ‘all’.</p></li>
+<li><p><strong>verbose</strong> – tells the number of registries that are being subjected to
+the analysis and returns tha analysis DataFrame sorted by the
+highest Z score down. Defaults to True.</p></li>
+<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+plotting and to limit the top deviations to show. Defaults to None.</p></li>
+<li><p><strong>high_Z</strong> – chooses which Z scores to be used when displaying results,
+according to the confidence level chosen. Defaluts to ‘pos’,
+which will highlight only values higher than the expexted
+frequencies; ‘all’ will highlight both extremes (positive and
+negative); and an integer, which will use the first n entries,
+positive and negative, regardless of whether Z is higher than
+the confidence or not.</p></li>
+<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+the Z scores if the sample is too big. Defaults to None.</p></li>
+<li><p><strong>MAD</strong> – calculates the Mean Absolute Difference between the
+found and the expected distributions; defaults to False.</p></li>
+<li><p><strong>MSE</strong> – calculates the Mean Square Error of the sample; defaults to
+False.</p></li>
+<li><p><strong>chi_square</strong> – calculates the chi_square statistic of the sample and
+compares it with a critical value, according to the confidence
+level chosen and the series’s degrees of freedom. Defaults to
+False. Requires confidence != None.</p></li>
+<li><p><strong>KS</strong> – calculates the Kolmogorov-Smirnov test, comparing the cumulative
+distribution of the sample with the Benford’s, according to the
+confidence level chosen. Defaults to False. Requires confidence
+!= None.</p></li>
+<li><p><strong>show_plot</strong> – draws the test plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>DataFrame with the Expected and Found proportions, and the Z scores of</dt><dd><p>the differences if the confidence is not None.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.benford.mantissas">
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">mantissas</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">report=True</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">arc_test=True</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#mantissas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.mantissas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extraxts the mantissas of the records logarithms</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – sequence to compute mantissas from, numpy 1D array, pandas Series
+of pandas DataFrame column.</p></li>
+<li><p><strong>report</strong> – prints the mamtissas mean, variance, skewness and kurtosis
+for the sequence studied, along with reference values.</p></li>
+<li><p><strong>show_plot</strong> – plots the ordered mantissas and a line with the expected
+inclination. Defaults to True.</p></li>
+<li><p><strong>arc_test</strong> – draws the Arc Test plot. Defaluts to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Series with the data mantissas.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.benford.summation">
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">summation</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">digs=2</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">top=20</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#summation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.summation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the Summation test. In a Benford series, the sums of the
+entries begining with the same digits tends to be the same.
+Works only with the First Digits (1, 2 or 3) test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>digs</strong> – tells the first digits to use: 1- first; 2- first two;
+3- first three. Defaults to 2.</p></li>
+<li><p><strong>decimals</strong> – number of decimal places to consider. Defaluts to 2.
+If integers, set to 0. If set to -infer-, it will remove the zeros
+and consider up to the fifth decimal place to the right, but will
+loose performance.</p></li>
+<li><p><strong>top</strong> – choses how many top values to show. Defaults to 20.</p></li>
+<li><p><strong>show_plot</strong> – plots the results. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>DataFrame with the Summation test, whether sorted in descending order</dt><dd><p>(if verbose == True) or not.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.benford.mad">
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">mad</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">test</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#mad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.mad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the Mean Absolute Deviation of the Series</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – sequence of numbers to be evaluated. Must be a numpy 1D array,
+a pandas Series or a pandas DataFrame column, with values being
+integers or floats.</p></li>
+<li><p><strong>test</strong> – informs which base test to use for the mad.</p></li>
+<li><p><strong>decimals</strong> – number of decimal places to consider. Defaluts to 2.
+If integers, set to 0. If set to -infer-, it will remove the zeros
+and consider up to the fifth decimal place to the right, but will
+loose performance.</p></li>
+<li><p><strong>sign</strong> – tells which portion of the data to consider. pos: only the positive
+entries; neg: only negative entries; all: all entries but zeros.
+Defaults to all.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the Mean Absolute Deviation of the Series</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.benford.mse">
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">mse</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">test</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#mse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.mse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the Mean Squared Error of the Series</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – sequence of numbers to be evaluated. Must be a numpy 1D array,
+a pandas Series or a pandas DataFrame column, with values being
+integers or floats.</p></li>
+<li><p><strong>test</strong> – informs which base test to use for the mad.</p></li>
+<li><p><strong>decimals</strong> – number of decimal places to consider. Defaluts to 2.
+If integers, set to 0. If set to -infer-, it will remove the zeros
+and consider up to the fifth decimal place to the right, but will
+loose performance.</p></li>
+<li><p><strong>sign</strong> – tells which portion of the data to consider. pos: only the positive
+entries; neg: only negative entries; all: all entries but zeros.
+Defaults to all.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the Mean Squared Error of the Series</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.benford.mad_summ">
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">mad_summ</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">test</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#mad_summ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.mad_summ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the Mean Absolute Deviation of the Summation Test</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – sequence of numbers to be evaluated. Must be a numpy 1D array,
+a pandas Series or a pandas DataFrame column, with values being
+integers or floats.</p></li>
+<li><p><strong>test</strong> – informs which base test to use for the summation mad.</p></li>
+<li><p><strong>decimals</strong> – number of decimal places to consider. Defaluts to 2.
+If integers, set to 0. If set to -infer-, it will remove the zeros
+and consider up to the fifth decimal place to the right, but will
+loose performance.</p></li>
+<li><p><strong>sign</strong> – tells which portion of the data to consider. pos: only the positive
+entries; neg: only negative entries; all: all entries but zeros.
+Defaults to all.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the Mean Absolute Deviation of the Summation Test</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.benford.rolling_mad">
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">rolling_mad</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">test</em>, <em class="sig-param">window</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">show_plot=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#rolling_mad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.rolling_mad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the MAD to sequential subsets of the records.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – sequence of numbers to be evaluated. Must be a numpy 1D array,
+a pandas Series or a pandas DataFrame column, with values being
+integers or floats.</p></li>
+<li><p><strong>test</strong> – tells which test to use. 1: Fisrt Digits; 2: First Two Digits;
+3: First Three Digits; 22: Second Digit; and -2: Last Two Digits.</p></li>
+<li><p><strong>window</strong> – size of the subset to be used.</p></li>
+<li><p><strong>decimals</strong> – number of decimal places to consider. Defaluts to 2.
+If integers, set to 0. If set to -infer-, it will remove the zeros
+and consider up to the fifth decimal place to the right, but will
+loose performance.</p></li>
+<li><p><strong>sign</strong> – tells which portion of the data to consider. pos: only the positive
+entries; neg: only negative entries; all: all entries but zeros.
+Defaults to all.</p></li>
+<li><p><strong>show_plot</strong> – draws the test plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Series with sequentially computed MADs.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.benford.rolling_mse">
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">rolling_mse</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">test</em>, <em class="sig-param">window</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">show_plot=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#rolling_mse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.rolling_mse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the MSE to sequential subsets of the records.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – sequence of numbers to be evaluated. Must be a numpy 1D array,
+a pandas Series or a pandas DataFrame column, with values being
+integers or floats.</p></li>
+<li><p><strong>test</strong> – tells which test to use. 1: Fisrt Digits; 2: First Two Digits;
+3: First Three Digits; 22: Second Digit; and -2: Last Two Digits.</p></li>
+<li><p><strong>window</strong> – size of the subset to be used.</p></li>
+<li><p><strong>decimals</strong> – number of decimal places to consider. Defaluts to 2.
+If integers, set to 0. If set to -infer-, it will remove the zeros
+and consider up to the fifth decimal place to the right, but will
+loose performance.</p></li>
+<li><p><strong>sign</strong> – tells which portion of the data to consider. pos: only the positive
+entries; neg: only negative entries; all: all entries but zeros.
+Defaults to all.</p></li>
+<li><p><strong>show_plot</strong> – draws the test plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Series with sequentially computed MSEs.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.benford.duplicates">
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">duplicates</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">top_Rep=20</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#duplicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.duplicates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a duplicates test and maps the duplicates count in descending
+order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – sequence to take the duplicates from. pandas Series or
+numpy Ndarray.</p></li>
+<li><p><strong>verbose</strong> – tells how many duplicated entries were found and prints the
+top numbers according to the top_Rep argument. Defaluts to True.</p></li>
+<li><p><strong>top_Rep</strong> – chooses how many duplicated entries will be
+shown withe the top repititions. int or None. Defaluts to 20.
+If None, returns al the ordered repetitions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>DataFrame with the duplicated records and their respective counts</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if the <cite>top_Rep</cite> arg is not int or None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.benford.second_order">
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">second_order</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">test</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">MAD=False</em>, <em class="sig-param">confidence=None</em>, <em class="sig-param">high_Z='pos'</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">MSE=False</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#second_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.second_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the chosen test after subtracting the ordered sequence by itself.
+Hence Second Order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – sequence of numbers to be evaluated. Must be a numpy 1D array,
+a pandas Series or a pandas DataFrame column, with values being
+integers or floats.</p></li>
+<li><p><strong>test</strong> – the test to be performed - 1 or ‘F1D’: First Digit; 2 or ‘F2D’:
+First Two Digits; 3 or ‘F3D’: First three Digits; 22 or ‘SD’:
+Second Digits; -2 or ‘L2D’: Last Two Digits.</p></li>
+<li><p><strong>decimals</strong> – number of decimal places to consider. Defaluts to 2.
+If integers, set to 0. If set to -infer-, it will remove the zeros
+and consider up to the fifth decimal place to the right, but will
+loose performance.</p></li>
+<li><p><strong>sign</strong> – tells which portion of the data to consider. pos: only the positive
+entries; neg: only negative entries; all: all entries but zeros.
+Defaults to all.</p></li>
+<li><p><strong>verbose</strong> – tells the number of registries that are being subjected to
+the analysis and returns tha analysis DataFrame sorted by the
+highest Z score down. Defaults to True.</p></li>
+<li><p><strong>MAD</strong> – calculates the Mean Absolute Difference between the
+found and the expected distributions; defaults to False.</p></li>
+<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+plotting and to limit the top deviations to show. Defaults to None.</p></li>
+<li><p><strong>high_Z</strong> – chooses which Z scores to be used when displaying results,
+according to the confidence level chosen. Defaluts to ‘pos’,
+which will highlight only values higher than the expexted
+frequencies; ‘all’ will highlight both extremes (positive and
+negative); and an integer, which will use the first n entries,
+positive and negative, regardless of whether Z is higher than
+the confidence or not.</p></li>
+<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+the Z scores if the sample is too big. Defaults to None.</p></li>
+<li><p><strong>MSE</strong> – calculates the Mean Square Error of the sample; defaults to
+False.</p></li>
+<li><p><strong>chi_square</strong> – calculates the chi_square statistic of the sample and
+compares it with a critical value, according to the confidence
+level chosen and the series’s degrees of freedom. Defaults to
+False. Requires confidence != None.</p></li>
+<li><p><strong>KS</strong> – calculates the Kolmogorov-Smirnov test, comparing the cumulative
+distribution of the sample with the Benford’s, according to the
+confidence level chosen. Defaults to False. Requires confidence
+!= None.</p></li>
+<li><p><strong>show_plot</strong> – draws the test plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>DataFrame of the test chosen, but applied on Second Order pre-</dt><dd><p>processed data.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-benford.checks">
+<span id="benford-checks-module"></span><h2>benford.checks module<a class="headerlink" href="#module-benford.checks" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-benford.constants">
+<span id="benford-constants-module"></span><h2>benford.constants module<a class="headerlink" href="#module-benford.constants" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-benford.expected">
+<span id="benford-expected-module"></span><h2>benford.expected module<a class="headerlink" href="#module-benford.expected" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="benford.expected.First">
+<em class="property">class </em><code class="sig-prename descclassname">benford.expected.</code><code class="sig-name descname">First</code><span class="sig-paren">(</span><em class="sig-param">digs</em>, <em class="sig-param">plot=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/expected.html#First"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.expected.First" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.core.frame.DataFrame</span></code></p>
+<p>Holds the expected probabilities of the First, First Two, or
+First Three digits according to Benford’s distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>digs</strong> – 1, 2 or 3 - tells which of the first digits to consider:
+1 for the First Digit, 2 for the First Two Digits and 3 for
+the First Three Digits.</p></li>
+<li><p><strong>plot</strong> – option to plot a bar chart of the Expected proportions.
+Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="benford.expected.Second">
+<em class="property">class </em><code class="sig-prename descclassname">benford.expected.</code><code class="sig-name descname">Second</code><span class="sig-paren">(</span><em class="sig-param">plot=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/expected.html#Second"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.expected.Second" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.core.frame.DataFrame</span></code></p>
+<p>Holds the expected probabilities of the Second Digits
+according to Benford’s distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>plot</strong> – option to plot a bar chart of the Expected proportions.
+Defaults to True.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="benford.expected.LastTwo">
+<em class="property">class </em><code class="sig-prename descclassname">benford.expected.</code><code class="sig-name descname">LastTwo</code><span class="sig-paren">(</span><em class="sig-param">num=False</em>, <em class="sig-param">plot=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/expected.html#LastTwo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.expected.LastTwo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.core.frame.DataFrame</span></code></p>
+<p>Holds the expected probabilities of the Last Two Digits
+according to Benford’s distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>plot</strong> – option to plot a bar chart of the Expected proportions.
+Defaults to True.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-benford.reports">
+<span id="benford-reports-module"></span><h2>benford.reports module<a class="headerlink" href="#module-benford.reports" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-benford.stats">
+<span id="benford-stats-module"></span><h2>benford.stats module<a class="headerlink" href="#module-benford.stats" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="benford.stats.Z_score">
+<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">Z_score</code><span class="sig-paren">(</span><em class="sig-param">frame</em>, <em class="sig-param">N</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#Z_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.Z_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the Z statistics for the proportions studied</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame</strong> – DataFrame with the expected proportions and the already calculated
+Absolute Diferences between the found and expeccted proportions</p></li>
+<li><p><strong>N</strong> – sample size</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Series of computed Z scores</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.stats.chi_square">
+<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">chi_square</code><span class="sig-paren">(</span><em class="sig-param">frame</em>, <em class="sig-param">ddf</em>, <em class="sig-param">confidence</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#chi_square"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.chi_square" title="Permalink to this definition">¶</a></dt>
+<dd><p>Comnputes the chi-square statistic of the found distributions and compares
+it with the critical chi-square of such a sample, according to the
+confidence level chosen and the degrees of freedom - len(sample) -1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame</strong> – DataFrame with Found, Expected and their difference columns.</p></li>
+<li><p><strong>ddf</strong> – Degrees of freedom to consider.</p></li>
+<li><p><strong>confidence</strong> – Confidence level to look up critical value.</p></li>
+<li><p><strong>verbose</strong> – prints the chi-squre result and compares to the critical
+chi-square for the sample. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The computed Chi square statistic and the critical chi square</dt><dd><p>(according) to the degrees of freedom and confidence level,
+for comparison. None if confidence is None</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.stats.chi_square_2">
+<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">chi_square_2</code><span class="sig-paren">(</span><em class="sig-param">frame</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#chi_square_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.chi_square_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the chi-square statistic of the found distributions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>frame</strong> – DataFrame with Found, Expected and their difference columns.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The computed Chi square statistic</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.stats.KS">
+<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">KS</code><span class="sig-paren">(</span><em class="sig-param">frame</em>, <em class="sig-param">confidence</em>, <em class="sig-param">N</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#KS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.KS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the Kolmogorov-Smirnov test of the found distributions
+and compares it with the critical chi-square of such a sample,
+according to the confidence level chosen.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame</strong> – DataFrame with Foud and Expected distributions.</p></li>
+<li><p><strong>confidence</strong> – Confidence level to look up critical value.</p></li>
+<li><p><strong>N</strong> – Sample size</p></li>
+<li><p><strong>verbose</strong> – prints the KS result and the critical value for the sample.
+Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The Suprem, which is the greatest absolute difference between the</dt><dd><p>Found end th expected proportions, and the Kolmogorov-Smirnov
+critical value according to the confidence level, for ccomparison</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.stats.KS_2">
+<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">KS_2</code><span class="sig-paren">(</span><em class="sig-param">frame</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#KS_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.KS_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the Kolmogorov-Smirnov test of the found distributions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>frame</strong> – DataFrame with Foud and Expected distributions.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The Suprem, which is the greatest absolute difference between the</dt><dd><p>Found end th expected proportions</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.stats.mad">
+<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">mad</code><span class="sig-paren">(</span><em class="sig-param">frame</em>, <em class="sig-param">test</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#mad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.mad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the Mean Absolute Deviation (MAD) between the found and the
+expected proportions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame</strong> – DataFrame with the Absolute Deviations already calculated.</p></li>
+<li><p><strong>test</strong> – Test to compute the MAD from (F1D, SD, F2D…)</p></li>
+<li><p><strong>verbose</strong> – prints the MAD result and compares to limit values of
+conformity. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The Mean of the Absolute Deviations between the found and expected</dt><dd><p>proportions.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.stats.mse">
+<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">mse</code><span class="sig-paren">(</span><em class="sig-param">frame</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#mse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.mse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the test’s Mean Square Error</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame</strong> – DataFrame with the already computed Absolute Deviations between
+the found and expected proportions</p></li>
+<li><p><strong>verbose</strong> – Prints the MSE. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Mean of the squared differences between the found and the expected proportions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="benford-utils-module">
+<h2>benford.utils module<a class="headerlink" href="#benford-utils-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-benford.viz">
+<span id="benford-viz-module"></span><h2>benford.viz module<a class="headerlink" href="#module-benford.viz" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="benford.viz.plot_expected">
+<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_expected</code><span class="sig-paren">(</span><em class="sig-param">df</em>, <em class="sig-param">digs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_expected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_expected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the Expected Benford Distributions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – DataFrame with the Expected Proportions</p></li>
+<li><p><strong>digs</strong> – Test’s digit</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.viz.plot_digs">
+<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_digs</code><span class="sig-paren">(</span><em class="sig-param">df</em>, <em class="sig-param">x</em>, <em class="sig-param">y_Exp</em>, <em class="sig-param">y_Found</em>, <em class="sig-param">N</em>, <em class="sig-param">figsize</em>, <em class="sig-param">conf_Z</em>, <em class="sig-param">text_x=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_digs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_digs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the digits tests results</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – DataFrame with the data to be plotted</p></li>
+<li><p><strong>x</strong> – sequence to be used in the x axis</p></li>
+<li><p><strong>y_Exp</strong> – sequence of the expected proportions to be used in the y axis
+(line)</p></li>
+<li><p><strong>y_Found</strong> – sequence of the found proportions to be used in the y axis
+(bars)</p></li>
+<li><p><strong>N</strong> – lenght of sequence, to be used when plotting the confidence levels</p></li>
+<li><p><strong>figsize</strong> – tuple to state the size of the plot figure</p></li>
+<li><p><strong>conf_Z</strong> – Confidence level</p></li>
+<li><p><strong>text_x</strong> – Forces to show all x ticks labels. Defaluts to True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.viz.plot_sum">
+<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_sum</code><span class="sig-paren">(</span><em class="sig-param">df</em>, <em class="sig-param">figsize</em>, <em class="sig-param">li</em>, <em class="sig-param">text_x=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_sum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the summation test results</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – DataFrame with the data to be plotted</p></li>
+<li><p><strong>figsize</strong> – sets the dimensions of the plot figure</p></li>
+<li><p><strong>-&gt; value with which to draw the horizontal line</strong> (<em>li</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.viz.plot_ordered_mantissas">
+<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_ordered_mantissas</code><span class="sig-paren">(</span><em class="sig-param">col</em>, <em class="sig-param">figsize=(12</em>, <em class="sig-param">12)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_ordered_mantissas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_ordered_mantissas" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Plots the ordered mantissas and compares them to the expected, straight</dt><dd><p>line that should be formed in a Benford-cmpliant set.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>col</strong> (<em>Series</em>) – column of mantissas to plot.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em>) – sets the dimensions of the plot figure.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="benford.viz.plot_mantissa_arc_test">
+<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_mantissa_arc_test</code><span class="sig-paren">(</span><em class="sig-param">df</em>, <em class="sig-param">gravity_center</em>, <em class="sig-param">grid=True</em>, <em class="sig-param">figsize=12</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_mantissa_arc_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_mantissa_arc_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws thee Mantissa Arc Test after computing X and Y circular coordinates
+for every mantissa and the center of gravity for the set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – pandas DataFrame with the mantissas and the X and Y
+coordinates.</p></li>
+<li><p><strong>gravity_center</strong> (<em>tuple</em>) – coordinates for plottling the gravity center</p></li>
+<li><p><strong>grid</strong> (<em>bool</em>) – show grid. Defaults to True.</p></li>
+<li><p><strong>figsize</strong> (<em>int</em>) – figure dimensions. No need to be a tuple, since the
+figure is a square.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-benford">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-benford" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Marcel Milcent
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

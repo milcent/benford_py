@@ -1,0 +1,349 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>benford.stats &mdash; benford_py 0.2.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> benford_py
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">benford</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">benford_py</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>benford.stats</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for benford.stats</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">sqrt</span>
+<span class="c1"># from .constants import digs_dict, confs, crit_chi2, KS_crit, mad_dict</span>
+
+
+<div class="viewcode-block" id="Z_score"><a class="viewcode-back" href="../../api.html#benford.stats.Z_score">[docs]</a><span class="k">def</span> <span class="nf">Z_score</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the Z statistics for the proportions studied</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        frame: DataFrame with the expected proportions and the already calculated</span>
+<span class="sd">            Absolute Diferences between the found and expeccted proportions</span>
+<span class="sd">        N: sample size</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Series of computed Z scores</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">AbsDif</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">N</span><span class="p">)))</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span>
+           <span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">Expected</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">frame</span><span class="o">.</span><span class="n">Expected</span><span class="p">))</span> <span class="o">/</span> <span class="n">N</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="chi_square"><a class="viewcode-back" href="../../api.html#benford.stats.chi_square">[docs]</a><span class="k">def</span> <span class="nf">chi_square</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">ddf</span><span class="p">,</span> <span class="n">confidence</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Comnputes the chi-square statistic of the found distributions and compares</span>
+<span class="sd">    it with the critical chi-square of such a sample, according to the</span>
+<span class="sd">    confidence level chosen and the degrees of freedom - len(sample) -1.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        frame: DataFrame with Found, Expected and their difference columns.</span>
+<span class="sd">        ddf: Degrees of freedom to consider.</span>
+<span class="sd">        confidence: Confidence level to look up critical value.</span>
+<span class="sd">        verbose: prints the chi-squre result and compares to the critical</span>
+<span class="sd">            chi-square for the sample. Defaults to True.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The computed Chi square statistic and the critical chi square</span>
+<span class="sd">            (according) to the degrees of freedom and confidence level,</span>
+<span class="sd">            for comparison. None if confidence is None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">confidence</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Chi-square test needs confidence other than None.&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">exp_counts</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">Counts</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="n">frame</span><span class="o">.</span><span class="n">Expected</span>
+        <span class="n">dif_counts</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">Counts</span> <span class="o">-</span> <span class="n">exp_counts</span>
+        <span class="n">found_chi</span> <span class="o">=</span> <span class="p">(</span><span class="n">dif_counts</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">exp_counts</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">crit_chi</span> <span class="o">=</span> <span class="n">crit_chi2</span><span class="p">[</span><span class="n">ddf</span><span class="p">][</span><span class="n">confidence</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The Chi-square statistic is </span><span class="si">{found_chi:.4f}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                  <span class="sa">f</span><span class="s2">&quot;Critical Chi-square for this series: </span><span class="si">{crit_chi}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">found_chi</span><span class="p">,</span> <span class="n">crit_chi</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="chi_square_2"><a class="viewcode-back" href="../../api.html#benford.stats.chi_square_2">[docs]</a><span class="k">def</span> <span class="nf">chi_square_2</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the chi-square statistic of the found distributions</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        frame: DataFrame with Found, Expected and their difference columns.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The computed Chi square statistic </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">exp_counts</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">Counts</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="n">frame</span><span class="o">.</span><span class="n">Expected</span>
+    <span class="n">dif_counts</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">Counts</span> <span class="o">-</span> <span class="n">exp_counts</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">dif_counts</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">exp_counts</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="KS"><a class="viewcode-back" href="../../api.html#benford.stats.KS">[docs]</a><span class="k">def</span> <span class="nf">KS</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">confidence</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the Kolmogorov-Smirnov test of the found distributions</span>
+<span class="sd">    and compares it with the critical chi-square of such a sample,</span>
+<span class="sd">    according to the confidence level chosen.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        frame: DataFrame with Foud and Expected distributions.</span>
+<span class="sd">        confidence: Confidence level to look up critical value.</span>
+<span class="sd">        N: Sample size</span>
+<span class="sd">        verbose: prints the KS result and the critical value for the sample.</span>
+<span class="sd">            Defaults to True.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The Suprem, which is the greatest absolute difference between the</span>
+<span class="sd">            Found end th expected proportions, and the Kolmogorov-Smirnov</span>
+<span class="sd">            critical value according to the confidence level, for ccomparison</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">confidence</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Kolmogorov-Smirnov test needs confidence other than None.&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># sorting and calculating the cumulative distribution</span>
+        <span class="n">ks_frame</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()[[</span><span class="s1">&#39;Found&#39;</span><span class="p">,</span> <span class="s1">&#39;Expected&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+        <span class="c1"># finding the supremum - the largest cumul dist difference</span>
+        <span class="n">suprem</span> <span class="o">=</span> <span class="p">((</span><span class="n">ks_frame</span><span class="o">.</span><span class="n">Found</span> <span class="o">-</span> <span class="n">ks_frame</span><span class="o">.</span><span class="n">Expected</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">())</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="c1"># calculating the crittical value according to confidence</span>
+        <span class="n">crit_KS</span> <span class="o">=</span> <span class="n">KS_crit</span><span class="p">[</span><span class="n">confidence</span><span class="p">]</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The Kolmogorov-Smirnov statistic is </span><span class="si">{suprem:.4f}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                  <span class="sa">f</span><span class="s2">&quot;Critical K-S for this series: </span><span class="si">{crit_KS:.4f}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">suprem</span><span class="p">,</span> <span class="n">crit_KS</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="KS_2"><a class="viewcode-back" href="../../api.html#benford.stats.KS_2">[docs]</a><span class="k">def</span> <span class="nf">KS_2</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the Kolmogorov-Smirnov test of the found distributions</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        frame: DataFrame with Foud and Expected distributions.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The Suprem, which is the greatest absolute difference between the</span>
+<span class="sd">            Found end th expected proportions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># sorting and calculating the cumulative distribution</span>
+    <span class="n">ks_frame</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()[[</span><span class="s1">&#39;Found&#39;</span><span class="p">,</span> <span class="s1">&#39;Expected&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+    <span class="c1"># finding the supremum - the largest cumul dist difference</span>
+    <span class="k">return</span> <span class="p">((</span><span class="n">ks_frame</span><span class="o">.</span><span class="n">Found</span> <span class="o">-</span> <span class="n">ks_frame</span><span class="o">.</span><span class="n">Expected</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">())</span><span class="o">.</span><span class="n">max</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="mad"><a class="viewcode-back" href="../../api.html#benford.stats.mad">[docs]</a><span class="k">def</span> <span class="nf">mad</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the Mean Absolute Deviation (MAD) between the found and the</span>
+<span class="sd">    expected proportions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        frame: DataFrame with the Absolute Deviations already calculated.</span>
+<span class="sd">        test: Test to compute the MAD from (F1D, SD, F2D...)</span>
+<span class="sd">        verbose: prints the MAD result and compares to limit values of</span>
+<span class="sd">            conformity. Defaults to True.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The Mean of the Absolute Deviations between the found and expected</span>
+<span class="sd">            proportions. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mad</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">AbsDif</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The Mean Absolute Deviation is </span><span class="si">{mad}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">test</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">2</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;For the {mad_dict[digs_dict[test]]}:</span><span class="se">\n\</span>
+<span class="s2">            - 0.0000 to </span><span class="si">{mad_dict[test][0]}</span><span class="s2">: Close Conformity</span><span class="se">\n\</span>
+<span class="s2">            - </span><span class="si">{mad_dict[test][0]}</span><span class="s2"> to </span><span class="si">{mad_dict[test][1]}</span><span class="s2">: Acceptable Conformity</span><span class="se">\n\</span>
+<span class="s2">            - </span><span class="si">{mad_dict[test][1]}</span><span class="s2"> to </span><span class="si">{mad_dict[test][2]}</span><span class="s2">: Marginally Acceptable Conformity</span><span class="se">\n\</span>
+<span class="s2">            - Above </span><span class="si">{mad_dict[test][2]}</span><span class="s2">: Nonconformity&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">mad</span></div>
+
+
+<div class="viewcode-block" id="mse"><a class="viewcode-back" href="../../api.html#benford.stats.mse">[docs]</a><span class="k">def</span> <span class="nf">mse</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the test&#39;s Mean Square Error</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        frame: DataFrame with the already computed Absolute Deviations between</span>
+<span class="sd">            the found and expected proportions</span>
+<span class="sd">        verbose: Prints the MSE. Defaults to True.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Mean of the squared differences between the found and the expected proportions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mse</span> <span class="o">=</span> <span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">AbsDif</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Mean Square Error = </span><span class="si">{mse}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mse</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Marcel Milcent
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
