@@ -3,7 +3,8 @@ from numpy import array, ndarray
 from .constants import digs_dict, rev_digs, confs
 
 def _check_digs_(digs):
-    """Chhecks the possible values for the digs of the First Digits test1
+    """Checks the possible values for the digs parameter of the
+    First Digits tests
     """
     if digs not in [1, 2, 3]:
         raise ValueError("The value assigned to the parameter -digs- "
