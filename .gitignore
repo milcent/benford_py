@@ -7,10 +7,6 @@
 # text editor backups
 *~
 
-# test files
-test*.*
-left*.*
-
 # Setuptools distribution folder.
 /dist/
 
