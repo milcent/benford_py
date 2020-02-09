@@ -56,10 +56,15 @@ def _check_num_array_(data):
         except:
             raise ValueError('Could not convert data. Check input.')
         print('\nConversion successful.')
-    elif (data.dtype != int) & (data.dtype != float):
-        print("\n`data` type not int nor float. Trying to convert...")
+
         try:
             data = data.astype(float)
         except:
             raise ValueError('Could not convert data. Check input.')
+    else:
+        if data.dtype not in [int, float]:
+            try:
+                data = data.astype(float)
+            except:
+                raise ValueError('Could not convert data. Check input.')
     return data

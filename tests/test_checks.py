@@ -1,4 +1,6 @@
 import pytest
+import pandas as pd
+import numpy as np
 from benford import checks as ch
 
 def test_check_digs_zero():
@@ -134,8 +136,58 @@ def test_check_high_Z_all():
     assert ch._check_high_Z_('all') == 'all'
 
 
+def test_check_num_array_str():
+    with pytest.raises(ValueError) as context:
+        ch._check_num_array_('alocdwneceo;u')
+
+def test_check_num_array_list_str():
+    with pytest.raises(ValueError) as context:
+        ch._check_num_array_(['foo','baar','baz','jinks'])
+
+def test_check_num_array_list_of_str_num():
+    assert ch._check_num_array_(['1','2','3','4','5','6','7']).dtype == float
+
+def test_check_num_array_list_of_int():
+    assert ch._check_num_array_([1,2,3,4,5,6,7]).dtype == float
+
+def test_check_num_array_list_of_float():
+    assert ch._check_num_array_([1,2,3,4,5.0,6.3,.17]).dtype == float
+
+def test_check_num_array_npArray_float():
+    assert ch._check_num_array_(np.array([1,2,3,4,5.0,6.3,.17])).dtype == float
+
+def test_check_num_array_npArray_int():
+    assert ch._check_num_array_(np.array([1,2,3,4,5,6,7])).dtype == int
+
+def test_check_num_array_npArray_str_num():
+    assert ch._check_num_array_(np.array(['1','2','3','4','5','6','7'])).dtype == float
+
+def test_check_num_array_npArray_str():
+    with pytest.raises(ValueError) as context:
+        ch._check_num_array_(np.array(['foo','baar','baz','hixks']))
+
+def test_check_num_array_Series_float():
+    assert ch._check_num_array_(pd.Series([1,2,3,4,5.0,6.3,.17])).dtype == float
+
+def test_check_num_array_Series_int():
+    assert ch._check_num_array_(pd.Series([1,2,3,4,5,6,7])).dtype == int
+
+def test_check_num_array_Series_str_num():
+    assert ch._check_num_array_(pd.Series(['1','2','3','4','5','6','7'])).dtype == float
+
+def test_check_num_array_Series_str():
+    with pytest.raises(ValueError) as context:
+        ch._check_num_array_(pd.Series(['foo','baar','baz','hixks']))
+    
+def test_check_num_array_npArray_str_num():
+    assert ch._check_num_array_(np.array(['1','2','3','4','5','6','7'])).dtype == float
+
+def test_check_num_array_dict():
+    with pytest.raises(ValueError) as context:
+        ch._check_num_array_({'a':1,'b':2,'c':3,'d':4})
+
+def test_check_num_array_tuple():
+    with pytest.raises(ValueError) as context:
+        ch._check_num_array_({1,2,3,4})
 
 
-
-def test_check_num_array():
-    pass
