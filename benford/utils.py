@@ -59,7 +59,7 @@ def input_data(given):
     return data, chosen
 
 
-def prepare(data, digs, limit_N, simple=False, confidence=None):
+def prepare(data, digs, limit_N=None, simple=False, confidence=None):
     """Transforms the original number sequence into a DataFrame reduced
     by the ocurrences of the chosen digits, creating other computed
     columns
