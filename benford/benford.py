@@ -14,8 +14,7 @@ from .viz import _get_plot_args, plot_digs, plot_sum, plot_ordered_mantissas,\
 from .reports import _inform_, _report_mad_, _report_summ_, _report_KS_,\
     _report_Z_, _report_chi2_, _report_test_, _deprecate_inform_,\
     _report_mantissa_
-from .stats import Z_score, chi_square, chi_square_2, KS, KS_2, \
-    mad, mse
+from .stats import Z_score, chi_square, chi_square_2, KS, KS_2
 
 class Base(DataFrame):
     """Internalizes and prepares the data for Analysis.
