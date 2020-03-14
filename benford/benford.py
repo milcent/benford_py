@@ -10,7 +10,7 @@ from .utils import  _set_N_, input_data, prepare, \
      get_mantissas
 from .expected import First, Second, LastTwo, _test_
 from .viz import _get_plot_args, plot_digs, plot_sum, plot_ordered_mantissas,\
-    plot_mantissa_arc_test
+    plot_mantissa_arc_test, plot_roll_mse, plot_roll_mad
 from .reports import _inform_, _report_mad_, _report_summ_, _report_KS_,\
     _report_Z_, _report_chi2_, _report_test_, _deprecate_inform_,\
     _report_mantissa_
@@ -700,8 +700,8 @@ class Source(DataFrame):
 
         conf = confs[confidence]
 
-        temp = self.loc[self.ZN >= 10]
-        temp['SD'] = (temp.ZN // 10**((log10(temp.ZN)).astype(
+        temp = self.loc[self.ZN >= 10, :]
+        temp['SD'] = (temp.ZN // 10 ** ((log10(temp.ZN)).astype(
                       int) - 1)) % 10
 
         if simple:
@@ -721,11 +721,12 @@ class Source(DataFrame):
 
         # Mean absolute difference
         if MAD:
-            self.MAD = mad(df, test=22, verbose=self.verbose)
-
+            self.MAD = df.AbsDif.mean()
+            if self.verbose:
+                _report_mad_(digs, self.MAD)
         # Mean Square Error
         if MSE:
-            self.MSE = mse(df, verbose=self.verbose)
+            self.MSE = (df.AbsDif ** 2).mean()
 
         # Chi-square statistic
         if chi_square:
@@ -981,7 +982,7 @@ class Mantissas(object):
         plot_mantissa_arc_test(self, stats['gravity_center'], figsize=figsize)
 
 
-class Roll_mad(Series):
+class Roll_mad(object):
     """Applies the MAD to sequential subsets of the Series, returning another
     Series.
 
@@ -1004,19 +1005,18 @@ class Roll_mad(Series):
 
     def __init__(self, data, test, window, decimals=2, sign='all'):
 
-        test = _check_test_(test)
+        #: the test (F1D, SD, F2D...) used for the MAD calculation and critical values
+        self.test = _check_test_(test)
 
         if not isinstance(data, Source):
             start = Source(data, sign=sign, decimals=decimals, verbose=False)
 
-        Exp, ind = prep_to_roll(start, test)
+        Exp, ind = prep_to_roll(start, self.test)
 
-        Series.__init__(self, start[digs_dict[test]].rolling(
-            window=window).apply(mad_to_roll, args=(Exp, ind), raw=False))
-
-        self.dropna(inplace=True)
-        #: the test (F1D, SD, F2D...) used for the MAD calculation and critical values
-        self.test = test
+        self.roll_series = start[digs_dict[test]].rolling(
+                                window=window).apply(mad_to_roll, 
+                                    args=(Exp, ind), raw=False)
+        self.roll_series.dropna(inplace=True)
 
     def show_plot(self, figsize=(15, 8)):
         """Shows the rolling MAD plot
@@ -1024,17 +1024,10 @@ class Roll_mad(Series):
         Args:
             figsize: the figure dimensions.
         """
-        fig, ax = plt.subplots(figsize=figsize)
-        ax.set_facecolor(colors['b'])
-        ax.plot(self, color=colors['m'])
-        if self.test != -2:
-            plt.axhline(y=mad_dict[self.test][0], color=colors['af'], linewidth=3)
-            plt.axhline(y=mad_dict[self.test][1], color=colors['h2'], linewidth=3)
-            plt.axhline(y=mad_dict[self.test][2], color=colors['s'], linewidth=3)
-        plt.show(block=False)
+        plot_roll_mad(self, figsize=figsize)
 
 
-class Roll_mse(Series):
+class Roll_mse(object):
     """Applies the MSE to sequential subsets of the Series, returning another
     Series.
 
@@ -1063,10 +1056,10 @@ class Roll_mse(Series):
 
         Exp, ind = prep_to_roll(start, test)
 
-        Series.__init__(self, start[digs_dict[test]].rolling(
-            window=window).apply(mse_to_roll, args=(Exp, ind), raw=False))
-
-        self.dropna(inplace=True)
+        self.roll_series = start[digs_dict[test]].rolling(
+                                window=window).apply(mse_to_roll, 
+                                    args=(Exp, ind), raw=False)
+        self.roll_series.dropna(inplace=True)
 
     def show_plot(self, figsize=(15, 8)):
         """Shows the rolling MSE plot
@@ -1074,10 +1067,8 @@ class Roll_mse(Series):
         Args:
             figsize: the figure dimensions.
         """
-        fig, ax = plt.subplots(figsize=figsize)
-        ax.set_facecolor(colors['b'])
-        ax.plot(self, color=colors['m'])
-        plt.show(block=False)
+        plot_roll_mse(self.roll_series, figsize=figsize)
+
 
 
 def first_digits(data, digs, decimals=2, sign='all', verbose=True,
@@ -1458,11 +1449,10 @@ def rolling_mad(data, test, window, decimals=2, sign='all', show_plot=False):
         Series with sequentially computed MADs.
     """
     data = _check_num_array_(data)
-    test = _check_test_(test)
     r_mad = Roll_mad(data, test, window, decimals, sign)
     if show_plot:
-        r_mad.show_plot(test)
-    return r_mad
+        r_mad.show_plot()
+    return r_mad.roll_series
 
 
 def rolling_mse(data, test, window, decimals=2, sign='all', show_plot=False):
@@ -1488,11 +1478,10 @@ def rolling_mse(data, test, window, decimals=2, sign='all', show_plot=False):
         Series with sequentially computed MSEs.
     """
     data = _check_num_array_(data)
-    test = _check_test_(test)
     r_mse = Roll_mse(data, test, window, decimals, sign)
     if show_plot:
         r_mse.show_plot()
-    return r_mse
+    return r_mse.roll_series
 
 
 def duplicates(data, top_Rep=20, verbose=True, inform=None):

@@ -130,8 +130,7 @@ def prep_to_roll(start, test):
 def mad_to_roll(arr, Exp, ind):
     """Mean Absolute Deviation used in the rolling function
     """
-    prop = Series(arr)
-    prop = prop.value_counts(normalize=True).sort_index()
+    prop = arr.value_counts(normalize=True).sort_index()
 
     if len(prop) < len(Exp):
         prop = prop.reindex(ind).fillna(0)
@@ -141,8 +140,7 @@ def mad_to_roll(arr, Exp, ind):
 def mse_to_roll(arr, Exp, ind):
     """Mean Squared Error used in the rolling function
     """
-    prop = Series(arr)
-    temp = prop.value_counts(normalize=True).sort_index()
+    temp = arr.value_counts(normalize=True).sort_index()
 
     if len(temp) < len(Exp):
         temp = temp.reindex(ind).fillna(0)

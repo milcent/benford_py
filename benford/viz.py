@@ -1,7 +1,7 @@
 from numpy import array, arange, maximum, sqrt, ones
 import matplotlib.pyplot as plt
 from matplotlib.text import Annotation
-from .constants import colors
+from .constants import colors, mad_dict
 
 
 def plot_expected(df, digs):
@@ -194,3 +194,29 @@ def plot_mantissa_arc_test(df, gravity_center, grid=True, figsize=12):
     ax.legend(loc = 'lower left')
     ax.set_title("Mantissas Arc Test")
     plt.show(block=False);
+
+def plot_roll_mse(roll_series, figsize):
+    """Shows the rolling MSE plot
+    
+    Args:
+        figsize: the figure dimensions.
+    """
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.set_facecolor(colors['b'])
+    ax.plot(roll_series, color=colors['m'])
+    plt.show(block=False)
+
+def plot_roll_mad(roll_mad, figsize):
+    """Shows the rolling MAD plot
+    
+    Args:
+        figsize: the figure dimensions.
+    """
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.set_facecolor(colors['b'])
+    ax.plot(roll_mad.roll_series, color=colors['m'])
+    if roll_mad.test != -2:
+        plt.axhline(y=mad_dict[roll_mad.test][0], color=colors['af'], linewidth=3)
+        plt.axhline(y=mad_dict[roll_mad.test][1], color=colors['h2'], linewidth=3)
+        plt.axhline(y=mad_dict[roll_mad.test][2], color=colors['s'], linewidth=3)
+    plt.show(block=False)
