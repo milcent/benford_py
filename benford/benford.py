@@ -1359,8 +1359,9 @@ def mad(data, test, decimals=2, sign='all', verbose=False):
     Returns:
         float: the Mean Absolute Deviation of the Series
     """
-    _check_test_(test)
-    start = Source(data.values, sign=sign, decimals=decimals, verbose=False)
+    data = _check_num_array_(data)
+    test = _check_test_(test)
+    start = Source(data, sign=sign, decimals=decimals, verbose=verbose)
     if test in [1, 2, 3]:
         start.first_digits(digs=test, MAD=True, MSE=True, simple=True)
     elif test == 22:
@@ -1388,6 +1389,7 @@ def mse(data, test, decimals=2, sign='all', verbose=False):
     Returns:
         float: the Mean Squared Error of the Series
     """
+    data = _check_num_array_(data)
     test = _check_test_(test)
     start = Source(data, sign=sign, decimals=decimals, verbose=verbose)
     if test in [1, 2, 3]:
@@ -1418,7 +1420,8 @@ def mad_summ(data, test, decimals=2, sign='all', verbose=False):
     Returns:
         float: the Mean Absolute Deviation of the Summation Test
     """
-    _check_digs_(test)
+    data = _check_num_array_(data)
+    test = _check_digs_(test)
 
     start = Source(data, sign=sign, decimals=decimals, verbose=verbose)
     temp = start.loc[start.ZN >= 10 ** (test - 1)]
@@ -1453,6 +1456,7 @@ def rolling_mad(data, test, window, decimals=2, sign='all', show_plot=False):
     Returns:
         Series with sequentially computed MADs.
     """
+    data = _check_num_array_(data)
     test = _check_test_(test)
     r_mad = Roll_mad(data, test, window, decimals, sign)
     if show_plot:
@@ -1482,6 +1486,8 @@ def rolling_mse(data, test, window, decimals=2, sign='all', show_plot=False):
     Returns:
         Series with sequentially computed MSEs.
     """
+    data = _check_num_array_(data)
+    test = _check_test_(test)
     r_mse = Roll_mse(data, test, window, decimals, sign)
     if show_plot:
         r_mse.show_plot()
