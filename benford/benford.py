@@ -636,11 +636,13 @@ class Source(DataFrame):
 
         # Mean absolute difference
         if MAD:
-            self.MAD = mad(df, test=digs, verbose=self.verbose)
+            self.MAD = df.AbsDif.mean()
+            if self.verbose:
+                _report_mad_(digs, self.MAD)
 
         # Mean Square Error
         if MSE:
-            self.MSE = mse(df, verbose=self.verbose)
+            self.MSE = (df.AbsDif ** 2).mean()
 
         # Chi-square statistic
         if chi_square:
@@ -794,11 +796,12 @@ class Source(DataFrame):
 
         # Mean absolute difference
         if MAD:
-            self.MAD = mad(df, test=-2, verbose=self.verbose)
-
+            self.MAD = df.AbsDif.mean()
+            if self.verbose:
+                _report_mad_(-2, self.MAD)
         # Mean Square Error
         if MSE:
-            self.MSE = mse(df, verbose=self.verbose)
+            self.MSE = (df.AbsDif ** 2).mean()
 
         # Chi-square statistic
         if chi_square:
@@ -1338,7 +1341,7 @@ def summation(data, digs=2, decimals=2, sign='all', top=20, verbose=True,
         return data
 
 
-def mad(data, test, decimals=2, sign='all'):
+def mad(data, test, decimals=2, sign='all', verbose=False):
     """Calculates the Mean Absolute Deviation of the Series
 
     Args:
@@ -1367,7 +1370,7 @@ def mad(data, test, decimals=2, sign='all'):
     return start.MAD
 
 
-def mse(data, test, decimals=2, sign='all'):
+def mse(data, test, decimals=2, sign='all', verbose=False):
     """Calculates the Mean Squared Error of the Series
 
     Args:
@@ -1386,7 +1389,7 @@ def mse(data, test, decimals=2, sign='all'):
         float: the Mean Squared Error of the Series
     """
     test = _check_test_(test)
-    start = Source(data, sign=sign, decimals=decimals, verbose=False)
+    start = Source(data, sign=sign, decimals=decimals, verbose=verbose)
     if test in [1, 2, 3]:
         start.first_digits(digs=test, MAD=False, MSE=True, simple=True)
     elif test == 22:
@@ -1396,7 +1399,7 @@ def mse(data, test, decimals=2, sign='all'):
     return start.MSE
 
 
-def mad_summ(data, test, decimals=2, sign='all'):
+def mad_summ(data, test, decimals=2, sign='all', verbose=False):
     """Calculate the Mean Absolute Deviation of the Summation Test
 
     Args:
@@ -1417,7 +1420,7 @@ def mad_summ(data, test, decimals=2, sign='all'):
     """
     _check_digs_(test)
 
-    start = Source(data, sign=sign, decimals=decimals, verbose=False)
+    start = Source(data, sign=sign, decimals=decimals, verbose=verbose)
     temp = start.loc[start.ZN >= 10 ** (test - 1)]
     temp[digs_dict[test]] = (temp.ZN // 10 ** ((log10(temp.ZN).astype(
                                                 int)) - (test - 1))).astype(
