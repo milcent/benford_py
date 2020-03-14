@@ -126,6 +126,7 @@ class Test(DataFrame):
         self.chi_square = chi_square_2(self)
         self.KS = KS_2(self)
         self.MAD = self.AbsDif.mean()
+        self.MSE = (self.AbsDif ** 2).mean()
         self.confidence = confidence
         self.digs = digs
         self.sec_order = sec_order
@@ -206,6 +207,7 @@ class Summ(DataFrame):
         self.index = self.index.astype(int)
         #: Mean Absolute Deviation for the test
         self.MAD = self.AbsDif.mean()
+        self.MSE = (self.AbsDif ** 2).mean()
         #: Confidence level to consider when setting some critical values
         self.confidence = None
         # (int): numerical representation of the test at hand 
