@@ -11,8 +11,7 @@ from .utils import  _set_N_, input_data, prepare, \
 from .expected import First, Second, LastTwo, _test_
 from .viz import _get_plot_args, plot_digs, plot_sum, plot_ordered_mantissas,\
     plot_mantissa_arc_test, plot_roll_mse, plot_roll_mad
-from .reports import _inform_, _report_mad_, _report_summ_, _report_KS_,\
-    _report_Z_, _report_chi2_, _report_test_, _deprecate_inform_,\
+from .reports import _inform_, _report_mad_, _report_test_, _deprecate_inform_,\
     _report_mantissa_
 from .stats import Z_score, chi_square, chi_square_2, KS, KS_2
 
