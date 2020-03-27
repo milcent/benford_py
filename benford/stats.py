@@ -76,7 +76,7 @@ def KS(frame, confidence, N, verbose=True):
     
     Returns:
         The Suprem, which is the greatest absolute difference between the
-            Found end th expected proportions, and the Kolmogorov-Smirnov
+            Found and the expected proportions, and the Kolmogorov-Smirnov
             critical value according to the confidence level, for ccomparison
     """
     if confidence is None:
