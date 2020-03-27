@@ -63,16 +63,14 @@ def test_check_test_not_in_rev_digs():
         ch._check_test_('F4D')
 
 def test_check_test_float():
-    with pytest.raises(ValueError) as context:
+    with pytest.raises(TypeError) as context:
         ch._check_test_(2.0)
         ch._check_test_(-3)
 
 def test_check_test_bool():
     with pytest.raises(ValueError) as context:
         ch._check_test_(False)
-    with pytest.raises(ValueError) as context:
-        ch._check_test_(True)
-    with pytest.raises(ValueError) as context:
+    with pytest.raises(TypeError) as context:
         ch._check_test_(None)
 
 
