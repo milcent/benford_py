@@ -68,16 +68,17 @@ def prepare(data, digs, limit_N=None, simple=False, confidence=None):
     N = _set_N_(len(data), limit_N=limit_N)
 
     # get the number of occurrences of the digits
-    v = data.value_counts()
+    counts = data.value_counts()
     # get their relative frequencies
-    p = data.value_counts(normalize=True)
+    proportions = data.value_counts(normalize=True)
     # crate dataframe from them
-    dd = DataFrame({'Counts': v, 'Found': p}).sort_index()
+    dd = DataFrame({'Counts': counts, 'Found': proportions}).sort_index()
     # join the dataframe with the one of expected Benford's frequencies
     dd = _test_(digs).join(dd).fillna(0)
     # create column with absolute differences
     dd['Dif'] = dd.Found - dd.Expected
     dd['AbsDif'] = dd.Dif.abs()
+    print(dd.Found)
     if simple:
         del dd['Dif']
         return dd
