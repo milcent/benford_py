@@ -1,8 +1,9 @@
 from pandas import Series, DataFrame
 from numpy import array, arange, log10, ndarray
 from .expected import _test_
-from .constants import digs_dict
+from .constants import digs_dict, rev_digs
 from .stats import Z_score
+from .checks import _check_num_array_, _check_sign_, _check_decimals_
 
 
 def _set_N_(len_df, limit_N):
