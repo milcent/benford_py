@@ -70,9 +70,45 @@ def test_check_test_float():
 def test_check_test_bool():
     with pytest.raises(ValueError) as context:
         ch._check_test_(False)
+    with pytest.raises(ValueError) as context:
         ch._check_test_(True)
+    with pytest.raises(ValueError) as context:
         ch._check_test_(None)
 
+
+def test_check_decimals_positive_int():
+    assert ch._check_decimals_(2) == 2
+    assert ch._check_decimals_(0) == 0
+    assert ch._check_decimals_(8) == 8
+
+def test_check_decimals_negative_int():
+    with pytest.raises(ValueError) as context:
+        ch._check_decimals_(-2)
+    assert str(context.value) == "Parameter -decimals- must be an int >= 0, or 'infer'."
+    with pytest.raises(ValueError):
+        ch._check_decimals_(-5)
+
+def test_check_decimals_infer():
+    assert ch._check_decimals_('infer') == 'infer'
+
+def test_check_decimals_other_str():
+    with pytest.raises(ValueError):
+        ch._check_decimals_('infe')
+    with pytest.raises(ValueError):
+        ch._check_decimals_('Infer')
+
+def test_check_decimals_other_type():
+    with pytest.raises(ValueError):
+        assert ch._check_decimals_(-2)
+    with pytest.raises(ValueError) as context:
+        assert ch._check_decimals_(-2)
+    assert str(context.value) == "Parameter -decimals- must be an int >= 0, or 'infer'."
+    with pytest.raises(ValueError):
+        assert ch._check_decimals_(None)
+    with pytest.raises(ValueError) as context:
+        assert ch._check_decimals_([])
+        
+        
 
 def test_check_confidence_not_in_conf_keys():
     with pytest.raises(ValueError) as context:
