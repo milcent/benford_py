@@ -31,6 +31,16 @@ def _check_test_(test):
                          f'values are\n {list(digs_dict.keys())} for ints and'
                          f'\n {list(rev_digs.keys())} for strings.')
 
+def _check_decimals_(decimals):
+    """"""
+    if isinstance(decimals, int):
+        if (decimals < 0):
+            raise ValueError("Parameter -decimals- must be an int >= 0, or 'infer'.")
+    else:
+        if decimals != 'infer':
+            raise ValueError("Parameter -decimals- must be an int >= 0, or 'infer'.")
+    return decimals
+
 def _check_confidence_(confidence):
     """"""
     if confidence not in confs.keys():
