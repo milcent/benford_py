@@ -41,6 +41,14 @@ def _check_decimals_(decimals):
             raise ValueError("Parameter -decimals- must be an int >= 0, or 'infer'.")
     return decimals
 
+def _check_sign_(sign):
+    """"""
+    if sign not in ['all', 'pos', 'neg']:
+        raise ValueError("Parameter -sign- must be one of the following: "
+                         "'all', 'pos' or 'neg'.")
+    return sign
+
+
 def _check_confidence_(confidence):
     """"""
     if confidence not in confs.keys():
