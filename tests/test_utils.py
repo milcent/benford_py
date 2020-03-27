@@ -66,26 +66,30 @@ def test_extract_digs(gen_array):
     assert len(e_digs) == len(gen_array)
     assert len(e_digs.columns) == 7
 
-@pytest.fixture
-def gen_input(gen_array):
-    return ut.input_data(gen_array)
+# @pytest.fixture
+# def gen_input(gen_array):
+#     return ut.input_data(gen_array)
 
-def test_prepare_1_simple_no_confidence(gen_input):
-    df = ut.prepare(gen_input[1], 1, simple=True)
-    assert type(df) == pd.DataFrame
-    assert len(df.columns) == 4
-    assert len(df) == 9
 
-def test_prepare_2__conf(gen_input):
-    df = ut.prepare(gen_input[1], 2, confidence=95)
-    assert type(df) == tuple
-    assert len(df[1].columns) == 6
-    assert len(df[1]) == 90
-    assert df[0] == len(gen_input[1])
-    assert 'Z_score' in df[1].columns
 
-def test_prepare_22_conf(gen_input):
-    N, df = ut.prepare(gen_input[1], 22, confidence=95)
-    assert len(df) == 10
-    print(df.Found)
-    assert df.Found.sum() > .999
+# def test_prepare_1_simple_no_confidence(gen_series): 
+#     df = ut.prepare(gen_series, 1, simple=True)
+#     assert type(df) == pd.DataFrame
+#     assert len(df.columns) == 4
+#     assert len(df) == 9
+#     print(df.Found)
+#     # assert df.Found.sum() > .999
+
+# def test_prepare_2__conf(gen_series):
+#     df = ut.prepare(gen_series, 2, confidence=95)
+#     assert type(df) == tuple
+#     assert len(df[1].columns) == 6
+#     assert len(df[1]) == 90
+#     # assert df[0] == len(gen_input[1])
+#     assert 'Z_score' in df[1].columns
+#     assert df[1].Found.sum() > .999
+
+# def test_prepare_22_conf(gen_series):
+#     N, df = ut.prepare(gen_series, 22, confidence=95)
+#     assert len(df) == 10
+#     assert df.Found.sum() == 0
