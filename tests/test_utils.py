@@ -61,6 +61,10 @@ def test_input_data_wrong_input_type(gen_array):
     with pytest.raises(TypeError) as context:
         ut.input_data(gen_array.tolist())
 
+def test_extract_digs(gen_array):
+    e_digs = ut.extract_digs(gen_array, decimals=8)
+    assert len(e_digs) == len(gen_array)
+    assert len(e_digs.columns) == 7
 
 @pytest.fixture
 def gen_input(gen_array):
