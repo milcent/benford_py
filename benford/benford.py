@@ -923,10 +923,10 @@ class Mantissas(object):
 
     def __init__(self, data):
 
-        data = Series(_check_num_array(data))
+        data = Series(_check_num_array_(data))
         data = data.dropna().loc[data != 0].abs()
         
-        self.data = DataFrame({'Mantissa': _getMantissas_(data.abs())})
+        self.data = DataFrame({'Mantissa': get_mantissas(data.abs())})
 
         self.stats = {'Mean': self.data.Mantissa.mean(),
                       'Var': self.data.Mantissa.var(),
@@ -979,7 +979,8 @@ class Mantissas(object):
             self.data['mant_y'] = sin(2 * pi * self.data.Mantissa)
             self.stats['gravity_center'] = (self.data.mant_x.mean(),
                                             self.data.mant_y.mean())
-        plot_mantissa_arc_test(self, stats['gravity_center'], figsize=figsize)
+        plot_mantissa_arc_test(self.data, self.stats['gravity_center'],
+                               figsize=figsize)
 
 
 class Roll_mad(object):
