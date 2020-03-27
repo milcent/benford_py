@@ -1,8 +1,9 @@
 from pandas import Series, DataFrame
 from numpy import array, arange, log10, ndarray
 from .expected import _test_
-from .constants import digs_dict
+from .constants import digs_dict, rev_digs
 from .stats import Z_score
+from .checks import _check_num_array_, _check_sign_, _check_decimals_
 
 
 def _set_N_(len_df, limit_N):
@@ -58,8 +59,70 @@ def input_data(given):
         raise TypeError("Wrong data input type. Check docstring.")
     return data, chosen
 
+def set_sign(data, sign="all"):
+    """
+    """
+    sign = _check_sign_(sign)
 
-def prepare(data, digs, limit_N, simple=False, confidence=None):
+    if sign == 'all':
+        data.Seq = data.Seq.loc[data.Seq != 0]
+    elif sign == 'pos':
+        data.Seq = data.Seq.loc[data.Seq > 0]
+    else:
+        data.Seq = data.Seq.loc[data.Seq < 0]
+
+    return data.dropna()
+
+
+def get_times_10_power(data, decimals=2):
+    """"""
+    decimals = _check_decimals_(decimals)
+
+    ab = data.Seq.abs()
+
+    if data.Seq.dtypes == 'int64':
+        data['ZN'] = ab
+    else:
+        if decimals == 'infer':
+            data['ZN'] = ab.astype(str).str\
+                            .replace('.', '')\
+                            .str.lstrip('0')\
+                            .str[:5].astype(int)
+        else:
+            data['ZN'] = (ab * (10 ** decimals)).astype(int)
+    return data
+
+
+def extract_digs(data, decimals=2, sign="all"):
+    """ 
+    """
+    df = DataFrame({'Seq': _check_num_array_(data)})
+
+    df = choose_sign(df, sign=sign)
+
+    df = get_times_10_power(df, decimals=decimals)
+
+    # First digits
+    for col in ['F1D', 'F2D', 'F3D']:
+        temp = df.ZN.loc[df.ZN >= 10 ** (rev_digs[col] - 1)]
+        df[col] = (temp // 10 ** ((log10(temp).astype(int)) -
+                                    (rev_digs[col] - 1)))
+        # fill NANs with -1, which is a non-usable value for digits,
+        # to be discarded later.
+        df[col] = df[col].fillna(-1).astype(int)
+    # Second digit
+    temp_sd = df.loc[df.ZN >= 10]
+    df['SD'] = (temp_sd.ZN // 10**((log10(temp_sd.ZN)).astype(int) -
+                                        1)) % 10
+    df['SD'] = df['SD'].fillna(-1).astype(int)
+    # Last two digits
+    temp_l2d = df.loc[df.ZN >= 1000]
+    df['L2D'] = temp_l2d.ZN % 100
+    df['L2D'] = df['L2D'].fillna(-1).astype(int)
+    return df
+
+
+def prepare(data, digs, limit_N=None, simple=False, confidence=None):
     """Transforms the original number sequence into a DataFrame reduced
     by the ocurrences of the chosen digits, creating other computed
     columns
@@ -67,16 +130,17 @@ def prepare(data, digs, limit_N, simple=False, confidence=None):
     N = _set_N_(len(data), limit_N=limit_N)
 
     # get the number of occurrences of the digits
-    v = data.value_counts()
+    counts = data.value_counts()
     # get their relative frequencies
-    p = data.value_counts(normalize=True)
+    proportions = data.value_counts(normalize=True)
     # crate dataframe from them
-    dd = DataFrame({'Counts': v, 'Found': p}).sort_index()
+    dd = DataFrame({'Counts': counts, 'Found': proportions}).sort_index()
     # join the dataframe with the one of expected Benford's frequencies
     dd = _test_(digs).join(dd).fillna(0)
     # create column with absolute differences
     dd['Dif'] = dd.Found - dd.Expected
     dd['AbsDif'] = dd.Dif.abs()
+    print(dd.Found)
     if simple:
         del dd['Dif']
         return dd

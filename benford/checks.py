@@ -3,7 +3,8 @@ from numpy import array, ndarray
 from .constants import digs_dict, rev_digs, confs
 
 def _check_digs_(digs):
-    """Chhecks the possible values for the digs of the First Digits test1
+    """Checks the possible values for the digs parameter of the
+    First Digits tests
     """
     if digs not in [1, 2, 3]:
         raise ValueError("The value assigned to the parameter -digs- "
@@ -30,6 +31,24 @@ def _check_test_(test):
                          f'values are\n {list(digs_dict.keys())} for ints and'
                          f'\n {list(rev_digs.keys())} for strings.')
 
+def _check_decimals_(decimals):
+    """"""
+    if isinstance(decimals, int):
+        if (decimals < 0):
+            raise ValueError("Parameter -decimals- must be an int >= 0, or 'infer'.")
+    else:
+        if decimals != 'infer':
+            raise ValueError("Parameter -decimals- must be an int >= 0, or 'infer'.")
+    return decimals
+
+def _check_sign_(sign):
+    """"""
+    if sign not in ['all', 'pos', 'neg']:
+        raise ValueError("Parameter -sign- must be one of the following: "
+                         "'all', 'pos' or 'neg'.")
+    return sign
+
+
 def _check_confidence_(confidence):
     """"""
     if confidence not in confs.keys():
@@ -55,10 +74,15 @@ def _check_num_array_(data):
         except:
             raise ValueError('Could not convert data. Check input.')
         print('\nConversion successful.')
-    elif (data.dtype != int) & (data.dtype != float):
-        print("\n`data` type not int nor float. Trying to convert...")
+
         try:
             data = data.astype(float)
         except:
             raise ValueError('Could not convert data. Check input.')
+    else:
+        if data.dtype not in [int, float]:
+            try:
+                data = data.astype(float)
+            except:
+                raise ValueError('Could not convert data. Check input.')
     return data
