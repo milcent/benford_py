@@ -92,7 +92,7 @@ def _report_summ_(test, high_diff):
     else:
         print('\nThe top Absolute Differences are:\n')
         print(test.sort_values('AbsDif', ascending=False))
-    
+
 
 def _report_test_(test, high=None, crit_vals=None):
     """Main report function. Receives the Args: to report with, initiates
