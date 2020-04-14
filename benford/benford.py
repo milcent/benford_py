@@ -122,7 +122,7 @@ class Test(DataFrame):
         self.N = _set_N_(len(base), limit_N)
         self['Z_score'] = Z_score(self, self.N)
         self.ddf = len(self) - 1
-        self.chi_square = chi_square_2(self)
+        self.chi_square = chi_sq_2(self)
         self.KS = KS_2(self)
         self.MAD = self.AbsDif.mean()
         self.MSE = (self.AbsDif ** 2).mean()
@@ -646,7 +646,7 @@ class Source(DataFrame):
 
         # Chi-square statistic
         if chi_square:
-            self.chi_square = chi_square(df, ddf=len(df) - 1,
+            self.chi_square = chi_sq(df, ddf=len(df) - 1,
                                            confidence=confidence,
                                            verbose=self.verbose)
         # KS test
@@ -729,7 +729,7 @@ class Source(DataFrame):
 
         # Chi-square statistic
         if chi_square:
-            self.chi_square = chi_square(df, ddf=9, confidence=confidence,
+            self.chi_square = chi_sq(df, ddf=9, confidence=confidence,
                                            verbose=self.verbose)
         # KS test
         if KS:
@@ -806,7 +806,7 @@ class Source(DataFrame):
 
         # Chi-square statistic
         if chi_square:
-            self.chi_square = chi_square(df, ddf=99, confidence=confidence,
+            self.chi_square = chi_sq(df, ddf=99, confidence=confidence,
                                            verbose=self.verbose)
         # KS test
         if KS:
