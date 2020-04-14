@@ -123,7 +123,7 @@ class Test(DataFrame):
         self['Z_score'] = Z_score(self, self.N)
         self.ddf = len(self) - 1
         self.chi_square = chi_sq_2(self)
-        self.KS = KS_2(self)
+        self.KS = kolmogorov_smirnov_2(self)
         self.MAD = self.AbsDif.mean()
         self.MSE = (self.AbsDif ** 2).mean()
         self.confidence = confidence
@@ -651,7 +651,7 @@ class Source(DataFrame):
                                            verbose=self.verbose)
         # KS test
         if KS:
-            self.KS = KS(df, confidence=confidence, N=len(temp),
+            self.KS = kolmogorov_smirnov(df, confidence=confidence, N=len(temp),
                            verbose=self.verbose)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
@@ -733,7 +733,7 @@ class Source(DataFrame):
                                            verbose=self.verbose)
         # KS test
         if KS:
-            self.KS = KS(df, confidence=confidence, N=len(temp),
+            self.KS = kolmogorov_smirnov(df, confidence=confidence, N=len(temp),
                            verbose=self.verbose)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
@@ -810,7 +810,7 @@ class Source(DataFrame):
                                            verbose=self.verbose)
         # KS test
         if KS:
-            self.KS = KS(df, confidence=confidence, N=len(temp),
+            self.KS = kolmogorov_smirnov(df, confidence=confidence, N=len(temp),
                            verbose=self.verbose)
 
         # Plotting expected frequencies (line) versus found ones (bars)

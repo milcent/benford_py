@@ -62,7 +62,7 @@ def chi_sq_2(frame):
     return (dif_counts ** 2 / exp_counts).sum()
 
 
-def KS(frame, confidence, N, verbose=True):
+def kolmogorov_smirnov(frame, confidence, N, verbose=True):
     """Computes the Kolmogorov-Smirnov test of the found distributions
     and compares it with the critical chi-square of such a sample,
     according to the confidence level chosen.
@@ -96,7 +96,7 @@ def KS(frame, confidence, N, verbose=True):
         return (suprem, crit_KS)
 
 
-def KS_2(frame):
+def kolmogorov_smirnov_2(frame):
     """Computes the Kolmogorov-Smirnov test of the found distributions
     
     Args:
