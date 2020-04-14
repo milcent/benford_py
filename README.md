@@ -1,8 +1,12 @@
 # Benford for Python
 
-`current version = 0.2.6`
+`current version = 0.2.7`
 
 ## New in this version
+
+### Bug fixes (see [release notes](https://github.com/milcent/benford_py/releases/tag/v0.2.7))
+
+## In version 0.2.6
 
 ### Bug fixes (see [release notes](https://github.com/milcent/benford_py/releases/tag/v0.2.6))
 
