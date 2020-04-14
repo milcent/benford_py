@@ -723,7 +723,7 @@ class Source(DataFrame):
         if MAD:
             self.MAD = df.AbsDif.mean()
             if self.verbose:
-                _report_mad_(digs, self.MAD)
+                _report_mad_(22, self.MAD)
         # Mean Square Error
         if MSE:
             self.MSE = (df.AbsDif ** 2).mean()
