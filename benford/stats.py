@@ -1,5 +1,5 @@
 from numpy import sqrt
-# from .constants import digs_dict, confs, crit_chi2, KS_crit, mad_dict
+from .constants import crit_chi2, KS_crit
 
 
 def Z_score(frame, N):
@@ -17,7 +17,7 @@ def Z_score(frame, N):
            (frame.Expected * (1. - frame.Expected)) / N)
 
 
-def chi_square(frame, ddf, confidence, verbose=True):
+def chi_sq(frame, ddf, confidence, verbose=True):
     """Comnputes the chi-square statistic of the found distributions and compares
     it with the critical chi-square of such a sample, according to the
     confidence level chosen and the degrees of freedom - len(sample) -1.
@@ -48,7 +48,7 @@ def chi_square(frame, ddf, confidence, verbose=True):
         return (found_chi, crit_chi)
 
 
-def chi_square_2(frame):
+def chi_sq_2(frame):
     """Computes the chi-square statistic of the found distributions
 
     Args:
@@ -62,7 +62,7 @@ def chi_square_2(frame):
     return (dif_counts ** 2 / exp_counts).sum()
 
 
-def KS(frame, confidence, N, verbose=True):
+def kolmogorov_smirnov(frame, confidence, N, verbose=True):
     """Computes the Kolmogorov-Smirnov test of the found distributions
     and compares it with the critical chi-square of such a sample,
     according to the confidence level chosen.
@@ -96,7 +96,7 @@ def KS(frame, confidence, N, verbose=True):
         return (suprem, crit_KS)
 
 
-def KS_2(frame):
+def kolmogorov_smirnov_2(frame):
     """Computes the Kolmogorov-Smirnov test of the found distributions
     
     Args:
