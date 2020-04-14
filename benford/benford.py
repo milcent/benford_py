@@ -13,7 +13,8 @@ from .viz import _get_plot_args, plot_digs, plot_sum, plot_ordered_mantissas,\
     plot_mantissa_arc_test, plot_roll_mse, plot_roll_mad
 from .reports import _inform_, _report_mad_, _report_test_, _deprecate_inform_,\
     _report_mantissa_
-from .stats import Z_score, chi_square, chi_square_2, KS, KS_2
+from .stats import Z_score, chi_sq, chi_sq_2, kolmogorov_smirnov,\
+    kolmogorov_smirnov_2
 
 class Base(DataFrame):
     """Internalizes and prepares the data for Analysis.
@@ -122,8 +123,8 @@ class Test(DataFrame):
         self.N = _set_N_(len(base), limit_N)
         self['Z_score'] = Z_score(self, self.N)
         self.ddf = len(self) - 1
-        self.chi_square = chi_square_2(self)
-        self.KS = KS_2(self)
+        self.chi_square = chi_sq_2(self)
+        self.KS = kolmogorov_smirnov_2(self)
         self.MAD = self.AbsDif.mean()
         self.MSE = (self.AbsDif ** 2).mean()
         self.confidence = confidence
@@ -646,12 +647,12 @@ class Source(DataFrame):
 
         # Chi-square statistic
         if chi_square:
-            self.chi_square = chi_square(df, ddf=len(df) - 1,
+            self.chi_square = chi_sq(df, ddf=len(df) - 1,
                                            confidence=confidence,
                                            verbose=self.verbose)
         # KS test
         if KS:
-            self.KS = KS(df, confidence=confidence, N=len(temp),
+            self.KS = kolmogorov_smirnov(df, confidence=confidence, N=len(temp),
                            verbose=self.verbose)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
@@ -722,18 +723,18 @@ class Source(DataFrame):
         if MAD:
             self.MAD = df.AbsDif.mean()
             if self.verbose:
-                _report_mad_(digs, self.MAD)
+                _report_mad_(22, self.MAD)
         # Mean Square Error
         if MSE:
             self.MSE = (df.AbsDif ** 2).mean()
 
         # Chi-square statistic
         if chi_square:
-            self.chi_square = chi_square(df, ddf=9, confidence=confidence,
+            self.chi_square = chi_sq(df, ddf=9, confidence=confidence,
                                            verbose=self.verbose)
         # KS test
         if KS:
-            self.KS = KS(df, confidence=confidence, N=len(temp),
+            self.KS = kolmogorov_smirnov(df, confidence=confidence, N=len(temp),
                            verbose=self.verbose)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
@@ -806,11 +807,11 @@ class Source(DataFrame):
 
         # Chi-square statistic
         if chi_square:
-            self.chi_square = chi_square(df, ddf=99, confidence=confidence,
+            self.chi_square = chi_sq(df, ddf=99, confidence=confidence,
                                            verbose=self.verbose)
         # KS test
         if KS:
-            self.KS = KS(df, confidence=confidence, N=len(temp),
+            self.KS = kolmogorov_smirnov(df, confidence=confidence, N=len(temp),
                            verbose=self.verbose)
 
         # Plotting expected frequencies (line) versus found ones (bars)
