@@ -199,6 +199,7 @@ def plot_roll_mse(roll_series, figsize):
     """Shows the rolling MSE plot
     
     Args:
+        roll_series: pd.Series resultant form rolling mse.
         figsize: the figure dimensions.
     """
     fig, ax = plt.subplots(figsize=figsize)
@@ -210,6 +211,7 @@ def plot_roll_mad(roll_mad, figsize):
     """Shows the rolling MAD plot
     
     Args:
+        roll_mad: pd.Series resultant form rolling mad.
         figsize: the figure dimensions.
     """
     fig, ax = plt.subplots(figsize=figsize)
