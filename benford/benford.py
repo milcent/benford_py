@@ -1163,11 +1163,11 @@ class Roll_mad(object):
         self.test = _check_test_(test)
 
         if not isinstance(data, Source):
-            start = Source(data, sign=sign, decimals=decimals, verbose=False)
+            data = Source(data, sign=sign, decimals=decimals, verbose=False)
 
-        Exp, ind = prep_to_roll(start, self.test)
+        Exp, ind = prep_to_roll(data, self.test)
 
-        self.roll_series = start[digs_dict[test]].rolling(
+        self.roll_series = data[digs_dict[test]].rolling(
                                 window=window).apply(mad_to_roll, 
                                     args=(Exp, ind), raw=False)
         self.roll_series.dropna(inplace=True)
@@ -1215,11 +1215,11 @@ class Roll_mse(object):
         test = _check_test_(test)
 
         if not isinstance(data, Source):
-            start = Source(data, sign=sign, decimals=decimals, verbose=False)
+            data = Source(data, sign=sign, decimals=decimals, verbose=False)
 
-        Exp, ind = prep_to_roll(start, test)
+        Exp, ind = prep_to_roll(data, test)
 
-        self.roll_series = start[digs_dict[test]].rolling(
+        self.roll_series = data[digs_dict[test]].rolling(
                                 window=window).apply(mse_to_roll, 
                                     args=(Exp, ind), raw=False)
         self.roll_series.dropna(inplace=True)
