@@ -1,3 +1,4 @@
+''' Setup Pyt for benford's module'''
 from setuptools import setup
 
 setup(name='benford_py',
@@ -27,5 +28,5 @@ setup(name='benford_py',
             'Intended Audience :: Other Audience',
             'Topic :: Office/Business :: Financial :: Accounting',
             'Topic :: Scientific/Engineering :: Mathematics',
-            
+
       ],)
