@@ -28,5 +28,4 @@ setup(name='benford_py',
             'Intended Audience :: Other Audience',
             'Topic :: Office/Business :: Financial :: Accounting',
             'Topic :: Scientific/Engineering :: Mathematics',
-
       ],)
