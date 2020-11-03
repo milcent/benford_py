@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 import numpy as np
-from benford.benford import checks as ch
+from ..benford import checks as ch
 
 
 def test_check_digs_zero():
