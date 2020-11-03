@@ -1,0 +1,7 @@
+[MASTER]
+disable=
+    F0001, # No module named XXXXXXXX
+
+
+
+ignored-classes=SQLObject,Registrant,scoped_session

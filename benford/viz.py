@@ -51,7 +51,7 @@ def _get_plot_args(digs):
     return x, figsize, text_x
     
 
-def plot_digs(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
+def plot_digs(df, x, y_Exp, y_Found, N, figsize, conf_Z, save_pic, text_x=False):
     """Plots the digits tests results
 
     Args:
@@ -64,6 +64,7 @@ def plot_digs(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
         N: lenght of sequence, to be used when plotting the confidence levels
         figsize: tuple to state the size of the plot figure
         conf_Z: Confidence level
+        save_pic: file path to save figure
         text_x: Forces to show all x ticks labels. Defaluts to True.
     """
     if len(x) > 10:
@@ -104,6 +105,8 @@ def plot_digs(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     ax.legend()
     ax.set_ylim(0, max([y_Exp.max() * 100, y_Found.max() * 100]) + 10 / len(x))
     ax.set_xlim(x[0] - 1, x[-1] + 1)
+    if save_pic:
+        plt.savefig(save_pic)
     plt.show(block=False)
 
 

@@ -2,6 +2,8 @@
 
 `current version = 0.2.7`
 
+### Python versions >= 3.6
+
 ## New in this version
 
 ### Bug fixes (see [release notes](https://github.com/milcent/benford_py/releases/tag/v0.2.7))

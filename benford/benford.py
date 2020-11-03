@@ -1,8 +1,8 @@
-from pandas import Series, DataFrame
-from numpy import array, arange, log10, ones, abs, cos, sin, pi, sqrt, mean 
 import warnings
+from pandas import Series, DataFrame
+from numpy import arange, log10, ones, abs, cos, sin, pi, mean
 from .constants import confs, digs_dict, sec_order_dict, rev_digs, names, \
-    mad_dict, colors, crit_chi2, KS_crit
+    mad_dict, crit_chi2, KS_crit
 from .checks import _check_digs_, _check_confidence_, _check_test_, \
     _check_num_array_, _check_high_Z_
 from .utils import  _set_N_, input_data, prepare, \
@@ -30,31 +30,31 @@ class Base(DataFrame):
         sign: tells which portion of the data to consider. pos: only the positive
             entries; neg: only negative entries; all: all entries but zeros.
             Defaults to all.`
-    
+
     Raises:
         TypeError: if not receiving `int` or `float` as input.
     """
     def __init__(self, data, decimals, sign='all', sec_order=False):
-        
-        DataFrame.__init__(self, {'Seq': data})
 
-        if (self.Seq.dtypes != 'float64') & (self.Seq.dtypes != 'int64'):
+        DataFrame.__init__(self, {'seq': data})
+
+        if (self.seq.dtypes != 'float64') & (self.seq.dtypes != 'int64'):
             raise TypeError("The sequence dtype was not pandas int64 nor "
                             "float64. Convert it to whether int of float, "
                             "and try again.")
 
         if sign == 'all':
-            self.Seq = self.Seq.loc[self.Seq != 0]
+            self.seq = self.seq.loc[self.seq != 0]
         elif sign == 'pos':
-            self.Seq = self.Seq.loc[self.Seq > 0]
+            self.seq = self.seq.loc[self.seq > 0]
         else:
-            self.Seq = self.Seq.loc[self.Seq < 0]
+            self.seq = self.seq.loc[self.seq < 0]
 
         self.dropna(inplace=True)
 
-        ab = self.Seq.abs()
+        ab = self.seq.abs()
 
-        if self.Seq.dtypes == 'int64':
+        if self.seq.dtypes == 'int64':
             self['ZN'] = ab
         else:
             if decimals == 'infer':
@@ -96,7 +96,7 @@ class Test(DataFrame):
             plotting and to limit the top deviations to show.
         limit_N: sets a limit to N as the sample size for the calculation of
                 the Z scores if the sample is too big. Defaults to None.
-    
+
     Attributes:
         N: Number of records in the sample to consider in computations
         ddf: Degrees of Freedom to look up for the critical chi-square value
@@ -106,7 +106,7 @@ class Test(DataFrame):
         confidence: Confidence level to consider when setting some critical values
         digs (int): numerical representation of the test at hand. 1: F1D; 2: F2D;
             3: F3D; 22: SD; -2: L2D.
-        sec_order (bool): True if the test is a Second Order one 
+        sec_order (bool): True if the test is a Second Order one
     """
 
     def __init__(self, base, digs, confidence, limit_N=None, sec_order=False):
@@ -135,7 +135,7 @@ class Test(DataFrame):
             self.name = names[sec_order_dict[digs]]
         else:
             self.name = names[digs_dict[digs]]
-    
+
     def update_confidence(self, new_conf, check=True):
         """Sets a new confidence level for the Benford object, so as to be used to
         produce critical values for the tests
@@ -198,9 +198,9 @@ class Summ(DataFrame):
     """
     def __init__(self, base, test):
         super(Summ, self).__init__(base.abs()
-                                   .groupby(test)[['Seq']]
+                                   .groupby(test)[['seq']]
                                    .sum())
-        self['Percent'] = self.Seq / self.Seq.sum()
+        self['Percent'] = self.seq / self.seq.sum()
         self.columns.values[0] = 'Sum'
         self.expected = 1 / len(self)
         self['AbsDif'] = (self.Percent - self.expected).abs()
@@ -210,22 +210,22 @@ class Summ(DataFrame):
         self.MSE = (self.AbsDif ** 2).mean()
         #: Confidence level to consider when setting some critical values
         self.confidence = None
-        # (int): numerical representation of the test at hand 
+        # (int): numerical representation of the test at hand
         self.digs = rev_digs[test]
-        # (str): the name of the Summation test. 
+        # (str): the name of the Summation test.
         self.name = names[f'{test}_Summ']
 
     def show_plot(self):
         """Draws the Summation test plot"""
         figsize=(2 * (self.digs ** 2 + 5), 1.5 * (self.digs ** 2 + 5))
         plot_sum(self, figsize, self.expected)
-    
+
     def report(self, high_diff=None, show_plot=True):
         """Gives the report on the Summation test.
-        
+
         Args:
             high_diff: Number of records to show after ordering by the absolute
-                differences between the found and the expected proportions      
+                differences between the found and the expected proportions
             show_plot: calls the show_plot method, to draw the Summation test plot
         """
         _report_test_(self, high_diff)
@@ -246,7 +246,7 @@ class Mantissas(object):
         data = data.dropna().loc[data != 0].abs()
         #: (DataFrame): pandas DataFrame with the mantissas
         self.data = DataFrame({'Mantissa': get_mantissas(data.abs())})
-        # (dict): Dictionary with the mantissas statistics 
+        # (dict): Dictionary with the mantissas statistics
         self.stats = {'Mean': self.data.Mantissa.mean(),
                       'Var': self.data.Mantissa.var(),
                       'Skew': self.data.Mantissa.skew(),
@@ -292,8 +292,8 @@ class Mantissas(object):
             self.data['mant_y'] = sin(2 * pi * self.data.Mantissa)
             self.stats['gravity_center'] = (self.data.mant_x.mean(),
                                             self.data.mant_y.mean())
-        
-        plot_mantissa_arc_test(self.data, self.stats, decimals=decimals, 
+
+        plot_mantissa_arc_test(self.data, self.stats, decimals=decimals,
                                grid=grid, figsize=figsize)
 
 class Benford(object):
@@ -374,13 +374,13 @@ class Benford(object):
 
         if mantissas:
             self.mantissas()
-    
+
         if sec_order:
             self.sec_order()
 
         if summation:
             self.summation()
-    
+
     def update_confidence(self, new_conf, tests=None):
         """Sets (a) new confidence level(s) for the Benford object, so as to be
         used to produce critical values for the tests.
@@ -393,7 +393,7 @@ class Benford(object):
                 have their confidence updated. If only one, provide a one-element
                 list, like ['F1D']. Defauts to None, in which case it will use
                 the instance .test list attribute.
-        
+
         Raises:
             ValueError: if the test argument is not a `list` or `None`.
         """
@@ -412,7 +412,7 @@ class Benford(object):
                 else:
                     print(f"{test} not in Benford instance tests - review test's name.")
                     pass
-    
+
     @property
     def all_confidences(self):
         """dict: a dictionary with a confidence level for each computed tests,
@@ -427,9 +427,9 @@ class Benford(object):
 
     def mantissas(self):
         """Adds a Mantissas object to the tests, with all its statistics and
-        plotting capabilities. 
+        plotting capabilities.
         """
-        self.Mantissas = Mantissas(self.base.Seq)
+        self.Mantissas = Mantissas(self.base.seq)
         self.tests.append('Mantissas')
         if self.verbose:
             print('\nAdded Mantissas test.')
@@ -490,7 +490,7 @@ class Source(DataFrame):
             differences between the ordered entries before running the Tests.
         verbose: tells the number of registries that are being subjected to
             the analysis; defaults to True.
-    
+
     Raises:
         ValueError: if the `sign` arg is not in ['all', 'pos', 'neg']
         TypeError: if not receiving `int` or `float` as input.
@@ -503,18 +503,18 @@ class Source(DataFrame):
             raise ValueError("The -sign- argument must be "
                              "'all','pos' or 'neg'.")
 
-        DataFrame.__init__(self, {'Seq': data})
+        DataFrame.__init__(self, {'seq': data})
 
-        if self.Seq.dtypes != 'float64' and self.Seq.dtypes != 'int64':
+        if self.seq.dtypes != 'float64' and self.seq.dtypes != 'int64':
             raise TypeError('The sequence dtype was not pandas int64 nor float64.\n'
                             'Convert it to whether int64 of float64, and try again.')
 
         if sign == 'pos':
-            self.Seq = self.Seq.loc[self.Seq > 0]
+            self.seq = self.seq.loc[self.seq > 0]
         elif sign == 'neg':
-            self.Seq = self.Seq.loc[self.Seq < 0]
+            self.seq = self.seq.loc[self.seq < 0]
         else:
-            self.Seq = self.Seq.loc[self.Seq != 0]
+            self.seq = self.seq.loc[self.seq != 0]
 
         self.dropna(inplace=True)
         #: (bool): verbose or not
@@ -523,16 +523,16 @@ class Source(DataFrame):
             print(f"\nInitialized sequence with {len(self)} registries.")
 
         if sec_order:
-            self.Seq = subtract_sorted(self.Seq.copy())
+            self.seq = subtract_sorted(self.seq.copy())
             self.dropna(inplace=True)
             self.reset_index(inplace=True)
             if verbose:
                 print('Second Order Test. Initial series reduced '
-                      f'to {len(self.Seq)} entries.')
+                      f'to {len(self.seq)} entries.')
 
-        ab = self.Seq.abs()
+        ab = self.seq.abs()
 
-        if self.Seq.dtypes == 'int64':
+        if self.seq.dtypes == 'int64':
             self['ZN'] = ab
         else:
             if decimals == 'infer':
@@ -556,10 +556,10 @@ class Source(DataFrame):
                 inclination. Defaults to True.
             figsize: tuple that sets the figure dimensions.
         """
-        self['Mant'] = get_mantissas(self.Seq.abs())
+        self['Mant'] = get_mantissas(self.seq.abs())
         if report:
-            p = self[['Seq', 'Mant']]
-            p = p.loc[p.Seq > 0].sort_values('Mant')
+            p = self[['seq', 'Mant']]
+            p = p.loc[p.seq > 0].sort_values('Mant')
             print(f"The Mantissas MEAN is {p.Mant.mean()}. Ref: 0.5.")
             print(f"The Mantissas VARIANCE is {p.Mant.var()}. Ref: 0.083333.")
             print(f"The Mantissas SKEWNESS is {p.Mant.skew()}. \tRef: 0.")
@@ -691,7 +691,7 @@ class Source(DataFrame):
             show_plot: draws the test plot.
             ret_df: returns the test DataFrame. Defaults to False. True if run by
                 the test function.
-        
+
         Returns:
             DataFrame with the Expected and Found proportions, and the Z scores of
                 the differences
@@ -770,7 +770,7 @@ class Source(DataFrame):
             MSE: calculates the Mean Square Error of the sample; defaults to
                 False.
             show_plot: draws the test plot.
-        
+
         Returns:
             DataFrame with the Expected and Found proportions, and the Z scores of
                 the differences
@@ -832,7 +832,7 @@ class Source(DataFrame):
                 3- first three. Defaults to 2.
             top: choses how many top values to show. Defaults to 20.
             show_plot: plots the results. Defaults to True.
-        
+
         Returns:
             DataFrame with the Expected and Found proportions, and their
             absolute differences
@@ -878,23 +878,23 @@ class Source(DataFrame):
             top_Rep: int or None. Chooses how many duplicated entries will be
                 shown withe the top repititions. Defaluts to 20. If None, returns
                 al the ordered repetitions.
-        
+
         Returns:
             DataFrame with the duplicated records and their occurrence counts,
                 in descending order (if verbose is False; if True, prints to
                 terminal).
-        
+
         Raises:
             ValueError: if the `top_Rep` arg is not int or None.
         """
         if top_Rep is not None and not isinstance(top_Rep, int):
             raise ValueError('The top_Rep argument must be an int or None.')
 
-        dup = self[['Seq']][self.Seq.duplicated(keep=False)]
-        dup_count = dup.groupby(self.Seq).count()
+        dup = self[['seq']][self.seq.duplicated(keep=False)]
+        dup_count = dup.groupby(self.seq).count()
 
         dup_count.index.names = ['Entries']
-        dup_count.rename(columns={'Seq': 'Count'}, inplace=True)
+        dup_count.rename(columns={'seq': 'Count'}, inplace=True)
 
         dup_count.sort_values('Count', ascending=False, inplace=True)
 
@@ -925,7 +925,7 @@ class Mantissas(object):
 
         data = Series(_check_num_array_(data))
         data = data.dropna().loc[data != 0].abs()
-        
+
         self.data = DataFrame({'Mantissa': get_mantissas(data.abs())})
 
         self.stats = {'Mean': self.data.Mantissa.mean(),
@@ -961,7 +961,7 @@ class Mantissas(object):
             figsize: tuple that sets the figure size.
         """
         plot_ordered_mantissas(self.data.Mantissa, figsize=figsize)
- 
+
     def arc_test(self, grid=True, figsize=12):
         """
         Add two columns to Mantissas's DataFrame equal to their "X" and "Y"
@@ -1015,13 +1015,13 @@ class Roll_mad(object):
         Exp, ind = prep_to_roll(start, self.test)
 
         self.roll_series = start[digs_dict[test]].rolling(
-                                window=window).apply(mad_to_roll, 
+                                window=window).apply(mad_to_roll,
                                     args=(Exp, ind), raw=False)
         self.roll_series.dropna(inplace=True)
 
     def show_plot(self, figsize=(15, 8)):
         """Shows the rolling MAD plot
-        
+
         Args:
             figsize: the figure dimensions.
         """
@@ -1058,13 +1058,13 @@ class Roll_mse(object):
         Exp, ind = prep_to_roll(start, test)
 
         self.roll_series = start[digs_dict[test]].rolling(
-                                window=window).apply(mse_to_roll, 
+                                window=window).apply(mse_to_roll,
                                     args=(Exp, ind), raw=False)
         self.roll_series.dropna(inplace=True)
 
     def show_plot(self, figsize=(15, 8)):
         """Shows the rolling MSE plot
-        
+
         Args:
             figsize: the figure dimensions.
         """
@@ -1119,7 +1119,7 @@ def first_digits(data, digs, decimals=2, sign='all', verbose=True,
             confidence level chosen. Defaults to False. Requires confidence
             != None.
         show_plot: draws the test plot.
-    
+
     Returns:
         DataFrame with the Expected and Found proportions, and the Z scores of
             the differences if the confidence is not None.
@@ -1285,7 +1285,7 @@ def mantissas(data, report=True, show_plot=True, arc_test=True, inform=None):
         show_plot: plots the ordered mantissas and a line with the expected
             inclination. Defaults to True.
         arc_test: draws the Arc Test plot. Defaluts to True.
-    
+
     Returns:
         Series with the data mantissas.
     """
@@ -1316,7 +1316,7 @@ def summation(data, digs=2, decimals=2, sign='all', top=20, verbose=True,
             loose performance.
         top: choses how many top values to show. Defaults to 20.
         show_plot: plots the results. Defaults to True.
-    
+
     Returns:
         DataFrame with the Summation test, whether sorted in descending order
             (if verbose == True) or not.
@@ -1409,7 +1409,7 @@ def mad_summ(data, test, decimals=2, sign='all', verbose=False):
         sign: tells which portion of the data to consider. pos: only the positive
             entries; neg: only negative entries; all: all entries but zeros.
             Defaults to all.
-    
+
     Returns:
         float: the Mean Absolute Deviation of the Summation Test
     """
@@ -1445,7 +1445,7 @@ def rolling_mad(data, test, window, decimals=2, sign='all', show_plot=False):
             entries; neg: only negative entries; all: all entries but zeros.
             Defaults to all.
         show_plot: draws the test plot.
-    
+
     Returns:
         Series with sequentially computed MADs.
     """
@@ -1474,7 +1474,7 @@ def rolling_mse(data, test, window, decimals=2, sign='all', show_plot=False):
             entries; neg: only negative entries; all: all entries but zeros.
             Defaults to all.
         show_plot: draws the test plot.
-    
+
     Returns:
         Series with sequentially computed MSEs.
     """
@@ -1497,10 +1497,10 @@ def duplicates(data, top_Rep=20, verbose=True, inform=None):
         top_Rep: chooses how many duplicated entries will be
             shown withe the top repititions. int or None. Defaluts to 20.
             If None, returns al the ordered repetitions.
-    
+
     Returns:
         DataFrame with the duplicated records and their respective counts
-    
+
     Raises:
         ValueError: if the `top_Rep` arg is not int or None.
     """
@@ -1576,7 +1576,7 @@ def second_order(data, test, decimals=2, sign='all', verbose=True, MAD=False,
             confidence level chosen. Defaults to False. Requires confidence
             != None.
         show_plot: draws the test plot.
-    
+
     Returns:
         DataFrame of the test chosen, but applied on Second Order pre-
             processed data.
