@@ -14,9 +14,18 @@ class First(DataFrame):
             the First Three Digits.
         plot: option to plot a bar chart of the Expected proportions.
             Defaults to True.
+        save_plot: string with the path/name of the file in which the generated
+            plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+            is infered by the file name extension. Only available when
+            plot=True.
+        save_kwargs: dict with any of the kwargs accepted by
+            matplotlib.pyplot.savefig()
+            https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+            Only available when plot=True and save_plot is a string with the
+            figure file path/name.
     """
 
-    def __init__(self, digs, plot=True):
+    def __init__(self, digs, plot=True, save_plot=None, save_kwargs=None):
         _check_digs_(digs)
         dig_name = f'First_{digs}_Dig'
         Dig = arange(10 ** (digs - 1), 10 ** digs)
@@ -26,7 +35,8 @@ class First(DataFrame):
         self.index.names = [dig_name]
 
         if plot:
-            plot_expected(self, digs)
+            plot_expected(self, digs, save_plot=save_plot,
+                          save_kwargs=save_kwargs)
 
 
 class Second(DataFrame):
@@ -36,9 +46,17 @@ class Second(DataFrame):
     Args:
         plot: option to plot a bar chart of the Expected proportions.
             Defaults to True.
+        save_plot: string with the path/name of the file in which the generated
+            plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+            is infered by the file name extension. Only available when
+            plot=True.
+        save_kwargs: dict with any of the kwargs accepted by
+            matplotlib.pyplot.savefig()
+            https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+            Only available when plot=True and save_plot is a string with the
+            figure file path/name.
     """
-
-    def __init__(self, plot=True):
+    def __init__(self, plot=True, save_plot=None, save_kwargs=None):
         a = arange(10, 100)
         Expe = log10(1 + (1. / a))
         Sec_Dig = array(list(range(10)) * 9)
@@ -48,7 +66,8 @@ class Second(DataFrame):
         DataFrame.__init__(self, df.groupby('Sec_Dig').sum())
 
         if plot:
-            plot_expected(self, 22)
+            plot_expected(self, 22, save_plot=save_plot,
+                          save_kwargs=save_kwargs)
 
 
 class LastTwo(DataFrame):
@@ -58,15 +77,24 @@ class LastTwo(DataFrame):
     Args:
         plot: option to plot a bar chart of the Expected proportions.
             Defaults to True.
+        save_plot: string with the path/name of the file in which the generated
+            plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+            is infered by the file name extension. Only available when
+            plot=True.
+        save_kwargs: dict with any of the kwargs accepted by
+            matplotlib.pyplot.savefig()
+            https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+            Only available when plot=True and save_plot is a string with the
+            figure file path/name.
     """
-
-    def __init__(self, num=False, plot=True):
+    def __init__(self, num=False, plot=True, save_plot=None, save_kwargs=None):
         exp = array([1 / 99.] * 100)
         DataFrame.__init__(self, {'Expected': exp,
                                   'Last_2_Dig': _lt_(num=num)})
         self.set_index('Last_2_Dig', inplace=True)
         if plot:
-            plot_expected(self, -2)
+            plot_expected(self, -2, save_plot=save_plot,
+                          save_kwargs=save_kwargs)
 
 
 def _test_(digs):

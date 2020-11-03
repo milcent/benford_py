@@ -163,16 +163,27 @@ class Test(DataFrame):
                 'MAD': mad_dict[self.digs]
                 }
 
-    def show_plot(self):
+    def show_plot(self, save_plot=None, save_kwargs=None):
         """Draws the test plot.
+        
+        Args:
+        save_plot: string with the path/name of the file in which the generated
+            plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+            is infered by the file name extension.
+        save_kwargs: dict with any of the kwargs accepted by
+            matplotlib.pyplot.savefig()
+            https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+            Only available when save_plot is a string with the figure file
+            path/name.
         """
         x, figsize, text_x = _get_plot_args(self.digs)
         plot_digs(self, x=x, y_Exp=self.Expected, y_Found=self.Found,
-                  N=self.N, figsize=figsize, conf_Z=confs[self.confidence],
-                  text_x=text_x
-                  )
+                    N=self.N, figsize=figsize, conf_Z=confs[self.confidence],
+                    text_x=text_x, save_plot=save_plot, save_kwargs=save_kwargs
+                    )
 
-    def report(self, high_Z='pos', show_plot=True):
+    def report(self, high_Z='pos', show_plot=True,
+               save_plot=None, save_kwargs=None):
         """Handles the report especific to the test, considering its statistics
         and according to the current confidence level.
 
@@ -185,11 +196,20 @@ class Test(DataFrame):
                 positive and negative, regardless of whether Z is higher than
                 the critical value or not.
             show_plot: calls the show_plot method, to draw the test plot
+            save_plot: string with the path/name of the file in which the generated
+                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+                is infered by the file name extension. Only available when
+                plot=True.
+            save_kwargs: dict with any of the kwargs accepted by
+                matplotlib.pyplot.savefig()
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+                Only available when plot=True and save_plot is a string with the
+                figure file path/name.
         """
         high_Z = _check_high_Z_(high_Z)
         _report_test_(self, high_Z, self.critical_values)
         if show_plot:
-            self.show_plot()
+            self.show_plot(save_plot=save_plot, save_kwargs=save_kwargs)
 
 
 class Summ(DataFrame):
@@ -219,22 +239,45 @@ class Summ(DataFrame):
         # (str): the name of the Summation test.
         self.name = names[f'{test}_Summ']
 
-    def show_plot(self):
-        """Draws the Summation test plot"""
-        figsize = (2 * (self.digs ** 2 + 5), 1.5 * (self.digs ** 2 + 5))
-        plot_sum(self, figsize, self.expected)
-
-    def report(self, high_diff=None, show_plot=True):
+    def show_plot(self, save_plot=None, save_kwargs=None):
+        """Draws the Summation test plot
+        
+        Args:
+        save_plot: string with the path/name of the file in which the generated
+            plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+            is infered by the file name extension.
+        save_kwargs: dict with any of the kwargs accepted by
+            matplotlib.pyplot.savefig()
+            https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+            Only available when save_plot is a string with the figure file
+            path/name.
+            
+        """
+        figsize=(2 * (self.digs ** 2 + 5), 1.5 * (self.digs ** 2 + 5))
+        plot_sum(self, figsize, self.expected,
+                 save_plot=save_plot, save_kwargs=save_kwargs)
+    
+    def report(self, high_diff=None, show_plot=True,
+               save_plot=None, save_kwargs=None):
         """Gives the report on the Summation test.
 
         Args:
             high_diff: Number of records to show after ordering by the absolute
                 differences between the found and the expected proportions
             show_plot: calls the show_plot method, to draw the Summation test plot
+            save_plot: string with the path/name of the file in which the generated
+                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+                is infered by the file name extension. Only available when
+                plot=True.
+            save_kwargs: dict with any of the kwargs accepted by
+                matplotlib.pyplot.savefig()
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+                Only available when plot=True and save_plot is a string with the
+                figure file path/name.
         """
         _report_test_(self, high_diff)
         if show_plot:
-            self.show_plot()
+            self.show_plot(save_plot=save_plot, save_kwargs=save_kwargs)
 
 
 class Mantissas(object):
@@ -257,29 +300,48 @@ class Mantissas(object):
                       'Skew': self.data.Mantissa.skew(),
                       'Kurt': self.data.Mantissa.kurt()}
 
-    def report(self, show_plot=True):
+    def report(self, show_plot=True, save_plot=None, save_kwargs=None):
         """Displays the Mantissas test stats.
 
         Args:
             show_plot: shows the Ordered Mantissas plot and the Arc Test plot.
                 Defaults to True.
+            save_plot: string with the path/name of the file in which the generated
+                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+                is infered by the file name extension. Only available when
+                plot=True.
+            save_kwargs: dict with any of the kwargs accepted by
+                matplotlib.pyplot.savefig()
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+                Only available when plot=True and save_plot is a string with the
+                figure file path/name.
         """
         _report_mantissa_(self.stats)
 
         if show_plot:
-            self.show_plot()
-            self.arc_test()
+            self.show_plot(save_plot=save_plot, save_kwargs=save_kwargs)
+            self.arc_test(save_plot=save_plot, save_kwargs=save_kwargs)
 
-    def show_plot(self, figsize=(12, 6)):
+    def show_plot(self, figsize=(12, 6), save_plot=None, save_kwargs=None):
         """Plots the ordered mantissas and a line with the expected
         inclination.
 
         Args:
             figsize (tuple): figure size dimensions
+            save_plot: string with the path/name of the file in which the generated
+                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+                is infered by the file name extension.
+            save_kwargs: dict with any of the kwargs accepted by
+                matplotlib.pyplot.savefig()
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+                Only available when save_plot is a string with the figure file
+                path/name.
         """
-        plot_ordered_mantissas(self.data.Mantissa, figsize=figsize)
+        plot_ordered_mantissas(self.data.Mantissa, figsize=figsize,
+                               save_plot=save_plot, save_kwargs=save_kwargs)
 
-    def arc_test(self, decimals=2, grid=True, figsize=12):
+    def arc_test(self, decimals=2, grid=True, figsize=12,
+                 save_plot=None, save_kwargs=None):
         """Adds two columns to Mantissas's DataFrame equal to their "X" and "Y"
         coordinates, plots its to a scatter plot and calculates the gravity
         center of the circle.
@@ -291,15 +353,25 @@ class Mantissas(object):
             figsize (int): size of the figure to be displayed. Since it is a square,
                 there is no need to provide a tuple, like is usually the case with
                 matplotlib.
+            save_plot: string with the path/name of the file in which the generated
+                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+                is infered by the file name extension. Only available when
+                plot=True.
+            save_kwargs: dict with any of the kwargs accepted by
+                matplotlib.pyplot.savefig()
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+                Only available when plot=True and save_plot is a string with the
+                figure file path/name.
         """
         if self.stats.get('gravity_center') is None:
             self.data['mant_x'] = cos(2 * pi * self.data.Mantissa)
             self.data['mant_y'] = sin(2 * pi * self.data.Mantissa)
             self.stats['gravity_center'] = (self.data.mant_x.mean(),
                                             self.data.mant_y.mean())
-
-        plot_mantissa_arc_test(self.data, self.stats, decimals=decimals,
-                               grid=grid, figsize=figsize)
+        
+        plot_mantissa_arc_test(self.data, self.stats, decimals=decimals, 
+                               grid=grid, figsize=figsize,
+                               save_plot=save_plot, save_kwargs=save_kwargs)
 
 
 class Benford(object):
@@ -554,16 +626,26 @@ class Source(DataFrame):
             else:
                 self['ZN'] = (ab * (10 ** decimals)).astype(int)
 
-    def mantissas(self, report=True, plot=True, figsize=(15, 8)):
+    def mantissas(self, report=True, show_plot=True, figsize=(15, 8),
+                  save_plot=None, save_kwargs=None):
         """Calculates the mantissas, their mean and variance, and compares them
         with the mean and variance of a Benford's sequence.
 
         Args:
             report: prints the mamtissas mean, variance, skewness and kurtosis
                 for the sequence studied, along with reference values.
-            plot: plots the ordered mantissas and a line with the expected
+            show_plot: plots the ordered mantissas and a line with the expected
                 inclination. Defaults to True.
             figsize: tuple that sets the figure dimensions.
+            save_plot: string with the path/name of the file in which the generated
+                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+                is infered by the file name extension. Only available when
+                plot=True.
+            save_kwargs: dict with any of the kwargs accepted by
+                matplotlib.pyplot.savefig()
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+                Only available when plot=True and save_plot is a string with the
+                figure file path/name.
         """
         self['Mant'] = get_mantissas(self.seq.abs())
         if report:
@@ -574,12 +656,14 @@ class Source(DataFrame):
             print(f"The Mantissas SKEWNESS is {p.Mant.skew()}. \tRef: 0.")
             print(f"The Mantissas KURTOSIS is {p.Mant.kurt()}. \tRef: -1.2.")
 
-        if plot:
-            plot_ordered_mantissas(self.Mant, figsize=figsize)
+        if show_plot:
+            plot_ordered_mantissas(self.Mant, figsize=figsize,
+                                   save_plot=save_plot, save_kwargs=save_kwargs)
 
     def first_digits(self, digs, confidence=None, high_Z='pos',
                      limit_N=None, MAD=False, MSE=False, chi_square=False,
-                     KS=False, show_plot=True, simple=False, ret_df=False):
+                     KS=False, show_plot=True, save_plot=None, save_kwargs=None,
+                     simple=False, ret_df=False):
         """Performs the Benford First Digits test with the series of
         numbers provided, and populates the mapping dict for future
         selection of the original series.
@@ -608,6 +692,15 @@ class Source(DataFrame):
             MSE: calculates the Mean Square Error of the sample; defaults to
                 False.
             show_plot: draws the test plot. Defaults to True.
+            save_plot: string with the path/name of the file in which the generated
+                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+                is infered by the file name extension. Only available when
+                plot=True.
+            save_kwargs: dict with any of the kwargs accepted by
+                matplotlib.pyplot.savefig()
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+                Only available when plot=True and save_plot is a string with the
+                figure file path/name.
             ret_df: returns the test DataFrame. Defaults to False. True if run by
                 the test function.
 
@@ -666,14 +759,16 @@ class Source(DataFrame):
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
             plot_digs(df, x=x, y_Exp=df.Expected, y_Found=df.Found, N=N,
-                      figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)),
-                      conf_Z=confs[confidence])
+                       figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)),
+                       conf_Z=confs[confidence], save_plot=save_plot,
+                       save_kwargs=save_kwargs)
         if ret_df:
             return df
 
     def second_digit(self, confidence=None, high_Z='pos',
                      limit_N=None, MAD=False, MSE=False, chi_square=False,
-                     KS=False, show_plot=True, simple=False, ret_df=False):
+                     KS=False, show_plot=True, save_plot=None, save_kwargs=None,
+                     simple=False, ret_df=False):
         """Performs the Benford Second Digit test with the series of
         numbers provided.
 
@@ -697,6 +792,15 @@ class Source(DataFrame):
             MSE: calculates the Mean Square Error of the sample; defaults to
                 False.
             show_plot: draws the test plot.
+            save_plot: string with the path/name of the file in which the generated
+                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+                is infered by the file name extension. Only available when
+                plot=True.
+            save_kwargs: dict with any of the kwargs accepted by
+                matplotlib.pyplot.savefig()
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+                Only available when plot=True and save_plot is a string with the
+                figure file path/name.
             ret_df: returns the test DataFrame. Defaults to False. True if run by
                 the test function.
 
@@ -748,13 +852,15 @@ class Source(DataFrame):
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
             plot_digs(df, x=arange(0, 10), y_Exp=df.Expected,
-                      y_Found=df.Found, N=N, figsize=(10, 6), conf_Z=conf)
+                       y_Found=df.Found, N=N, figsize=(10, 6), conf_Z=conf,
+                       save_plot=save_plot, save_kwargs=save_kwargs)
         if ret_df:
             return df
 
     def last_two_digits(self, confidence=None, high_Z='pos',
                         limit_N=None, MAD=False, MSE=False, chi_square=False,
-                        KS=False, show_plot=True, simple=False, ret_df=False):
+                        KS=False, show_plot=True, save_plot=None, save_kwargs=None,
+                        simple=False, ret_df=False):
         """Performs the Benford Last Two Digits test with the series of
         numbers provided.
 
@@ -778,7 +884,16 @@ class Source(DataFrame):
             MSE: calculates the Mean Square Error of the sample; defaults to
                 False.
             show_plot: draws the test plot.
-
+            save_plot: string with the path/name of the file in which the generated
+                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+                is infered by the file name extension. Only available when
+                plot=True.
+            save_kwargs: dict with any of the kwargs accepted by
+                matplotlib.pyplot.savefig()
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+                Only available when plot=True and save_plot is a string with the
+                figure file path/name.
+        
         Returns:
             DataFrame with the Expected and Found proportions, and the Z scores of
                 the differences
@@ -825,13 +940,14 @@ class Source(DataFrame):
         # Plotting expected frequencies (line) versus found ones (bars)
         if show_plot:
             plot_digs(df, x=arange(0, 100), y_Exp=df.Expected,
-                      y_Found=df.Found, N=N, figsize=(15, 5),
-                      conf_Z=conf, text_x=True)
+                       y_Found=df.Found, N=N, figsize=(15, 5),
+                       conf_Z=conf, text_x=True, save_plot=save_plot,
+                       save_kwargs=save_kwargs)
         if ret_df:
             return df
 
-    def summation(self, digs=2, top=20, show_plot=True,
-                  ret_df=False):
+    def summation(self, digs=2, top=20, show_plot=True, save_plot=None,
+                  save_kwargs=None, ret_df=False):
         """Performs the Summation test. In a Benford series, the sums of the
         entries begining with the same digits tends to be the same.
 
@@ -840,7 +956,16 @@ class Source(DataFrame):
                 3- first three. Defaults to 2.
             top: choses how many top values to show. Defaults to 20.
             show_plot: plots the results. Defaults to True.
-
+            save_plot: string with the path/name of the file in which the generated
+                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+                is infered by the file name extension. Only available when
+                plot=True.
+            save_kwargs: dict with any of the kwargs accepted by
+                matplotlib.pyplot.savefig()
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+                Only available when plot=True and save_plot is a string with the
+                figure file path/name.
+        
         Returns:
             DataFrame with the Expected and Found proportions, and their
             absolute differences
@@ -871,7 +996,8 @@ class Source(DataFrame):
 
         if show_plot:
             plot_sum(df, figsize=(
-                2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)), li=li)
+                       2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)), li=li,
+                       save_plot=save_plot, save_kwargs=save_kwargs)
 
         if ret_df:
             return df
@@ -941,12 +1067,21 @@ class Mantissas(object):
                       'Skew': self.data.Mantissa.skew(),
                       'Kurt': self.data.Mantissa.kurt()}
 
-    def report(self, show_plot=True):
+    def report(self, show_plot=True, save_plot=None, save_kwargs=None):
         """Displays the Mantissas stats.
 
         Args:
             show_plot: shows the ordered mantissas plot and the Arc Test plot.
                 Defaults to True.
+            save_plot: string with the path/name of the file in which the generated
+                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+                is infered by the file name extension. Only available when
+                plot=True.
+            save_kwargs: dict with any of the kwargs accepted by
+                matplotlib.pyplot.savefig()
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+                Only available when plot=True and save_plot is a string with the
+                figure file path/name.
         """
         print("\n", '  Mantissas Test  '.center(52, '#'))
         print(f"\nThe Mantissas MEAN is      {self.stats['Mean']:.6f}."
@@ -958,19 +1093,28 @@ class Mantissas(object):
         print(f"The Mantissas KURTOSIS is  {self.stats['Kurt']:.6f}."
               "\tRef: -1.2\n")
         if show_plot:
-            self.show_plot()
-            self.arc_test()
+            self.show_plot(save_plot=save_plot, save_kwargs=save_kwargs)
+            self.arc_test(save_plot=save_plot, save_kwargs=save_kwargs)
 
-    def show_plot(self, figsize=(12, 12)):
+    def show_plot(self, figsize=(12, 12), save_plot=None, save_kwargs=None):
         """Plots the ordered mantissas and compares them to the expected, straight
         line that should be formed in a Benford-cmpliant set.
 
         Args:
             figsize: tuple that sets the figure size.
+            save_plot: string with the path/name of the file in which the generated
+                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+                is infered by the file name extension.
+            save_kwargs: dict with any of the kwargs accepted by
+                matplotlib.pyplot.savefig()
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+                Only available when save_plot is a string with the figure file
+                path/name.
         """
-        plot_ordered_mantissas(self.data.Mantissa, figsize=figsize)
-
-    def arc_test(self, grid=True, figsize=12):
+        plot_ordered_mantissas(self.data.Mantissa, figsize=figsize,
+                               save_plot=save_plot, save_kwargs=save_kwargs)
+ 
+    def arc_test(self, grid=True, figsize=12, save_plot=None, save_kwargs=None):
         """
         Add two columns to Mantissas's DataFrame equal to their "X" and "Y"
         coordinates, plots its to a scatter plot and calculates the gravity
@@ -981,6 +1125,14 @@ class Mantissas(object):
             figsize: size of the figure to be displayed. Since it is a square,
                 there is no need to provide a tuple, like is usually the case with
                 matplotlib.
+            save_plot: string with the path/name of the file in which the generated
+                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+                is infered by the file name extension.
+            save_kwargs: dict with any of the kwargs accepted by
+                matplotlib.pyplot.savefig()
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+                Only available when save_plot is a string with the figure file
+                path/name.
         """
         if self.stats.get('gravity_center') is None:
             self.data['mant_x'] = cos(2 * pi * self.data.Mantissa)
@@ -988,7 +1140,8 @@ class Mantissas(object):
             self.stats['gravity_center'] = (self.data.mant_x.mean(),
                                             self.data.mant_y.mean())
         plot_mantissa_arc_test(self.data, self.stats['gravity_center'],
-                               figsize=figsize)
+                               figsize=figsize, save_plot=save_plot,
+                               save_kwargs=save_kwargs)
 
 
 class Roll_mad(object):
@@ -1018,22 +1171,31 @@ class Roll_mad(object):
         self.test = _check_test_(test)
 
         if not isinstance(data, Source):
-            start = Source(data, sign=sign, decimals=decimals, verbose=False)
+            data = Source(data, sign=sign, decimals=decimals, verbose=False)
 
-        Exp, ind = prep_to_roll(start, self.test)
+        Exp, ind = prep_to_roll(data, self.test)
 
-        self.roll_series = start[digs_dict[test]].rolling(
-            window=window).apply(mad_to_roll,
-                                 args=(Exp, ind), raw=False)
+        self.roll_series = data[digs_dict[test]].rolling(
+                                window=window).apply(mad_to_roll, 
+                                    args=(Exp, ind), raw=False)
         self.roll_series.dropna(inplace=True)
 
-    def show_plot(self, figsize=(15, 8)):
+    def show_plot(self, figsize=(15, 8), save_plot=None, save_kwargs=None):
         """Shows the rolling MAD plot
 
         Args:
             figsize: the figure dimensions.
+            save_plot: string with the path/name of the file in which the generated
+                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+                is infered by the file name extension.
+            save_kwargs: dict with any of the kwargs accepted by
+                matplotlib.pyplot.savefig()
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+                Only available when save_plot is a string with the figure file
+                path/name.
         """
-        plot_roll_mad(self, figsize=figsize)
+        plot_roll_mad(self, figsize=figsize,
+                      save_plot=save_plot, save_kwargs=save_kwargs)
 
 
 class Roll_mse(object):
@@ -1061,28 +1223,38 @@ class Roll_mse(object):
         test = _check_test_(test)
 
         if not isinstance(data, Source):
-            start = Source(data, sign=sign, decimals=decimals, verbose=False)
+            data = Source(data, sign=sign, decimals=decimals, verbose=False)
 
-        Exp, ind = prep_to_roll(start, test)
+        Exp, ind = prep_to_roll(data, test)
 
-        self.roll_series = start[digs_dict[test]].rolling(
-            window=window).apply(mse_to_roll,
-                                 args=(Exp, ind), raw=False)
+        self.roll_series = data[digs_dict[test]].rolling(
+                                window=window).apply(mse_to_roll, 
+                                    args=(Exp, ind), raw=False)
         self.roll_series.dropna(inplace=True)
 
-    def show_plot(self, figsize=(15, 8)):
+    def show_plot(self, figsize=(15, 8), save_plot=None, save_kwargs=None):
         """Shows the rolling MSE plot
 
         Args:
             figsize: the figure dimensions.
+            save_plot: string with the path/name of the file in which the generated
+                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+                is infered by the file name extension.
+            save_kwargs: dict with any of the kwargs accepted by
+                matplotlib.pyplot.savefig()
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+                Only available when save_plot is a string with the figure file
+                path/name.
         """
-        plot_roll_mse(self.roll_series, figsize=figsize)
+        plot_roll_mse(self.roll_series, figsize=figsize,
+                      save_plot=save_plot, save_kwargs=save_kwargs)
 
 
 def first_digits(data, digs, decimals=2, sign='all', verbose=True,
                  confidence=None, high_Z='pos', limit_N=None,
                  MAD=False, MSE=False, chi_square=False, KS=False,
-                 show_plot=True, inform=None):
+                 show_plot=True, save_plot=None, save_kwargs=None,
+                 inform=None):
     """Performs the Benford First Digits test on the series of
     numbers provided.
 
@@ -1126,7 +1298,16 @@ def first_digits(data, digs, decimals=2, sign='all', verbose=True,
             confidence level chosen. Defaults to False. Requires confidence
             != None.
         show_plot: draws the test plot.
-
+        save_plot: string with the path/name of the file in which the generated
+            plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+            is infered by the file name extension. Only available when
+            plot=True.
+        save_kwargs: dict with any of the kwargs accepted by
+            matplotlib.pyplot.savefig()
+            https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+            Only available when plot=True and save_plot is a string with the
+            figure file path/name.
+    
     Returns:
         DataFrame with the Expected and Found proportions, and the Z scores of
             the differences if the confidence is not None.
@@ -1139,6 +1320,7 @@ def first_digits(data, digs, decimals=2, sign='all', verbose=True,
     data = data.first_digits(digs, confidence=confidence, high_Z=high_Z,
                              limit_N=limit_N, MAD=MAD, MSE=MSE,
                              chi_square=chi_square, KS=KS, show_plot=show_plot,
+                             save_plot=save_plot, save_kwargs=save_kwargs,
                              ret_df=True)
 
     if confidence is not None:
@@ -1151,7 +1333,8 @@ def first_digits(data, digs, decimals=2, sign='all', verbose=True,
 def second_digit(data, decimals=2, sign='all', verbose=True,
                  confidence=None, high_Z='pos', limit_N=None,
                  MAD=False, MSE=False, chi_square=False, KS=False,
-                 show_plot=True, inform=None):
+                 show_plot=True, save_plot=None, save_kwargs=None,
+                 inform=None):
     """Performs the Benford Second Digits test on the series of
     numbers provided.
 
@@ -1193,6 +1376,15 @@ def second_digit(data, decimals=2, sign='all', verbose=True,
             confidence level chosen. Defaults to False. Requires confidence
             != None.
         show_plot: draws the test plot.
+        save_plot: string with the path/name of the file in which the generated
+            plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+            is infered by the file name extension. Only available when
+            plot=True.
+        save_kwargs: dict with any of the kwargs accepted by
+            matplotlib.pyplot.savefig()
+            https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+            Only available when plot=True and save_plot is a string with the
+            figure file path/name.
 
     Returns:
         DataFrame with the Expected and Found proportions, and the Z scores of
@@ -1206,6 +1398,7 @@ def second_digit(data, decimals=2, sign='all', verbose=True,
     data = data.second_digit(confidence=confidence, high_Z=high_Z,
                              limit_N=limit_N, MAD=MAD, MSE=MSE,
                              chi_square=chi_square, KS=KS, show_plot=show_plot,
+                             save_plot=save_plot, save_kwargs=save_kwargs,
                              ret_df=True)
     if confidence is not None:
         data = data[['Counts', 'Found', 'Expected', 'Z_score']]
@@ -1217,7 +1410,8 @@ def second_digit(data, decimals=2, sign='all', verbose=True,
 def last_two_digits(data, decimals=2, sign='all', verbose=True,
                     confidence=None, high_Z='pos', limit_N=None,
                     MAD=False, MSE=False, chi_square=False, KS=False,
-                    show_plot=True, inform=None):
+                    show_plot=True, save_plot=None, save_kwargs=None,
+                    inform=None):
     """Performs the Last Two Digits test on the series of
     numbers provided.
 
@@ -1259,6 +1453,15 @@ def last_two_digits(data, decimals=2, sign='all', verbose=True,
             confidence level chosen. Defaults to False. Requires confidence
             != None.
         show_plot: draws the test plot.
+        save_plot: string with the path/name of the file in which the generated
+            plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+            is infered by the file name extension. Only available when
+            plot=True.
+        save_kwargs: dict with any of the kwargs accepted by
+            matplotlib.pyplot.savefig()
+            https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+            Only available when plot=True and save_plot is a string with the
+            figure file path/name.
 
     Returns:
         DataFrame with the Expected and Found proportions, and the Z scores of
@@ -1272,7 +1475,8 @@ def last_two_digits(data, decimals=2, sign='all', verbose=True,
     data = data.last_two_digits(confidence=confidence, high_Z=high_Z,
                                 limit_N=limit_N, MAD=MAD,
                                 MSE=MSE, chi_square=chi_square, KS=KS,
-                                show_plot=show_plot, ret_df=True)
+                                show_plot=show_plot, save_plot=save_plot,
+                                save_kwargs=save_kwargs, ret_df=True)
 
     if confidence is not None:
         data = data[['Counts', 'Found', 'Expected', 'Z_score']]
@@ -1281,7 +1485,8 @@ def last_two_digits(data, decimals=2, sign='all', verbose=True,
         return data[['Counts', 'Found', 'Expected']]
 
 
-def mantissas(data, report=True, show_plot=True, arc_test=True, inform=None):
+def mantissas(data, report=True, show_plot=True, arc_test=True,
+              save_plot=None, save_kwargs=None, inform=None):
     """Extraxts the mantissas of the records logarithms
 
     Args:
@@ -1292,7 +1497,16 @@ def mantissas(data, report=True, show_plot=True, arc_test=True, inform=None):
         show_plot: plots the ordered mantissas and a line with the expected
             inclination. Defaults to True.
         arc_test: draws the Arc Test plot. Defaluts to True.
-
+        save_plot: string with the path/name of the file in which the generated
+            plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+            is infered by the file name extension. Only available when
+            plot=True.
+        save_kwargs: dict with any of the kwargs accepted by
+            matplotlib.pyplot.savefig()
+            https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+            Only available when plot=True and save_plot is a string with the
+            figure file path/name.
+    
     Returns:
         Series with the data mantissas.
     """
@@ -1300,16 +1514,16 @@ def mantissas(data, report=True, show_plot=True, arc_test=True, inform=None):
 
     mant = Mantissas(data)
     if report:
-        mant.report()
+        mant.report(save_plot=save_plot, save_kwargs=save_kwargs)
     if show_plot:
-        mant.show_plot()
+        mant.show_plot(save_plot=save_plot, save_kwargs=save_kwargs)
     if arc_test:
-        mant.arc_test()
+        mant.arc_test(save_plot=save_plot, save_kwargs=save_kwargs)
     return mant
 
 
 def summation(data, digs=2, decimals=2, sign='all', top=20, verbose=True,
-              show_plot=True, inform=None):
+              show_plot=True, save_plot=None, save_kwargs=None, inform=None):
     """Performs the Summation test. In a Benford series, the sums of the
     entries begining with the same digits tends to be the same.
     Works only with the First Digits (1, 2 or 3) test.
@@ -1323,7 +1537,16 @@ def summation(data, digs=2, decimals=2, sign='all', top=20, verbose=True,
             loose performance.
         top: choses how many top values to show. Defaults to 20.
         show_plot: plots the results. Defaults to True.
-
+        save_plot: string with the path/name of the file in which the generated
+            plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+            is infered by the file name extension. Only available when
+            plot=True.
+        save_kwargs: dict with any of the kwargs accepted by
+            matplotlib.pyplot.savefig()
+            https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+            Only available when plot=True and save_plot is a string with the
+            figure file path/name.
+    
     Returns:
         DataFrame with the Summation test, whether sorted in descending order
             (if verbose == True) or not.
@@ -1334,7 +1557,8 @@ def summation(data, digs=2, decimals=2, sign='all', top=20, verbose=True,
         data = Source(data, sign=sign, decimals=decimals, verbose=verbose)
 
     data = data.summation(digs=digs, top=top, verbose=verbose,
-                          show_plot=show_plot, ret_df=True)
+                          show_plot=show_plot, save_plot=save_plot,
+                          save_kwargs=save_kwargs, ret_df=True)
     if verbose:
         return data.sort_values('AbsDif', ascending=False)
     else:
@@ -1434,7 +1658,8 @@ def mad_summ(data, test, decimals=2, sign='all', verbose=False):
     return mean(abs(df.ZN / df.ZN.sum() - li))
 
 
-def rolling_mad(data, test, window, decimals=2, sign='all', show_plot=False):
+def rolling_mad(data, test, window, decimals=2, sign='all',
+                show_plot=False, save_plot=None, save_kwargs=None):
     """Applies the MAD to sequential subsets of the records.
 
     Args:
@@ -1452,18 +1677,28 @@ def rolling_mad(data, test, window, decimals=2, sign='all', show_plot=False):
             entries; neg: only negative entries; all: all entries but zeros.
             Defaults to all.
         show_plot: draws the test plot.
-
+        save_plot: string with the path/name of the file in which the generated
+            plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+            is infered by the file name extension. Only available when
+            plot=True.
+        save_kwargs: dict with any of the kwargs accepted by
+            matplotlib.pyplot.savefig()
+            https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+            Only available when plot=True and save_plot is a string with the
+            figure file path/name.
+    
     Returns:
         Series with sequentially computed MADs.
     """
     data = _check_num_array_(data)
     r_mad = Roll_mad(data, test, window, decimals, sign)
     if show_plot:
-        r_mad.show_plot()
+        r_mad.show_plot(save_plot=save_plot, save_kwargs=save_kwargs)
     return r_mad.roll_series
 
 
-def rolling_mse(data, test, window, decimals=2, sign='all', show_plot=False):
+def rolling_mse(data, test, window, decimals=2, sign='all',
+                show_plot=False, save_plot=None, save_kwargs=None):
     """Applies the MSE to sequential subsets of the records.
 
     Args:
@@ -1481,14 +1716,23 @@ def rolling_mse(data, test, window, decimals=2, sign='all', show_plot=False):
             entries; neg: only negative entries; all: all entries but zeros.
             Defaults to all.
         show_plot: draws the test plot.
-
+        save_plot: string with the path/name of the file in which the generated
+            plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+            is infered by the file name extension. Only available when
+            plot=True.
+        save_kwargs: dict with any of the kwargs accepted by
+            matplotlib.pyplot.savefig()
+            https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+            Only available when plot=True and save_plot is a string with the
+            figure file path/name.
+    
     Returns:
         Series with sequentially computed MSEs.
     """
     data = _check_num_array_(data)
     r_mse = Roll_mse(data, test, window, decimals, sign)
     if show_plot:
-        r_mse.show_plot()
+        r_mse.show_plot(save_plot=save_plot, save_kwargs=save_kwargs)
     return r_mse.roll_series
 
 
@@ -1538,7 +1782,7 @@ def duplicates(data, top_Rep=20, verbose=True, inform=None):
 
 def second_order(data, test, decimals=2, sign='all', verbose=True, MAD=False,
                  confidence=None, high_Z='pos', limit_N=None, MSE=False,
-                 show_plot=True, inform=None):
+                 show_plot=True, save_plot=None, save_kwargs=None, inform=None):
     """Performs the chosen test after subtracting the ordered sequence by itself.
     Hence Second Order.
 
@@ -1583,7 +1827,16 @@ def second_order(data, test, decimals=2, sign='all', verbose=True, MAD=False,
             confidence level chosen. Defaults to False. Requires confidence
             != None.
         show_plot: draws the test plot.
-
+        save_plot: string with the path/name of the file in which the generated
+            plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+            is infered by the file name extension. Only available when
+            plot=True.
+        save_kwargs: dict with any of the kwargs accepted by
+            matplotlib.pyplot.savefig()
+            https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+            Only available when plot=True and save_plot is a string with the
+            figure file path/name.
+    
     Returns:
         DataFrame of the test chosen, but applied on Second Order pre-
             processed data.
@@ -1597,11 +1850,14 @@ def second_order(data, test, decimals=2, sign='all', verbose=True, MAD=False,
     if test in [1, 2, 3]:
         data.first_digits(digs=test, MAD=MAD,
                           confidence=confidence, high_Z=high_Z,
-                          limit_N=limit_N, MSE=MSE, show_plot=show_plot)
+                          limit_N=limit_N, MSE=MSE, show_plot=show_plot,
+                          save_plot=save_plot, save_kwargs=save_kwargs)
     elif test == 22:
         data.second_digit(MAD=MAD, confidence=confidence, high_Z=high_Z,
-                          limit_N=limit_N, MSE=MSE, show_plot=show_plot)
+                          limit_N=limit_N, MSE=MSE, show_plot=show_plot,
+                          save_plot=save_plot, save_kwargs=save_kwargs)
     else:
         data.last_two_digits(MAD=MAD, confidence=confidence, high_Z=high_Z,
-                             limit_N=limit_N, MSE=MSE, show_plot=show_plot)
+                             limit_N=limit_N, MSE=MSE, show_plot=show_plot,
+                             save_plot=save_plot, save_kwargs=save_kwargs)
     return data
