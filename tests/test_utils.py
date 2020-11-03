@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 import pandas as pd
-from benford import utils as ut
+from benford.benford import utils as ut
 
 def test_set_N_Limit_None():
     assert ut._set_N_(100, None) == 100
