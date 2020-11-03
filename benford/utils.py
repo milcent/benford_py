@@ -65,11 +65,11 @@ def set_sign(data, sign="all"):
     sign = _check_sign_(sign)
 
     if sign == 'all':
-        data.Seq = data.Seq.loc[data.Seq != 0]
+        data.seq = data.seq.loc[data.seq != 0]
     elif sign == 'pos':
-        data.Seq = data.Seq.loc[data.Seq > 0]
+        data.seq = data.seq.loc[data.seq > 0]
     else:
-        data.Seq = data.Seq.loc[data.Seq < 0]
+        data.seq = data.seq.loc[data.seq < 0]
 
     return data.dropna()
 
@@ -78,9 +78,9 @@ def get_times_10_power(data, decimals=2):
     """"""
     decimals = _check_decimals_(decimals)
 
-    ab = data.Seq.abs()
+    ab = data.seq.abs()
 
-    if data.Seq.dtypes == 'int64':
+    if data.seq.dtypes == 'int64':
         data['ZN'] = ab
     else:
         if decimals == 'infer':
@@ -96,9 +96,9 @@ def get_times_10_power(data, decimals=2):
 def extract_digs(data, decimals=2, sign="all"):
     """ 
     """
-    df = DataFrame({'Seq': _check_num_array_(data)})
+    df = DataFrame({'seq': _check_num_array_(data)})
 
-    df = choose_sign(df, sign=sign)
+    df = set_sign(df, sign=sign)
 
     df = get_times_10_power(df, decimals=decimals)
 

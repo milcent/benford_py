@@ -67,15 +67,6 @@ def test_check_test_float():
         ch._check_test_(2.0)
         ch._check_test_(-3)
 
-# def test_check_test_bool():
-#     with pytest.raises(ValueError) as context:
-#         ch._check_test_(False)
-#     with pytest.raises(ValueError) as context:
-#         ch._check_test_(True)
-#     with pytest.raises(ValueError) as context:
-#         ch._check_test_(None)
-
-
 def test_check_decimals_positive_int():
     assert ch._check_decimals_(2) == 2
     assert ch._check_decimals_(0) == 0
