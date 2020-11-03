@@ -5,9 +5,9 @@ from .constants import confs, digs_dict, sec_order_dict, rev_digs, names, \
     mad_dict, crit_chi2, KS_crit
 from .checks import _check_digs_, _check_confidence_, _check_test_, \
     _check_num_array_, _check_high_Z_
-from .utils import  _set_N_, input_data, prepare, \
+from .utils import _set_N_, input_data, prepare, \
     subtract_sorted, prep_to_roll, mad_to_roll, mse_to_roll, \
-     get_mantissas
+    get_mantissas
 from .expected import First, Second, LastTwo, _test_
 from .viz import _get_plot_args, plot_digs, plot_sum, plot_ordered_mantissas,\
     plot_mantissa_arc_test, plot_roll_mse, plot_roll_mad
@@ -15,6 +15,7 @@ from .reports import _inform_, _report_mad_, _report_test_, _deprecate_inform_,\
     _report_mantissa_
 from .stats import Z_score, chi_sq, chi_sq_2, kolmogorov_smirnov,\
     kolmogorov_smirnov_2
+
 
 class Base(DataFrame):
     """Internalizes and prepares the data for Analysis.
@@ -34,6 +35,7 @@ class Base(DataFrame):
     Raises:
         TypeError: if not receiving `int` or `float` as input.
     """
+
     def __init__(self, data, decimals, sign='all', sec_order=False):
 
         DataFrame.__init__(self, {'seq': data})
@@ -166,9 +168,9 @@ class Test(DataFrame):
         """
         x, figsize, text_x = _get_plot_args(self.digs)
         plot_digs(self, x=x, y_Exp=self.Expected, y_Found=self.Found,
-                    N=self.N, figsize=figsize, conf_Z=confs[self.confidence],
-                    text_x=text_x
-                    )
+                  N=self.N, figsize=figsize, conf_Z=confs[self.confidence],
+                  text_x=text_x
+                  )
 
     def report(self, high_Z='pos', show_plot=True):
         """Handles the report especific to the test, considering its statistics
@@ -189,6 +191,7 @@ class Test(DataFrame):
         if show_plot:
             self.show_plot()
 
+
 class Summ(DataFrame):
     """Gets the base object and outputs a Summation test object
 
@@ -196,6 +199,7 @@ class Summ(DataFrame):
        base: The Base object with the data prepared for Analysis
        test: The test for which to compute the summation
     """
+
     def __init__(self, base, test):
         super(Summ, self).__init__(base.abs()
                                    .groupby(test)[['seq']]
@@ -217,7 +221,7 @@ class Summ(DataFrame):
 
     def show_plot(self):
         """Draws the Summation test plot"""
-        figsize=(2 * (self.digs ** 2 + 5), 1.5 * (self.digs ** 2 + 5))
+        figsize = (2 * (self.digs ** 2 + 5), 1.5 * (self.digs ** 2 + 5))
         plot_sum(self, figsize, self.expected)
 
     def report(self, high_diff=None, show_plot=True):
@@ -231,6 +235,7 @@ class Summ(DataFrame):
         _report_test_(self, high_diff)
         if show_plot:
             self.show_plot()
+
 
 class Mantissas(object):
     """Computes and holds the mantissas of the logarithms of the records
@@ -295,6 +300,7 @@ class Mantissas(object):
 
         plot_mantissa_arc_test(self.data, self.stats, decimals=decimals,
                                grid=grid, figsize=figsize)
+
 
 class Benford(object):
     """Initializes a Benford Analysis object and computes the proportions for
@@ -367,10 +373,11 @@ class Benford(object):
                                 for col in digs_dict.values()])}
 
         if self.verbose:
-            print('\n',' Benford Object Instantiated '.center(50, '#'),'\n')
+            print('\n', ' Benford Object Instantiated '.center(50, '#'), '\n')
             print(f'Initial sample size: {len(self.chosen)}.\n')
             print(f'Test performed on {len(self.base)} registries.\n')
-            print(f'Number of discarded entries for each test:\n{self._discarded}')
+            print(
+                f'Number of discarded entries for each test:\n{self._discarded}')
 
         if mantissas:
             self.mantissas()
@@ -405,19 +412,21 @@ class Benford(object):
                 raise ValueError('tests must be a list or None.')
         for test in tests:
             try:
-                getattr(self, test).update_confidence(self.confidence, check=False)
+                getattr(self, test).update_confidence(
+                    self.confidence, check=False)
             except AttributeError:
                 if test in ['Mantissas', 'F1D_Summ', 'F2D_Summ', 'F3D_Summ']:
                     pass
                 else:
-                    print(f"{test} not in Benford instance tests - review test's name.")
+                    print(
+                        f"{test} not in Benford instance tests - review test's name.")
                     pass
 
     @property
     def all_confidences(self):
         """dict: a dictionary with a confidence level for each computed tests,
         when applicable."""
-        con_dic= {}
+        con_dic = {}
         for key in self.tests:
             try:
                 con_dic[key] = getattr(self, key).confidence
@@ -464,7 +473,7 @@ class Benford(object):
     def summation(self):
         """Creates Summation test DataFrames from Base object"""
         for test in ['F1D', 'F2D', 'F3D']:
-            t =  f'{test}_Summ'
+            t = f'{test}_Summ'
             setattr(self, t, Summ(self.base, test))
             self.tests.append(t)
 
@@ -568,7 +577,6 @@ class Source(DataFrame):
         if plot:
             plot_ordered_mantissas(self.Mant, figsize=figsize)
 
-
     def first_digits(self, digs, confidence=None, high_Z='pos',
                      limit_N=None, MAD=False, MSE=False, chi_square=False,
                      KS=False, show_plot=True, simple=False, ret_df=False):
@@ -623,10 +631,10 @@ class Source(DataFrame):
             self.verbose = False
             show_plot = False
             df = prepare(temp[digs_dict[digs]], digs, limit_N=limit_N,
-                        simple=True, confidence=None)
+                         simple=True, confidence=None)
         else:
             N, df = prepare(temp[digs_dict[digs]], digs, limit_N=limit_N,
-                           simple=False, confidence=confidence)
+                            simple=False, confidence=confidence)
 
         if self.verbose:
             print(f"\nTest performed on {len(temp)} registries.\n"
@@ -648,18 +656,18 @@ class Source(DataFrame):
         # Chi-square statistic
         if chi_square:
             self.chi_square = chi_sq(df, ddf=len(df) - 1,
-                                           confidence=confidence,
-                                           verbose=self.verbose)
+                                     confidence=confidence,
+                                     verbose=self.verbose)
         # KS test
         if KS:
             self.KS = kolmogorov_smirnov(df, confidence=confidence, N=len(temp),
-                           verbose=self.verbose)
+                                         verbose=self.verbose)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
             plot_digs(df, x=x, y_Exp=df.Expected, y_Found=df.Found, N=N,
-                       figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)),
-                       conf_Z=confs[confidence])
+                      figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)),
+                      conf_Z=confs[confidence])
         if ret_df:
             return df
 
@@ -708,10 +716,10 @@ class Source(DataFrame):
             self.verbose = False
             show_plot = False
             df = prepare(temp['SD'], 22, limit_N=limit_N, simple=True,
-                        confidence=None)
+                         confidence=None)
         else:
             N, df = prepare(temp['SD'], 22, limit_N=limit_N, simple=False,
-                           confidence=confidence)
+                            confidence=confidence)
 
         if self.verbose:
             print(f"\nTest performed on {len(temp)} registries.\nDiscarded "
@@ -731,16 +739,16 @@ class Source(DataFrame):
         # Chi-square statistic
         if chi_square:
             self.chi_square = chi_sq(df, ddf=9, confidence=confidence,
-                                           verbose=self.verbose)
+                                     verbose=self.verbose)
         # KS test
         if KS:
             self.KS = kolmogorov_smirnov(df, confidence=confidence, N=len(temp),
-                           verbose=self.verbose)
+                                         verbose=self.verbose)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
             plot_digs(df, x=arange(0, 10), y_Exp=df.Expected,
-                       y_Found=df.Found, N=N, figsize=(10, 6), conf_Z=conf)
+                      y_Found=df.Found, N=N, figsize=(10, 6), conf_Z=conf)
         if ret_df:
             return df
 
@@ -785,10 +793,10 @@ class Source(DataFrame):
             self.verbose = False
             show_plot = False
             df = prepare(temp['L2D'], -2, limit_N=limit_N, simple=True,
-                        confidence=None)
+                         confidence=None)
         else:
             N, df = prepare(temp['L2D'], -2, limit_N=limit_N, simple=False,
-                           confidence=confidence)
+                            confidence=confidence)
 
         if self.verbose:
             print(f"\nTest performed on {len(temp)} registries.\n\nDiscarded "
@@ -808,17 +816,17 @@ class Source(DataFrame):
         # Chi-square statistic
         if chi_square:
             self.chi_square = chi_sq(df, ddf=99, confidence=confidence,
-                                           verbose=self.verbose)
+                                     verbose=self.verbose)
         # KS test
         if KS:
             self.KS = kolmogorov_smirnov(df, confidence=confidence, N=len(temp),
-                           verbose=self.verbose)
+                                         verbose=self.verbose)
 
         # Plotting expected frequencies (line) versus found ones (bars)
         if show_plot:
             plot_digs(df, x=arange(0, 100), y_Exp=df.Expected,
-                       y_Found=df.Found, N=N, figsize=(15, 5),
-                       conf_Z=conf, text_x=True)
+                      y_Found=df.Found, N=N, figsize=(15, 5),
+                      conf_Z=conf, text_x=True)
         if ret_df:
             return df
 
@@ -863,7 +871,7 @@ class Source(DataFrame):
 
         if show_plot:
             plot_sum(df, figsize=(
-                       2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)), li=li)
+                2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)), li=li)
 
         if ret_df:
             return df
@@ -1015,8 +1023,8 @@ class Roll_mad(object):
         Exp, ind = prep_to_roll(start, self.test)
 
         self.roll_series = start[digs_dict[test]].rolling(
-                                window=window).apply(mad_to_roll,
-                                    args=(Exp, ind), raw=False)
+            window=window).apply(mad_to_roll,
+                                 args=(Exp, ind), raw=False)
         self.roll_series.dropna(inplace=True)
 
     def show_plot(self, figsize=(15, 8)):
@@ -1058,8 +1066,8 @@ class Roll_mse(object):
         Exp, ind = prep_to_roll(start, test)
 
         self.roll_series = start[digs_dict[test]].rolling(
-                                window=window).apply(mse_to_roll,
-                                    args=(Exp, ind), raw=False)
+            window=window).apply(mse_to_roll,
+                                 args=(Exp, ind), raw=False)
         self.roll_series.dropna(inplace=True)
 
     def show_plot(self, figsize=(15, 8)):
@@ -1069,7 +1077,6 @@ class Roll_mse(object):
             figsize: the figure dimensions.
         """
         plot_roll_mse(self.roll_series, figsize=figsize)
-
 
 
 def first_digits(data, digs, decimals=2, sign='all', verbose=True,

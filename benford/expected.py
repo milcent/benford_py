@@ -37,6 +37,7 @@ class Second(DataFrame):
         plot: option to plot a bar chart of the Expected proportions.
             Defaults to True.
     """
+
     def __init__(self, plot=True):
         a = arange(10, 100)
         Expe = log10(1 + (1. / a))
@@ -58,20 +59,22 @@ class LastTwo(DataFrame):
         plot: option to plot a bar chart of the Expected proportions.
             Defaults to True.
     """
+
     def __init__(self, num=False, plot=True):
         exp = array([1 / 99.] * 100)
         DataFrame.__init__(self, {'Expected': exp,
-                              'Last_2_Dig': _lt_(num=num)})
+                                  'Last_2_Dig': _lt_(num=num)})
         self.set_index('Last_2_Dig', inplace=True)
         if plot:
             plot_expected(self, -2)
+
 
 def _test_(digs):
     """Chooses the Exxpected class to be used in a test
 
     Args:
         digs: the int corresponding to the Expected class to be instantiated
-    
+
     Returns:
         the Expected instance forthe propoer test to be performed
     """
@@ -89,7 +92,7 @@ def _lt_(num=False):
     Args:
         num: returns numeric (ints) values. Defaluts to False,
             which returns strings.
-    
+
     Returns:
         Array of ints or str, in any case representing all 100 possible
             combinations of last two digits
@@ -99,5 +102,5 @@ def _lt_(num=False):
     else:
         n = arange(0, 100).astype(str)
         n[:10] = array(['00', '01', '02', '03', '04', '05',
-                           '06', '07', '08', '09'])
+                        '06', '07', '08', '09'])
     return n
