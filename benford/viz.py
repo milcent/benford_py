@@ -19,14 +19,14 @@ def plot_expected(df, digs, save_plot=None, save_kwargs=None):
     """
     if digs in [1, 2, 3]:
         y_max = (df.Expected.max() + (10 ** -(digs) / 3)) * 100
-        fig, ax = plt.subplots(figsize=(2 * (digs ** 2 + 5), 1.5 *
-                                        (digs ** 2 + 5)))
+        figsize = 2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)
     elif digs == 22:
         y_max = 13.
-        fig, ax = plt.subplots(figsize=(14, 10.5))
+        figsize = 14, 10.5
     elif digs == -2:
         y_max = 1.1
-        fig, ax = plt.subplots(figsize=(15, 8))
+        figsize = 15, 8
+    fig, ax = plt.subplots(figsize=figsize)
     plt.title('Expected Benford Distributions', size='xx-large')
     plt.xlabel(df.index.name, size='x-large')
     plt.ylabel('Distribution (%)', size='x-large')
