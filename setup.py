@@ -1,3 +1,4 @@
+''' Setup Pyt for benford's module'''
 from setuptools import setup
 
 setup(name='benford_py',
