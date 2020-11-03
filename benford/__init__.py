@@ -25,4 +25,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from .benford import *
 
 __version__ = '0.2.7'
-

@@ -9,7 +9,7 @@ def Z_score(frame, N):
         frame: DataFrame with the expected proportions and the already calculated
             Absolute Diferences between the found and expeccted proportions
         N: sample size
-    
+
     Returns:
         Series of computed Z scores
     """
@@ -28,7 +28,7 @@ def chi_sq(frame, ddf, confidence, verbose=True):
         confidence: Confidence level to look up critical value.
         verbose: prints the chi-squre result and compares to the critical
             chi-square for the sample. Defaults to True.
-    
+
     Returns:
         The computed Chi square statistic and the critical chi square
             (according) to the degrees of freedom and confidence level,
@@ -73,7 +73,7 @@ def kolmogorov_smirnov(frame, confidence, N, verbose=True):
         N: Sample size
         verbose: prints the KS result and the critical value for the sample.
             Defaults to True.
-    
+
     Returns:
         The Suprem, which is the greatest absolute difference between the
             Found and the expected proportions, and the Kolmogorov-Smirnov
@@ -98,10 +98,10 @@ def kolmogorov_smirnov(frame, confidence, N, verbose=True):
 
 def kolmogorov_smirnov_2(frame):
     """Computes the Kolmogorov-Smirnov test of the found distributions
-    
+
     Args:
         frame: DataFrame with Foud and Expected distributions.
-    
+
     Returns:
         The Suprem, which is the greatest absolute difference between the
             Found end th expected proportions

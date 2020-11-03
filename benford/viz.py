@@ -43,6 +43,7 @@ def plot_expected(df, digs, save_plot=None, save_kwargs=None):
 
     plt.show(block=False)
 
+
 def _get_plot_args(digs):
     """Selects the correct arguments for the plotting functions, depending on the
     the test (digs) chosen.
@@ -61,7 +62,6 @@ def _get_plot_args(digs):
         x = arange(100)
         figsize = (15, 7)
     return x, figsize, text_x
-    
 
 def plot_digs(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False,
               save_plot=None, save_kwargs=None):
@@ -77,6 +77,7 @@ def plot_digs(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False,
         N: lenght of sequence, to be used when plotting the confidence levels
         figsize: tuple to state the size of the plot figure
         conf_Z: Confidence level
+        save_pic: file path to save figure
         text_x: Forces to show all x ticks labels. Defaluts to True.
         save_plot: string with the path/name of the file in which the generated
             plot will be saved. Uses matplotlib.pyplot.savefig(). File format
@@ -119,7 +120,7 @@ def plot_digs(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False,
     if text_x:
         ind = array(df.index).astype(str)
         ind[:10] = array(['00', '01', '02', '03', '04', '05',
-                             '06', '07', '08', '09'])
+                          '06', '07', '08', '09'])
         plt.xticks(x, ind, rotation='vertical')
     ax.legend()
     ax.set_ylim(0, max([y_Exp.max() * 100, y_Found.max() * 100]) + 10 / len(x))
@@ -164,7 +165,7 @@ def plot_sum(df, figsize, li, text_x=False, save_plot=None, save_kwargs=None):
     if text_x:
         ind = array(x).astype(str)
         ind[:10] = array(['00', '01', '02', '03', '04', '05',
-                             '06', '07', '08', '09'])
+                          '06', '07', '08', '09'])
         plt.xticks(x, ind, rotation='vertical')
     ax.legend()
 
@@ -179,7 +180,7 @@ def plot_ordered_mantissas(col, figsize=(12, 12),
                            save_plot=None, save_kwargs=None):
     """Plots the ordered mantissas and compares them to the expected, straight
         line that should be formed in a Benford-cmpliant set.
-    
+
     Args:
         col (Series): column of mantissas to plot.
         figsize (tuple): sets the dimensions of the plot figure.
@@ -217,7 +218,7 @@ def plot_mantissa_arc_test(df, gravity_center, grid=True, figsize=12,
                            save_plot=None, save_kwargs=None):
     """Draws thee Mantissa Arc Test after computing X and Y circular coordinates
     for every mantissa and the center of gravity for the set
-    
+
     Args:
         df (DataFrame): pandas DataFrame with the mantissas and the X and Y
             coordinates.
@@ -232,25 +233,25 @@ def plot_mantissa_arc_test(df, gravity_center, grid=True, figsize=12,
             matplotlib.pyplot.savefig()
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
     """
-    fig = plt.figure(figsize=(figsize,figsize))
+    fig = plt.figure(figsize=(figsize, figsize))
     ax = plt.subplot()
     ax.set_facecolor(colors['b'])
-    ax.scatter(df.mant_x, df.mant_y, label= "ARC TEST",
-                color=colors['m'])
+    ax.scatter(df.mant_x, df.mant_y, label="ARC TEST",
+               color=colors['m'])
     ax.scatter(gravity_center[0], gravity_center[1],
-                color=colors['s']) 
+               color=colors['s'])
     text_annotation = Annotation(
-                "  Gravity Center: "
-                f"x({round(gravity_center[0], 3)}),"
-                f" y({round(gravity_center[1], 3)})", 
-                xy=(gravity_center[0] - 0.65,
-                    gravity_center[1] - 0.1),
-                xycoords='data')
+        "  Gravity Center: "
+        f"x({round(gravity_center[0], 3)}),"
+        f" y({round(gravity_center[1], 3)})",
+        xy=(gravity_center[0] - 0.65,
+            gravity_center[1] - 0.1),
+        xycoords='data')
     ax.add_artist(text_annotation)
     ax.grid(True, which='both')
     ax.axhline(y=0, color='k')
     ax.axvline(x=0, color='k')
-    ax.legend(loc = 'lower left')
+    ax.legend(loc='lower left')
     ax.set_title("Mantissas Arc Test")
 
     if save_plot:
@@ -262,7 +263,7 @@ def plot_mantissa_arc_test(df, gravity_center, grid=True, figsize=12,
 
 def plot_roll_mse(roll_series, figsize, save_plot=None, save_kwargs=None):
     """Shows the rolling MSE plot
-    
+
     Args:
         roll_series: pd.Series resultant form rolling mse.
         figsize: the figure dimensions.
@@ -286,7 +287,7 @@ def plot_roll_mse(roll_series, figsize, save_plot=None, save_kwargs=None):
 
 def plot_roll_mad(roll_mad, figsize, save_plot=None, save_kwargs=None):
     """Shows the rolling MAD plot
-    
+
     Args:
         roll_mad: pd.Series resultant form rolling mad.
         figsize: the figure dimensions.
