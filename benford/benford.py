@@ -1,13 +1,13 @@
 from pandas import Series, DataFrame
-from numpy import array, arange, log10, ones, abs, cos, sin, pi, sqrt, mean 
+from numpy import array, arange, log10, ones, abs, cos, sin, pi, sqrt, mean
 import warnings
 from .constants import confs, digs_dict, sec_order_dict, rev_digs, names, \
     mad_dict, colors, crit_chi2, KS_crit
 from .checks import _check_digs_, _check_confidence_, _check_test_, \
     _check_num_array_, _check_high_Z_
-from .utils import  _set_N_, input_data, prepare, \
+from .utils import _set_N_, input_data, prepare, \
     subtract_sorted, prep_to_roll, mad_to_roll, mse_to_roll, \
-     get_mantissas
+    get_mantissas
 from .expected import First, Second, LastTwo, _test_
 from .viz import _get_plot_args, plot_digs, plot_sum, plot_ordered_mantissas,\
     plot_mantissa_arc_test
@@ -16,6 +16,7 @@ from .reports import _inform_, _report_mad_, _report_summ_, _report_KS_,\
     _report_mantissa_
 from .stats import Z_score, chi_square, chi_square_2, KS, KS_2, \
     mad, mse
+
 
 class Base(DataFrame):
     """Internalizes and prepares the data for Analysis.
@@ -31,12 +32,13 @@ class Base(DataFrame):
         sign: tells which portion of the data to consider. pos: only the positive
             entries; neg: only negative entries; all: all entries but zeros.
             Defaults to all.`
-    
+
     Raises:
         TypeError: if not receiving `int` or `float` as input.
     """
+
     def __init__(self, data, decimals, sign='all', sec_order=False):
-        
+
         DataFrame.__init__(self, {'Seq': data})
 
         if (self.Seq.dtypes != 'float64') & (self.Seq.dtypes != 'int64'):
@@ -97,7 +99,7 @@ class Test(DataFrame):
             plotting and to limit the top deviations to show.
         limit_N: sets a limit to N as the sample size for the calculation of
                 the Z scores if the sample is too big. Defaults to None.
-    
+
     Attributes:
         N: Number of records in the sample to consider in computations
         ddf: Degrees of Freedom to look up for the critical chi-square value
@@ -135,7 +137,7 @@ class Test(DataFrame):
             self.name = names[sec_order_dict[digs]]
         else:
             self.name = names[digs_dict[digs]]
-    
+
     def update_confidence(self, new_conf, check=True):
         """Sets a new confidence level for the Benford object, so as to be used to
         produce critical values for the tests
@@ -166,9 +168,9 @@ class Test(DataFrame):
         """
         x, figsize, text_x = _get_plot_args(self.digs)
         plot_digs(self, x=x, y_Exp=self.Expected, y_Found=self.Found,
-                    N=self.N, figsize=figsize, conf_Z=confs[self.confidence],
-                    text_x=text_x
-                    )
+                  N=self.N, figsize=figsize, conf_Z=confs[self.confidence],
+                  text_x=text_x
+                  )
 
     def report(self, high_Z='pos', show_plot=True):
         """Handles the report especific to the test, considering its statistics
@@ -189,6 +191,7 @@ class Test(DataFrame):
         if show_plot:
             self.show_plot()
 
+
 class Summ(DataFrame):
     """Gets the base object and outputs a Summation test object
 
@@ -196,6 +199,7 @@ class Summ(DataFrame):
        base: The Base object with the data prepared for Analysis
        test: The test for which to compute the summation
     """
+
     def __init__(self, base, test):
         super(Summ, self).__init__(base.abs()
                                    .groupby(test)[['Seq']]
@@ -209,19 +213,19 @@ class Summ(DataFrame):
         self.MAD = self.AbsDif.mean()
         #: Confidence level to consider when setting some critical values
         self.confidence = None
-        # (int): numerical representation of the test at hand 
+        # (int): numerical representation of the test at hand
         self.digs = rev_digs[test]
-        # (str): the name of the Summation test. 
+        # (str): the name of the Summation test.
         self.name = names[f'{test}_Summ']
 
     def show_plot(self):
         """Draws the Summation test plot"""
-        figsize=(2 * (self.digs ** 2 + 5), 1.5 * (self.digs ** 2 + 5))
+        figsize = (2 * (self.digs ** 2 + 5), 1.5 * (self.digs ** 2 + 5))
         plot_sum(self, figsize, self.expected)
-    
+
     def report(self, high_diff=None, show_plot=True):
         """Gives the report on the Summation test.
-        
+
         Args:
             high_diff: Number of records to show after ordering by the absolute
                 differences between the found and the expected proportions      
@@ -230,6 +234,7 @@ class Summ(DataFrame):
         _report_test_(self, high_diff)
         if show_plot:
             self.show_plot()
+
 
 class Mantissas(object):
     """Computes and holds the mantissas of the logarithms of the records
@@ -245,7 +250,7 @@ class Mantissas(object):
         data = data.dropna().loc[data != 0].abs()
         #: (DataFrame): pandas DataFrame with the mantissas
         self.data = DataFrame({'Mantissa': get_mantissas(data.abs())})
-        # (dict): Dictionary with the mantissas statistics 
+        # (dict): Dictionary with the mantissas statistics
         self.stats = {'Mean': self.data.Mantissa.mean(),
                       'Var': self.data.Mantissa.var(),
                       'Skew': self.data.Mantissa.skew(),
@@ -291,9 +296,10 @@ class Mantissas(object):
             self.data['mant_y'] = sin(2 * pi * self.data.Mantissa)
             self.stats['gravity_center'] = (self.data.mant_x.mean(),
                                             self.data.mant_y.mean())
-        
-        plot_mantissa_arc_test(self.data, self.stats, decimals=decimals, 
+
+        plot_mantissa_arc_test(self.data, self.stats, decimals=decimals,
                                grid=grid, figsize=figsize)
+
 
 class Benford(object):
     """Initializes a Benford Analysis object and computes the proportions for
@@ -366,20 +372,21 @@ class Benford(object):
                                 for col in digs_dict.values()])}
 
         if self.verbose:
-            print('\n',' Benford Object Instantiated '.center(50, '#'),'\n')
+            print('\n', ' Benford Object Instantiated '.center(50, '#'), '\n')
             print(f'Initial sample size: {len(self.chosen)}.\n')
             print(f'Test performed on {len(self.base)} registries.\n')
-            print(f'Number of discarded entries for each test:\n{self._discarded}')
+            print(
+                f'Number of discarded entries for each test:\n{self._discarded}')
 
         if mantissas:
             self.mantissas()
-    
+
         if sec_order:
             self.sec_order()
 
         if summation:
             self.summation()
-    
+
     def update_confidence(self, new_conf, tests=None):
         """Sets (a) new confidence level(s) for the Benford object, so as to be
         used to produce critical values for the tests.
@@ -392,7 +399,7 @@ class Benford(object):
                 have their confidence updated. If only one, provide a one-element
                 list, like ['F1D']. Defauts to None, in which case it will use
                 the instance .test list attribute.
-        
+
         Raises:
             ValueError: if the test argument is not a `list` or `None`.
         """
@@ -404,19 +411,21 @@ class Benford(object):
                 raise ValueError('tests must be a list or None.')
         for test in tests:
             try:
-                getattr(self, test).update_confidence(self.confidence, check=False)
+                getattr(self, test).update_confidence(
+                    self.confidence, check=False)
             except AttributeError:
                 if test in ['Mantissas', 'F1D_Summ', 'F2D_Summ', 'F3D_Summ']:
                     pass
                 else:
-                    print(f"{test} not in Benford instance tests - review test's name.")
+                    print(
+                        f"{test} not in Benford instance tests - review test's name.")
                     pass
-    
+
     @property
     def all_confidences(self):
         """dict: a dictionary with a confidence level for each computed tests,
         when applicable."""
-        con_dic= {}
+        con_dic = {}
         for key in self.tests:
             try:
                 con_dic[key] = getattr(self, key).confidence
@@ -463,7 +472,7 @@ class Benford(object):
     def summation(self):
         """Creates Summation test DataFrames from Base object"""
         for test in ['F1D', 'F2D', 'F3D']:
-            t =  f'{test}_Summ'
+            t = f'{test}_Summ'
             setattr(self, t, Summ(self.base, test))
             self.tests.append(t)
 
@@ -489,7 +498,7 @@ class Source(DataFrame):
             differences between the ordered entries before running the Tests.
         verbose: tells the number of registries that are being subjected to
             the analysis; defaults to True.
-    
+
     Raises:
         ValueError: if the `sign` arg is not in ['all', 'pos', 'neg']
         TypeError: if not receiving `int` or `float` as input.
@@ -567,7 +576,6 @@ class Source(DataFrame):
         if plot:
             plot_ordered_mantissas(self.Mant, figsize=figsize)
 
-
     def first_digits(self, digs, confidence=None, high_Z='pos',
                      limit_N=None, MAD=False, MSE=False, chi_square=False,
                      KS=False, show_plot=True, simple=False, ret_df=False):
@@ -622,10 +630,10 @@ class Source(DataFrame):
             self.verbose = False
             show_plot = False
             df = prepare(temp[digs_dict[digs]], digs, limit_N=limit_N,
-                        simple=True, confidence=None)
+                         simple=True, confidence=None)
         else:
             N, df = prepare(temp[digs_dict[digs]], digs, limit_N=limit_N,
-                           simple=False, confidence=confidence)
+                            simple=False, confidence=confidence)
 
         if self.verbose:
             print(f"\nTest performed on {len(temp)} registries.\n"
@@ -645,18 +653,18 @@ class Source(DataFrame):
         # Chi-square statistic
         if chi_square:
             self.chi_square = chi_square(df, ddf=len(df) - 1,
-                                           confidence=confidence,
-                                           verbose=self.verbose)
+                                         confidence=confidence,
+                                         verbose=self.verbose)
         # KS test
         if KS:
             self.KS = KS(df, confidence=confidence, N=len(temp),
-                           verbose=self.verbose)
+                         verbose=self.verbose)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
             plot_digs(df, x=x, y_Exp=df.Expected, y_Found=df.Found, N=N,
-                       figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)),
-                       conf_Z=confs[confidence])
+                      figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)),
+                      conf_Z=confs[confidence])
         if ret_df:
             return df
 
@@ -688,7 +696,7 @@ class Source(DataFrame):
             show_plot: draws the test plot.
             ret_df: returns the test DataFrame. Defaults to False. True if run by
                 the test function.
-        
+
         Returns:
             DataFrame with the Expected and Found proportions, and the Z scores of
                 the differences
@@ -705,10 +713,10 @@ class Source(DataFrame):
             self.verbose = False
             show_plot = False
             df = prepare(temp['SD'], 22, limit_N=limit_N, simple=True,
-                        confidence=None)
+                         confidence=None)
         else:
             N, df = prepare(temp['SD'], 22, limit_N=limit_N, simple=False,
-                           confidence=confidence)
+                            confidence=confidence)
 
         if self.verbose:
             print(f"\nTest performed on {len(temp)} registries.\nDiscarded "
@@ -727,16 +735,16 @@ class Source(DataFrame):
         # Chi-square statistic
         if chi_square:
             self.chi_square = chi_square(df, ddf=9, confidence=confidence,
-                                           verbose=self.verbose)
+                                         verbose=self.verbose)
         # KS test
         if KS:
             self.KS = KS(df, confidence=confidence, N=len(temp),
-                           verbose=self.verbose)
+                         verbose=self.verbose)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
             plot_digs(df, x=arange(0, 10), y_Exp=df.Expected,
-                       y_Found=df.Found, N=N, figsize=(10, 6), conf_Z=conf)
+                      y_Found=df.Found, N=N, figsize=(10, 6), conf_Z=conf)
         if ret_df:
             return df
 
@@ -766,7 +774,7 @@ class Source(DataFrame):
             MSE: calculates the Mean Square Error of the sample; defaults to
                 False.
             show_plot: draws the test plot.
-        
+
         Returns:
             DataFrame with the Expected and Found proportions, and the Z scores of
                 the differences
@@ -781,10 +789,10 @@ class Source(DataFrame):
             self.verbose = False
             show_plot = False
             df = prepare(temp['L2D'], -2, limit_N=limit_N, simple=True,
-                        confidence=None)
+                         confidence=None)
         else:
             N, df = prepare(temp['L2D'], -2, limit_N=limit_N, simple=False,
-                           confidence=confidence)
+                            confidence=confidence)
 
         if self.verbose:
             print(f"\nTest performed on {len(temp)} registries.\n\nDiscarded "
@@ -803,17 +811,17 @@ class Source(DataFrame):
         # Chi-square statistic
         if chi_square:
             self.chi_square = chi_square(df, ddf=99, confidence=confidence,
-                                           verbose=self.verbose)
+                                         verbose=self.verbose)
         # KS test
         if KS:
             self.KS = KS(df, confidence=confidence, N=len(temp),
-                           verbose=self.verbose)
+                         verbose=self.verbose)
 
         # Plotting expected frequencies (line) versus found ones (bars)
         if show_plot:
             plot_digs(df, x=arange(0, 100), y_Exp=df.Expected,
-                       y_Found=df.Found, N=N, figsize=(15, 5),
-                       conf_Z=conf, text_x=True)
+                      y_Found=df.Found, N=N, figsize=(15, 5),
+                      conf_Z=conf, text_x=True)
         if ret_df:
             return df
 
@@ -827,7 +835,7 @@ class Source(DataFrame):
                 3- first three. Defaults to 2.
             top: choses how many top values to show. Defaults to 20.
             show_plot: plots the results. Defaults to True.
-        
+
         Returns:
             DataFrame with the Expected and Found proportions, and their
             absolute differences
@@ -858,7 +866,7 @@ class Source(DataFrame):
 
         if show_plot:
             plot_sum(df, figsize=(
-                       2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)), li=li)
+                2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)), li=li)
 
         if ret_df:
             return df
@@ -873,12 +881,12 @@ class Source(DataFrame):
             top_Rep: int or None. Chooses how many duplicated entries will be
                 shown withe the top repititions. Defaluts to 20. If None, returns
                 al the ordered repetitions.
-        
+
         Returns:
             DataFrame with the duplicated records and their occurrence counts,
                 in descending order (if verbose is False; if True, prints to
                 terminal).
-        
+
         Raises:
             ValueError: if the `top_Rep` arg is not int or None.
         """
@@ -920,7 +928,7 @@ class Mantissas(object):
 
         data = Series(_check_num_array(data))
         data = data.dropna().loc[data != 0].abs()
-        
+
         self.data = DataFrame({'Mantissa': _getMantissas_(data.abs())})
 
         self.stats = {'Mean': self.data.Mantissa.mean(),
@@ -956,7 +964,7 @@ class Mantissas(object):
             figsize: tuple that sets the figure size.
         """
         plot_ordered_mantissas(self.data.Mantissa, figsize=figsize)
- 
+
     def arc_test(self, grid=True, figsize=12):
         """
         Add two columns to Mantissas's DataFrame equal to their "X" and "Y"
@@ -1016,7 +1024,7 @@ class Roll_mad(Series):
 
     def show_plot(self, figsize=(15, 8)):
         """Shows the rolling MAD plot
-        
+
         Args:
             figsize: the figure dimensions.
         """
@@ -1024,9 +1032,12 @@ class Roll_mad(Series):
         ax.set_facecolor(colors['b'])
         ax.plot(self, color=colors['m'])
         if self.test != -2:
-            plt.axhline(y=mad_dict[self.test][0], color=colors['af'], linewidth=3)
-            plt.axhline(y=mad_dict[self.test][1], color=colors['h2'], linewidth=3)
-            plt.axhline(y=mad_dict[self.test][2], color=colors['s'], linewidth=3)
+            plt.axhline(y=mad_dict[self.test][0],
+                        color=colors['af'], linewidth=3)
+            plt.axhline(y=mad_dict[self.test][1],
+                        color=colors['h2'], linewidth=3)
+            plt.axhline(y=mad_dict[self.test][2],
+                        color=colors['s'], linewidth=3)
         plt.show(block=False)
 
 
@@ -1066,7 +1077,7 @@ class Roll_mse(Series):
 
     def show_plot(self, figsize=(15, 8)):
         """Shows the rolling MSE plot
-        
+
         Args:
             figsize: the figure dimensions.
         """
@@ -1123,7 +1134,7 @@ def first_digits(data, digs, decimals=2, sign='all', verbose=True,
             confidence level chosen. Defaults to False. Requires confidence
             != None.
         show_plot: draws the test plot.
-    
+
     Returns:
         DataFrame with the Expected and Found proportions, and the Z scores of
             the differences if the confidence is not None.
@@ -1289,7 +1300,7 @@ def mantissas(data, report=True, show_plot=True, arc_test=True, inform=None):
         show_plot: plots the ordered mantissas and a line with the expected
             inclination. Defaults to True.
         arc_test: draws the Arc Test plot. Defaluts to True.
-    
+
     Returns:
         Series with the data mantissas.
     """
@@ -1320,7 +1331,7 @@ def summation(data, digs=2, decimals=2, sign='all', top=20, verbose=True,
             loose performance.
         top: choses how many top values to show. Defaults to 20.
         show_plot: plots the results. Defaults to True.
-    
+
     Returns:
         DataFrame with the Summation test, whether sorted in descending order
             (if verbose == True) or not.
@@ -1411,7 +1422,7 @@ def mad_summ(data, test, decimals=2, sign='all'):
         sign: tells which portion of the data to consider. pos: only the positive
             entries; neg: only negative entries; all: all entries but zeros.
             Defaults to all.
-    
+
     Returns:
         float: the Mean Absolute Deviation of the Summation Test
     """
@@ -1446,7 +1457,7 @@ def rolling_mad(data, test, window, decimals=2, sign='all', show_plot=False):
             entries; neg: only negative entries; all: all entries but zeros.
             Defaults to all.
         show_plot: draws the test plot.
-    
+
     Returns:
         Series with sequentially computed MADs.
     """
@@ -1475,7 +1486,7 @@ def rolling_mse(data, test, window, decimals=2, sign='all', show_plot=False):
             entries; neg: only negative entries; all: all entries but zeros.
             Defaults to all.
         show_plot: draws the test plot.
-    
+
     Returns:
         Series with sequentially computed MSEs.
     """
@@ -1497,10 +1508,10 @@ def duplicates(data, top_Rep=20, verbose=True, inform=None):
         top_Rep: chooses how many duplicated entries will be
             shown withe the top repititions. int or None. Defaluts to 20.
             If None, returns al the ordered repetitions.
-    
+
     Returns:
         DataFrame with the duplicated records and their respective counts
-    
+
     Raises:
         ValueError: if the `top_Rep` arg is not int or None.
     """
@@ -1576,7 +1587,7 @@ def second_order(data, test, decimals=2, sign='all', verbose=True, MAD=False,
             confidence level chosen. Defaults to False. Requires confidence
             != None.
         show_plot: draws the test plot.
-    
+
     Returns:
         DataFrame of the test chosen, but applied on Second Order pre-
             processed data.

@@ -21,10 +21,10 @@ def _set_N_(len_df, limit_N):
 
 def get_mantissas(arr):
     """Computes the mantissas, the non-integer part of the log of a number.
-    
+
     Args:
         arr: array of integers or floats
-    
+
     Returns:
         Array of floats withe logs mantissas
     """
@@ -34,11 +34,11 @@ def get_mantissas(arr):
 
 def input_data(given):
     """Internalizes and transforms the input data
-    
+
     Args:
         given: ndarray, Series or tuple with DataFrame and name of the
             column to analyze
-    
+
     Returns:
         The raw inputed data and the result of its first pre-processing,
             when required.
@@ -58,6 +58,7 @@ def input_data(given):
     else:
         raise TypeError("Wrong data input type. Check docstring.")
     return data, chosen
+
 
 def set_sign(data, sign="all"):
     """
@@ -85,9 +86,9 @@ def get_times_10_power(data, decimals=2):
     else:
         if decimals == 'infer':
             data['ZN'] = ab.astype(str).str\
-                            .replace('.', '')\
-                            .str.lstrip('0')\
-                            .str[:5].astype(int)
+                .replace('.', '')\
+                .str.lstrip('0')\
+                .str[:5].astype(int)
         else:
             data['ZN'] = (ab * (10 ** decimals)).astype(int)
     return data
@@ -106,14 +107,14 @@ def get_digs(data, decimals=2, sign="all"):
     for col in ['F1D', 'F2D', 'F3D']:
         temp = df.ZN.loc[df.ZN >= 10 ** (rev_digs[col] - 1)]
         df[col] = (temp // 10 ** ((log10(temp).astype(int)) -
-                                    (rev_digs[col] - 1)))
+                                  (rev_digs[col] - 1)))
         # fill NANs with -1, which is a non-usable value for digits,
         # to be discarded later.
         df[col] = df[col].fillna(-1).astype(int)
     # Second digit
     temp_sd = df.loc[df.ZN >= 10]
     df['SD'] = (temp_sd.ZN // 10**((log10(temp_sd.ZN)).astype(int) -
-                                        1)) % 10
+                                   1)) % 10
     df['SD'] = df['SD'].fillna(-1).astype(int)
     # Last two digits
     temp_l2d = df.loc[df.ZN >= 1000]
@@ -169,6 +170,7 @@ def subtract_sorted(data):
     sec = sec.loc[sec != 0]
     return sec
 
+
 def prep_to_roll(start, test):
     """Used by the rolling mad and rolling mean, prepares each test and
     respective expected proportions for later application to the Series subset
@@ -188,7 +190,7 @@ def prep_to_roll(start, test):
 
         Expec = log10(1 + (1. / arange(10, 100)))
         temp = DataFrame({'Expected': Expec, 'Sec_Dig':
-                             array(list(range(10)) * 9)})
+                          array(list(range(10)) * 9)})
         Exp = temp.groupby('Sec_Dig').sum().values.reshape(10,)
         ind = arange(0, 10)
 
@@ -201,6 +203,7 @@ def prep_to_roll(start, test):
 
     return Exp, ind
 
+
 def mad_to_roll(arr, Exp, ind):
     """Mean Absolute Deviation used in the rolling function
     """
@@ -211,6 +214,7 @@ def mad_to_roll(arr, Exp, ind):
         prop = prop.reindex(ind).fillna(0)
 
     return abs(prop - Exp).mean()
+
 
 def mse_to_roll(arr, Exp, ind):
     """Mean Squared Error used in the rolling function

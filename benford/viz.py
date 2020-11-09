@@ -31,6 +31,7 @@ def plot_expected(df, digs):
     ax.set_xticklabels(df.index)
     plt.show(block=False)
 
+
 def _get_plot_args(digs):
     """Selects the correct arguments for the plotting functions, depending on the
     the test (digs) chosen.
@@ -49,7 +50,7 @@ def _get_plot_args(digs):
         x = arange(100)
         figsize = (15, 7)
     return x, figsize, text_x
-    
+
 
 def plot_digs(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     """Plots the digits tests results
@@ -99,7 +100,7 @@ def plot_digs(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False):
     if text_x:
         ind = array(df.index).astype(str)
         ind[:10] = array(['00', '01', '02', '03', '04', '05',
-                             '06', '07', '08', '09'])
+                          '06', '07', '08', '09'])
         plt.xticks(x, ind, rotation='vertical')
     ax.legend()
     ax.set_ylim(0, max([y_Exp.max() * 100, y_Found.max() * 100]) + 10 / len(x))
@@ -132,15 +133,16 @@ def plot_sum(df, figsize, li, text_x=False):
     if text_x:
         ind = array(x).astype(str)
         ind[:10] = array(['00', '01', '02', '03', '04', '05',
-                             '06', '07', '08', '09'])
+                          '06', '07', '08', '09'])
         plt.xticks(x, ind, rotation='vertical')
     ax.legend()
     plt.show(block=False)
 
+
 def plot_ordered_mantissas(col, figsize=(12, 12)):
     """Plots the ordered mantissas and compares them to the expected, straight
         line that should be formed in a Benford-cmpliant set.
-    
+
     Args:
         col (Series): column of mantissas to plot.
         figsize (tuple): sets the dimensions of the plot figure.
@@ -159,12 +161,13 @@ def plot_ordered_mantissas(col, figsize=(12, 12)):
     ax.set_facecolor(colors['b'])
     ax.set_title("Ordered Mantissas")
     plt.legend(loc='upper left')
-    plt.show(block=False);
+    plt.show(block=False)
+
 
 def plot_mantissa_arc_test(df, gravity_center, grid=True, figsize=12):
     """Draws thee Mantissa Arc Test after computing X and Y circular coordinates
     for every mantissa and the center of gravity for the set
-    
+
     Args:
         df (DataFrame): pandas DataFrame with the mantissas and the X and Y
             coordinates.
@@ -173,24 +176,24 @@ def plot_mantissa_arc_test(df, gravity_center, grid=True, figsize=12):
         figsize (int): figure dimensions. No need to be a tuple, since the
             figure is a square.
     """
-    fig = plt.figure(figsize=(figsize,figsize))
+    fig = plt.figure(figsize=(figsize, figsize))
     ax = plt.subplot()
     ax.set_facecolor(colors['b'])
-    ax.scatter(df.mant_x, df.mant_y, label= "ARC TEST",
-                color=colors['m'])
+    ax.scatter(df.mant_x, df.mant_y, label="ARC TEST",
+               color=colors['m'])
     ax.scatter(gravity_center[0], gravity_center[1],
-                color=colors['s']) 
+               color=colors['s'])
     text_annotation = Annotation(
-                "  Gravity Center: "
-                f"x({round(gravity_center[0], 3)}),"
-                f" y({round(gravity_center[1], 3)})", 
-                xy=(gravity_center[0] - 0.65,
-                    gravity_center[1] - 0.1),
-                xycoords='data')
+        "  Gravity Center: "
+        f"x({round(gravity_center[0], 3)}),"
+        f" y({round(gravity_center[1], 3)})",
+        xy=(gravity_center[0] - 0.65,
+            gravity_center[1] - 0.1),
+        xycoords='data')
     ax.add_artist(text_annotation)
     ax.grid(True, which='both')
     ax.axhline(y=0, color='k')
     ax.axvline(x=0, color='k')
-    ax.legend(loc = 'lower left')
+    ax.legend(loc='lower left')
     ax.set_title("Mantissas Arc Test")
-    plt.show(block=False);
+    plt.show(block=False)

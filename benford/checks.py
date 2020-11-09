@@ -2,6 +2,7 @@ from pandas import Series
 from numpy import array, ndarray
 from .constants import digs_dict, rev_digs, confs
 
+
 def _check_digs_(digs):
     """Checks the possible values for the digs parameter of the
     First Digits tests
@@ -28,18 +29,22 @@ def _check_test_(test):
                              f'{rev_digs.keys()}')
     else:
         raise TypeError('Wrong type chosen for test parameter. Possible '
-                         f'values are\n {list(digs_dict.keys())} for ints and'
-                         f'\n {list(rev_digs.keys())} for strings.')
+                        f'values are\n {list(digs_dict.keys())} for ints and'
+                        f'\n {list(rev_digs.keys())} for strings.')
+
 
 def _check_decimals_(decimals):
     """"""
     if isinstance(decimals, int):
         if (decimals < 0):
-            raise ValueError("Parameter -decimals- must be an int >= 0, or 'infer'.")
+            raise ValueError(
+                "Parameter -decimals- must be an int >= 0, or 'infer'.")
     else:
         if decimals != 'infer':
-            raise ValueError("Parameter -decimals- must be an int >= 0, or 'infer'.")
+            raise ValueError(
+                "Parameter -decimals- must be an int >= 0, or 'infer'.")
     return decimals
+
 
 def _check_sign_(sign):
     """"""
@@ -56,6 +61,7 @@ def _check_confidence_(confidence):
                          f"following:\n {list(confs.keys())}")
     return confidence
 
+
 def _check_high_Z_(high_Z):
     """"""
     if not high_Z in ['pos', 'all']:
@@ -64,11 +70,12 @@ def _check_high_Z_(high_Z):
                              "'all' or an int.")
     return high_Z
 
+
 def _check_num_array_(data):
     """"""
     if (not isinstance(data, ndarray)) & (not isinstance(data, Series)):
         print('\n`data` not a numpy NDarray nor a pandas Series.'
-                ' Trying to convert...')
+              ' Trying to convert...')
         try:
             data = array(data)
         except:

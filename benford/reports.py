@@ -1,6 +1,7 @@
 import warnings
 from .constants import mad_dict
 
+
 def _inform_(df, high_Z, conf):
     """Selects and sorts by the Z_stats chosen to be considered, informing or not.
     """
@@ -39,6 +40,7 @@ def _inform_(df, high_Z, conf):
             print('\nThe entries with the significant deviations are:\n')
     print(dd)
 
+
 def _report_mad_(digs, MAD):
     """Reports the test Mean Absolut Deviation and compares it to critical values
     """
@@ -58,6 +60,7 @@ def _report_mad_(digs, MAD):
     else:
         print("There is no conformity check for this test's MAD.\n")
 
+
 def _report_KS_(KS, crit_KS):
     """Reports the test Kolmogorov-Smirnov statistic and compares it to critical
     values, depending on the confidence level
@@ -65,6 +68,7 @@ def _report_KS_(KS, crit_KS):
     result = 'PASS' if KS <= crit_KS else 'FAIL'
     print(f"\n\tKolmogorov-Smirnov: {KS:.6f}",
           f"\n\tCritical value: {crit_KS:.6f} -- {result}")
+
 
 def _report_chi2_(chi2, crit_chi2):
     """Reports the test Chi-square statistic and compares it to critical values,
@@ -74,12 +78,14 @@ def _report_chi2_(chi2, crit_chi2):
     print(f"\n\tChi square: {chi2:.6f}",
           f"\n\tCritical value: {crit_chi2:.6f} -- {result}")
 
+
 def _report_Z_(df, high_Z, crit_Z):
     """Reports the test Z scores and compares them to a critical value,
     depending on the confidence level
     """
     print(f"\n\tCritical Z-score:{crit_Z}.")
     _inform_(df, high_Z, crit_Z)
+
 
 def _report_summ_(test, high_diff):
     """Reports the Summation Test Absolute Differences between the Found and
@@ -92,7 +98,7 @@ def _report_summ_(test, high_diff):
     else:
         print('\nThe top Absolute Differences are:\n')
         print(test.sort_values('AbsDif', ascending=False))
-    
+
 
 def _report_test_(test, high=None, crit_vals=None):
     """Main report function. Receives the Args: to report with, initiates
@@ -109,11 +115,12 @@ def _report_test_(test, high=None, crit_vals=None):
             _report_Z_(test, high, crit_vals['Z'])
         else:
             print('Confidence is currently `None`. Set the confidence level, '
-                    'so as to generate comparable critical values.' )
+                  'so as to generate comparable critical values.')
             if isinstance(high, int):
                 _inform_(test, high, None)
     else:
         _report_summ_(test, high)
+
 
 def _report_mantissa_(stats):
     """Prints the mantissas statistics and their respective reference values
@@ -123,13 +130,13 @@ def _report_mantissa_(stats):
     """
     print("\n", '  Mantissas Test  '.center(52, '#'))
     print(f"\nThe Mantissas MEAN is      {stats['Mean']:.6f}."
-            "\tRef: 0.5")
+          "\tRef: 0.5")
     print(f"The Mantissas VARIANCE is  {stats['Var']:.6f}."
-            "\tRef: 0.08333")
+          "\tRef: 0.08333")
     print(f"The Mantissas SKEWNESS is  {stats['Skew']:.6f}."
-            "\tRef: 0.0")
+          "\tRef: 0.0")
     print(f"The Mantissas KURTOSIS is  {stats['Kurt']:.6f}."
-            "\tRef: -1.2\n")
+          "\tRef: -1.2\n")
 
 
 def _deprecate_inform_(verbose, inform):

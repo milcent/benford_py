@@ -9,7 +9,7 @@ def Z_score(frame, N):
         frame: DataFrame with the expected proportions and the already calculated
             Absolute Diferences between the found and expeccted proportions
         N: sample size
-    
+
     Returns:
         Series of computed Z scores
     """
@@ -28,7 +28,7 @@ def chi_square(frame, ddf, confidence, verbose=True):
         confidence: Confidence level to look up critical value.
         verbose: prints the chi-squre result and compares to the critical
             chi-square for the sample. Defaults to True.
-    
+
     Returns:
         The computed Chi square statistic and the critical chi square
             (according) to the degrees of freedom and confidence level,
@@ -73,7 +73,7 @@ def KS(frame, confidence, N, verbose=True):
         N: Sample size
         verbose: prints the KS result and the critical value for the sample.
             Defaults to True.
-    
+
     Returns:
         The Suprem, which is the greatest absolute difference between the
             Found and the expected proportions, and the Kolmogorov-Smirnov
@@ -98,10 +98,10 @@ def KS(frame, confidence, N, verbose=True):
 
 def KS_2(frame):
     """Computes the Kolmogorov-Smirnov test of the found distributions
-    
+
     Args:
         frame: DataFrame with Foud and Expected distributions.
-    
+
     Returns:
         The Suprem, which is the greatest absolute difference between the
             Found end th expected proportions
@@ -121,7 +121,7 @@ def mad(frame, test, verbose=True):
         test: Test to compute the MAD from (F1D, SD, F2D...)
         verbose: prints the MAD result and compares to limit values of
             conformity. Defaults to True.
-    
+
     Returns:
         The Mean of the Absolute Deviations between the found and expected
             proportions. 
@@ -149,7 +149,7 @@ def mse(frame, verbose=True):
         frame: DataFrame with the already computed Absolute Deviations between
             the found and expected proportions
         verbose: Prints the MSE. Defaults to True.
-    
+
     Returns:
         Mean of the squared differences between the found and the expected proportions.
     """
