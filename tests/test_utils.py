@@ -44,13 +44,13 @@ def test_input_data_array(gen_array):
 
 def test_input_data_wrong_tuple(gen_array, gen_series, gen_data_frame):
     with pytest.raises(TypeError) as context:
-        ut.input_data((gen_array, 'Seq'))
+        ut.input_data((gen_array, 'seq'))
         ut.input_data((gen_series, 'col1'))
         ut.input_data((gen_data_frame, 2))
 
 
 def test_input_data_df(gen_data_frame):
-    tup = ut.input_data((gen_data_frame, 'Seq'))
+    tup = ut.input_data((gen_data_frame, 'seq'))
     assert type(tup[0]) == pd.DataFrame
     assert type(tup[1]) == pd.Series
 
@@ -62,17 +62,17 @@ def test_input_data_wrong_input_type(gen_array):
 
 def test_set_sign_all(gen_data_frame):
     sign_df = ut.set_sign(gen_data_frame, 'all')
-    assert len(sign_df.loc[sign_df.Seq == 0]) == 0
+    assert len(sign_df.loc[sign_df.seq == 0]) == 0
 
 
 def test_set_sign_pos(gen_data_frame):
     sign_df = ut.set_sign(gen_data_frame, 'pos')
-    assert sum(sign_df.Seq <= 0) == 0
+    assert sum(sign_df.seq <= 0) == 0
 
 
 def test_set_sign_neg(gen_data_frame):
     sign_df = ut.set_sign(gen_data_frame, 'neg')
-    assert sum(sign_df.Seq >= 0) == 0
+    assert sum(sign_df.seq >= 0) == 0
 
 
 def test_get_times_10_power_2(gen_data_frame):
@@ -83,13 +83,13 @@ def test_get_times_10_power_2(gen_data_frame):
 def test_get_times_10_power_8(gen_data_frame):
     pow_df = ut.get_times_10_power(gen_data_frame, 8)
     assert pow_df.ZN.dtype == int
-    assert (pow_df.ZN == (pow_df.Seq.abs() * 10 ** 8).astype(int)).all()
+    assert (pow_df.ZN == (pow_df.seq.abs() * 10 ** 8).astype(int)).all()
 
 
 def test_get_times_10_power_0(gen_int_df):
     pow_df = ut.get_times_10_power(gen_int_df)
     assert pow_df.ZN.dtype == int
-    assert (pow_df.ZN == pow_df.Seq.abs()).all()
+    assert (pow_df.ZN == pow_df.seq.abs()).all()
 
 
 def test_get_times_10_power_infer(gen_data_frame):
@@ -100,7 +100,7 @@ def test_get_times_10_power_infer(gen_data_frame):
 
 def test_get_digs_dec_8(gen_array):
     e_digs = ut.get_digs(gen_array, decimals=8)
-    cols = ['Seq', 'ZN', 'F1D', 'F2D', 'F3D', 'SD', 'L2D']
+    cols = ['seq', 'ZN', 'F1D', 'F2D', 'F3D', 'SD', 'L2D']
     assert e_digs.columns.str.contains('|'.join(cols)).all()
     assert (e_digs[['F1D', 'F2D', 'F3D', 'SD', 'L2D']].dtypes == int).all()
     assert e_digs.notna().all().all()
@@ -108,7 +108,7 @@ def test_get_digs_dec_8(gen_array):
 
 def test_get_digs_dec_0(gen_array):
     e_digs = ut.get_digs(gen_array, decimals=0)
-    cols = ['Seq', 'ZN', 'F1D', 'F2D', 'F3D', 'SD', 'L2D']
+    cols = ['seq', 'ZN', 'F1D', 'F2D', 'F3D', 'SD', 'L2D']
     assert e_digs.columns.str.contains('|'.join(cols)).all()
     assert (e_digs[['F1D', 'F2D', 'F3D', 'SD', 'L2D']].dtypes == int).all()
     assert e_digs.notna().all().all()
@@ -116,7 +116,7 @@ def test_get_digs_dec_0(gen_array):
 
 def test_get_digs_dec_2(gen_array):
     e_digs = ut.get_digs(gen_array, decimals=2)
-    cols = ['Seq', 'ZN', 'F1D', 'F2D', 'F3D', 'SD', 'L2D']
+    cols = ['seq', 'ZN', 'F1D', 'F2D', 'F3D', 'SD', 'L2D']
     assert e_digs.columns.str.contains('|'.join(cols)).all()
     assert (e_digs[['F1D', 'F2D', 'F3D', 'SD', 'L2D']].dtypes == int).all()
     assert e_digs.notna().all().all()
@@ -124,7 +124,7 @@ def test_get_digs_dec_2(gen_array):
 
 def test_get_digs_dec_infer(gen_array):
     e_digs = ut.get_digs(gen_array, decimals='infer')
-    cols = ['Seq', 'ZN', 'F1D', 'F2D', 'F3D', 'SD', 'L2D']
+    cols = ['seq', 'ZN', 'F1D', 'F2D', 'F3D', 'SD', 'L2D']
     assert e_digs.columns.str.contains('|'.join(cols)).all()
     assert (e_digs[['F1D', 'F2D', 'F3D', 'SD', 'L2D']].dtypes == int).all()
     assert e_digs.notna().all().all()

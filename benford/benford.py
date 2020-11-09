@@ -39,25 +39,25 @@ class Base(DataFrame):
 
     def __init__(self, data, decimals, sign='all', sec_order=False):
 
-        DataFrame.__init__(self, {'Seq': data})
+        DataFrame.__init__(self, {'seq': data})
 
-        if (self.Seq.dtypes != 'float64') & (self.Seq.dtypes != 'int64'):
+        if (self.seq.dtypes != 'float64') & (self.seq.dtypes != 'int64'):
             raise TypeError("The sequence dtype was not pandas int64 nor "
                             "float64. Convert it to whether int of float, "
                             "and try again.")
 
         if sign == 'all':
-            self.Seq = self.Seq.loc[self.Seq != 0]
+            self.seq = self.seq.loc[self.seq != 0]
         elif sign == 'pos':
-            self.Seq = self.Seq.loc[self.Seq > 0]
+            self.seq = self.seq.loc[self.seq > 0]
         else:
-            self.Seq = self.Seq.loc[self.Seq < 0]
+            self.seq = self.seq.loc[self.seq < 0]
 
         self.dropna(inplace=True)
 
-        ab = self.Seq.abs()
+        ab = self.seq.abs()
 
-        if self.Seq.dtypes == 'int64':
+        if self.seq.dtypes == 'int64':
             self['ZN'] = ab
         else:
             if decimals == 'infer':
@@ -202,9 +202,9 @@ class Summ(DataFrame):
 
     def __init__(self, base, test):
         super(Summ, self).__init__(base.abs()
-                                   .groupby(test)[['Seq']]
+                                   .groupby(test)[['seq']]
                                    .sum())
-        self['Percent'] = self.Seq / self.Seq.sum()
+        self['Percent'] = self.seq / self.seq.sum()
         self.columns.values[0] = 'Sum'
         self.expected = 1 / len(self)
         self['AbsDif'] = (self.Percent - self.expected).abs()
@@ -437,7 +437,7 @@ class Benford(object):
         """Adds a Mantissas object to the tests, with all its statistics and
         plotting capabilities. 
         """
-        self.Mantissas = Mantissas(self.base.Seq)
+        self.Mantissas = Mantissas(self.base.seq)
         self.tests.append('Mantissas')
         if self.verbose:
             print('\nAdded Mantissas test.')
@@ -511,18 +511,18 @@ class Source(DataFrame):
             raise ValueError("The -sign- argument must be "
                              "'all','pos' or 'neg'.")
 
-        DataFrame.__init__(self, {'Seq': data})
+        DataFrame.__init__(self, {'seq': data})
 
-        if self.Seq.dtypes != 'float64' and self.Seq.dtypes != 'int64':
+        if self.seq.dtypes != 'float64' and self.seq.dtypes != 'int64':
             raise TypeError('The sequence dtype was not pandas int64 nor float64.\n'
                             'Convert it to whether int64 of float64, and try again.')
 
         if sign == 'pos':
-            self.Seq = self.Seq.loc[self.Seq > 0]
+            self.seq = self.seq.loc[self.seq > 0]
         elif sign == 'neg':
-            self.Seq = self.Seq.loc[self.Seq < 0]
+            self.seq = self.seq.loc[self.seq < 0]
         else:
-            self.Seq = self.Seq.loc[self.Seq != 0]
+            self.seq = self.seq.loc[self.seq != 0]
 
         self.dropna(inplace=True)
         #: (bool): verbose or not
@@ -531,16 +531,16 @@ class Source(DataFrame):
             print(f"\nInitialized sequence with {len(self)} registries.")
 
         if sec_order:
-            self.Seq = subtract_sorted(self.Seq.copy())
+            self.seq = subtract_sorted(self.seq.copy())
             self.dropna(inplace=True)
             self.reset_index(inplace=True)
             if verbose:
                 print('Second Order Test. Initial series reduced '
-                      f'to {len(self.Seq)} entries.')
+                      f'to {len(self.seq)} entries.')
 
-        ab = self.Seq.abs()
+        ab = self.seq.abs()
 
-        if self.Seq.dtypes == 'int64':
+        if self.seq.dtypes == 'int64':
             self['ZN'] = ab
         else:
             if decimals == 'infer':
@@ -564,10 +564,10 @@ class Source(DataFrame):
                 inclination. Defaults to True.
             figsize: tuple that sets the figure dimensions.
         """
-        self['Mant'] = get_mantissas(self.Seq.abs())
+        self['Mant'] = get_mantissas(self.seq.abs())
         if report:
-            p = self[['Seq', 'Mant']]
-            p = p.loc[p.Seq > 0].sort_values('Mant')
+            p = self[['seq', 'Mant']]
+            p = p.loc[p.seq > 0].sort_values('Mant')
             print(f"The Mantissas MEAN is {p.Mant.mean()}. Ref: 0.5.")
             print(f"The Mantissas VARIANCE is {p.Mant.var()}. Ref: 0.083333.")
             print(f"The Mantissas SKEWNESS is {p.Mant.skew()}. \tRef: 0.")
@@ -893,11 +893,11 @@ class Source(DataFrame):
         if top_Rep is not None and not isinstance(top_Rep, int):
             raise ValueError('The top_Rep argument must be an int or None.')
 
-        dup = self[['Seq']][self.Seq.duplicated(keep=False)]
-        dup_count = dup.groupby(self.Seq).count()
+        dup = self[['seq']][self.seq.duplicated(keep=False)]
+        dup_count = dup.groupby(self.seq).count()
 
         dup_count.index.names = ['Entries']
-        dup_count.rename(columns={'Seq': 'Count'}, inplace=True)
+        dup_count.rename(columns={'seq': 'Count'}, inplace=True)
 
         dup_count.sort_values('Count', ascending=False, inplace=True)
 
