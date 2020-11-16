@@ -1,5 +1,25 @@
 # Benford for Python
 
+--------------------------------------------------------------------------------
+
+**Citing**
+
+
+If you find *Benford_py* useful in your research, please consider adding the following citation:
+
+```bibtex
+@misc{benford_py,
+      author = {Marcel, Milcent},
+      title = {{Benford_py: a Python Implementation of Benford's Law Tests}},
+      year = {2017},
+      publisher = {GitHub},
+      journal = {GitHub repository},
+      howpublished = {\url{https://github.com/milcent/benford_py}},
+}
+```
+
+--------------------------------------------------------------------------------
+
 `current version = 0.2.7`
 
 ### Python versions >= 3.6
