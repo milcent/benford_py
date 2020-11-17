@@ -94,7 +94,7 @@ def get_times_10_power(data, decimals=2):
     return data
 
 
-def extract_digs(data, decimals=2, sign="all"):
+def get_digs(data, decimals=2, sign="all"):
     """ 
     """
     df = DataFrame({'seq': _check_num_array_(data)})
@@ -123,30 +123,39 @@ def extract_digs(data, decimals=2, sign="all"):
     return df
 
 
+def get_proportions(data):
+    """
+    """
+    counts = data.value_counts()
+    # get their relative frequencies
+    proportions = data.value_counts(normalize=True)
+    # crate dataframe from them
+    return DataFrame({'Counts': counts, 'Found': proportions}).sort_index()
+
+
+def join_expect_found_diff(data, digs):
+    """
+    """
+    dd = _test_(digs).join(data).fillna(0)
+    # create column with absolute differences
+    dd['Dif'] = dd.Found - dd.Expected
+    dd['AbsDif'] = dd.Dif.abs()
+    return dd
+
+
 def prepare(data, digs, limit_N=None, simple=False, confidence=None):
     """Transforms the original number sequence into a DataFrame reduced
     by the ocurrences of the chosen digits, creating other computed
     columns
     """
-    N = _set_N_(len(data), limit_N=limit_N)
-
-    # get the number of occurrences of the digits
-    counts = data.value_counts()
-    # get their relative frequencies
-    proportions = data.value_counts(normalize=True)
-    # crate dataframe from them
-    dd = DataFrame({'Counts': counts, 'Found': proportions}).sort_index()
-    # join the dataframe with the one of expected Benford's frequencies
-    dd = _test_(digs).join(dd).fillna(0)
-    # create column with absolute differences
-    dd['Dif'] = dd.Found - dd.Expected
-    dd['AbsDif'] = dd.Dif.abs()
-    print(dd.Found)
+    df = get_proportions(data)
+    dd = join_expect_found_diff(df, digs)
     if simple:
         del dd['Dif']
         return dd
     else:
         if confidence is not None:
+            N = _set_N_(len(data), limit_N=limit_N)
             dd['Z_score'] = Z_score(dd, N)
         return N, dd
 

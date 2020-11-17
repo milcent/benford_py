@@ -29,3 +29,5 @@ _templates
 
 # pytest
 .pytest_cache/
+#VSCode
+.vscode/
