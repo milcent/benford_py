@@ -210,3 +210,28 @@ def test_join_exp_foun_diff_L2D(gen_proportions_L2D):
     assert (jefd_L2D.columns.str.contains('|'.join(
         ['Expected', 'Counts', 'Found', 'Dif', 'AbsDif']))).all()
     assert jefd_L2D.isna().sum().sum() == 0
+
+
+def test_prepare_F1D_simple(gen_series):
+    prep_F1D = ut.prepare(gen_series, 1, simple=True)
+    assert "Dif" not in prep_F1D.columns
+
+
+def test_prepare_F2D_simple(gen_series):
+    prep_F2D = ut.prepare(gen_series, 2, simple=True)
+    assert "Dif" not in prep_F2D.columns
+
+
+def test_prepare_F3D_simple(gen_series):
+    prep_F3D = ut.prepare(gen_series, 3, simple=True)
+    assert "Dif" not in prep_F3D.columns
+
+
+def test_prepare_SD_simple(gen_series):
+    prep_SD = ut.prepare(gen_series, 22, simple=True)
+    assert "Dif" not in prep_SD.columns
+
+
+def test_prepare_L2D_simple(gen_series):
+    prep_L2D = ut.prepare(gen_series, -2, simple=True)
+    assert "Dif" not in prep_L2D.columns
