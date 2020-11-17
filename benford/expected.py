@@ -97,6 +97,7 @@ class LastTwo(DataFrame):
                           save_kwargs=save_kwargs)
 
 
+
 def _test_(digs):
     """Chooses the Exxpected class to be used in a test
 

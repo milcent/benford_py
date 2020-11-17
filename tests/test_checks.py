@@ -4,6 +4,7 @@ import numpy as np
 from ..benford import checks as ch
 
 
+
 def test_check_digs_zero():
     with pytest.raises(ValueError) as context:
         ch._check_digs_(0)
@@ -83,9 +84,16 @@ def test_check_test_not_in_rev_digs():
 
 
 def test_check_test_float():
-    with pytest.raises(ValueError) as context:
+    with pytest.raises(TypeError) as context:
         ch._check_test_(2.0)
         ch._check_test_(-3)
+
+
+def test_check_test_bool():
+    with pytest.raises(ValueError) as context:
+        ch._check_test_(False)
+    with pytest.raises(TypeError) as context:
+        ch._check_test_(None)
 
 
 def test_check_decimals_positive_int():
@@ -228,37 +236,33 @@ def test_check_num_array_list_of_float():
     assert ch._check_num_array_([1, 2, 3, 4, 5.0, 6.3, .17]).dtype == float
 
 
-def test_check_num_array_npArray_float():
-    assert ch._check_num_array_(
-        np.array([1, 2, 3, 4, 5.0, 6.3, .17])).dtype == float
+def test_check_num_array_npArray_float(small_float_array):
+    assert ch._check_num_array_(small_float_array).dtype == float
 
 
-def test_check_num_array_npArray_int():
-    assert ch._check_num_array_(np.array([1, 2, 3, 4, 5, 6, 7])).dtype == int
+def test_check_num_array_npArray_int(small_int_array):
+    assert ch._check_num_array_(small_int_array).dtype == int
 
 
-def test_check_num_array_npArray_str_num():
-    assert ch._check_num_array_(
-        np.array(['1', '2', '3', '4', '5', '6', '7'])).dtype == float
+def test_check_num_array_npArray_str_num(small_str_dig_array):
+    assert ch._check_num_array_(small_str_dig_array).dtype == float
 
 
-def test_check_num_array_npArray_str():
+def test_check_num_array_npArray_str(small_str_foo_array):
     with pytest.raises(ValueError) as context:
-        ch._check_num_array_(np.array(['foo', 'baar', 'baz', 'hixks']))
+        ch._check_num_array_(small_str_foo_array)
 
 
-def test_check_num_array_Series_float():
-    assert ch._check_num_array_(
-        pd.Series([1, 2, 3, 4, 5.0, 6.3, .17])).dtype == float
+def test_check_num_array_Series_float(small_float_series):
+    assert ch._check_num_array_(small_float_series).dtype == float
 
 
-def test_check_num_array_Series_int():
-    assert ch._check_num_array_(pd.Series([1, 2, 3, 4, 5, 6, 7])).dtype == int
+def test_check_num_array_Series_int(small_int_series):
+    assert ch._check_num_array_(small_int_series).dtype == int
 
 
-def test_check_num_array_Series_str_num():
-    assert ch._check_num_array_(
-        pd.Series(['1', '2', '3', '4', '5', '6', '7'])).dtype == float
+def test_check_num_array_Series_str_num(small_str_dig_series):
+    assert ch._check_num_array_(small_str_dig_series).dtype == float
 
 
 def test_check_num_array_Series_str():
@@ -266,9 +270,8 @@ def test_check_num_array_Series_str():
         ch._check_num_array_(pd.Series(['foo', 'baar', 'baz', 'hixks']))
 
 
-def test_check_num_array_npArray_str_num():
-    assert ch._check_num_array_(
-        np.array(['1', '2', '3', '4', '5', '6', '7'])).dtype == float
+def test_check_num_array_npArray_str_num(small_str_dig_array):
+    assert ch._check_num_array_(small_str_dig_array).dtype == float
 
 
 def test_check_num_array_dict():

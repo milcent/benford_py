@@ -28,9 +28,10 @@ def _check_test_(test):
             raise ValueError(f'Test was set to {test}. Should be one of '
                              f'{rev_digs.keys()}')
     else:
-        raise ValueError('Wrong value chosen for test parameter. Possible '
-                         f'values are\n {list(digs_dict.keys())} for ints and'
-                         f'\n {list(rev_digs.keys())} for strings.')
+        raise TypeError('Wrong type chosen for test parameter. Possible '
+                        f'values are\n {list(digs_dict.keys())} for ints and'
+                        f'\n {list(rev_digs.keys())} for strings.')
+
 
 
 def _check_decimals_(decimals):

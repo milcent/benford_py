@@ -1,3 +1,5 @@
+from pandas import Series, DataFrame
+from numpy import array, arange, log10, ones, abs, cos, sin, pi, sqrt, mean
 import warnings
 from pandas import Series, DataFrame
 from numpy import arange, log10, ones, abs, cos, sin, pi, mean
@@ -15,6 +17,7 @@ from .reports import _inform_, _report_mad_, _report_test_, _deprecate_inform_,\
     _report_mantissa_
 from .stats import Z_score, chi_sq, chi_sq_2, kolmogorov_smirnov,\
     kolmogorov_smirnov_2
+
 
 
 class Base(DataFrame):
@@ -212,6 +215,7 @@ class Test(DataFrame):
             self.show_plot(save_plot=save_plot, save_kwargs=save_kwargs)
 
 
+
 class Summ(DataFrame):
     """Gets the base object and outputs a Summation test object
 
@@ -278,6 +282,7 @@ class Summ(DataFrame):
         _report_test_(self, high_diff)
         if show_plot:
             self.show_plot(save_plot=save_plot, save_kwargs=save_kwargs)
+
 
 
 class Mantissas(object):
@@ -372,6 +377,7 @@ class Mantissas(object):
         plot_mantissa_arc_test(self.data, self.stats, decimals=decimals, 
                                grid=grid, figsize=figsize,
                                save_plot=save_plot, save_kwargs=save_kwargs)
+
 
 
 class Benford(object):
