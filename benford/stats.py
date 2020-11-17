@@ -1,5 +1,5 @@
 from numpy import sqrt
-from .constants import crit_chi2, KS_crit
+from .constants import crit_chi2, KS_crit, mad_dict, digs_dict
 
 
 def Z_score(frame, N):
