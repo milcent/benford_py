@@ -23,25 +23,6 @@ def test_set_N_float():
     with pytest.raises(ValueError) as context:
         ut._set_N_(127.8, -100)
 
-<<<<<<< HEAD
-
-@pytest.fixture
-def gen_array():
-    arr = np.random.rand(3000) * np.random.randn(3000) * 1000
-    return np.abs(arr)
-
-
-@pytest.fixture
-def gen_series(gen_array):
-    return pd.Series(gen_array)
-
-
-@pytest.fixture
-def gen_data_frame(gen_array):
-    return pd.DataFrame({'col1': gen_array, 'col2': gen_array})
-
-=======
->>>>>>> tests
 
 def test_get_mantissas_less_than_1(gen_array):
     assert sum(ut.get_mantissas(gen_array) > 1) == 0
@@ -63,11 +44,7 @@ def test_input_data_array(gen_array):
     assert type(tup[1]) == pd.Series
 
 
-<<<<<<< HEAD
-def test_input_data_wrong_tuple():
-=======
 def test_input_data_wrong_tuple(gen_array, gen_series, gen_data_frame):
->>>>>>> tests
     with pytest.raises(TypeError) as context:
         ut.input_data((gen_array, 'seq'))
         ut.input_data((gen_series, 'col1'))

@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 import pandas as pd
-from benford import utils as ut
+from ..benford import utils as ut
 
 
 @pytest.fixture

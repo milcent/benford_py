@@ -1,5 +1,5 @@
 import pytest
-from benford import expected as ex
+from ..benford import expected as ex
 
 
 def test__test_1():
