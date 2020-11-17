@@ -6,7 +6,7 @@ from ..benford import utils as ut
 
 @pytest.fixture
 def gen_array():
-    return np.random.rand(3000) * np.random.randn(3000) * 1000
+    return np.abs(np.random.rand(3000) * np.random.randn(3000) * 1000)
 
 
 @pytest.fixture
