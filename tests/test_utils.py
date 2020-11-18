@@ -235,3 +235,83 @@ def test_prepare_SD_simple(gen_series):
 def test_prepare_L2D_simple(gen_series):
     prep_L2D = ut.prepare(gen_series, -2, simple=True)
     assert "Dif" not in prep_L2D.columns
+
+
+def test_prepare_F1D(gen_series):
+    ser = gen_series
+    lf = len(ser)
+    num, prep_F1D = ut.prepare(ser, 1)
+    assert "Z_score" in prep_F1D.columns
+    assert num == lf
+
+
+def test_prepare_F2D(gen_series):
+    ser = gen_series
+    lf = len(ser)
+    num, prep_F2D = ut.prepare(ser, 2)
+    assert "Z_score" in prep_F2D.columns
+    assert num == lf
+
+
+def test_prepare_F3D(gen_series):
+    ser = gen_series
+    lf = len(ser)
+    num, prep_F3D = ut.prepare(ser, 3)
+    assert "Z_score" in prep_F3D.columns
+    assert num == lf
+
+
+def test_prepare_SD(gen_series):
+    ser = gen_series
+    lf = len(ser)
+    num, prep_SD = ut.prepare(ser, 22)
+    assert "Z_score" in prep_SD.columns
+    assert num == lf
+
+
+def test_prepare_L2D(gen_series):
+    ser = gen_series
+    lf = len(ser)
+    num, prep_L2D = ut.prepare(ser, -2)
+    assert "Z_score" in prep_L2D.columns
+    assert num == lf
+
+
+def test_prepare_F1D_N(gen_N, gen_series):
+    ser = gen_series
+    n_diff = gen_N
+    num, prep_F1D = ut.prepare(ser, 1, limit_N=n_diff)
+    assert "Z_score" in prep_F1D.columns
+    assert num == n_diff
+
+
+def test_prepare_F2D_N(gen_N, gen_series):
+    ser = gen_series
+    n_diff = gen_N
+    num, prep_F2D = ut.prepare(ser, 2, limit_N=n_diff)
+    assert "Z_score" in prep_F2D.columns
+    assert num == n_diff
+
+
+def test_prepare_F3D_N(gen_N, gen_series):
+    ser = gen_series
+    n_diff = gen_N
+    num, prep_F3D = ut.prepare(ser, 3, limit_N=n_diff)
+    assert "Z_score" in prep_F3D.columns
+    assert num == n_diff
+
+
+def test_prepare_SD_N(gen_N, gen_series):
+    ser = gen_series
+    n_diff = gen_N
+    num, prep_SD = ut.prepare(ser, 22, limit_N=n_diff)
+    assert "Z_score" in prep_SD.columns
+    assert num == n_diff
+
+
+def test_prepare_L2D_N(gen_N, gen_series):
+    ser = gen_series
+    n_diff = gen_N
+    num, prep_L2D = ut.prepare(ser, -2, limit_N=n_diff)
+    assert "Z_score" in prep_L2D.columns
+    assert num == n_diff
