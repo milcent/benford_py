@@ -143,7 +143,7 @@ def join_expect_found_diff(data, digs):
     return dd
 
 
-def prepare(data, digs, limit_N=None, simple=False, confidence=None):
+def prepare(data, digs, limit_N=None, simple=False):
     """Transforms the original number sequence into a DataFrame reduced
     by the ocurrences of the chosen digits, creating other computed
     columns
@@ -154,9 +154,8 @@ def prepare(data, digs, limit_N=None, simple=False, confidence=None):
         del dd['Dif']
         return dd
     else:
-        if confidence is not None:
-            N = _set_N_(len(data), limit_N=limit_N)
-            dd['Z_score'] = Z_score(dd, N)
+        N = _set_N_(len(data), limit_N=limit_N)
+        dd['Z_score'] = Z_score(dd, N)
         return N, dd
 
 
