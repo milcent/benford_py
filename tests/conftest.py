@@ -5,8 +5,15 @@ from ..benford import utils as ut
 
 
 @pytest.fixture
-def gen_array():
-    return np.abs(np.random.rand(3000) * np.random.randn(3000) * 1000)
+def gen_N():
+    return np.random.randint(0, 25000)
+
+
+@pytest.fixture
+def gen_array(gen_N):
+    num = gen_N
+    return np.abs(np.random.rand(num) * np.random.randn(num) * 
+                  np.random.randint(1, num))
 
 
 @pytest.fixture
