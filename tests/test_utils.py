@@ -5,13 +5,12 @@ from ..benford import utils as ut
 
 
 
-def test_set_N_Limit_None():
-    assert ut._set_N_(100, None) == 100
+def test_set_N_Limit_None(gen_N):
+    assert ut._set_N_(gen_N, None) == gen_N
 
 
-def test_set_N_Limit_greater():
-    assert ut._set_N_(100, 99) == 99
-    assert ut._set_N_(1000, 750) == 750
+def test_set_N_Limit_greater(gen_N, gen_N_lower):
+    assert ut._set_N_(gen_N, gen_N_lower) == gen_N_lower
 
 
 def test_set_N_negative():
@@ -23,10 +22,12 @@ def test_set_N_float():
     with pytest.raises(ValueError) as context:
         ut._set_N_(127.8, -100)
 
+def test_set_N_zero(gen_N):
+    assert ut._set_N_(0, None) == 1
+    assert ut._set_N_(0, gen_N) == 1
 
 def test_get_mantissas_less_than_1(gen_array):
     assert sum(ut.get_mantissas(gen_array) > 1) == 0
-
 
 
 def test_get_mantissas_less_than_0(gen_array):
@@ -210,3 +211,108 @@ def test_join_exp_foun_diff_L2D(gen_proportions_L2D):
     assert (jefd_L2D.columns.str.contains('|'.join(
         ['Expected', 'Counts', 'Found', 'Dif', 'AbsDif']))).all()
     assert jefd_L2D.isna().sum().sum() == 0
+
+
+def test_prepare_F1D_simple(gen_series):
+    prep_F1D = ut.prepare(gen_series, 1, simple=True)
+    assert "Dif" not in prep_F1D.columns
+
+
+def test_prepare_F2D_simple(gen_series):
+    prep_F2D = ut.prepare(gen_series, 2, simple=True)
+    assert "Dif" not in prep_F2D.columns
+
+
+def test_prepare_F3D_simple(gen_series):
+    prep_F3D = ut.prepare(gen_series, 3, simple=True)
+    assert "Dif" not in prep_F3D.columns
+
+
+def test_prepare_SD_simple(gen_series):
+    prep_SD = ut.prepare(gen_series, 22, simple=True)
+    assert "Dif" not in prep_SD.columns
+
+
+def test_prepare_L2D_simple(gen_series):
+    prep_L2D = ut.prepare(gen_series, -2, simple=True)
+    assert "Dif" not in prep_L2D.columns
+
+
+def test_prepare_F1D(gen_series):
+    ser = gen_series
+    lf = len(ser)
+    num, prep_F1D = ut.prepare(ser, 1)
+    assert "Z_score" in prep_F1D.columns
+    assert num == lf
+
+
+def test_prepare_F2D(gen_series):
+    ser = gen_series
+    lf = len(ser)
+    num, prep_F2D = ut.prepare(ser, 2)
+    assert "Z_score" in prep_F2D.columns
+    assert num == lf
+
+
+def test_prepare_F3D(gen_series):
+    ser = gen_series
+    lf = len(ser)
+    num, prep_F3D = ut.prepare(ser, 3)
+    assert "Z_score" in prep_F3D.columns
+    assert num == lf
+
+
+def test_prepare_SD(gen_series):
+    ser = gen_series
+    lf = len(ser)
+    num, prep_SD = ut.prepare(ser, 22)
+    assert "Z_score" in prep_SD.columns
+    assert num == lf
+
+
+def test_prepare_L2D(gen_series):
+    ser = gen_series
+    lf = len(ser)
+    num, prep_L2D = ut.prepare(ser, -2)
+    assert "Z_score" in prep_L2D.columns
+    assert num == lf
+
+
+def test_prepare_F1D_N(gen_N, gen_series):
+    ser = gen_series
+    n_diff = gen_N
+    num, prep_F1D = ut.prepare(ser, 1, limit_N=n_diff)
+    assert "Z_score" in prep_F1D.columns
+    assert num == n_diff
+
+
+def test_prepare_F2D_N(gen_N, gen_series):
+    ser = gen_series
+    n_diff = gen_N
+    num, prep_F2D = ut.prepare(ser, 2, limit_N=n_diff)
+    assert "Z_score" in prep_F2D.columns
+    assert num == n_diff
+
+
+def test_prepare_F3D_N(gen_N, gen_series):
+    ser = gen_series
+    n_diff = gen_N
+    num, prep_F3D = ut.prepare(ser, 3, limit_N=n_diff)
+    assert "Z_score" in prep_F3D.columns
+    assert num == n_diff
+
+
+def test_prepare_SD_N(gen_N, gen_series):
+    ser = gen_series
+    n_diff = gen_N
+    num, prep_SD = ut.prepare(ser, 22, limit_N=n_diff)
+    assert "Z_score" in prep_SD.columns
+    assert num == n_diff
+
+
+def test_prepare_L2D_N(gen_N, gen_series):
+    ser = gen_series
+    n_diff = gen_N
+    num, prep_L2D = ut.prepare(ser, -2, limit_N=n_diff)
+    assert "Z_score" in prep_L2D.columns
+    assert num == n_diff

@@ -724,10 +724,10 @@ class Source(DataFrame):
             self.verbose = False
             show_plot = False
             df = prepare(temp[digs_dict[digs]], digs, limit_N=limit_N,
-                         simple=True, confidence=None)
+                         simple=True)
         else:
             N, df = prepare(temp[digs_dict[digs]], digs, limit_N=limit_N,
-                            simple=False, confidence=confidence)
+                            simple=False)
 
         if self.verbose:
             print(f"\nTest performed on {len(temp)} registries.\n"
@@ -819,11 +819,9 @@ class Source(DataFrame):
         if simple:
             self.verbose = False
             show_plot = False
-            df = prepare(temp['SD'], 22, limit_N=limit_N, simple=True,
-                         confidence=None)
+            df = prepare(temp['SD'], 22, limit_N=limit_N, simple=True)
         else:
-            N, df = prepare(temp['SD'], 22, limit_N=limit_N, simple=False,
-                            confidence=confidence)
+            N, df = prepare(temp['SD'], 22, limit_N=limit_N, simple=False)
 
         if self.verbose:
             print(f"\nTest performed on {len(temp)} registries.\nDiscarded "
@@ -907,11 +905,9 @@ class Source(DataFrame):
         if simple:
             self.verbose = False
             show_plot = False
-            df = prepare(temp['L2D'], -2, limit_N=limit_N, simple=True,
-                         confidence=None)
+            df = prepare(temp['L2D'], -2, limit_N=limit_N, simple=True)
         else:
-            N, df = prepare(temp['L2D'], -2, limit_N=limit_N, simple=False,
-                            confidence=confidence)
+            N, df = prepare(temp['L2D'], -2, limit_N=limit_N, simple=False)
 
         if self.verbose:
             print(f"\nTest performed on {len(temp)} registries.\n\nDiscarded "

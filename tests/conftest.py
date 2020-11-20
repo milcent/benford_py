@@ -5,8 +5,19 @@ from ..benford import utils as ut
 
 
 @pytest.fixture
-def gen_array():
-    return np.random.rand(3000) * np.random.randn(3000) * 1000
+def gen_N():
+    return np.random.randint(0, 25000)
+
+
+@pytest.fixture
+def gen_N_lower(gen_N):
+    return np.random.randint(0, gen_N)
+
+@pytest.fixture
+def gen_array(gen_N):
+    num = gen_N
+    return np.abs(np.random.rand(num) * np.random.randn(num) * 
+                  np.random.randint(1, num))
 
 
 @pytest.fixture
@@ -92,3 +103,28 @@ def gen_proportions_SD(gen_get_digs_df):
 @pytest.fixture
 def gen_proportions_L2D(gen_get_digs_df):
     return ut.get_proportions(gen_get_digs_df.L2D)
+
+
+@pytest.fixture
+def gen_join_expect_found_diff_F1D(gen_proportions_F1D):
+    return ut.join_expect_found_diff(gen_proportions_F1D, 1)
+
+
+@pytest.fixture
+def gen_join_expect_found_diff_F2D(gen_proportions_F2D):
+    return ut.join_expect_found_diff(gen_proportions_F2D, 2)
+
+
+@pytest.fixture
+def gen_join_expect_found_diff_F3D(gen_proportions_F3D):
+    return ut.join_expect_found_diff(gen_proportions_F3D, 3)
+
+
+@pytest.fixture
+def gen_join_expect_found_diff_SD(gen_proportions_SD):
+    return ut.join_expect_found_diff(gen_proportions_SD, 22)
+
+
+@pytest.fixture
+def gen_join_expect_found_diff_L2D(gen_proportions_L2D):
+    return ut.join_expect_found_diff(gen_proportions_L2D, -2)

@@ -10,13 +10,13 @@ def _set_N_(len_df, limit_N):
     """"""
     # Assigning to N the superior limit or the lenght of the series
     if limit_N is None or limit_N > len_df:
-        return len_df
+        return max(1, len_df)
     # Check on limit_N being a positive integer
     else:
         if limit_N < 0 or not isinstance(limit_N, int):
             raise ValueError("limit_N must be None or a positive integer.")
         else:
-            return limit_N
+            return max(1, limit_N)
 
 
 def get_mantissas(arr):
@@ -143,7 +143,7 @@ def join_expect_found_diff(data, digs):
     return dd
 
 
-def prepare(data, digs, limit_N=None, simple=False, confidence=None):
+def prepare(data, digs, limit_N=None, simple=False):
     """Transforms the original number sequence into a DataFrame reduced
     by the ocurrences of the chosen digits, creating other computed
     columns
@@ -154,9 +154,8 @@ def prepare(data, digs, limit_N=None, simple=False, confidence=None):
         del dd['Dif']
         return dd
     else:
-        if confidence is not None:
-            N = _set_N_(len(data), limit_N=limit_N)
-            dd['Z_score'] = Z_score(dd, N)
+        N = _set_N_(len(data), limit_N=limit_N)
+        dd['Z_score'] = Z_score(dd, N)
         return N, dd
 
 
