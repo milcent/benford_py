@@ -11,8 +11,7 @@ def Z_score(frame, N):
         N: sample size
 
     Returns:
-        Series of computed Z scores, or zero if N==0, so there is no
-            DivisionByZero
+        Series of computed Z scores
     """
     return (frame.AbsDif - (1 / (2 * N))) / sqrt(
            (frame.Expected * (1. - frame.Expected)) / N)
