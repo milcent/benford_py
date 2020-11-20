@@ -5,13 +5,12 @@ from ..benford import utils as ut
 
 
 
-def test_set_N_Limit_None():
-    assert ut._set_N_(100, None) == 100
+def test_set_N_Limit_None(gen_N):
+    assert ut._set_N_(gen_N, None) == gen_N
 
 
-def test_set_N_Limit_greater():
-    assert ut._set_N_(100, 99) == 99
-    assert ut._set_N_(1000, 750) == 750
+def test_set_N_Limit_greater(gen_N, gen_N_lower):
+    assert ut._set_N_(gen_N, gen_N_lower) == gen_N_lower
 
 
 def test_set_N_negative():
@@ -23,10 +22,12 @@ def test_set_N_float():
     with pytest.raises(ValueError) as context:
         ut._set_N_(127.8, -100)
 
+def test_set_N_zero(gen_N):
+    assert ut._set_N_(0, None) == 1
+    assert ut._set_N_(0, gen_N) == 1
 
 def test_get_mantissas_less_than_1(gen_array):
     assert sum(ut.get_mantissas(gen_array) > 1) == 0
-
 
 
 def test_get_mantissas_less_than_0(gen_array):

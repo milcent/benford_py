@@ -10,6 +10,10 @@ def gen_N():
 
 
 @pytest.fixture
+def gen_N_lower(gen_N):
+    return np.random.randint(0, gen_N)
+
+@pytest.fixture
 def gen_array(gen_N):
     num = gen_N
     return np.abs(np.random.rand(num) * np.random.randn(num) * 

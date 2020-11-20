@@ -14,8 +14,6 @@ def Z_score(frame, N):
         Series of computed Z scores, or zero if N==0, so there is no
             DivisionByZero
     """
-    if N == 0:
-        return 0
     return (frame.AbsDif - (1 / (2 * N))) / sqrt(
            (frame.Expected * (1. - frame.Expected)) / N)
 
