@@ -4,7 +4,7 @@ from matplotlib.text import Annotation
 from .constants import colors, mad_dict
 
 
-def plot_expected(df, digs, save_plot=None, save_kwargs=None):
+def plot_expected(df, digs, save_plot=None, save_plot_kwargs=None):
     """Plots the Expected Benford Distributions
 
     Args:
@@ -13,7 +13,7 @@ def plot_expected(df, digs, save_plot=None, save_kwargs=None):
         save_plot: string with the path/name of the file in which the generated
             plot will be saved. Uses matplotlib.pyplot.savefig(). File format
             is infered by the file name extension.
-        save_kwargs: dict with any of the kwargs accepted by
+        save_plot_kwargs: dict with any of the kwargs accepted by
             matplotlib.pyplot.savefig()
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
     """
@@ -37,9 +37,9 @@ def plot_expected(df, digs, save_plot=None, save_kwargs=None):
     ax.set_xticklabels(df.index)
 
     if save_plot:
-        if not save_kwargs:
-            save_kwargs = {}
-        plt.savefig(save_plot, **save_kwargs)
+        if not save_plot_kwargs:
+            save_plot_kwargs = {}
+        plt.savefig(save_plot, **save_plot_kwargs)
 
     plt.show(block=False)
 
@@ -64,7 +64,7 @@ def _get_plot_args(digs):
     return x, figsize, text_x
 
 def plot_digs(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False,
-              save_plot=None, save_kwargs=None):
+              save_plot=None, save_plot_kwargs=None):
     """Plots the digits tests results
 
     Args:
@@ -82,7 +82,7 @@ def plot_digs(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False,
         save_plot: string with the path/name of the file in which the generated
             plot will be saved. Uses matplotlib.pyplot.savefig(). File format
             is infered by the file name extension.
-        save_kwargs: dict with any of the kwargs accepted by
+        save_plot_kwargs: dict with any of the kwargs accepted by
             matplotlib.pyplot.savefig()
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
         
@@ -127,14 +127,14 @@ def plot_digs(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False,
     ax.set_xlim(x[0] - 1, x[-1] + 1)
 
     if save_plot:
-        if not save_kwargs:
-            save_kwargs = {}
-        plt.savefig(save_plot, **save_kwargs)
+        if not save_plot_kwargs:
+            save_plot_kwargs = {}
+        plt.savefig(save_plot, **save_plot_kwargs)
 
     plt.show(block=False)
 
 
-def plot_sum(df, figsize, li, text_x=False, save_plot=None, save_kwargs=None):
+def plot_sum(df, figsize, li, text_x=False, save_plot=None, save_plot_kwargs=None):
     """Plots the summation test results
 
     Args:
@@ -144,7 +144,7 @@ def plot_sum(df, figsize, li, text_x=False, save_plot=None, save_kwargs=None):
         save_plot: string with the path/name of the file in which the generated
             plot will be saved. Uses matplotlib.pyplot.savefig(). File format
             is infered by the file name extension.
-        save_kwargs: dict with any of the kwargs accepted by
+        save_plot_kwargs: dict with any of the kwargs accepted by
             matplotlib.pyplot.savefig()
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
     """
@@ -170,14 +170,14 @@ def plot_sum(df, figsize, li, text_x=False, save_plot=None, save_kwargs=None):
     ax.legend()
 
     if save_plot:
-        if not save_kwargs:
-            save_kwargs = {}
-        plt.savefig(save_plot, **save_kwargs)
+        if not save_plot_kwargs:
+            save_plot_kwargs = {}
+        plt.savefig(save_plot, **save_plot_kwargs)
 
     plt.show(block=False)
 
 def plot_ordered_mantissas(col, figsize=(12, 12),
-                           save_plot=None, save_kwargs=None):
+                           save_plot=None, save_plot_kwargs=None):
     """Plots the ordered mantissas and compares them to the expected, straight
         line that should be formed in a Benford-cmpliant set.
 
@@ -187,7 +187,7 @@ def plot_ordered_mantissas(col, figsize=(12, 12),
         save_plot: string with the path/name of the file in which the generated
             plot will be saved. Uses matplotlib.pyplot.savefig(). File format
             is infered by the file name extension.
-        save_kwargs: dict with any of the kwargs accepted by
+        save_plot_kwargs: dict with any of the kwargs accepted by
             matplotlib.pyplot.savefig()
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
  
@@ -208,14 +208,14 @@ def plot_ordered_mantissas(col, figsize=(12, 12),
     plt.legend(loc='upper left')
 
     if save_plot:
-        if not save_kwargs:
-            save_kwargs = {}
-        plt.savefig(save_plot, **save_kwargs)
+        if not save_plot_kwargs:
+            save_plot_kwargs = {}
+        plt.savefig(save_plot, **save_plot_kwargs)
 
     plt.show(block=False);
 
 def plot_mantissa_arc_test(df, gravity_center, grid=True, figsize=12,
-                           save_plot=None, save_kwargs=None):
+                           save_plot=None, save_plot_kwargs=None):
     """Draws thee Mantissa Arc Test after computing X and Y circular coordinates
     for every mantissa and the center of gravity for the set
 
@@ -229,7 +229,7 @@ def plot_mantissa_arc_test(df, gravity_center, grid=True, figsize=12,
         save_plot: string with the path/name of the file in which the generated
             plot will be saved. Uses matplotlib.pyplot.savefig(). File format
             is infered by the file name extension.
-        save_kwargs: dict with any of the kwargs accepted by
+        save_plot_kwargs: dict with any of the kwargs accepted by
             matplotlib.pyplot.savefig()
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
     """
@@ -255,13 +255,13 @@ def plot_mantissa_arc_test(df, gravity_center, grid=True, figsize=12,
     ax.set_title("Mantissas Arc Test")
 
     if save_plot:
-        if not save_kwargs:
-            save_kwargs = {}
-        plt.savefig(save_plot, **save_kwargs)
+        if not save_plot_kwargs:
+            save_plot_kwargs = {}
+        plt.savefig(save_plot, **save_plot_kwargs)
 
     plt.show(block=False);
 
-def plot_roll_mse(roll_series, figsize, save_plot=None, save_kwargs=None):
+def plot_roll_mse(roll_series, figsize, save_plot=None, save_plot_kwargs=None):
     """Shows the rolling MSE plot
 
     Args:
@@ -270,7 +270,7 @@ def plot_roll_mse(roll_series, figsize, save_plot=None, save_kwargs=None):
         save_plot: string with the path/name of the file in which the generated
             plot will be saved. Uses matplotlib.pyplot.savefig(). File format
             is infered by the file name extension.
-        save_kwargs: dict with any of the kwargs accepted by
+        save_plot_kwargs: dict with any of the kwargs accepted by
             matplotlib.pyplot.savefig()
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
     """
@@ -279,13 +279,13 @@ def plot_roll_mse(roll_series, figsize, save_plot=None, save_kwargs=None):
     ax.plot(roll_series, color=colors['m'])
 
     if save_plot:
-        if not save_kwargs:
-            save_kwargs = {}
-        plt.savefig(save_plot, **save_kwargs)
+        if not save_plot_kwargs:
+            save_plot_kwargs = {}
+        plt.savefig(save_plot, **save_plot_kwargs)
 
     plt.show(block=False)
 
-def plot_roll_mad(roll_mad, figsize, save_plot=None, save_kwargs=None):
+def plot_roll_mad(roll_mad, figsize, save_plot=None, save_plot_kwargs=None):
     """Shows the rolling MAD plot
 
     Args:
@@ -294,7 +294,7 @@ def plot_roll_mad(roll_mad, figsize, save_plot=None, save_kwargs=None):
         save_plot: string with the path/name of the file in which the generated
             plot will be saved. Uses matplotlib.pyplot.savefig(). File format
             is infered by the file name extension.
-        save_kwargs: dict with any of the kwargs accepted by
+        save_plot_kwargs: dict with any of the kwargs accepted by
             matplotlib.pyplot.savefig()
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
     """
@@ -308,8 +308,8 @@ def plot_roll_mad(roll_mad, figsize, save_plot=None, save_kwargs=None):
         plt.axhline(y=mad_dict[roll_mad.test][2], color=colors['s'], linewidth=3)
 
     if save_plot:
-        if not save_kwargs:
-            save_kwargs = {}
-        plt.savefig(save_plot, **save_kwargs)
+        if not save_plot_kwargs:
+            save_plot_kwargs = {}
+        plt.savefig(save_plot, **save_plot_kwargs)
 
     plt.show(block=False)
