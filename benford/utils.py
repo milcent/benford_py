@@ -163,11 +163,9 @@ def subtract_sorted(data):
     """Subtracts the sorted sequence elements from each other, discarding zeros.
     Used in the Second Order test
     """
-    sec = data.copy()
-    sec.sort_values(inplace=True)
-    sec = sec - sec.shift(1)
-    sec = sec.loc[sec != 0]
-    return sec
+    temp = data.copy().sort_values(ignore_index=True)
+    temp = (temp - temp.shift(1)).dropna()
+    return temp.loc[temp != 0]
 
 
 def prep_to_roll(start, test):

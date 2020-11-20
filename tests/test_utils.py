@@ -316,3 +316,10 @@ def test_prepare_L2D_N(gen_N, gen_series):
     num, prep_L2D = ut.prepare(ser, -2, limit_N=n_diff)
     assert "Z_score" in prep_L2D.columns
     assert num == n_diff
+
+
+def test_subtraxt_sorted(gen_series):
+    ser = gen_series
+    sort = ut.subtract_sorted(ser)
+    assert len(ser) - len(sort) >= 1
+    assert (sort != 0).all()
