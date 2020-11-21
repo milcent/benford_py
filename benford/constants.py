@@ -62,6 +62,6 @@ crit_chi2 = {8: {80: 11.03, 85: 12.027, 90: 13.362, 95: 15.507,
 
 # Critical Kolmogorov-Smirnov values according to the confidence levels
 # These values are yet to be divided by the square root of the sample size
-KS_crit = {80: 1.075, 85: 1.139, 90: 1.125, 95: 1.36, 99: 1.63,
+KS_crit = {80: 1.075, 85: 1.139, 90: 1.225, 95: 1.36, 99: 1.63,
            99.9: 1.95, 99.99: 2.23, 99.999: 2.47,
            99.9999: 2.7, 99.99999: 2.9, None: None}
