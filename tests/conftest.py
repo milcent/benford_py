@@ -1,7 +1,9 @@
+from random import choice
 import pytest
 import numpy as np
 import pandas as pd
 from ..benford import utils as ut
+from ..benford.constants import confs
 
 
 @pytest.fixture
@@ -10,14 +12,30 @@ def gen_N():
 
 
 @pytest.fixture
+def gen_decimals():
+    return np.random.randint(0, 8)
+
+
+@pytest.fixture
 def gen_N_lower(gen_N):
     return np.random.randint(0, gen_N)
+
 
 @pytest.fixture
 def gen_array(gen_N):
     num = gen_N
     return np.abs(np.random.rand(num) * np.random.randn(num) * 
                   np.random.randint(1, num))
+
+
+@pytest.fixture
+def choose_digs():
+    return choice([1, 2, 3, 22, -2])
+
+
+@pytest.fixture
+def choose_confidence():
+    return choice(list(confs.keys())[1:])
 
 
 @pytest.fixture
@@ -76,8 +94,8 @@ def small_str_foo_series():
 
 
 @pytest.fixture
-def gen_get_digs_df(gen_series):
-    return ut.get_digs(gen_series, decimals=8)
+def gen_get_digs_df(gen_series, gen_decimals):
+    return ut.get_digs(gen_series, decimals=gen_decimals)
 
 
 @pytest.fixture
