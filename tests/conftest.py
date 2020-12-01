@@ -3,7 +3,7 @@ import pytest
 import numpy as np
 import pandas as pd
 from ..benford import utils as ut
-from ..benford.constants import confs
+from ..benford.constants import confs, rev_digs
 
 
 @pytest.fixture
@@ -31,6 +31,11 @@ def gen_array(gen_N):
 @pytest.fixture
 def choose_digs():
     return choice([1, 2, 3, 22, -2])
+
+
+@pytest.fixture
+def choose_test():
+    return choice(["F1D","F2D","F3D","SD","L2D"])
 
 
 @pytest.fixture
@@ -121,6 +126,18 @@ def gen_proportions_SD(gen_get_digs_df):
 @pytest.fixture
 def gen_proportions_L2D(gen_get_digs_df):
     return ut.get_proportions(gen_get_digs_df.L2D)
+
+
+@pytest.fixture
+def gen_proportions_random_test(choose_test, gen_get_digs_df):
+    dig_str = choose_test
+    return ut.get_proportions(gen_get_digs_df[dig_str]), rev_digs[dig_str]
+
+
+@pytest.fixture
+def gen_join_expect_found_diff_random_test(gen_proportions_random_test):
+    rand_test, rand_digs = gen_proportions_random_test
+    return ut.join_expect_found_diff(rand_test, rand_digs)
 
 
 @pytest.fixture
