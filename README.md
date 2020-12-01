@@ -22,42 +22,23 @@ If you find *Benford_py* useful in your research, please consider adding the fol
 
 `current version = 0.2.7`
 
+### See [release notes](https://github.com/milcent/benford_py/releases/) for features in this and in older versions
+
 ### Python versions >= 3.6
 
-## New in this version
+### Installation
 
-### Bug fixes (see [release notes](https://github.com/milcent/benford_py/releases/tag/v0.2.7))
+Benford_py is a package in PyPi, so you can install with pip:
 
-## In version 0.2.6
+`pip install benford_py`
 
-### Bug fixes (see [release notes](https://github.com/milcent/benford_py/releases/tag/v0.2.6))
+Or you can cd into the site-packages subfolder of your python distribution (or environment) and git clone from there:
 
-### In version 0.2.5
+`git clone https://github.com/milcent/benford_py`
 
-- Lib separated in submodules, for better organization, debugging, and further documentation and testing; and
-- Debuted documentation with sphinx and [ReadTheDocs](https://benford-py.readthedocs.io). Mostly the docstrings autodocs functionality for now, but better than nothing.
+For a quick start, please go to the [Demo notebook](https://github.com/milcent/benford_py/blob/master/Demo.ipynb), in which I show examples on how to run the tests with the SPY (S&P 500 ETF) daily returns.
 
-### In version 0.2.1
-
-### Bug fixes (see [release notes](https://github.com/milcent/benford_py/releases/tag/v0.2.1))
-
-## In version 0.2.0
-
-- New Mantissas object, with methods `report`, `show_plot` and `arc_test`, which shows the [Arc Test and Plot](https://github.com/milcent/benford_py/pull/24) (the latter thanks to @im-alexandre);
-- Future Deprecation of the `inform` parameter in favor of `verbose` or `report`, dependeing on the caase; and
-- Whole new Benford class, which holds the initial tests (First Digit,
-Second Digit, First Two Digits, First Three Digits and Last Two Digits) at instantiation, but may also hold all the Second Order tests, Summation tests and Mantissas tests. All statistics are computed and stored for each test as applicable, and the confidence level may be reset for all tests or individually. Reports can then be called on each test, along with the respective plot. See the "Benford Class" section of the [Demo Notebook](https://github.com/milcent/benford_py/blob/master/Demo.ipynb) for more details.
-
-<p align="center">
-  <img alt="New Benford Instance" src="https://github.com/milcent/benford_py/blob/master/img/Benford_Instance.png">
-</p>
-
-## On the RoadMap
-
-- Tests, Tests,... and more tests (I mean **PY**tests!!);
-- More color optionns for ploting;
-- Set up warnings when the usable sample is too small for the especific test;
-- Implement the bootstrap approach for conformity checking ([Issue 15](https://github.com/milcent/benford_py/issues/15))
+### Background
 
 The first digit of a number is its leftmost digit.
 <p align="center">
@@ -94,8 +75,8 @@ were more worn out, that is, more consulted.
 <p align="center">
   <img alt="Simon Newcomb" src="https://github.com/milcent/benford_py/blob/master/img/Simon_Newcomb_APS.jpg">
 </p>
-<p align="center"><h3>
-Simon Newcomb, 1835-1909.</h3>
+<p align="center">
+      Simon Newcomb, 1835-1909.
 </p>
 
 In that same article, Newcomb proposed the formula for the
@@ -179,18 +160,6 @@ matplotlib for vizualization, to deliver results like the one
 bellow and much more.
 
 ![Sample Image](https://github.com/milcent/benford_py/blob/master/img/SPY-f2d-conf_level-95.png)
-
-### Installation
-
-Benford_py is a package in PyPi, so you can install with pip:
-
-`pip install benford_py`
-
-Or you can cd into the site-packages subfolder of your python distribution (or environment) and git clone from there:
-
-`git clone https://github.com/milcent/benford_py`
-
-For a quick start, please go to the [Demo notebook](https://github.com/milcent/benford_py/blob/master/Demo.ipynb), in which I show examples on how to run the tests with the SPY (S&P 500 ETF) daily returns.
 
 It has been a long time since I last tested it in Python 2. The death clock has stopped ticking, so officially it is for Python 3 now. It should work on Linux, Windows and Mac, but please file a bug report if you run into some trouble.
 
