@@ -73,14 +73,14 @@ class Test_check_test():
             ch._check_test_('F4D')
 
     def test_float(self):
-        with pytest.raises(TypeError) as context:
+        with pytest.raises(ValueError) as context:
             ch._check_test_(2.0)
             ch._check_test_(-3)
 
     def test_bool(self):
         with pytest.raises(ValueError) as context:
             ch._check_test_(False)
-        with pytest.raises(TypeError) as context:
+        with pytest.raises(ValueError) as context:
             ch._check_test_(None)
 
 
