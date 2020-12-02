@@ -140,7 +140,7 @@ def plot_sum(df, figsize, li, text_x=False, save_plot=None, save_plot_kwargs=Non
     Args:
         df: DataFrame with the data to be plotted
         figsize: sets the dimensions of the plot figure
-        li -> value with which to draw the horizontal line
+        li: value with which to draw the horizontal line
         save_plot: string with the path/name of the file in which the generated
             plot will be saved. Uses matplotlib.pyplot.savefig(). File format
             is infered by the file name extension.

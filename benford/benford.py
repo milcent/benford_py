@@ -97,7 +97,7 @@ class Test(DataFrame):
         confidence: confidence level to draw lower and upper limits when
             plotting and to limit the top deviations to show.
         limit_N: sets a limit to N as the sample size for the calculation of
-                the Z scores if the sample is too big. Defaults to None.
+            the Z scores if the sample is too big. Defaults to None.
 
     Attributes:
         N: Number of records in the sample to consider in computations
@@ -964,7 +964,7 @@ class Source(DataFrame):
         
         Returns:
             DataFrame with the Expected and Found proportions, and their
-            absolute differences
+                absolute differences
         """
         _check_digs_(digs)
 
