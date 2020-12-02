@@ -167,14 +167,14 @@ class Test(DataFrame):
         """Draws the test plot.
         
         Args:
-        save_plot: string with the path/name of the file in which the generated
-            plot will be saved. Uses matplotlib.pyplot.savefig(). File format
-            is infered by the file name extension.
-        save_plot_kwargs: dict with any of the kwargs accepted by
-            matplotlib.pyplot.savefig()
-            https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
-            Only available when save_plot is a string with the figure file
-            path/name.
+            save_plot: string with the path/name of the file in which the generated
+                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+                is infered by the file name extension.
+            save_plot_kwargs: dict with any of the kwargs accepted by
+                matplotlib.pyplot.savefig()
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+                Only available when save_plot is a string with the figure file
+                path/name.
         """
         x, figsize, text_x = _get_plot_args(self.digs)
         plot_digs(self, x=x, y_Exp=self.Expected, y_Found=self.Found,
@@ -243,15 +243,14 @@ class Summ(DataFrame):
         """Draws the Summation test plot
         
         Args:
-        save_plot: string with the path/name of the file in which the generated
-            plot will be saved. Uses matplotlib.pyplot.savefig(). File format
-            is infered by the file name extension.
-        save_plot_kwargs: dict with any of the kwargs accepted by
-            matplotlib.pyplot.savefig()
-            https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
-            Only available when save_plot is a string with the figure file
-            path/name.
-            
+            save_plot: string with the path/name of the file in which the generated
+                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
+                is infered by the file name extension.
+            save_plot_kwargs: dict with any of the kwargs accepted by
+                matplotlib.pyplot.savefig()
+                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
+                Only available when save_plot is a string with the figure file
+                path/name.
         """
         figsize=(2 * (self.digs ** 2 + 5), 1.5 * (self.digs ** 2 + 5))
         plot_sum(self, figsize, self.expected,
