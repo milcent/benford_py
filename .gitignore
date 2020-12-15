@@ -22,7 +22,7 @@ __pycache__/
 /*.egg-info
 
 # Sphinx docs rendered files
-/docs/build/
+# /docs/build/
 _build
 _static
 _templates
