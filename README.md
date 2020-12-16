@@ -38,6 +38,8 @@ Or you can cd into the site-packages subfolder of your python distribution (or e
 
 For a quick start, please go to the [Demo notebook](https://github.com/milcent/benford_py/blob/master/Demo.ipynb), in which I show examples on how to run the tests with the SPY (S&P 500 ETF) daily returns.
 
+For more fine-grained details of the functions and classes, see the [docs](https://benford-py.readthedocs.io/en/latest/index.html).
+
 ### Background
 
 The first digit of a number is its leftmost digit.
