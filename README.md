@@ -20,7 +20,7 @@ If you find *Benford_py* useful in your research, please consider adding the fol
 
 --------------------------------------------------------------------------------
 
-`current version = 0.3.0`
+`current version = 0.3.2`
 
 ### See [release notes](https://github.com/milcent/benford_py/releases/) for features in this and in older versions
 
@@ -31,6 +31,10 @@ If you find *Benford_py* useful in your research, please consider adding the fol
 Benford_py is a package in PyPi, so you can install with pip:
 
 `pip install benford_py`
+
+or
+
+`pip install benford-py`
 
 Or you can cd into the site-packages subfolder of your python distribution (or environment) and git clone from there:
 
