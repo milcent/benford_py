@@ -46,10 +46,7 @@ For more fine-grained details of the functions and classes, see the [docs](https
 
 ### Background
 
-The first digit of a number is its leftmost digit.
-<p align="center">
-  <img alt="First Digits" src="https://github.com/milcent/benford_py/blob/master/img/First_Digits.png">
-</p>
+The first digit of a number is [its leftmost digit](https://github.com/milcent/benford_py/blob/master/img/First_Digits.png)
 
 Since the first digit of any number can range from "1" to "9"
 (not considering "0"), it would be intuitively expected that the
@@ -67,37 +64,18 @@ a way that the digit "1" is the most frequent, followed by "2",
 which presents the lowest frequency as the first digit.
 
 The expected distributions of the First Digits in a
-Benford-compliant data set are the ones shown below:
-<p align="center">
-  <img alt="Expected Distributions of First Digits" src="https://github.com/milcent/benford_py/blob/master/img/First.png">
-</p>
+Benford-compliant data set are the ones shown [here](https://github.com/milcent/benford_py/blob/master/img/First.png)
 
 The first record on the subject dates from 1881, in the work of
-Simon Newcomb, an American-Canadian astronomer and mathematician,
+[Simon Newcomb](https://github.com/milcent/benford_py/blob/master/img/Simon_Newcomb_APS.jpg), an American-Canadian astronomer and mathematician,
 who noted that in the logarithmic tables the first pages, which
 contained logarithms beginning with the numerals "1" and "2",
 were more worn out, that is, more consulted.
 
-<p align="center">
-  <img alt="Simon Newcomb" src="https://github.com/milcent/benford_py/blob/master/img/Simon_Newcomb_APS.jpg">
-</p>
-<p align="center">
-      Simon Newcomb, 1835-1909.
-</p>
+In that same article, Newcomb proposed the [formula](https://github.com/milcent/benford_py/blob/master/img/formula.png) for the probability of a certain digit "d" 
+being the first digit of a number, given by the following equation.
 
-In that same article, Newcomb proposed the formula for the
-probability of a certain digit "d" being the first digit of a
-number, given by the following equation.
-
-<p align="center">
-  <img alt="First digit equation" src="https://github.com/milcent/benford_py/blob/master/img/formula.png">
-</p>
-<p align="center"> where: P (D = d) is the probability that
-  the first digit is equal to d, and d is an integer ranging 
-  from 1 to 9.
-</p>
-
-In 1938, the American physicist Frank Benford revisited the 
+In 1938, the American physicist [Frank Benford](https://github.com/milcent/benford_py/blob/master/img/2429_Benford-Frank.jpg) revisited the 
 phenomenon, which he called the "Law of Anomalous Numbers," in 
 a survey with more than 20,000 observations of empirical data 
 compiled from various sources, ranging from areas of rivers to
@@ -105,13 +83,6 @@ molecular weights of chemical compounds, including cost data,
 address numbers, population sizes and physical constants. All 
 of them, to a greater or lesser extent, followed such 
 distribution.
-
-<p align="center">
-  <img alt="Frank Benford" src="https://github.com/milcent/benford_py/blob/master/img/2429_Benford-Frank.jpg">
-</p>
-<p align="center">
-  Frank Albert Benford, Jr., 1883-1948.
-</p>
 
 The extent of Benford's work seems to have been one good reason 
 for the phenomenon to be popularized with his name, though 
@@ -162,10 +133,8 @@ performance of Benford's Law-related tests by people using
 Python, whether interactively or in an automated, scripting way.
 
 It uses the versatility of numpy and pandas, along with
-matplotlib for vizualization, to deliver results like the one
-bellow and much more.
+matplotlib for vizualization, to deliver results like [this one](https://github.com/milcent/benford_py/blob/master/img/SPY-f2d-conf_level-95.png) and much more.
 
-![Sample Image](https://github.com/milcent/benford_py/blob/master/img/SPY-f2d-conf_level-95.png)
 
 It has been a long time since I last tested it in Python 2. The death clock has stopped ticking, so officially it is for Python 3 now. It should work on Linux, Windows and Mac, but please file a bug report if you run into some trouble.
 
