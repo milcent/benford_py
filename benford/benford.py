@@ -1551,7 +1551,7 @@ def summation(data, digs=2, decimals=2, sign='all', top=20, verbose=True,
     if not isinstance(data, Source):
         data = Source(data, sign=sign, decimals=decimals, verbose=verbose)
 
-    data = data.summation(digs=digs, top=top, verbose=verbose,
+    data = data.summation(digs=digs, top=top,
                           show_plot=show_plot, save_plot=save_plot,
                           save_plot_kwargs=save_plot_kwargs, ret_df=True)
     if verbose:
