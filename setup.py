@@ -7,12 +7,12 @@ with open(path.join(this_directory, 'README-pypi.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='benford_py',
-      version='0.3.2',
+      version='0.3.3',
       description='A library for testing data sets with Bendford\'s Law',
       long_description=long_description,
       long_description_content_type='text/markdown',
       url='https://github.com/milcent/benford_py',
-      download_url='https://github.com/milcent/benford_py/archive/v0.3.2.tar.gz',
+      download_url='https://github.com/milcent/benford_py/archive/v0.3.3.tar.gz',
       author='Marcel Milcent',
       author_email='marcelmilcent@gmail.com',
       license='GPLv3.0',
