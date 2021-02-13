@@ -86,7 +86,7 @@ def get_times_10_power(data, decimals=2):
     else:
         if decimals == 'infer':
             data['ZN'] = ab.astype(str).str\
-                .replace('.', '')\
+                .replace('.', '', regex=False)\
                 .str.lstrip('0')\
                 .str[:5].astype(int)
         else:
