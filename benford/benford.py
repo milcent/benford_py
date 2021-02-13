@@ -41,8 +41,8 @@ class Base(DataFrame):
         DataFrame.__init__(self, {'seq': data})
 
         if (self.seq.dtype != 'float') & (self.seq.dtype != 'int'):
-            raise TypeError("The sequence dtype was not pandas int64 nor "
-                            "float64. Convert it to whether int of float, "
+            raise TypeError("The sequence dtype was neither int nor "
+                            "float. Convert it to whether int of float, "
                             "and try again.")
 
         if sign == 'all':
@@ -61,7 +61,7 @@ class Base(DataFrame):
         else:
             if decimals == 'infer':
                 self['ZN'] = ab.astype(str).str\
-                               .replace('.', '')\
+                               .replace('.', '', regex=False)\
                                .str.lstrip('0')\
                                .str[:5].astype(int)
             else:
@@ -586,8 +586,8 @@ class Source(DataFrame):
         DataFrame.__init__(self, {'seq': data})
 
         if self.seq.dtype != 'float' and self.seq.dtype != 'int':
-            raise TypeError('The sequence dtype was not pandas int64 nor float64.\n'
-                            'Convert it to whether int64 of float64, and try again.')
+            raise TypeError('The sequence dtype was neither int nor float.\n'
+                            'Convert it to whether int or float, and try again.')
 
         if sign == 'pos':
             self.seq = self.seq.loc[self.seq > 0]
@@ -619,7 +619,7 @@ class Source(DataFrame):
                 # There is some numerical issue with Windows that required
                 # implementing it differently (and slower)
                 self['ZN'] = ab.astype(str)\
-                               .str.replace('.', '')\
+                               .str.replace('.', '', regex=False)\
                                .str.lstrip('0').str[:5]\
                                .astype(int)
             else:
