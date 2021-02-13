@@ -81,7 +81,7 @@ def get_times_10_power(data, decimals=2):
 
     ab = data.seq.abs()
 
-    if data.seq.dtypes == 'int64':
+    if data.seq.dtype == 'int':
         data['ZN'] = ab
     else:
         if decimals == 'infer':

@@ -40,7 +40,7 @@ class Base(DataFrame):
 
         DataFrame.__init__(self, {'seq': data})
 
-        if (self.seq.dtypes != 'float64') & (self.seq.dtypes != 'int64'):
+        if (self.seq.dtype != 'float') & (self.seq.dtype != 'int'):
             raise TypeError("The sequence dtype was not pandas int64 nor "
                             "float64. Convert it to whether int of float, "
                             "and try again.")
@@ -56,7 +56,7 @@ class Base(DataFrame):
 
         ab = self.seq.abs()
 
-        if self.seq.dtypes == 'int64':
+        if self.seq.dtype == 'int':
             self['ZN'] = ab
         else:
             if decimals == 'infer':
@@ -585,7 +585,7 @@ class Source(DataFrame):
 
         DataFrame.__init__(self, {'seq': data})
 
-        if self.seq.dtypes != 'float64' and self.seq.dtypes != 'int64':
+        if self.seq.dtype != 'float' and self.seq.dtype != 'int':
             raise TypeError('The sequence dtype was not pandas int64 nor float64.\n'
                             'Convert it to whether int64 of float64, and try again.')
 
@@ -612,7 +612,7 @@ class Source(DataFrame):
 
         ab = self.seq.abs()
 
-        if self.seq.dtypes == 'int64':
+        if self.seq.dtype == 'int':
             self['ZN'] = ab
         else:
             if decimals == 'infer':
