@@ -1,4 +1,4 @@
-from numpy import sqrt
+from numpy import sqrt, log
 from .constants import crit_chi2, KS_crit, mad_dict, digs_dict
 
 
@@ -159,3 +159,14 @@ def mse(frame, verbose=True):
         print(f"\nMean Square Error = {mse}")
 
     return mse
+
+def _bhattacharyya_coefficient(dist_1, dist_2):
+    """
+    """
+    return sqrt(dist_1 * dist_2).sum()
+
+
+def bhattacharyya_distance(dist_1, dist_2):
+    """
+    """
+    return -log(_bhattacharyya_coefficient(dist_1, dist_2))
