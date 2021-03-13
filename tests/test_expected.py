@@ -40,4 +40,4 @@ class Test__lt_():
     def test_num_True(self):
         lt = ex._lt_(num=True)
         assert len(lt) == 100
-        assert lt.dtype == 'int64'
+        assert lt.dtype == 'int'
