@@ -14,7 +14,7 @@ from .viz import _get_plot_args, plot_digs, plot_sum, plot_ordered_mantissas,\
 from .reports import _inform_, _report_mad_, _report_test_, _deprecate_inform_,\
     _report_mantissa_
 from .stats import Z_score, chi_sq, chi_sq_2, kolmogorov_smirnov,\
-    kolmogorov_smirnov_2, bhattacharyya_distance
+    kolmogorov_smirnov_2, bhattacharyya_distance, kullback_leibler_divergence
 
 
 class Base(DataFrame):
@@ -130,6 +130,8 @@ class Test(DataFrame):
         self.MAD = self.AbsDif.mean()
         self.MSE = (self.AbsDif ** 2).mean()
         self.bhattacharyya_distance = bhattacharyya_distance(
+            self.Found.values, self.Expected.values)
+        self.kullback_leibler_divergence = kullback_leibler_divergence(
             self.Found.values, self.Expected.values)
         self.confidence = confidence
         self.digs = digs

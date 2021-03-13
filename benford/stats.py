@@ -1,4 +1,4 @@
-from numpy import sqrt, log
+from numpy import sqrt, log, where
 from .constants import crit_chi2, KS_crit, mad_dict, digs_dict
 
 
@@ -170,3 +170,9 @@ def bhattacharyya_distance(dist_1, dist_2):
     """
     """
     return -log(_bhattacharyya_coefficient(dist_1, dist_2))
+
+
+def kullback_leibler_divergence(dist_1, dist_2):
+    """
+    """
+    return where(dist_1 != 0, dist_1 * log(dist_1 / dist_2), 0).sum()
