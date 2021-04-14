@@ -100,6 +100,18 @@ def _report_summ_(test, high_diff):
         print(test.sort_values('AbsDif', ascending=False))
 
 
+def _report_bhattac_dist_(bhattac_dist):
+    """
+    """
+    print(f"The Bhattacharyya Distance is: {bhattac_dist:6f}\n")
+
+
+def _report_kl_diverg_(kl_diverg):
+    """
+    """
+    print(f"The Kullback-Leibler Divergence is: {kl_diverg:6f}\n")
+
+
 def _report_test_(test, high=None, crit_vals=None):
     """Main report function. Receives the Args: to report with, initiates
     the process, and calls the right reporting helper function(s), depending
@@ -108,6 +120,8 @@ def _report_test_(test, high=None, crit_vals=None):
     print('\n', f'  {test.name}  '.center(50, '#'), '\n')
     if not 'Summation' in test.name:
         _report_mad_(test.digs, test.MAD)
+        _report_bhattac_dist_(test.bhattacharyya_distance)
+        _report_kl_diverg_(test.kullback_leibler_divergence)
         if test.confidence is not None:
             print(f"For confidence level {test.confidence}%: ")
             _report_KS_(test.KS, crit_vals['KS'])

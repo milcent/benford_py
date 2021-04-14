@@ -1,4 +1,4 @@
-from numpy import sqrt
+from numpy import sqrt, log, where
 from .constants import crit_chi2, KS_crit, mad_dict, digs_dict
 
 
@@ -159,3 +159,50 @@ def mse(frame, verbose=True):
         print(f"\nMean Square Error = {mse}")
 
     return mse
+
+def _bhattacharyya_coefficient(dist_1, dist_2):
+    """Computes the Bhattacharyya Coeficient between two probability
+    distributions, to be letar used to compute the Bhattacharyya Distance
+
+    Args:
+        dist_1 (np.array): The newly gathered distribution, to be compared
+            with an older / established distribution.
+        dist_2 (np.array): The older/ establhished distribution with which
+            the new one will be compared. 
+    
+    Returns:
+        bhat_coef (float)
+    """
+    return sqrt(dist_1 * dist_2).sum()
+
+
+def bhattacharyya_distance(dist_1, dist_2):
+    """Computes the Bhattacharyya Dsitance between two probability
+    distributions
+
+    Args:
+        dist_1 (np.array): The newly gathered distribution, to be compared
+            with an older / established distribution.
+        dist_2 (np.array): The older/ establhished distribution with which
+            the new one will be compared. 
+    
+    Returns:
+        bhat_dist (float)
+    """
+    return -log(_bhattacharyya_coefficient(dist_1, dist_2))
+
+
+def kullback_leibler_divergence(dist_1, dist_2):
+    """Computes the Kullback-Leibler Divergence between two probability
+    distributions.
+
+    Args:
+        dist_1 (np.array): The newly gathered distribution, to be compared
+            with an older / established distribution.
+        dist_2 (np.array): The older/ establhished distribution with which
+            the new one will be compared. 
+
+    Returns:
+        kulb_leib_diverg (float)        
+    """
+    return (log((dist_1 / dist_2), where=(dist_1 != 0)) * dist_1).sum()
