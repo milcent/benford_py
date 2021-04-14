@@ -175,4 +175,4 @@ def bhattacharyya_distance(dist_1, dist_2):
 def kullback_leibler_divergence(dist_1, dist_2):
     """
     """
-    return where(dist_1 != 0, dist_1 * log(dist_1 / dist_2), 0).sum()
+    return (log((dist_1 / dist_2), where=(dist_1 != 0)) * dist_1).sum()
