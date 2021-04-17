@@ -3,7 +3,8 @@ import pytest
 import numpy as np
 import pandas as pd
 from ..benford import utils as ut
-from ..benford.constants import confs, len_test, rev_digs
+from ..benford.constants import confs, rev_digs
+from ..benford.expected import _get_expected_digits_
 
 
 @pytest.fixture
@@ -31,10 +32,6 @@ def gen_array(gen_N):
 def choose_digs_rand():
     return choice([1, 2, 3, 22, -2])
 
-
-@pytest.fixture
-def get_random_len_by_digs(choose_digs_rand):
-    return len_test[choose_digs_rand]
 
 @pytest.fixture
 def choose_test():
@@ -167,11 +164,14 @@ def gen_join_expect_found_diff_SD(gen_proportions_SD):
 def gen_join_expect_found_diff_L2D(gen_proportions_L2D):
     return ut.join_expect_found_diff(gen_proportions_L2D, -2)
 
+
 @pytest.fixture
 def gen_linspaced_zero_one(cuts:int=1000):
     return np.linspace(0, 1, cuts)
 
+
 @pytest.fixture
-def gen_random_proportions(gen_linspaced_zero_one, get_random_len_by_digs):
-    simul = np.random.choice(gen_linspaced_zero_one, get_random_len_by_digs)
-    return simul / simul.sum()
+def gen_random_digs_and_proportions(gen_linspaced_zero_one, choose_digs_rand):
+    exp = _get_expected_digits_(choose_digs_rand).Expected.values
+    rand_prop = np.random.choice(gen_linspaced_zero_one, len(exp))
+    return exp, rand_prop / rand_prop.sum()

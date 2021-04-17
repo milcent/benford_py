@@ -162,5 +162,24 @@ class TestChiSquare():
 
 class TestBhattacharyya():
 
-    def test_coeff(self):
-        pass
+    def test_coeff(self, gen_random_digs_and_proportions):
+        exp, rand_prop = gen_random_digs_and_proportions
+        bhat_coeff = st._bhattacharyya_coefficient(exp, rand_prop)
+        assert isinstance(bhat_coeff, float)
+        assert bhat_coeff >= 0
+        assert bhat_coeff <= 1
+    
+    def test_distance(self, gen_random_digs_and_proportions):
+        exp, rand_prop = gen_random_digs_and_proportions
+        bhat_dist = st.bhattacharyya_distance(exp, rand_prop)
+        assert isinstance(bhat_dist, float)
+        assert bhat_dist >= 0
+
+
+class TestKLDivergence():
+
+    def test_kld(self, gen_random_digs_and_proportions):
+        exp, rand_prop = gen_random_digs_and_proportions
+        kl_diverg = st.kullback_leibler_divergence(exp, rand_prop)
+        assert isinstance(kl_diverg, float)
+        assert kl_diverg >= 0
