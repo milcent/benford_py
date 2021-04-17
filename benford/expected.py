@@ -90,7 +90,7 @@ class LastTwo(DataFrame):
     def __init__(self, num=False, plot=True, save_plot=None, save_plot_kwargs=None):
         exp = array([1 / 99.] * 100)
         DataFrame.__init__(self, {'Expected': exp,
-                                  'Last_2_Dig': _lt_(num=num)})
+                                  'Last_2_Dig': _gen_last_2_digs_(num=num)})
         self.set_index('Last_2_Dig', inplace=True)
         if plot:
             plot_expected(self, -2, save_plot=save_plot,
@@ -114,7 +114,7 @@ def _test_(digs):
         return LastTwo(num=True, plot=False)
 
 
-def _lt_(num=False):
+def _gen_last_2_digs_(num=False):
     """Creates an array with the possible last two digits
 
     Args:
@@ -125,10 +125,10 @@ def _lt_(num=False):
         Array of ints or str, in any case representing all 100 possible
             combinations of last two digits
     """
+    n = arange(0, 100)
     if num:
-        n = arange(0, 100)
-    else:
-        n = arange(0, 100).astype(str)
-        n[:10] = array(['00', '01', '02', '03', '04', '05',
-                        '06', '07', '08', '09'])
+        return n
+    n = n.astype(str)
+    n[:10] = array(['00', '01', '02', '03', '04', '05',
+                    '06', '07', '08', '09'])
     return n

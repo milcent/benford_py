@@ -30,14 +30,14 @@ class Test_expected():
         assert len(f1d) == 100
 
 
-class Test__lt_():
+class Test_gen_last_2_digs_():
         
     def test_num_False(self):
-        lt = ex._lt_()
+        lt = ex._gen_last_2_digs_()
         assert len(lt) == 100
         assert lt.dtype == '<U21'
 
     def test_num_True(self):
-        lt = ex._lt_(num=True)
+        lt = ex._gen_last_2_digs_(num=True)
         assert len(lt) == 100
         assert lt.dtype == 'int'
