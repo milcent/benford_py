@@ -103,13 +103,13 @@ def _report_summ_(test, high_diff):
 def _report_bhattac_dist_(bhattac_dist):
     """
     """
-    print(f"The Bhattacharyya Distance is: {bhattac_dist:6f}\n")
+    print(f"Bhattacharyya Distance: {bhattac_dist:6f}\n")
 
 
 def _report_kl_diverg_(kl_diverg):
     """
     """
-    print(f"The Kullback-Leibler Divergence is: {kl_diverg:6f}\n")
+    print(f"Kullback-Leibler Divergence: {kl_diverg:6f}\n")
 
 
 def _report_test_(test, high=None, crit_vals=None):
