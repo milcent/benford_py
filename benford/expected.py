@@ -88,9 +88,9 @@ class LastTwo(DataFrame):
             figure file path/name.
     """
     def __init__(self, num=False, plot=True, save_plot=None, save_plot_kwargs=None):
-        exp = array([1 / 99.] * 100)
+        exp, l2d = _gen_l2d_(num=num)
         DataFrame.__init__(self, {'Expected': exp,
-                                  'Last_2_Dig': _gen_last_2_digs_(num=num)})
+                                  'Last_2_Dig': l2d})
         self.set_index('Last_2_Dig', inplace=True)
         if plot:
             plot_expected(self, -2, save_plot=save_plot,
@@ -114,21 +114,25 @@ def _test_(digs):
         return LastTwo(num=True, plot=False)
 
 
-def _gen_last_2_digs_(num=False):
-    """Creates an array with the possible last two digits
+def _gen_l2d_(num=False):
+    """Creates two arrays, one with the possible last two digits and one with
+    thei respective probabilities
 
     Args:
         num: returns numeric (ints) values. Defaluts to False,
             which returns strings.
 
     Returns:
-        Array of ints or str, in any case representing all 100 possible
-            combinations of last two digits
+        exp (np.array): Array with the (constant) probabilities of occurrence of
+            each pair of last two digits 
+        l2d (np.array): Array of ints or str, in any case representing all 100
+            possible combinations of last two digits
     """
-    n = arange(0, 100)
+    exp = array([1 / 99.] * 100)
+    l2d = arange(0, 100)
     if num:
-        return n
-    n = n.astype(str)
-    n[:10] = array(['00', '01', '02', '03', '04', '05',
+        return exp, l2d
+    l2d = l2d.astype(str)
+    l2d[:10] = array(['00', '01', '02', '03', '04', '05',
                     '06', '07', '08', '09'])
-    return n
+    return exp, l2d

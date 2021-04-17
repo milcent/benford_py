@@ -30,14 +30,19 @@ class Test_expected():
         assert len(f1d) == 100
 
 
-class Test_gen_last_2_digs_():
+class Test_gen_l2d_():
         
-    def test_num_False(self):
-        lt = ex._gen_last_2_digs_()
+    def test_l2d_num_False(self):
+        _, lt = ex._gen_l2d_()
         assert len(lt) == 100
         assert lt.dtype == '<U21'
 
-    def test_num_True(self):
-        lt = ex._gen_last_2_digs_(num=True)
+    def test_l2d_num_True(self):
+        _, lt = ex._gen_l2d_(num=True)
         assert len(lt) == 100
         assert lt.dtype == 'int'
+    
+    def test_exp(self):
+        exp, _ = ex._gen_l2d_()
+        assert len(exp == 100)
+        assert exp.sum() > 0.999999
