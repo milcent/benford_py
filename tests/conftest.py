@@ -105,33 +105,33 @@ def gen_get_digs_df(gen_series, gen_decimals):
 
 @pytest.fixture
 def gen_proportions_F1D(gen_get_digs_df):
-    return ut.get_proportions(gen_get_digs_df.F1D)
+    return ut.get_found_proportions(gen_get_digs_df.F1D)
 
 
 @pytest.fixture
 def gen_proportions_F2D(gen_get_digs_df):
-    return ut.get_proportions(gen_get_digs_df.F2D)
+    return ut.get_found_proportions(gen_get_digs_df.F2D)
 
 
 @pytest.fixture
 def gen_proportions_F3D(gen_get_digs_df):
-    return ut.get_proportions(gen_get_digs_df.F3D)
+    return ut.get_found_proportions(gen_get_digs_df.F3D)
 
 
 @pytest.fixture
 def gen_proportions_SD(gen_get_digs_df):
-    return ut.get_proportions(gen_get_digs_df.SD)
+    return ut.get_found_proportions(gen_get_digs_df.SD)
 
 
 @pytest.fixture
 def gen_proportions_L2D(gen_get_digs_df):
-    return ut.get_proportions(gen_get_digs_df.L2D)
+    return ut.get_found_proportions(gen_get_digs_df.L2D)
 
 
 @pytest.fixture
 def gen_proportions_random_test(choose_test, gen_get_digs_df):
     dig_str = choose_test
-    return ut.get_proportions(gen_get_digs_df[dig_str]), rev_digs[dig_str]
+    return ut.get_found_proportions(gen_get_digs_df[dig_str]), rev_digs[dig_str]
 
 
 @pytest.fixture

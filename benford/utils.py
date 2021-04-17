@@ -123,7 +123,7 @@ def get_digs(data, decimals=2, sign="all"):
     return df
 
 
-def get_proportions(data):
+def get_found_proportions(data):
     """
     """
     counts = data.value_counts()
@@ -148,7 +148,7 @@ def prepare(data, digs, limit_N=None, simple=False):
     by the ocurrences of the chosen digits, creating other computed
     columns
     """
-    df = get_proportions(data)
+    df = get_found_proportions(data)
     dd = join_expect_found_diff(df, digs)
     if simple:
         del dd['Dif']

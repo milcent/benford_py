@@ -127,7 +127,7 @@ class Test_get_digs():
         assert (e_digs[['F1D', 'F2D', 'F3D', 'SD', 'L2D']].dtypes == int).all()
         assert e_digs.notna().all().all()
 
-class Test_get_proportions():
+class Test_get_found_proportions():
         
     def test_F1D(self, gen_proportions_F1D):
         prop_f1d = gen_proportions_F1D
