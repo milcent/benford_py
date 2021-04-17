@@ -5,27 +5,27 @@ from ..benford import expected as ex
 class TestGetExpectedDigits():
         
     def test_1(self):
-        f1d = ex._test_(1)
+        f1d = ex._get_expected_digits_(1)
         assert type(f1d) == ex.First
         assert len(f1d) == 9
 
     def test_2(self):
-        f1d = ex._test_(2)
+        f1d = ex._get_expected_digits_(2)
         assert type(f1d) == ex.First
         assert len(f1d) == 90
 
     def test_3(self):
-        f1d = ex._test_(3)
+        f1d = ex._get_expected_digits_(3)
         assert type(f1d) == ex.First
         assert len(f1d) == 900
 
     def test_22(self):
-        f1d = ex._test_(22)
+        f1d = ex._get_expected_digits_(22)
         assert type(f1d) == ex.Second
         assert len(f1d) == 10
 
     def test_minus_2(self):
-        f1d = ex._test_(-2)
+        f1d = ex._get_expected_digits_(-2)
         assert type(f1d) == ex.LastTwo
         assert len(f1d) == 100
 
