@@ -56,12 +56,11 @@ class Second(DataFrame):
             figure file path/name.
     """
     def __init__(self, plot=True, save_plot=None, save_plot_kwargs=None):
-        expe_f2d, _ = _gen_digits_(2)
-        Sec_Dig = array(list(range(10)) * 9)
 
-        df = DataFrame({'Expected': expe_f2d, 'Sec_Dig': Sec_Dig})
+        exp, sec_digs = _gen_second_digits_()
 
-        DataFrame.__init__(self, df.groupby('Sec_Dig').sum())
+        DataFrame.__init__(self, {'Expected': exp, 'Sec_Dig': sec_digs})
+        self.set_index("Sec_Dig", inplace=True)
 
         if plot:
             plot_expected(self, 22, save_plot=save_plot,
@@ -136,7 +135,7 @@ def _gen_l2d_(num=False):
     return exp, l2d
 
 def _gen_digits_(digs):
-    """Creates towo arrays, one with the possible digits combinations and the
+    """Creates two arrays, one with the possible digits combinations and the
     other with their respective expected probabilities according to Benford
 
     Args:
@@ -149,4 +148,18 @@ def _gen_digits_(digs):
     """
     dig_array = arange(10 ** (digs - 1), 10 ** digs)
     exp_prob = log10(1 + (1. / dig_array))
-    return exp_prob, dig_array 
+    return exp_prob, dig_array
+
+def _gen_second_digits_():
+    """Creates two arrays, one with he possible second digits combinations and
+    the other with their respective expected probabilities according to Benford
+
+    Returns:
+        (tuple of arrays): the expected probabilities array and the second
+        digits array.
+    """
+    exp_f2d, _ = _gen_digits_(2)
+    sec_digs = range(10)
+    sec_digs_in_f2d = array(list(range(10)) * 9)
+    exp = array([exp_f2d[sec_digs_in_f2d == i].sum() for i in sec_digs])
+    return exp, array(sec_digs)

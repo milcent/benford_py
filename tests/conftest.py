@@ -27,7 +27,6 @@ def gen_array(gen_N):
     return np.abs(np.random.rand(num) * np.random.randn(num) * 
                   np.random.randint(1, num))
 
-
 @pytest.fixture
 def choose_digs_rand():
     return choice([1, 2, 3, 22, -2])
@@ -168,7 +167,7 @@ def gen_join_expect_found_diff_SD(gen_proportions_SD):
 def gen_join_expect_found_diff_L2D(gen_proportions_L2D):
     return ut.join_expect_found_diff(gen_proportions_L2D, -2)
 
-@pytest.fictue
+@pytest.fixture
 def gen_linspaced_zero_one(cuts:int=1000):
     return np.linspace(0, 1, cuts)
 

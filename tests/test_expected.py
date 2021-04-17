@@ -66,3 +66,11 @@ class TestGenDigits():
         assert len(exp) == len(digits) == 900
         assert exp.sum() > 0.999999
         assert digits.sum() == 494550
+
+class TestGenSecondDigits():
+
+    def test_gen_sec_dig(self):
+        exp, digits = ex._gen_second_digits_()
+        assert len(exp) == len(digits) == 10
+        assert exp.sum() > 0.999999
+        assert digits.sum() == 45
