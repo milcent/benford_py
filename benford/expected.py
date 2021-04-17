@@ -28,10 +28,9 @@ class First(DataFrame):
     def __init__(self, digs, plot=True, save_plot=None, save_plot_kwargs=None):
         _check_digs_(digs)
         dig_name = f'First_{digs}_Dig'
-        Dig = arange(10 ** (digs - 1), 10 ** digs)
-        Exp = log10(1 + (1. / Dig))
-
-        DataFrame.__init__(self, {'Expected': Exp}, index=Dig)
+        exp_array, dig_array = _gen_digits_(digs)
+ 
+        DataFrame.__init__(self, {'Expected': exp_array}, index=dig_array)
         self.index.names = [dig_name]
 
         if plot:
@@ -57,11 +56,10 @@ class Second(DataFrame):
             figure file path/name.
     """
     def __init__(self, plot=True, save_plot=None, save_plot_kwargs=None):
-        a = arange(10, 100)
-        Expe = log10(1 + (1. / a))
+        expe_f2d, _ = _gen_digits_(2)
         Sec_Dig = array(list(range(10)) * 9)
 
-        df = DataFrame({'Expected': Expe, 'Sec_Dig': Sec_Dig})
+        df = DataFrame({'Expected': expe_f2d, 'Sec_Dig': Sec_Dig})
 
         DataFrame.__init__(self, df.groupby('Sec_Dig').sum())
 
@@ -136,3 +134,19 @@ def _gen_l2d_(num=False):
     l2d[:10] = array(['00', '01', '02', '03', '04', '05',
                     '06', '07', '08', '09'])
     return exp, l2d
+
+def _gen_digits_(digs):
+    """Creates towo arrays, one with the possible digits combinations and the
+    other with their respective expected probabilities according to Benford
+
+    Args:
+        digs (int): 1, 2 or 3, for generation of the first, first two, or first
+            three digits
+
+    Returns:
+        (tuple of arrays): the expected probabilities array and the digits
+            combination array. 
+    """
+    dig_array = arange(10 ** (digs - 1), 10 ** digs)
+    exp_prob = log10(1 + (1. / dig_array))
+    return exp_prob, dig_array 
