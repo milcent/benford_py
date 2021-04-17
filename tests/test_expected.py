@@ -44,8 +44,9 @@ class TestGenLastTwoDigits():
     
     def test_exp(self):
         exp, _ = ex._gen_last_two_digits_()
-        assert len(exp == 100)
+        assert len(exp) == 100
         assert exp.sum() > 0.999999
+        assert (exp < 0).sum() == 0
 
 class TestGenFirstDigits():
 
@@ -54,18 +55,24 @@ class TestGenFirstDigits():
         assert len(exp) == len(digits) == 9
         assert exp.sum() > 0.999999
         assert digits.sum() == 45
+        assert (exp < 0).sum() == 0
+
     
     def test_f2d(self):
         exp, digits = ex._gen_first_digits_(2)
         assert len(exp) == len(digits) == 90
         assert exp.sum() > 0.999999
         assert digits.sum() == 4905
+        assert (exp < 0).sum() == 0
+
  
     def test_f3d(self):
         exp, digits = ex._gen_first_digits_(3)
         assert len(exp) == len(digits) == 900
         assert exp.sum() > 0.999999
         assert digits.sum() == 494550
+        assert (exp < 0).sum() == 0
+
 
 class TestGenSecondDigits():
 
@@ -74,3 +81,4 @@ class TestGenSecondDigits():
         assert len(exp) == len(digits) == 10
         assert exp.sum() > 0.999999
         assert digits.sum() == 45
+        assert (exp < 0).sum() == 0
