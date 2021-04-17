@@ -8,7 +8,7 @@ from .checks import _check_digs_, _check_confidence_, _check_test_, \
 from .utils import _set_N_, input_data, prepare, \
     subtract_sorted, prep_to_roll, mad_to_roll, mse_to_roll, \
     get_mantissas
-from .expected import First, Second, LastTwo, _test_
+from .expected import _get_expected_digits_ # First, Second, LastTwo
 from .viz import _get_plot_args, plot_digs, plot_sum, plot_ordered_mantissas,\
     plot_mantissa_arc_test, plot_roll_mse, plot_roll_mad
 from .reports import _inform_, _report_mad_, _report_test_, _deprecate_inform_,\
@@ -113,7 +113,7 @@ class Test(DataFrame):
 
     def __init__(self, base, digs, confidence, limit_N=None, sec_order=False):
         # create a separated Expected distributions object
-        super(Test, self).__init__(_test_(digs))
+        super(Test, self).__init__(_get_expected_digits_(digs))
         # create column with occurrences of the digits in the base
         self['Counts'] = base[digs_dict[digs]].value_counts()
         # create column with relative frequencies

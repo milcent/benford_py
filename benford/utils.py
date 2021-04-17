@@ -1,6 +1,6 @@
 from pandas import Series, DataFrame
 from numpy import array, arange, log10, ndarray
-from .expected import _test_
+from .expected import _get_expected_digits_
 from .constants import digs_dict, rev_digs
 from .stats import Z_score
 from .checks import _check_num_array_, _check_sign_, _check_decimals_
@@ -136,7 +136,7 @@ def get_found_proportions(data):
 def join_expect_found_diff(data, digs):
     """
     """
-    dd = _test_(digs).join(data).fillna(0)
+    dd =_get_expected_digits_(digs).join(data).fillna(0)
     # create column with absolute differences
     dd['Dif'] = dd.Found - dd.Expected
     dd['AbsDif'] = dd.Dif.abs()

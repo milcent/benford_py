@@ -95,7 +95,7 @@ class LastTwo(DataFrame):
                           save_plot_kwargs=save_plot_kwargs)
 
 
-def _test_(digs):
+def _get_expected_digits_(digs):
     """Chooses the Exxpected class to be used in a test
 
     Args:
