@@ -4,6 +4,8 @@ sec_order_dict = {key: f'{val}_sec' for key, val in digs_dict.items()}
 
 rev_digs = {'F1D': 1, 'F2D': 2, 'F3D': 3, 'SD': 22, 'L2D': -2}
 
+len_test = {1: 9, 2: 90, 3: 900, 22: 10, -2: 100}
+
 names = {'F1D': 'First Digit Test', 'F2D': 'First Two Digits Test',
          'F3D': 'First Three Digits Test', 'SD': 'Second Digit Test',
          'L2D': 'Last Two Digits Test',
