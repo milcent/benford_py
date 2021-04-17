@@ -28,7 +28,7 @@ class First(DataFrame):
     def __init__(self, digs, plot=True, save_plot=None, save_plot_kwargs=None):
         _check_digs_(digs)
         dig_name = f'First_{digs}_Dig'
-        exp_array, dig_array = _gen_digits_(digs)
+        exp_array, dig_array = _gen_first_digits_(digs)
  
         DataFrame.__init__(self, {'Expected': exp_array}, index=dig_array)
         self.index.names = [dig_name]
@@ -85,7 +85,7 @@ class LastTwo(DataFrame):
             figure file path/name.
     """
     def __init__(self, num=False, plot=True, save_plot=None, save_plot_kwargs=None):
-        exp, l2d = _gen_l2d_(num=num)
+        exp, l2d = _gen_last_two_digits_(num=num)
         DataFrame.__init__(self, {'Expected': exp,
                                   'Last_2_Dig': l2d})
         self.set_index('Last_2_Dig', inplace=True)
@@ -111,7 +111,7 @@ def _get_expected_digits_(digs):
         return LastTwo(num=True, plot=False)
 
 
-def _gen_l2d_(num=False):
+def _gen_last_two_digits_(num=False):
     """Creates two arrays, one with the possible last two digits and one with
     thei respective probabilities
 
@@ -134,7 +134,7 @@ def _gen_l2d_(num=False):
                     '06', '07', '08', '09'])
     return exp, l2d
 
-def _gen_digits_(digs):
+def _gen_first_digits_(digs):
     """Creates two arrays, one with the possible digits combinations and the
     other with their respective expected probabilities according to Benford
 
@@ -158,7 +158,7 @@ def _gen_second_digits_():
         (tuple of arrays): the expected probabilities array and the second
         digits array.
     """
-    exp_f2d, _ = _gen_digits_(2)
+    exp_f2d, _ = _gen_first_digits_(2)
     sec_digs = range(10)
     sec_digs_in_f2d = array(list(range(10)) * 9)
     exp = array([exp_f2d[sec_digs_in_f2d == i].sum() for i in sec_digs])

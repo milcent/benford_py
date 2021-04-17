@@ -30,39 +30,39 @@ class TestGetExpectedDigits():
         assert len(f1d) == 100
 
 
-class TestGenL2d():
+class TestGenLastTwoDigits():
         
     def test_l2d_num_False(self):
-        _, lt = ex._gen_l2d_()
+        _, lt = ex._gen_last_two_digits_()
         assert len(lt) == 100
         assert lt.dtype == '<U21'
 
     def test_l2d_num_True(self):
-        _, lt = ex._gen_l2d_(num=True)
+        _, lt = ex._gen_last_two_digits_(num=True)
         assert len(lt) == 100
         assert lt.dtype == 'int'
     
     def test_exp(self):
-        exp, _ = ex._gen_l2d_()
+        exp, _ = ex._gen_last_two_digits_()
         assert len(exp == 100)
         assert exp.sum() > 0.999999
 
-class TestGenDigits():
+class TestGenFirstDigits():
 
     def test_f1d(self):
-        exp, digits = ex._gen_digits_(1)
+        exp, digits = ex._gen_first_digits_(1)
         assert len(exp) == len(digits) == 9
         assert exp.sum() > 0.999999
         assert digits.sum() == 45
     
     def test_f2d(self):
-        exp, digits = ex._gen_digits_(2)
+        exp, digits = ex._gen_first_digits_(2)
         assert len(exp) == len(digits) == 90
         assert exp.sum() > 0.999999
         assert digits.sum() == 4905
  
     def test_f3d(self):
-        exp, digits = ex._gen_digits_(3)
+        exp, digits = ex._gen_first_digits_(3)
         assert len(exp) == len(digits) == 900
         assert exp.sum() > 0.999999
         assert digits.sum() == 494550
