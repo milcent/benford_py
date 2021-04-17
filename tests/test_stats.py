@@ -6,7 +6,7 @@ from ..benford.constants import crit_chi2
 def test_Z_score_F1D():
     pass
 
-class Test_chi_sq():
+class TestChiSquare():
         
     def test_conf_None(self, gen_join_expect_found_diff_F1D, capsys):
         jefd_F1D = gen_join_expect_found_diff_F1D
@@ -159,3 +159,8 @@ class Test_chi_sq():
         assert chis[1] == crit_chi2[ddf][99.99999]
         assert chis[0] > 0
         assert isinstance(chis[0], float)
+
+class TestBhattacharyya():
+
+    def test_coeff(self):
+        pass
