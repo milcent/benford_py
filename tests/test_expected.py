@@ -2,35 +2,35 @@ import pytest
 from ..benford import expected as ex
 
 
-class Test_expected():
+class TestGetExpectedDigits():
         
-    def test__1(self):
+    def test_1(self):
         f1d = ex._test_(1)
         assert type(f1d) == ex.First
         assert len(f1d) == 9
 
-    def test__2(self):
+    def test_2(self):
         f1d = ex._test_(2)
         assert type(f1d) == ex.First
         assert len(f1d) == 90
 
-    def test__3(self):
+    def test_3(self):
         f1d = ex._test_(3)
         assert type(f1d) == ex.First
         assert len(f1d) == 900
 
-    def test__22(self):
+    def test_22(self):
         f1d = ex._test_(22)
         assert type(f1d) == ex.Second
         assert len(f1d) == 10
 
-    def test__minus_2(self):
+    def test_minus_2(self):
         f1d = ex._test_(-2)
         assert type(f1d) == ex.LastTwo
         assert len(f1d) == 100
 
 
-class Test_gen_l2d_():
+class TestGenL2d():
         
     def test_l2d_num_False(self):
         _, lt = ex._gen_l2d_()
