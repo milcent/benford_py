@@ -57,40 +57,23 @@ def gen_data_frame(gen_array):
 def gen_int_df(gen_data_frame):
     return gen_data_frame.astype(int)
 
+small_arrays_type = [
+    (np.array([1, 2, 3, 4, 5.0, 6.3, .17]), float),
+    (np.array([1, 2, 3, 4, 5, 6, 7]), int),
+    (np.array(['1', '2', '3', '4', '5', '6', '7']), float),
+    (pd.Series([1, 2, 3, 4, 5.0, 6.3, .17]), float),
+    (pd.Series([1, 2, 3, 4, 5, 6, 7]), int),
+    (pd.Series(['1', '2', '3', '4', '5', '6', '7']), float)
+]
 
-@pytest.fixture
-def small_float_array():
-    return np.array([1, 2, 3, 4, 5.0, 6.3, .17])
-
-
-@pytest.fixture
-def small_int_array():
-    return np.array([1, 2, 3, 4, 5, 6, 7])
-
-
-@pytest.fixture
-def small_str_dig_array():
-    return np.array(['1', '2', '3', '4', '5', '6', '7'])
+@pytest.fixture(params=small_arrays_type)
+def get_small_arrays(request):
+    return request.param
 
 
 @pytest.fixture
 def small_str_foo_array():
     return np.array(['foo', 'baar', 'baz', 'hixks'])
-
-
-@pytest.fixture
-def small_float_series():
-    return pd.Series([1, 2, 3, 4, 5.0, 6.3, .17])
-
-
-@pytest.fixture
-def small_int_series():
-    return pd.Series([1, 2, 3, 4, 5, 6, 7])
-
-
-@pytest.fixture
-def small_str_dig_series():
-    return pd.Series(['1', '2', '3', '4', '5', '6', '7'])
 
 
 @pytest.fixture
