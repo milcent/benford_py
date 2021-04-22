@@ -4,6 +4,7 @@ import pandas as pd
 import pytest
 from pytest import raises
 from ..benford import checks as ch
+from ..benford.constants import confs, digs_dict
 
 
 
@@ -35,112 +36,74 @@ class Test_check_digs():
 
 
 class Test_check_test():
-        
-    def test_1(self):
-        assert ch._check_test_(1) == 1
 
-    def test_2(self):
-        assert ch._check_test_(2) == 2
+    digs_tests = [(d, d) for d in digs_dict.keys()] +\
+        [(val, key) for key, val in digs_dict.items()]
+    
+    @pytest.mark.parametrize("dig, expected", digs_tests)
+    def test_choose(self, dig, expected):
+        assert ch._check_test_(dig) == expected   
+    
+    tests_errors = [
+        (y, raises(ValueError)) for y in [4, -3, 2.0, "F4D", False]] +\
+        [(x, do_not_raise()) for x in digs_dict.keys()] +\
+        [(z, do_not_raise()) for z in digs_dict.values()]
 
-    def test_3(self):
-        assert ch._check_test_(3) == 3
+    @pytest.mark.parametrize("dig, expectation", tests_errors)
+    def test_digs_raise(self, dig, expectation):
+        with expectation:
+            assert ch._check_test_(dig) is not None
 
-    def test_minus_2(self):
-        assert ch._check_test_(-2) == -2
-
-    def test_22(self):
-        assert ch._check_test_(22) == 22
-
-    def test_not_in_digs(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_test_(4)
-
-    def test_F1D(self):
-        assert ch._check_test_('F1D') == 1
-
-    def test_F2D(self):
-        assert ch._check_test_('F2D') == 2
-
-    def test_F3D(self):
-        assert ch._check_test_('F3D') == 3
-
-    def test_L2D(self):
-        assert ch._check_test_('L2D') == -2
-
-    def test_check_test_SD(self):
-        assert ch._check_test_('SD') == 22
-
-    def test_not_in_rev_digs(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_test_('F4D')
-
-    def test_float(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_test_(2.0)
-            ch._check_test_(-3)
-
-    def test_bool(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_test_(False)
+    def test_None(self):
         with pytest.raises(ValueError) as context:
             ch._check_test_(None)
 
 
 class Test_check_decimals():
     
-    pos_int = []
+    pos_int = zip(range(21), range(21))
     
-    @pytest.mark.parametrize("pos_int, expected", [
-        (2, 2), (0, 0), (8, 8)])
+    @pytest.mark.parametrize("pos_int, expected", pos_int)
     def test_positive_int(self, pos_int, expected):
         assert ch._check_decimals_(pos_int) == expected
 
+    dec_errors = [(x, raises(ValueError)) for x in range(-15, 0)] +\
+        [(y, do_not_raise()) for y in range(21)] +\
+        [(z, raises(ValueError)) for z in ["inf", "infe", "Infer", []]]
 
-    def test_negative_int(self):
+    @pytest.mark.parametrize("dec, expectation", dec_errors)
+    def test_dec_raises(self, dec, expectation):
+        with expectation:
+            assert ch._check_decimals_(dec) is not None
+
+    def test_negative_int_msg(self):
         with pytest.raises(ValueError) as context:
             ch._check_decimals_(-2)
         assert str(
             context.value) == "Parameter -decimals- must be an int >= 0, or 'infer'."
-        with pytest.raises(ValueError):
-            ch._check_decimals_(-5)
 
     def test_infer(self):
         assert ch._check_decimals_('infer') == 'infer'
 
-    def test_other_str(self):
+    def test_None_type(self):
         with pytest.raises(ValueError):
-            ch._check_decimals_('infe')
-        with pytest.raises(ValueError):
-            ch._check_decimals_('Infer')
-
-    def test_other_type(self):
-        with pytest.raises(ValueError):
-            assert ch._check_decimals_(-2)
-        with pytest.raises(ValueError) as context:
-            assert ch._check_decimals_(-2)
-        assert str(
-            context.value) == "Parameter -decimals- must be an int >= 0, or 'infer'."
-        with pytest.raises(ValueError):
-            assert ch._check_decimals_(None)
-        with pytest.raises(ValueError) as context:
-            assert ch._check_decimals_([])
+            ch._check_decimals_(None)
 
 
 class Test_check_confidence():
-        
-    def test_not_in_conf_keys(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_confidence_(93)
 
-    def test_str(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_confidence_('95')
-
-    all_confidences = [
-        (None, None), (80, 80), (85, 85), (90, 90), (95, 95), (99, 99),
-        (99.9, 99.9), (99.99, 99.99), (99.999, 99.999), (99.9999, 99.9999),
-        (99.99999, 99.99999) 
+    conf_errors = [
+        (x, raises(ValueError)) for x in
+        [93, "95", 76, "80", "99", 84, 99.8]
+    ] + [ # Except None ([:1]) due to comparison below
+        (y, do_not_raise()) for y in list(confs.keys())[1:] 
     ]
+    @pytest.mark.parametrize("conf, expectation", conf_errors)
+    def test_conf_raises(self, conf, expectation):
+        with expectation:
+            assert ch._check_confidence_(conf) is not None
+
+    all_confidences = zip(confs.keys(), confs.keys())
 
     @pytest.mark.parametrize("conf, expected", all_confidences)
     def test_all_confidences(self, conf, expected):
@@ -148,21 +111,22 @@ class Test_check_confidence():
 
 
 class Test_check_high_Z():
-        
-    def test_float(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_high_Z_(5.0)
-            ch._check_high_Z_(0.3)
 
-    def test_wrong_str(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_high_Z_('al')
-            ch._check_high_Z_('poss')
+    z_errors = [
+        (x, raises(ValueError)) for x in
+        [5.0, 0.3, "al", "poss", "po", "alll", ]
+    ] + [
+        (y, do_not_raise()) for y in 
+        [10, 20, 5, 2, "pos", "all"]
+    ]
+    @pytest.mark.parametrize("high_Z, expectation", z_errors)
+    def test_high_Z_raises(self, high_Z, expectation):
+        with expectation:
+            assert ch._check_high_Z_(high_Z) is not None
 
     high_Zs = [
         (10, 10), ("pos", "pos"), ("all", "all")
     ]
-
     @pytest.mark.parametrize("z, expected", high_Zs)
     def test_high_zs(self, z, expected):
         assert ch._check_high_Z_(z) == expected
@@ -189,7 +153,7 @@ class Test_check_nunm_array():
         with pytest.raises(ValueError) as context:
             ch._check_num_array_(small_str_foo_array)
 
-    to_raise = [
+    num_arr_raise = [
         ({1, 2, 3, 4}, raises(ValueError)),
         ({'a': 1, 'b': 2, 'c': 3, 'd': 4}, raises(ValueError)),
         ([1, 2, 3, 4, 5.0, 6.3, .17], do_not_raise()),
@@ -197,7 +161,8 @@ class Test_check_nunm_array():
         ('alocdwneceo;u', raises(ValueError))
     ]
 
-    @pytest.mark.parametrize("num_array, expectation", to_raise)
+    @pytest.mark.parametrize("num_array, expectation", num_arr_raise)
     def test_num_array_raises(self, num_array, expectation):
         with expectation:
+            print(num_array)
             assert ch._check_num_array_(num_array) is not None
