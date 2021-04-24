@@ -7,8 +7,7 @@ from ..benford import checks as ch
 from ..benford.constants import confs, digs_dict
 
 
-
-class Test_check_digs():
+class TestCheckDigs():
 
     digs_to_raise = [
         (x, raises(ValueError)) for x in 
@@ -19,8 +18,8 @@ class Test_check_digs():
     def test_digs_raise_msg(self, dig, expectation):
         with expectation as context:
             ch._check_digs_(dig)
-        assert str(context.value) == "The value assigned to the parameter -digs-" +\
-                                f" was {dig}. Value must be 1, 2 or 3."
+        assert str(context.value) == "The value assigned to the parameter " +\
+                                f"-digs- was {dig}. Value must be 1, 2 or 3."
 
     @pytest.mark.parametrize("dig, expectation", digs_to_raise)
     def test_check_digs_raise(self, dig, expectation):
@@ -36,7 +35,7 @@ class Test_check_digs():
             assert ch._check_digs_(dig) is None
 
 
-class Test_check_test():
+class TestCheckTest():
 
     digs_tests = [(d, d) for d in digs_dict.keys()] +\
         [(val, key) for key, val in digs_dict.items()]
@@ -45,22 +44,22 @@ class Test_check_test():
     def test_choose(self, dig, expected):
         assert ch._check_test_(dig) == expected   
     
-    tests_errors = [
+    test_check_raise = [
         (y, raises(ValueError)) for y in [4, -3, 2.0, "F4D", False]] +\
         [(x, do_not_raise()) for x in digs_dict.keys()] +\
         [(z, do_not_raise()) for z in digs_dict.values()]
 
-    @pytest.mark.parametrize("dig, expectation", tests_errors)
+    @pytest.mark.parametrize("dig, expectation", test_check_raise)
     def test_raise(self, dig, expectation):
         with expectation:
             assert ch._check_test_(dig) is not None
 
     def test_None(self):
-        with pytest.raises(ValueError) as context:
+        with pytest.raises(ValueError):
             ch._check_test_(None)
 
 
-class Test_check_decimals():
+class TestCheckDecimals():
     
     pos_int = zip(range(21), range(21))
     
@@ -91,7 +90,7 @@ class Test_check_decimals():
             ch._check_decimals_(None)
 
 
-class Test_check_confidence():
+class TestCheckConfidence():
 
     conf_errors = [
         (x, raises(ValueError)) for x in
@@ -111,7 +110,7 @@ class Test_check_confidence():
         assert ch._check_confidence_(conf) == expected
 
 
-class Test_check_high_Z():
+class TestCheckHighZ():
 
     z_errors = [
         (x, raises(ValueError)) for x in
@@ -133,7 +132,7 @@ class Test_check_high_Z():
         assert ch._check_high_Z_(z) == expected
 
 
-class Test_check_nunm_array():
+class TestCheckNunmArray():
     
     arrays = [
         ['1', '2', '3', '4', '5', '6', '7'],
@@ -151,7 +150,7 @@ class Test_check_nunm_array():
         assert ch._check_num_array_(arr).dtype == expected
     
     def test_np_array_str(self, small_str_foo_array):
-        with pytest.raises(ValueError) as context:
+        with pytest.raises(ValueError):
             ch._check_num_array_(small_str_foo_array)
 
     num_arr_raise = [
