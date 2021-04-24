@@ -10,29 +10,30 @@ from ..benford.constants import confs, digs_dict
 
 class Test_check_digs():
 
-    def test_zero(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_digs_(0)
-        assert str(
-            context.value) == "The value assigned to the parameter -digs- was 0. Value must be 1, 2 or 3."
+    digs_to_raise = [
+        (x, raises(ValueError)) for x in 
+        [0, 0.5, -3, -5, -1, 1.7, 22, 1000, "One", "Two", "Second", "LastTwo", "Three"]
+    ]
 
-    def test_float(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_digs_(0.5)
-        assert str(
-            context.value) == "The value assigned to the parameter -digs- was 0.5. Value must be 1, 2 or 3."
+    @pytest.mark.parametrize("dig, expectation", digs_to_raise)
+    def test_digs_raise_msg(self, dig, expectation):
+        with expectation as context:
+            ch._check_digs_(dig)
+        assert str(context.value) == "The value assigned to the parameter -digs-" +\
+                                f" was {dig}. Value must be 1, 2 or 3."
 
-    def test_other_int(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_digs_(22)
-        assert str(
-            context.value) == "The value assigned to the parameter -digs- was 22. Value must be 1, 2 or 3."
+    @pytest.mark.parametrize("dig, expectation", digs_to_raise)
+    def test_check_digs_raise(self, dig, expectation):
+        with expectation:
+            assert ch._check_digs_(dig) is not None
 
-    def test_str(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_digs_('Two')
-        assert str(
-            context.value) == "The value assigned to the parameter -digs- was Two. Value must be 1, 2 or 3."
+    legit_digs = [
+        (y, do_not_raise()) for y in [1, 2, 3]
+    ]
+    @pytest.mark.parametrize("dig, expectation", legit_digs)
+    def test_check_digs_no_raise(self, dig, expectation):
+        with expectation:
+            assert ch._check_digs_(dig) is None
 
 
 class Test_check_test():
@@ -50,7 +51,7 @@ class Test_check_test():
         [(z, do_not_raise()) for z in digs_dict.values()]
 
     @pytest.mark.parametrize("dig, expectation", tests_errors)
-    def test_digs_raise(self, dig, expectation):
+    def test_raise(self, dig, expectation):
         with expectation:
             assert ch._check_test_(dig) is not None
 
