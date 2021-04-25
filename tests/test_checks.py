@@ -1,6 +1,4 @@
 from contextlib import suppress as do_not_raise
-import numpy as np
-import pandas as pd
 import pytest
 from pytest import raises
 from ..benford import checks as ch
