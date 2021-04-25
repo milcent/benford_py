@@ -1,38 +1,41 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>benford package &mdash; benford_py 0.3.0 documentation</title>
+  <title>benford package &mdash; benford_py 0.3.3 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="benford" href="modules.html" /> 
@@ -72,6 +75,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -96,6 +100,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -130,11 +135,13 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="modules.html">benford</a> &raquo;</li>
         
@@ -143,7 +150,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -161,9 +168,9 @@
 <h1>benford package<a class="headerlink" href="#benford-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-benford.benford">
 <span id="benford-benford-module"></span><h2>benford.benford module<a class="headerlink" href="#module-benford.benford" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="benford.benford.Base">
-<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Base</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">decimals</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">sec_order=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Base"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Base" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Base</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">decimals</span></em>, <em class="sig-param"><span class="n">sign</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">sec_order</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Base"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Base" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.core.frame.DataFrame</span></code></p>
 <p>Internalizes and prepares the data for Analysis.</p>
 <dl class="field-list simple">
@@ -187,9 +194,9 @@ Defaults to all.`</p></li>
 </dl>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="benford.benford.Test">
-<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Test</code><span class="sig-paren">(</span><em class="sig-param">base</em>, <em class="sig-param">digs</em>, <em class="sig-param">confidence</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">sec_order=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Test" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Test</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base</span></em>, <em class="sig-param"><span class="n">digs</span></em>, <em class="sig-param"><span class="n">confidence</span></em>, <em class="sig-param"><span class="n">limit_N</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sec_order</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Test" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.core.frame.DataFrame</span></code></p>
 <p>Transforms the original number sequence into a DataFrame reduced
 by the ocurrences of the chosen digits, creating other computed
@@ -200,50 +207,50 @@ columns</p>
 <li><p><strong>base</strong> – The Base object with the data prepared for Analysis</p></li>
 <li><p><strong>digs</strong> – Tells which test to perform: 1: first digit; 2: first two digits;
 3: furst three digits; 22: second digit; -2: last two digits.</p></li>
-<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+<li><p><strong>confidence</strong> (<em>int</em><em>, </em><em>float</em>) – confidence level to draw lower and upper limits when
 plotting and to limit the top deviations to show.</p></li>
-<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+<li><p><strong>limit_N</strong> (<em>int</em>) – sets a limit to N as the sample size for the calculation of
 the Z scores if the sample is too big. Defaults to None.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Test.N">
 <code class="sig-name descname">N</code><a class="headerlink" href="#benford.benford.Test.N" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of records in the sample to consider in computations</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Test.ddf">
 <code class="sig-name descname">ddf</code><a class="headerlink" href="#benford.benford.Test.ddf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Degrees of Freedom to look up for the critical chi-square value</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Test.chi_square">
 <code class="sig-name descname">chi_square</code><a class="headerlink" href="#benford.benford.Test.chi_square" title="Permalink to this definition">¶</a></dt>
 <dd><p>Chi-square statistic for the given test</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Test.KS">
 <code class="sig-name descname">KS</code><a class="headerlink" href="#benford.benford.Test.KS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Kolmogorov-Smirnov statistic for the given test</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Test.MAD">
 <code class="sig-name descname">MAD</code><a class="headerlink" href="#benford.benford.Test.MAD" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mean Absolute Deviation for the given test</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Test.confidence">
 <code class="sig-name descname">confidence</code><a class="headerlink" href="#benford.benford.Test.confidence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Confidence level to consider when setting some critical values</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Test.digs">
 <code class="sig-name descname">digs</code><a class="headerlink" href="#benford.benford.Test.digs" title="Permalink to this definition">¶</a></dt>
 <dd><p>numerical representation of the test at hand. 1: F1D; 2: F2D;
@@ -255,7 +262,7 @@ the Z scores if the sample is too big. Defaults to None.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Test.sec_order">
 <code class="sig-name descname">sec_order</code><a class="headerlink" href="#benford.benford.Test.sec_order" title="Permalink to this definition">¶</a></dt>
 <dd><p>True if the test is a Second Order one</p>
@@ -266,9 +273,9 @@ the Z scores if the sample is too big. Defaults to None.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Test.update_confidence">
-<code class="sig-name descname">update_confidence</code><span class="sig-paren">(</span><em class="sig-param">new_conf</em>, <em class="sig-param">check=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Test.update_confidence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Test.update_confidence" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update_confidence</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_conf</span></em>, <em class="sig-param"><span class="n">check</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Test.update_confidence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Test.update_confidence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets a new confidence level for the Benford object, so as to be used to
 produce critical values for the tests</p>
 <dl class="field-list simple">
@@ -283,7 +290,7 @@ calculate critical values for the tests’ statistics.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Test.critical_values">
 <em class="property">property </em><code class="sig-name descname">critical_values</code><a class="headerlink" href="#benford.benford.Test.critical_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>a dictionary with the critical values for the test at hand,
@@ -295,17 +302,17 @@ according to the current confidence level.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Test.show_plot">
-<code class="sig-name descname">show_plot</code><span class="sig-paren">(</span><em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Test.show_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Test.show_plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">show_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Test.show_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Test.show_plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draws the test plot.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when save_plot is a string with the figure file
@@ -315,15 +322,15 @@ path/name.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Test.report">
-<code class="sig-name descname">report</code><span class="sig-paren">(</span><em class="sig-param">high_Z='pos'</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Test.report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Test.report" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">report</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">high_Z</span><span class="o">=</span><span class="default_value">'pos'</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Test.report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Test.report" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handles the report especific to the test, considering its statistics
 and according to the current confidence level.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>high_Z</strong> – chooses which Z scores to be used when displaying results,
+<li><p><strong>high_Z</strong> (<em>int</em>) – chooses which Z scores to be used when displaying results,
 according to the confidence level chosen. Defaluts to ‘pos’,
 which will highlight only values higher than the expexted
 frequencies; ‘all’ will highlight both extremes (positive and
@@ -331,11 +338,11 @@ negative); and an integer, which will use the first n entries,
 positive and negative, regardless of whether Z is higher than
 the critical value or not.</p></li>
 <li><p><strong>show_plot</strong> – calls the show_plot method, to draw the test plot</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension. Only available when
 plot=True.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when plot=True and save_plot is a string with the
@@ -347,9 +354,9 @@ figure file path/name.</p></li>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="benford.benford.Summ">
-<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Summ</code><span class="sig-paren">(</span><em class="sig-param">base</em>, <em class="sig-param">test</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Summ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Summ" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Summ</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base</span></em>, <em class="sig-param"><span class="n">test</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Summ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Summ" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.core.frame.DataFrame</span></code></p>
 <p>Gets the base object and outputs a Summation test object</p>
 <dl class="field-list simple">
@@ -360,29 +367,29 @@ figure file path/name.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Summ.MAD">
-<code class="sig-name descname">MAD</code><em class="property"> = None</em><a class="headerlink" href="#benford.benford.Summ.MAD" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">MAD</code><a class="headerlink" href="#benford.benford.Summ.MAD" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mean Absolute Deviation for the test</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Summ.confidence">
-<code class="sig-name descname">confidence</code><em class="property"> = None</em><a class="headerlink" href="#benford.benford.Summ.confidence" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">confidence</code><a class="headerlink" href="#benford.benford.Summ.confidence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Confidence level to consider when setting some critical values</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Summ.show_plot">
-<code class="sig-name descname">show_plot</code><span class="sig-paren">(</span><em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Summ.show_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Summ.show_plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">show_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Summ.show_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Summ.show_plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draws the Summation test plot</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when save_plot is a string with the figure file
@@ -392,9 +399,9 @@ path/name.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Summ.report">
-<code class="sig-name descname">report</code><span class="sig-paren">(</span><em class="sig-param">high_diff=None</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Summ.report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Summ.report" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">report</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">high_diff</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Summ.report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Summ.report" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gives the report on the Summation test.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -402,11 +409,11 @@ path/name.</p></li>
 <li><p><strong>high_diff</strong> – Number of records to show after ordering by the absolute
 differences between the found and the expected proportions</p></li>
 <li><p><strong>show_plot</strong> – calls the show_plot method, to draw the Summation test plot</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension. Only available when
 plot=True.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when plot=True and save_plot is a string with the
@@ -418,9 +425,9 @@ figure file path/name.</p></li>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="benford.benford.Benford">
-<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Benford</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">confidence=95</em>, <em class="sig-param">mantissas=False</em>, <em class="sig-param">sec_order=False</em>, <em class="sig-param">summation=False</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Benford"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Benford" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Benford</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sign</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">confidence</span><span class="o">=</span><span class="default_value">95</span></em>, <em class="sig-param"><span class="n">mantissas</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sec_order</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">summation</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">limit_N</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Benford"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Benford" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Initializes a Benford Analysis object and computes the proportions for
 the digits. The tets dataFrames are atributes, i.e., obj.F1D is the First
@@ -439,7 +446,7 @@ loose performance.</p></li>
 <li><p><strong>sign</strong> – tells which portion of the data to consider. pos: only the positive
 entries; neg: only negative entries; all: all entries but zeros.
 Defaults to all.</p></li>
-<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+<li><p><strong>confidence</strong> (<em>int</em><em>, </em><em>float</em>) – confidence level to draw lower and upper limits when
 plotting and to limit the top deviations to show, as well as to
 calculate critical values for the tests’ statistics. Defaults to 95.</p></li>
 <li><p><strong>sec_order</strong> – runs the Second Order tests, which are the Benford’s tests
@@ -450,26 +457,26 @@ Order can also be called separately, through the method sec_order().</p></li>
 <li><p><strong>summation</strong> – creates the Summation DataFrames for the First, First Two, and
 First Three Digits. The summation tests can also be called separately,
 through the method summation().</p></li>
-<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+<li><p><strong>limit_N</strong> (<em>int</em>) – sets a limit to N as the sample size for the calculation of
 the Z scores if the sample is too big. Defaults to None.</p></li>
 <li><p><strong>verbose</strong> – gives some information about the data and the registries used
 and discarded for each test.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Benford.data">
 <code class="sig-name descname">data</code><a class="headerlink" href="#benford.benford.Benford.data" title="Permalink to this definition">¶</a></dt>
 <dd><p>the raw data provided for the analysis</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Benford.chosen">
 <code class="sig-name descname">chosen</code><a class="headerlink" href="#benford.benford.Benford.chosen" title="Permalink to this definition">¶</a></dt>
 <dd><p>the column of the DataFrame to be analysed or the data itself</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Benford.sign">
 <code class="sig-name descname">sign</code><a class="headerlink" href="#benford.benford.Benford.sign" title="Permalink to this definition">¶</a></dt>
 <dd><p>which number sign(s) to include in the analysis</p>
@@ -480,13 +487,13 @@ and discarded for each test.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Benford.confidence">
 <code class="sig-name descname">confidence</code><a class="headerlink" href="#benford.benford.Benford.confidence" title="Permalink to this definition">¶</a></dt>
 <dd><p>current confidence level</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Benford.limit_N">
 <code class="sig-name descname">limit_N</code><a class="headerlink" href="#benford.benford.Benford.limit_N" title="Permalink to this definition">¶</a></dt>
 <dd><p>sample size to use in computations</p>
@@ -497,7 +504,7 @@ and discarded for each test.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Benford.verbose">
 <code class="sig-name descname">verbose</code><a class="headerlink" href="#benford.benford.Benford.verbose" title="Permalink to this definition">¶</a></dt>
 <dd><p>verbose or not</p>
@@ -508,13 +515,13 @@ and discarded for each test.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Benford.base">
 <code class="sig-name descname">base</code><a class="headerlink" href="#benford.benford.Benford.base" title="Permalink to this definition">¶</a></dt>
 <dd><p>the Base, pre-processed object</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Benford.tests">
 <code class="sig-name descname">tests</code><a class="headerlink" href="#benford.benford.Benford.tests" title="Permalink to this definition">¶</a></dt>
 <dd><p>keeps track of the tests the
@@ -526,9 +533,9 @@ instance has</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Benford.update_confidence">
-<code class="sig-name descname">update_confidence</code><span class="sig-paren">(</span><em class="sig-param">new_conf</em>, <em class="sig-param">tests=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Benford.update_confidence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Benford.update_confidence" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update_confidence</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_conf</span></em>, <em class="sig-param"><span class="n">tests</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Benford.update_confidence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Benford.update_confidence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets (a) new confidence level(s) for the Benford object, so as to be
 used to produce critical values for the tests.</p>
 <dl class="field-list simple">
@@ -549,7 +556,7 @@ the instance .test list attribute.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Benford.all_confidences">
 <em class="property">property </em><code class="sig-name descname">all_confidences</code><a class="headerlink" href="#benford.benford.Benford.all_confidences" title="Permalink to this definition">¶</a></dt>
 <dd><p>a dictionary with a confidence level for each computed tests,
@@ -561,14 +568,14 @@ when applicable.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Benford.mantissas">
 <code class="sig-name descname">mantissas</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Benford.mantissas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Benford.mantissas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds a Mantissas object to the tests, with all its statistics and
 plotting capabilities.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Benford.sec_order">
 <code class="sig-name descname">sec_order</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Benford.sec_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Benford.sec_order" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs the Second Order tests, which are the Benford’s tests
@@ -578,7 +585,7 @@ compliant, this new sequence should aldo follow Beford. The Second
 Order can also be called separately, through the method sec_order().</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Benford.summation">
 <code class="sig-name descname">summation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Benford.summation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Benford.summation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates Summation test DataFrames from Base object</p>
@@ -586,9 +593,9 @@ Order can also be called separately, through the method sec_order().</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="benford.benford.Source">
-<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Source</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">sec_order=False</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Source</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sign</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">sec_order</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">inform</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.core.frame.DataFrame</span></code></p>
 <p>Prepares the data for Analysis. pandas DataFrame subclass.</p>
 <dl class="field-list simple">
@@ -606,7 +613,7 @@ entries; neg: only negative entries; all: all entries but zeros.
 Defaults to all.</p></li>
 <li><p><strong>sec_order</strong> – choice for the Second Order Test, which cumputes the
 differences between the ordered entries before running the Tests.</p></li>
-<li><p><strong>verbose</strong> – tells the number of registries that are being subjected to
+<li><p><strong>verbose</strong> (<em>bool</em>) – tells the number of registries that are being subjected to
 the analysis; defaults to True.</p></li>
 </ul>
 </dd>
@@ -617,9 +624,9 @@ the analysis; defaults to True.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Source.verbose">
-<code class="sig-name descname">verbose</code><em class="property"> = None</em><a class="headerlink" href="#benford.benford.Source.verbose" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">verbose</code><a class="headerlink" href="#benford.benford.Source.verbose" title="Permalink to this definition">¶</a></dt>
 <dd><p>verbose or not</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -628,9 +635,9 @@ the analysis; defaults to True.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Source.mantissas">
-<code class="sig-name descname">mantissas</code><span class="sig-paren">(</span><em class="sig-param">report=True</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">figsize=(15</em>, <em class="sig-param">8)</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.mantissas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.mantissas" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">mantissas</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">report</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">(15, 8)</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.mantissas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.mantissas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the mantissas, their mean and variance, and compares them
 with the mean and variance of a Benford’s sequence.</p>
 <dl class="field-list simple">
@@ -641,11 +648,11 @@ for the sequence studied, along with reference values.</p></li>
 <li><p><strong>show_plot</strong> – plots the ordered mantissas and a line with the expected
 inclination. Defaults to True.</p></li>
 <li><p><strong>figsize</strong> – tuple that sets the figure dimensions.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension. Only available when
 plot=True.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when plot=True and save_plot is a string with the
@@ -655,43 +662,47 @@ figure file path/name.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Source.first_digits">
-<code class="sig-name descname">first_digits</code><span class="sig-paren">(</span><em class="sig-param">digs</em>, <em class="sig-param">confidence=None</em>, <em class="sig-param">high_Z='pos'</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">MAD=False</em>, <em class="sig-param">MSE=False</em>, <em class="sig-param">chi_square=False</em>, <em class="sig-param">KS=False</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em>, <em class="sig-param">simple=False</em>, <em class="sig-param">ret_df=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.first_digits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.first_digits" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">first_digits</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">digs</span></em>, <em class="sig-param"><span class="n">confidence</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">high_Z</span><span class="o">=</span><span class="default_value">'pos'</span></em>, <em class="sig-param"><span class="n">limit_N</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">MAD</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">MSE</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">chi_square</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">KS</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">simple</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">bhat_dist</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kl_diverg</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ret_df</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.first_digits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.first_digits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs the Benford First Digits test with the series of
 numbers provided, and populates the mapping dict for future
 selection of the original series.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>digs</strong> – number of first digits to consider. Must be 1 (first digit),
+<li><p><strong>digs</strong> (<em>int</em>) – number of first digits to consider. Must be 1 (first digit),
 2 (first two digits) or 3 (first three digits).</p></li>
-<li><p><strong>verbose</strong> – tells the number of registries that are being subjected to
+<li><p><strong>verbose</strong> (<em>bool</em>) – tells the number of registries that are being subjected to
 the analysis; defaults to True</p></li>
-<li><p><strong>digs</strong> – number of first digits to consider. Must be 1 (first digit),
-2 (first two digits) or 3 (first three digits).</p></li>
-<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+<li><p><strong>confidence</strong> (<em>int</em><em>, </em><em>float</em>) – confidence level to draw lower and upper limits when
 plotting and to limit the top deviations to show, as well as to
 calculate critical values for the tests’ statistics. Defaults to None.</p></li>
-<li><p><strong>high_Z</strong> – chooses which Z scores to be used when displaying results,
+<li><p><strong>high_Z</strong> (<em>int</em>) – chooses which Z scores to be used when displaying results,
 according to the confidence level chosen. Defaluts to ‘pos’,
 which will highlight only values higher than the expexted
 frequencies; ‘all’ will highlight both extremes (positive and
 negative); and an integer, which will use the first n entries,
 positive and negative, regardless of whether Z is higher than
 the confidence or not.</p></li>
-<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+<li><p><strong>limit_N</strong> (<em>int</em>) – sets a limit to N as the sample size for the calculation of
 the Z scores if the sample is too big. Defaults to None.</p></li>
-<li><p><strong>MAD</strong> – calculates the Mean Absolute Difference between the
+<li><p><strong>MAD</strong> (<em>bool</em>) – calculates the Mean Absolute Difference between the
 found and the expected distributions; defaults to False.</p></li>
-<li><p><strong>MSE</strong> – calculates the Mean Square Error of the sample; defaults to
+<li><p><strong>MSE</strong> (<em>bool</em>) – calculates the Mean Square Error of the sample; defaults to
 False.</p></li>
-<li><p><strong>show_plot</strong> – draws the test plot. Defaults to True.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>bhat_dist</strong> (<em>bool</em>) – calculates the Bhattacharrya Distance between
+foudn and the expected (Benford) digits distribution; defaults
+to Fasle</p></li>
+<li><p><strong>kl_diverg</strong> (<em>bool</em>) – calculates the Kulback-Laibler Divergence between
+the found and the expected (Benford) digits distribution;
+defaults to False</p></li>
+<li><p><strong>show_plot</strong> (<em>bool</em>) – draws the test plot. Defaults to True.</p></li>
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension. Only available when
 plot=True.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when plot=True and save_plot is a string with the
@@ -710,38 +721,44 @@ the test function.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Source.second_digit">
-<code class="sig-name descname">second_digit</code><span class="sig-paren">(</span><em class="sig-param">confidence=None</em>, <em class="sig-param">high_Z='pos'</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">MAD=False</em>, <em class="sig-param">MSE=False</em>, <em class="sig-param">chi_square=False</em>, <em class="sig-param">KS=False</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em>, <em class="sig-param">simple=False</em>, <em class="sig-param">ret_df=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.second_digit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.second_digit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">second_digit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">confidence</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">high_Z</span><span class="o">=</span><span class="default_value">'pos'</span></em>, <em class="sig-param"><span class="n">limit_N</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">MAD</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">MSE</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">chi_square</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">KS</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">bhat_dist</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kl_diverg</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">simple</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ret_df</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.second_digit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.second_digit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs the Benford Second Digit test with the series of
 numbers provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>verbose</strong> – tells the number of registries that are being subjected to
+<li><p><strong>verbose</strong> (<em>bool</em>) – tells the number of registries that are being subjected to
 the analysis; defaults to True</p></li>
-<li><p><strong>MAD</strong> – calculates the Mean Absolute Difference between the
+<li><p><strong>MAD</strong> (<em>bool</em>) – calculates the Mean Absolute Difference between the
 found and the expected distributions; defaults to False.</p></li>
-<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+<li><p><strong>confidence</strong> (<em>int</em><em>, </em><em>float</em>) – confidence level to draw lower and upper limits when
 plotting and to limit the top deviations to show, as well as to
 calculate critical values for the tests’ statistics. Defaults to None.</p></li>
-<li><p><strong>high_Z</strong> – chooses which Z scores to be used when displaying results,
+<li><p><strong>high_Z</strong> (<em>int</em>) – chooses which Z scores to be used when displaying results,
 according to the confidence level chosen. Defaluts to ‘pos’,
 which will highlight only values higher than the expexted
 frequencies; ‘all’ will highlight both extremes (positive and
 negative); and an integer, which will use the first n entries,
 positive and negative, regardless of whether Z is higher than
 the confidence or not.</p></li>
-<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+<li><p><strong>limit_N</strong> (<em>int</em>) – sets a limit to N as the sample size for the calculation of
 the Z scores if the sample is too big. Defaults to None.</p></li>
-<li><p><strong>MSE</strong> – calculates the Mean Square Error of the sample; defaults to
+<li><p><strong>MSE</strong> (<em>bool</em>) – calculates the Mean Square Error of the sample; defaults to
 False.</p></li>
-<li><p><strong>show_plot</strong> – draws the test plot.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>bhat_dist</strong> (<em>bool</em>) – calculates the Bhattacharrya Distance between
+foudn and the expected (Benford) digits distribution; defaults
+to Fasle</p></li>
+<li><p><strong>kl_diverg</strong> (<em>bool</em>) – calculates the Kulback-Laibler Divergence between
+the found and the expected (Benford) digits distribution;
+defaults to False</p></li>
+<li><p><strong>show_plot</strong> (<em>bool</em>) – draws the test plot.</p></li>
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension. Only available when
 plot=True.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when plot=True and save_plot is a string with the
@@ -760,38 +777,44 @@ the test function.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Source.last_two_digits">
-<code class="sig-name descname">last_two_digits</code><span class="sig-paren">(</span><em class="sig-param">confidence=None</em>, <em class="sig-param">high_Z='pos'</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">MAD=False</em>, <em class="sig-param">MSE=False</em>, <em class="sig-param">chi_square=False</em>, <em class="sig-param">KS=False</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em>, <em class="sig-param">simple=False</em>, <em class="sig-param">ret_df=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.last_two_digits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.last_two_digits" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">last_two_digits</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">confidence</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">high_Z</span><span class="o">=</span><span class="default_value">'pos'</span></em>, <em class="sig-param"><span class="n">limit_N</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">MAD</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">MSE</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">chi_square</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">KS</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">bhat_dist</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kl_diverg</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">simple</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ret_df</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.last_two_digits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.last_two_digits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs the Benford Last Two Digits test with the series of
 numbers provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>verbose</strong> – tells the number of registries that are being subjected to
+<li><p><strong>verbose</strong> (<em>bool</em>) – tells the number of registries that are being subjected to
 the analysis; defaults to True</p></li>
-<li><p><strong>MAD</strong> – calculates the Mean Absolute Difference between the
+<li><p><strong>MAD</strong> (<em>bool</em>) – calculates the Mean Absolute Difference between the
 found and the expected distributions; defaults to False.</p></li>
-<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+<li><p><strong>confidence</strong> (<em>int</em><em>, </em><em>float</em>) – confidence level to draw lower and upper limits when
 plotting and to limit the top deviations to show, as well as to
 calculate critical values for the tests’ statistics. Defaults to None.</p></li>
-<li><p><strong>high_Z</strong> – chooses which Z scores to be used when displaying results,
+<li><p><strong>high_Z</strong> (<em>int</em>) – chooses which Z scores to be used when displaying results,
 according to the confidence level chosen. Defaluts to ‘pos’,
 which will highlight only values higher than the expexted
 frequencies; ‘all’ will highlight both extremes (positive and
 negative); and an integer, which will use the first n entries,
 positive and negative, regardless of whether Z is higher than
 the confidence or not.</p></li>
-<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+<li><p><strong>limit_N</strong> (<em>int</em>) – sets a limit to N as the sample size for the calculation of
 the Z scores if the sample is too big. Defaults to None.</p></li>
-<li><p><strong>MSE</strong> – calculates the Mean Square Error of the sample; defaults to
+<li><p><strong>MSE</strong> (<em>bool</em>) – calculates the Mean Square Error of the sample; defaults to
 False.</p></li>
-<li><p><strong>show_plot</strong> – draws the test plot.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>bhat_dist</strong> (<em>bool</em>) – calculates the Bhattacharrya Distance between
+foudn and the expected (Benford) digits distribution; defaults
+to Fasle</p></li>
+<li><p><strong>kl_diverg</strong> (<em>bool</em>) – calculates the Kulback-Laibler Divergence between
+the found and the expected (Benford) digits distribution;
+defaults to False</p></li>
+<li><p><strong>show_plot</strong> (<em>bool</em>) – draws the test plot.</p></li>
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension. Only available when
 plot=True.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when plot=True and save_plot is a string with the
@@ -808,9 +831,9 @@ figure file path/name.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Source.summation">
-<code class="sig-name descname">summation</code><span class="sig-paren">(</span><em class="sig-param">digs=2</em>, <em class="sig-param">top=20</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em>, <em class="sig-param">ret_df=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.summation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.summation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">summation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">digs</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">top</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ret_df</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.summation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.summation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs the Summation test. In a Benford series, the sums of the
 entries begining with the same digits tends to be the same.</p>
 <dl class="field-list simple">
@@ -820,11 +843,11 @@ entries begining with the same digits tends to be the same.</p>
 3- first three. Defaults to 2.</p></li>
 <li><p><strong>top</strong> – choses how many top values to show. Defaults to 20.</p></li>
 <li><p><strong>show_plot</strong> – plots the results. Defaults to True.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension. Only available when
 plot=True.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when plot=True and save_plot is a string with the
@@ -841,15 +864,15 @@ figure file path/name.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Source.duplicates">
-<code class="sig-name descname">duplicates</code><span class="sig-paren">(</span><em class="sig-param">top_Rep=20</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.duplicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.duplicates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">duplicates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">top_Rep</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">inform</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Source.duplicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Source.duplicates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs a duplicates test and maps the duplicates count in descending
 order.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>verbose</strong> – tells how many duplicated entries were found and prints the
+<li><p><strong>verbose</strong> (<em>bool</em>) – tells how many duplicated entries were found and prints the
 top numbers according to the top_Rep argument. Defaluts to True.</p></li>
 <li><p><strong>top_Rep</strong> – int or None. Chooses how many duplicated entries will be
 shown withe the top repititions. Defaluts to 20. If None, returns
@@ -872,9 +895,9 @@ terminal).</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="benford.benford.Mantissas">
-<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Mantissas</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Mantissas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Mantissas" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Mantissas</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Mantissas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Mantissas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Returns a Series with the data mantissas,</p>
 <dl class="field-list simple">
@@ -883,7 +906,7 @@ terminal).</p>
 Series of pandas DataFrame column.</p>
 </dd>
 </dl>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Mantissas.data">
 <code class="sig-name descname">data</code><a class="headerlink" href="#benford.benford.Mantissas.data" title="Permalink to this definition">¶</a></dt>
 <dd><p>holds the computed mantissas and, if the arc_test
@@ -895,7 +918,7 @@ is also called, the respecttive x and Y coordinates for the plot.</p>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Mantissas.stats">
 <code class="sig-name descname">stats</code><a class="headerlink" href="#benford.benford.Mantissas.stats" title="Permalink to this definition">¶</a></dt>
 <dd><p>holds the relevant statistics about the data mantissas.</p>
@@ -906,9 +929,9 @@ is also called, the respecttive x and Y coordinates for the plot.</p>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
-<dt>
-<code class="sig-name descname">data</code><em class="property"> = None</em></dt>
+<dl class="py attribute">
+<dt id="id0">
+<code class="sig-name descname">data</code><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
 <dd><p>pandas DataFrame with the mantissas</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -917,20 +940,20 @@ is also called, the respecttive x and Y coordinates for the plot.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Mantissas.report">
-<code class="sig-name descname">report</code><span class="sig-paren">(</span><em class="sig-param">show_plot=True</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Mantissas.report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Mantissas.report" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">report</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Mantissas.report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Mantissas.report" title="Permalink to this definition">¶</a></dt>
 <dd><p>Displays the Mantissas stats.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>show_plot</strong> – shows the ordered mantissas plot and the Arc Test plot.
 Defaults to True.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension. Only available when
 plot=True.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when plot=True and save_plot is a string with the
@@ -940,19 +963,19 @@ figure file path/name.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Mantissas.show_plot">
-<code class="sig-name descname">show_plot</code><span class="sig-paren">(</span><em class="sig-param">figsize=(12</em>, <em class="sig-param">12)</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Mantissas.show_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Mantissas.show_plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">show_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">(12, 12)</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Mantissas.show_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Mantissas.show_plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots the ordered mantissas and compares them to the expected, straight
 line that should be formed in a Benford-cmpliant set.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>figsize</strong> – tuple that sets the figure size.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when save_plot is a string with the figure file
@@ -962,9 +985,9 @@ path/name.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Mantissas.arc_test">
-<code class="sig-name descname">arc_test</code><span class="sig-paren">(</span><em class="sig-param">grid=True</em>, <em class="sig-param">figsize=12</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Mantissas.arc_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Mantissas.arc_test" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">arc_test</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grid</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">12</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Mantissas.arc_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Mantissas.arc_test" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add two columns to Mantissas’s DataFrame equal to their “X” and “Y”
 coordinates, plots its to a scatter plot and calculates the gravity
 center of the circle.</p>
@@ -975,10 +998,10 @@ center of the circle.</p>
 <li><p><strong>figsize</strong> – size of the figure to be displayed. Since it is a square,
 there is no need to provide a tuple, like is usually the case with
 matplotlib.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when save_plot is a string with the figure file
@@ -990,9 +1013,9 @@ path/name.</p></li>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="benford.benford.Roll_mad">
-<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Roll_mad</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">test</em>, <em class="sig-param">window</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Roll_mad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Roll_mad" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Roll_mad</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">test</span></em>, <em class="sig-param"><span class="n">window</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sign</span><span class="o">=</span><span class="default_value">'all'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Roll_mad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Roll_mad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Applies the MAD to sequential subsets of the Series, returning another
 Series.</p>
@@ -1015,24 +1038,24 @@ Defaults to all.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="benford.benford.Roll_mad.test">
-<code class="sig-name descname">test</code><em class="property"> = None</em><a class="headerlink" href="#benford.benford.Roll_mad.test" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test</code><a class="headerlink" href="#benford.benford.Roll_mad.test" title="Permalink to this definition">¶</a></dt>
 <dd><p>the test (F1D, SD, F2D…) used for the MAD calculation and critical values</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Roll_mad.show_plot">
-<code class="sig-name descname">show_plot</code><span class="sig-paren">(</span><em class="sig-param">figsize=(15</em>, <em class="sig-param">8)</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Roll_mad.show_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Roll_mad.show_plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">show_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">(15, 8)</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Roll_mad.show_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Roll_mad.show_plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shows the rolling MAD plot</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>figsize</strong> – the figure dimensions.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when save_plot is a string with the figure file
@@ -1044,9 +1067,9 @@ path/name.</p></li>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="benford.benford.Roll_mse">
-<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Roll_mse</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">test</em>, <em class="sig-param">window</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Roll_mse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Roll_mse" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">Roll_mse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">test</span></em>, <em class="sig-param"><span class="n">window</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sign</span><span class="o">=</span><span class="default_value">'all'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Roll_mse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Roll_mse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Applies the MSE to sequential subsets of the Series, returning another
 Series.</p>
@@ -1069,18 +1092,18 @@ Defaults to ‘all’.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="benford.benford.Roll_mse.show_plot">
-<code class="sig-name descname">show_plot</code><span class="sig-paren">(</span><em class="sig-param">figsize=(15</em>, <em class="sig-param">8)</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Roll_mse.show_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Roll_mse.show_plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">show_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">(15, 8)</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#Roll_mse.show_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.Roll_mse.show_plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shows the rolling MSE plot</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>figsize</strong> – the figure dimensions.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when save_plot is a string with the figure file
@@ -1092,9 +1115,9 @@ path/name.</p></li>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.benford.first_digits">
-<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">first_digits</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">digs</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">confidence=None</em>, <em class="sig-param">high_Z='pos'</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">MAD=False</em>, <em class="sig-param">MSE=False</em>, <em class="sig-param">chi_square=False</em>, <em class="sig-param">KS=False</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#first_digits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.first_digits" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">first_digits</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">digs</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sign</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">confidence</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">high_Z</span><span class="o">=</span><span class="default_value">'pos'</span></em>, <em class="sig-param"><span class="n">limit_N</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">MAD</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">MSE</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">chi_square</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">KS</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inform</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#first_digits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.first_digits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs the Benford First Digits test on the series of
 numbers provided.</p>
 <dl class="field-list simple">
@@ -1110,25 +1133,25 @@ loose performance.</p></li>
 <li><p><strong>sign</strong> – tells which portion of the data to consider. ‘pos’: only the positive
 entries; ‘neg’: only negative entries; ‘all’: all entries but zeros.
 Defaults to ‘all’.</p></li>
-<li><p><strong>digs</strong> – number of first digits to consider. Must be 1 (first digit),
+<li><p><strong>digs</strong> (<em>int</em>) – number of first digits to consider. Must be 1 (first digit),
 2 (first two digits) or 3 (first three digits).</p></li>
-<li><p><strong>verbose</strong> – tells the number of registries that are being subjected to
+<li><p><strong>verbose</strong> (<em>bool</em>) – tells the number of registries that are being subjected to
 the analysis and returns tha analysis DataFrame sorted by the
 highest Z score down. Defaults to True.</p></li>
-<li><p><strong>MAD</strong> – calculates the Mean Absolute Difference between the
+<li><p><strong>MAD</strong> (<em>bool</em>) – calculates the Mean Absolute Difference between the
 found and the expected distributions; defaults to False.</p></li>
-<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+<li><p><strong>confidence</strong> (<em>int</em><em>, </em><em>float</em>) – confidence level to draw lower and upper limits when
 plotting and to limit the top deviations to show. Defaults to None.</p></li>
-<li><p><strong>high_Z</strong> – chooses which Z scores to be used when displaying results,
+<li><p><strong>high_Z</strong> (<em>int</em>) – chooses which Z scores to be used when displaying results,
 according to the confidence level chosen. Defaluts to ‘pos’,
 which will highlight only values higher than the expexted
 frequencies; ‘all’ will highlight both extremes (positive and
 negative); and an integer, which will use the first n entries,
 positive and negative, regardless of whether Z is higher than
 the confidence or not.</p></li>
-<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+<li><p><strong>limit_N</strong> (<em>int</em>) – sets a limit to N as the sample size for the calculation of
 the Z scores if the sample is too big. Defaults to None.</p></li>
-<li><p><strong>MSE</strong> – calculates the Mean Square Error of the sample; defaults to
+<li><p><strong>MSE</strong> (<em>bool</em>) – calculates the Mean Square Error of the sample; defaults to
 False.</p></li>
 <li><p><strong>chi_square</strong> – calculates the chi_square statistic of the sample and
 compares it with a critical value, according to the confidence
@@ -1138,12 +1161,12 @@ False. Requires confidence != None.</p></li>
 distribution of the sample with the Benford’s, according to the
 confidence level chosen. Defaults to False. Requires confidence
 != None.</p></li>
-<li><p><strong>show_plot</strong> – draws the test plot.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>show_plot</strong> (<em>bool</em>) – draws the test plot.</p></li>
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension. Only available when
 plot=True.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when plot=True and save_plot is a string with the
@@ -1160,9 +1183,9 @@ figure file path/name.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.benford.second_digit">
-<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">second_digit</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">confidence=None</em>, <em class="sig-param">high_Z='pos'</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">MAD=False</em>, <em class="sig-param">MSE=False</em>, <em class="sig-param">chi_square=False</em>, <em class="sig-param">KS=False</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#second_digit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.second_digit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">second_digit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sign</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">confidence</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">high_Z</span><span class="o">=</span><span class="default_value">'pos'</span></em>, <em class="sig-param"><span class="n">limit_N</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">MAD</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">MSE</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">chi_square</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">KS</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inform</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#second_digit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.second_digit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs the Benford Second Digits test on the series of
 numbers provided.</p>
 <dl class="field-list simple">
@@ -1178,23 +1201,23 @@ loose performance.</p></li>
 <li><p><strong>sign</strong> – tells which portion of the data to consider. ‘pos’: only the positive
 entries; ‘neg’: only negative entries; ‘all’: all entries but zeros.
 Defaults to ‘all’.</p></li>
-<li><p><strong>verbose</strong> – tells the number of registries that are being subjected to
+<li><p><strong>verbose</strong> (<em>bool</em>) – tells the number of registries that are being subjected to
 the analysis and returns tha analysis DataFrame sorted by the
 highest Z score down. Defaults to True.</p></li>
-<li><p><strong>MAD</strong> – calculates the Mean Absolute Difference between the
+<li><p><strong>MAD</strong> (<em>bool</em>) – calculates the Mean Absolute Difference between the
 found and the expected distributions; defaults to False.</p></li>
-<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+<li><p><strong>confidence</strong> (<em>int</em><em>, </em><em>float</em>) – confidence level to draw lower and upper limits when
 plotting and to limit the top deviations to show. Defaults to None.</p></li>
-<li><p><strong>high_Z</strong> – chooses which Z scores to be used when displaying results,
+<li><p><strong>high_Z</strong> (<em>int</em>) – chooses which Z scores to be used when displaying results,
 according to the confidence level chosen. Defaluts to ‘pos’,
 which will highlight only values higher than the expexted
 frequencies; ‘all’ will highlight both extremes (positive and
 negative); and an integer, which will use the first n entries,
 positive and negative, regardless of whether Z is higher than
 the confidence or not.</p></li>
-<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+<li><p><strong>limit_N</strong> (<em>int</em>) – sets a limit to N as the sample size for the calculation of
 the Z scores if the sample is too big. Defaults to None.</p></li>
-<li><p><strong>MSE</strong> – calculates the Mean Square Error of the sample; defaults to
+<li><p><strong>MSE</strong> (<em>bool</em>) – calculates the Mean Square Error of the sample; defaults to
 False.</p></li>
 <li><p><strong>chi_square</strong> – calculates the chi_square statistic of the sample and
 compares it with a critical value, according to the confidence
@@ -1204,12 +1227,12 @@ False. Requires confidence != None.</p></li>
 distribution of the sample with the Benford’s, according to the
 confidence level chosen. Defaults to False. Requires confidence
 != None.</p></li>
-<li><p><strong>show_plot</strong> – draws the test plot.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>show_plot</strong> (<em>bool</em>) – draws the test plot.</p></li>
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension. Only available when
 plot=True.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when plot=True and save_plot is a string with the
@@ -1226,9 +1249,9 @@ figure file path/name.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.benford.last_two_digits">
-<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">last_two_digits</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">confidence=None</em>, <em class="sig-param">high_Z='pos'</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">MAD=False</em>, <em class="sig-param">MSE=False</em>, <em class="sig-param">chi_square=False</em>, <em class="sig-param">KS=False</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#last_two_digits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.last_two_digits" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">last_two_digits</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sign</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">confidence</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">high_Z</span><span class="o">=</span><span class="default_value">'pos'</span></em>, <em class="sig-param"><span class="n">limit_N</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">MAD</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">MSE</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">chi_square</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">KS</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inform</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#last_two_digits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.last_two_digits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs the Last Two Digits test on the series of
 numbers provided.</p>
 <dl class="field-list simple">
@@ -1244,23 +1267,23 @@ loose performance.</p></li>
 <li><p><strong>sign</strong> – tells which portion of the data to consider. ‘pos’: only the positive
 entries; ‘neg’: only negative entries; ‘all’: all entries but zeros.
 Defaults to ‘all’.</p></li>
-<li><p><strong>verbose</strong> – tells the number of registries that are being subjected to
+<li><p><strong>verbose</strong> (<em>bool</em>) – tells the number of registries that are being subjected to
 the analysis and returns tha analysis DataFrame sorted by the
 highest Z score down. Defaults to True.</p></li>
-<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+<li><p><strong>confidence</strong> (<em>int</em><em>, </em><em>float</em>) – confidence level to draw lower and upper limits when
 plotting and to limit the top deviations to show. Defaults to None.</p></li>
-<li><p><strong>high_Z</strong> – chooses which Z scores to be used when displaying results,
+<li><p><strong>high_Z</strong> (<em>int</em>) – chooses which Z scores to be used when displaying results,
 according to the confidence level chosen. Defaluts to ‘pos’,
 which will highlight only values higher than the expexted
 frequencies; ‘all’ will highlight both extremes (positive and
 negative); and an integer, which will use the first n entries,
 positive and negative, regardless of whether Z is higher than
 the confidence or not.</p></li>
-<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+<li><p><strong>limit_N</strong> (<em>int</em>) – sets a limit to N as the sample size for the calculation of
 the Z scores if the sample is too big. Defaults to None.</p></li>
-<li><p><strong>MAD</strong> – calculates the Mean Absolute Difference between the
+<li><p><strong>MAD</strong> (<em>bool</em>) – calculates the Mean Absolute Difference between the
 found and the expected distributions; defaults to False.</p></li>
-<li><p><strong>MSE</strong> – calculates the Mean Square Error of the sample; defaults to
+<li><p><strong>MSE</strong> (<em>bool</em>) – calculates the Mean Square Error of the sample; defaults to
 False.</p></li>
 <li><p><strong>chi_square</strong> – calculates the chi_square statistic of the sample and
 compares it with a critical value, according to the confidence
@@ -1270,12 +1293,12 @@ False. Requires confidence != None.</p></li>
 distribution of the sample with the Benford’s, according to the
 confidence level chosen. Defaults to False. Requires confidence
 != None.</p></li>
-<li><p><strong>show_plot</strong> – draws the test plot.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>show_plot</strong> (<em>bool</em>) – draws the test plot.</p></li>
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension. Only available when
 plot=True.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when plot=True and save_plot is a string with the
@@ -1292,9 +1315,9 @@ figure file path/name.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.benford.mantissas">
-<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">mantissas</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">report=True</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">arc_test=True</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#mantissas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.mantissas" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">mantissas</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">report</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">arc_test</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inform</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#mantissas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.mantissas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extraxts the mantissas of the records logarithms</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1306,11 +1329,11 @@ for the sequence studied, along with reference values.</p></li>
 <li><p><strong>show_plot</strong> – plots the ordered mantissas and a line with the expected
 inclination. Defaults to True.</p></li>
 <li><p><strong>arc_test</strong> – draws the Arc Test plot. Defaluts to True.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension. Only available when
 plot=True.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when plot=True and save_plot is a string with the
@@ -1323,9 +1346,9 @@ figure file path/name.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.benford.summation">
-<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">summation</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">digs=2</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">top=20</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#summation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.summation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">summation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">digs</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sign</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">top</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inform</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#summation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.summation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs the Summation test. In a Benford series, the sums of the
 entries begining with the same digits tends to be the same.
 Works only with the First Digits (1, 2 or 3) test.</p>
@@ -1340,11 +1363,11 @@ and consider up to the fifth decimal place to the right, but will
 loose performance.</p></li>
 <li><p><strong>top</strong> – choses how many top values to show. Defaults to 20.</p></li>
 <li><p><strong>show_plot</strong> – plots the results. Defaults to True.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension. Only available when
 plot=True.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when plot=True and save_plot is a string with the
@@ -1361,9 +1384,9 @@ figure file path/name.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.benford.mad">
-<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">mad</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">test</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#mad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.mad" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">mad</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">test</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sign</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#mad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.mad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the Mean Absolute Deviation of the Series</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1390,9 +1413,9 @@ Defaults to all.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.benford.mse">
-<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">mse</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">test</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#mse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.mse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">mse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">test</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sign</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#mse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.mse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the Mean Squared Error of the Series</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1419,9 +1442,69 @@ Defaults to all.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
+<dt id="benford.benford.bhattacharyya_distance">
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">bhattacharyya_distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">test</span></em>, <em class="sig-param"><span class="n">decimals</span></em>, <em class="sig-param"><span class="n">sign</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#bhattacharyya_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.bhattacharyya_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the Bhattacharyya Distance between the Found and the Expected
+(Benford) digits distributions, according toe the test chosen
+(First, Second, First Two…)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>ndarray</em><em>, </em><em>Series</em>) – sequence to be evaluated, with values being
+integers or floats.</p></li>
+<li><p><strong>test</strong> (<em>int</em><em>, </em><em>str</em>) – informs which base test to be used.</p></li>
+<li><p><strong>decimals</strong> (<em>int</em>) – number of decimal places to consider. Defaluts to 2.
+If integers, set to 0. If set to -infer-, it will remove the zeros
+and consider up to the fifth decimal place to the right, but will
+loose performance.</p></li>
+<li><p><strong>sign</strong> (<em>str</em><em>, </em><em>optional</em>) – tells which portion of the data to consider.
+pos: only the positive entries; neg: only negative entries; all:
+all entries but zeros. Defaults to “all”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the Bhattacharyya Distance between the distributions</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="benford.benford.kullback_leibler_divergence">
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">kullback_leibler_divergence</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">test</span></em>, <em class="sig-param"><span class="n">decimals</span></em>, <em class="sig-param"><span class="n">sign</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#kullback_leibler_divergence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.kullback_leibler_divergence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the Kulback-Leibler Divergence between the Found and the
+Expected (Benford) digits distributions, according toe the test chosen
+(First, Second, First Two…).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>ndarray</em><em>, </em><em>Series</em>) – sequence to be evaluated, with values being
+integers or floats.</p></li>
+<li><p><strong>test</strong> (<em>int</em><em>, </em><em>str</em>) – informs which base test to be used.</p></li>
+<li><p><strong>decimals</strong> (<em>int</em>) – number of decimal places to consider. Defaluts to 2.
+If integers, set to 0. If set to -infer-, it will remove the zeros
+and consider up to the fifth decimal place to the right, but will
+loose performance.</p></li>
+<li><p><strong>sign</strong> (<em>str</em><em>, </em><em>optional</em>) – tells which portion of the data to consider.
+pos: only the positive entries; neg: only negative entries; all:
+all entries but zeros. Defaults to “all”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the Kulback-Leibler Divergence between the distributions</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="benford.benford.mad_summ">
-<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">mad_summ</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">test</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#mad_summ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.mad_summ" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">mad_summ</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">test</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sign</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#mad_summ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.mad_summ" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the Mean Absolute Deviation of the Summation Test</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1448,9 +1531,9 @@ Defaults to all.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.benford.rolling_mad">
-<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">rolling_mad</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">test</em>, <em class="sig-param">window</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">show_plot=False</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#rolling_mad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.rolling_mad" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">rolling_mad</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">test</span></em>, <em class="sig-param"><span class="n">window</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sign</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#rolling_mad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.rolling_mad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies the MAD to sequential subsets of the records.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1468,12 +1551,12 @@ loose performance.</p></li>
 <li><p><strong>sign</strong> – tells which portion of the data to consider. pos: only the positive
 entries; neg: only negative entries; all: all entries but zeros.
 Defaults to all.</p></li>
-<li><p><strong>show_plot</strong> – draws the test plot.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>show_plot</strong> (<em>bool</em>) – draws the test plot.</p></li>
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension. Only available when
 plot=True.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when plot=True and save_plot is a string with the
@@ -1486,9 +1569,9 @@ figure file path/name.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.benford.rolling_mse">
-<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">rolling_mse</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">test</em>, <em class="sig-param">window</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">show_plot=False</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#rolling_mse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.rolling_mse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">rolling_mse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">test</span></em>, <em class="sig-param"><span class="n">window</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sign</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#rolling_mse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.rolling_mse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies the MSE to sequential subsets of the records.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1506,12 +1589,12 @@ loose performance.</p></li>
 <li><p><strong>sign</strong> – tells which portion of the data to consider. pos: only the positive
 entries; neg: only negative entries; all: all entries but zeros.
 Defaults to all.</p></li>
-<li><p><strong>show_plot</strong> – draws the test plot.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>show_plot</strong> (<em>bool</em>) – draws the test plot.</p></li>
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension. Only available when
 plot=True.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when plot=True and save_plot is a string with the
@@ -1524,9 +1607,9 @@ figure file path/name.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.benford.duplicates">
-<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">duplicates</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">top_Rep=20</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#duplicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.duplicates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">duplicates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">top_Rep</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">inform</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#duplicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.duplicates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs a duplicates test and maps the duplicates count in descending
 order.</p>
 <dl class="field-list simple">
@@ -1534,7 +1617,7 @@ order.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> – sequence to take the duplicates from. pandas Series or
 numpy Ndarray.</p></li>
-<li><p><strong>verbose</strong> – tells how many duplicated entries were found and prints the
+<li><p><strong>verbose</strong> (<em>bool</em>) – tells how many duplicated entries were found and prints the
 top numbers according to the top_Rep argument. Defaluts to True.</p></li>
 <li><p><strong>top_Rep</strong> – chooses how many duplicated entries will be
 shown withe the top repititions. int or None. Defaluts to 20.
@@ -1550,9 +1633,9 @@ If None, returns al the ordered repetitions.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.benford.second_order">
-<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">second_order</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">test</em>, <em class="sig-param">decimals=2</em>, <em class="sig-param">sign='all'</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">MAD=False</em>, <em class="sig-param">confidence=None</em>, <em class="sig-param">high_Z='pos'</em>, <em class="sig-param">limit_N=None</em>, <em class="sig-param">MSE=False</em>, <em class="sig-param">show_plot=True</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em>, <em class="sig-param">inform=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#second_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.second_order" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.benford.</code><code class="sig-name descname">second_order</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">test</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">sign</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">MAD</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">confidence</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">high_Z</span><span class="o">=</span><span class="default_value">'pos'</span></em>, <em class="sig-param"><span class="n">limit_N</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">MSE</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inform</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/benford.html#second_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.benford.second_order" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs the chosen test after subtracting the ordered sequence by itself.
 Hence Second Order.</p>
 <dl class="field-list simple">
@@ -1571,23 +1654,23 @@ loose performance.</p></li>
 <li><p><strong>sign</strong> – tells which portion of the data to consider. pos: only the positive
 entries; neg: only negative entries; all: all entries but zeros.
 Defaults to all.</p></li>
-<li><p><strong>verbose</strong> – tells the number of registries that are being subjected to
+<li><p><strong>verbose</strong> (<em>bool</em>) – tells the number of registries that are being subjected to
 the analysis and returns tha analysis DataFrame sorted by the
 highest Z score down. Defaults to True.</p></li>
-<li><p><strong>MAD</strong> – calculates the Mean Absolute Difference between the
+<li><p><strong>MAD</strong> (<em>bool</em>) – calculates the Mean Absolute Difference between the
 found and the expected distributions; defaults to False.</p></li>
-<li><p><strong>confidence</strong> – confidence level to draw lower and upper limits when
+<li><p><strong>confidence</strong> (<em>int</em><em>, </em><em>float</em>) – confidence level to draw lower and upper limits when
 plotting and to limit the top deviations to show. Defaults to None.</p></li>
-<li><p><strong>high_Z</strong> – chooses which Z scores to be used when displaying results,
+<li><p><strong>high_Z</strong> (<em>int</em>) – chooses which Z scores to be used when displaying results,
 according to the confidence level chosen. Defaluts to ‘pos’,
 which will highlight only values higher than the expexted
 frequencies; ‘all’ will highlight both extremes (positive and
 negative); and an integer, which will use the first n entries,
 positive and negative, regardless of whether Z is higher than
 the confidence or not.</p></li>
-<li><p><strong>limit_N</strong> – sets a limit to N as the sample size for the calculation of
+<li><p><strong>limit_N</strong> (<em>int</em>) – sets a limit to N as the sample size for the calculation of
 the Z scores if the sample is too big. Defaults to None.</p></li>
-<li><p><strong>MSE</strong> – calculates the Mean Square Error of the sample; defaults to
+<li><p><strong>MSE</strong> (<em>bool</em>) – calculates the Mean Square Error of the sample; defaults to
 False.</p></li>
 <li><p><strong>chi_square</strong> – calculates the chi_square statistic of the sample and
 compares it with a critical value, according to the confidence
@@ -1597,12 +1680,12 @@ False. Requires confidence != None.</p></li>
 distribution of the sample with the Benford’s, according to the
 confidence level chosen. Defaults to False. Requires confidence
 != None.</p></li>
-<li><p><strong>show_plot</strong> – draws the test plot.</p></li>
-<li><p><strong>save_plot</strong> – string with the path/name of the file in which the generated
+<li><p><strong>show_plot</strong> (<em>bool</em>) – draws the test plot.</p></li>
+<li><p><strong>save_plot</strong> (<em>str</em>) – string with the path/name of the file in which the generated
 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
 is infered by the file name extension. Only available when
 plot=True.</p></li>
-<li><p><strong>save_plot_kwargs</strong> – dict with any of the kwargs accepted by
+<li><p><strong>save_plot_kwargs</strong> (<em>dict</em>) – any of the kwargs accepted by
 matplotlib.pyplot.savefig()
 <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</a>
 Only available when plot=True and save_plot is a string with the
@@ -1622,9 +1705,9 @@ figure file path/name.</p></li>
 </div>
 <div class="section" id="module-benford.expected">
 <span id="benford-expected-module"></span><h2>benford.expected module<a class="headerlink" href="#module-benford.expected" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="benford.expected.First">
-<em class="property">class </em><code class="sig-prename descclassname">benford.expected.</code><code class="sig-name descname">First</code><span class="sig-paren">(</span><em class="sig-param">digs</em>, <em class="sig-param">plot=True</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/expected.html#First"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.expected.First" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">benford.expected.</code><code class="sig-name descname">First</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">digs</span></em>, <em class="sig-param"><span class="n">plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/expected.html#First"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.expected.First" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.core.frame.DataFrame</span></code></p>
 <p>Holds the expected probabilities of the First, First Two, or
 First Three digits according to Benford’s distribution.</p>
@@ -1650,9 +1733,9 @@ figure file path/name.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="benford.expected.Second">
-<em class="property">class </em><code class="sig-prename descclassname">benford.expected.</code><code class="sig-name descname">Second</code><span class="sig-paren">(</span><em class="sig-param">plot=True</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/expected.html#Second"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.expected.Second" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">benford.expected.</code><code class="sig-name descname">Second</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/expected.html#Second"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.expected.Second" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.core.frame.DataFrame</span></code></p>
 <p>Holds the expected probabilities of the Second Digits
 according to Benford’s distribution.</p>
@@ -1675,9 +1758,9 @@ figure file path/name.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="benford.expected.LastTwo">
-<em class="property">class </em><code class="sig-prename descclassname">benford.expected.</code><code class="sig-name descname">LastTwo</code><span class="sig-paren">(</span><em class="sig-param">num=False</em>, <em class="sig-param">plot=True</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/expected.html#LastTwo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.expected.LastTwo" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">benford.expected.</code><code class="sig-name descname">LastTwo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/expected.html#LastTwo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.expected.LastTwo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.core.frame.DataFrame</span></code></p>
 <p>Holds the expected probabilities of the Last Two Digits
 according to Benford’s distribution.</p>
@@ -1703,9 +1786,9 @@ figure file path/name.</p></li>
 </div>
 <div class="section" id="module-benford.stats">
 <span id="benford-stats-module"></span><h2>benford.stats module<a class="headerlink" href="#module-benford.stats" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="benford.stats.Z_score">
-<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">Z_score</code><span class="sig-paren">(</span><em class="sig-param">frame</em>, <em class="sig-param">N</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#Z_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.Z_score" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">Z_score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frame</span></em>, <em class="sig-param"><span class="n">N</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#Z_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.Z_score" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the Z statistics for the proportions studied</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1721,9 +1804,9 @@ Absolute Diferences between the found and expeccted proportions</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.stats.chi_sq">
-<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">chi_sq</code><span class="sig-paren">(</span><em class="sig-param">frame</em>, <em class="sig-param">ddf</em>, <em class="sig-param">confidence</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#chi_sq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.chi_sq" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">chi_sq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frame</span></em>, <em class="sig-param"><span class="n">ddf</span></em>, <em class="sig-param"><span class="n">confidence</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#chi_sq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.chi_sq" title="Permalink to this definition">¶</a></dt>
 <dd><p>Comnputes the chi-square statistic of the found distributions and compares
 it with the critical chi-square of such a sample, according to the
 confidence level chosen and the degrees of freedom - len(sample) -1.</p>
@@ -1748,9 +1831,9 @@ for comparison. None if confidence is None</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.stats.chi_sq_2">
-<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">chi_sq_2</code><span class="sig-paren">(</span><em class="sig-param">frame</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#chi_sq_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.chi_sq_2" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">chi_sq_2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frame</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#chi_sq_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.chi_sq_2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the chi-square statistic of the found distributions</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1762,9 +1845,9 @@ for comparison. None if confidence is None</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.stats.kolmogorov_smirnov">
-<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">kolmogorov_smirnov</code><span class="sig-paren">(</span><em class="sig-param">frame</em>, <em class="sig-param">confidence</em>, <em class="sig-param">N</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#kolmogorov_smirnov"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.kolmogorov_smirnov" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">kolmogorov_smirnov</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frame</span></em>, <em class="sig-param"><span class="n">confidence</span></em>, <em class="sig-param"><span class="n">N</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#kolmogorov_smirnov"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.kolmogorov_smirnov" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the Kolmogorov-Smirnov test of the found distributions
 and compares it with the critical chi-square of such a sample,
 according to the confidence level chosen.</p>
@@ -1789,9 +1872,9 @@ critical value according to the confidence level, for ccomparison</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.stats.kolmogorov_smirnov_2">
-<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">kolmogorov_smirnov_2</code><span class="sig-paren">(</span><em class="sig-param">frame</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#kolmogorov_smirnov_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.kolmogorov_smirnov_2" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">kolmogorov_smirnov_2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frame</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#kolmogorov_smirnov_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.kolmogorov_smirnov_2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the Kolmogorov-Smirnov test of the found distributions</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1807,9 +1890,9 @@ critical value according to the confidence level, for ccomparison</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.stats.mad">
-<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">mad</code><span class="sig-paren">(</span><em class="sig-param">frame</em>, <em class="sig-param">test</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#mad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.mad" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">mad</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frame</span></em>, <em class="sig-param"><span class="n">test</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#mad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.mad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the Mean Absolute Deviation (MAD) between the found and the
 expected proportions.</p>
 <dl class="field-list simple">
@@ -1831,9 +1914,9 @@ conformity. Defaults to True.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.stats.mse">
-<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">mse</code><span class="sig-paren">(</span><em class="sig-param">frame</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#mse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.mse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.stats.</code><code class="sig-name descname">mse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frame</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/stats.html#mse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.stats.mse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the test’s Mean Square Error</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1852,9 +1935,9 @@ the found and expected proportions</p></li>
 </div>
 <div class="section" id="module-benford.viz">
 <span id="benford-viz-module"></span><h2>benford.viz module<a class="headerlink" href="#module-benford.viz" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="benford.viz.plot_expected">
-<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_expected</code><span class="sig-paren">(</span><em class="sig-param">df</em>, <em class="sig-param">digs</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_expected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_expected" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_expected</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">digs</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_expected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_expected" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots the Expected Benford Distributions</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1872,9 +1955,9 @@ matplotlib.pyplot.savefig()
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.viz.plot_digs">
-<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_digs</code><span class="sig-paren">(</span><em class="sig-param">df</em>, <em class="sig-param">x</em>, <em class="sig-param">y_Exp</em>, <em class="sig-param">y_Found</em>, <em class="sig-param">N</em>, <em class="sig-param">figsize</em>, <em class="sig-param">conf_Z</em>, <em class="sig-param">text_x=False</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_digs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_digs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_digs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y_Exp</span></em>, <em class="sig-param"><span class="n">y_Found</span></em>, <em class="sig-param"><span class="n">N</span></em>, <em class="sig-param"><span class="n">figsize</span></em>, <em class="sig-param"><span class="n">conf_Z</span></em>, <em class="sig-param"><span class="n">text_x</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_digs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_digs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots the digits tests results</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1901,9 +1984,9 @@ matplotlib.pyplot.savefig()
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.viz.plot_sum">
-<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_sum</code><span class="sig-paren">(</span><em class="sig-param">df</em>, <em class="sig-param">figsize</em>, <em class="sig-param">li</em>, <em class="sig-param">text_x=False</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_sum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_sum" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_sum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">figsize</span></em>, <em class="sig-param"><span class="n">li</span></em>, <em class="sig-param"><span class="n">text_x</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_sum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_sum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots the summation test results</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1922,9 +2005,9 @@ matplotlib.pyplot.savefig()
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.viz.plot_ordered_mantissas">
-<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_ordered_mantissas</code><span class="sig-paren">(</span><em class="sig-param">col</em>, <em class="sig-param">figsize=(12</em>, <em class="sig-param">12)</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_ordered_mantissas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_ordered_mantissas" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_ordered_mantissas</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">col</span></em>, <em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">(12, 12)</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_ordered_mantissas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_ordered_mantissas" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Plots the ordered mantissas and compares them to the expected, straight</dt><dd><p>line that should be formed in a Benford-cmpliant set.</p>
 </dd>
@@ -1945,9 +2028,9 @@ matplotlib.pyplot.savefig()
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.viz.plot_mantissa_arc_test">
-<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_mantissa_arc_test</code><span class="sig-paren">(</span><em class="sig-param">df</em>, <em class="sig-param">gravity_center</em>, <em class="sig-param">grid=True</em>, <em class="sig-param">figsize=12</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_mantissa_arc_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_mantissa_arc_test" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_mantissa_arc_test</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">gravity_center</span></em>, <em class="sig-param"><span class="n">grid</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">12</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_mantissa_arc_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_mantissa_arc_test" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draws thee Mantissa Arc Test after computing X and Y circular coordinates
 for every mantissa and the center of gravity for the set</p>
 <dl class="field-list simple">
@@ -1970,9 +2053,9 @@ matplotlib.pyplot.savefig()
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.viz.plot_roll_mse">
-<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_roll_mse</code><span class="sig-paren">(</span><em class="sig-param">roll_series</em>, <em class="sig-param">figsize</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_roll_mse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_roll_mse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_roll_mse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">roll_series</span></em>, <em class="sig-param"><span class="n">figsize</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_roll_mse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_roll_mse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shows the rolling MSE plot</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1990,9 +2073,9 @@ matplotlib.pyplot.savefig()
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="benford.viz.plot_roll_mad">
-<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_roll_mad</code><span class="sig-paren">(</span><em class="sig-param">roll_mad</em>, <em class="sig-param">figsize</em>, <em class="sig-param">save_plot=None</em>, <em class="sig-param">save_plot_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_roll_mad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_roll_mad" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">benford.viz.</code><code class="sig-name descname">plot_roll_mad</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">roll_mad</span></em>, <em class="sig-param"><span class="n">figsize</span></em>, <em class="sig-param"><span class="n">save_plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_plot_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/benford/viz.html#plot_roll_mad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#benford.viz.plot_roll_mad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shows the rolling MAD plot</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -2018,27 +2101,28 @@ matplotlib.pyplot.savefig()
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-      
-        <a href="modules.html" class="btn btn-neutral float-left" title="benford" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="modules.html" class="btn btn-neutral float-left" title="benford" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, Marcel Milcent
+        &#169; Copyright 2020, Marcel Milcent.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -2046,7 +2130,6 @@ matplotlib.pyplot.savefig()
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
