@@ -15,7 +15,7 @@ setup(name='benford_py',
       download_url='https://github.com/milcent/benford_py/archive/v0.4.0.tar.gz',
       author='Marcel Milcent',
       author_email='marcelmilcent@gmail.com',
-      license='GPLv3.0',
+      license='BSD 3-Clause',
       packages=['benford'],
       install_requires=[
           'pandas',
