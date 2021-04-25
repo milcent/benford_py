@@ -3,82 +3,70 @@ from ..benford import expected as ex
 
 
 class TestGetExpectedDigits():
-        
-    def test_1(self):
-        f1d = ex._get_expected_digits_(1)
-        assert type(f1d) == ex.First
-        assert len(f1d) == 9
 
-    def test_2(self):
-        f1d = ex._get_expected_digits_(2)
-        assert type(f1d) == ex.First
-        assert len(f1d) == 90
+    expected_types = [
+        (x, ex.First) for x in [1, 2, 3]
+    ] + [(22, ex.Second), (-2, ex.LastTwo)]
 
-    def test_3(self):
-        f1d = ex._get_expected_digits_(3)
-        assert type(f1d) == ex.First
-        assert len(f1d) == 900
+    @pytest.mark.parametrize("dig, expec_type", expected_types)
+    def test_expected_types(self, dig, expec_type):
+        assert type(ex._get_expected_digits_(dig)) == expec_type
 
-    def test_22(self):
-        f1d = ex._get_expected_digits_(22)
-        assert type(f1d) == ex.Second
-        assert len(f1d) == 10
+    expected_lenghts = [
+        (1, 9), (2, 90), (3, 900), (22, 10), (-2, 100)
+    ]
 
-    def test_minus_2(self):
-        f1d = ex._get_expected_digits_(-2)
-        assert type(f1d) == ex.LastTwo
-        assert len(f1d) == 100
+    @pytest.mark.parametrize("dig, exp_len", expected_lenghts)
+    def test_expected_lenghts(self, dig, exp_len):
+        assert len(ex._get_expected_digits_(dig)) == exp_len
 
 
 class TestGenLastTwoDigits():
-        
-    def test_l2d_num_False(self):
-        _, lt = ex._gen_last_two_digits_()
-        assert len(lt) == 100
-        assert lt.dtype == '<U21'
 
-    def test_l2d_num_True(self):
-        _, lt = ex._gen_last_two_digits_(num=True)
-        assert len(lt) == 100
-        assert lt.dtype == 'int'
-    
-    def test_exp(self):
-        exp, _ = ex._gen_last_two_digits_()
-        assert len(exp) == 100
+    l2d_types = [([], "<U21"), ([True], "int")]
+
+    @pytest.mark.parametrize("num, arr_type", l2d_types)
+    def test_types(self, num, arr_type):
+        _, lt = ex._gen_last_two_digits_(*num)
+        assert lt.dtype == arr_type
+
+
+class TestGenDigits():
+
+    gen_digs = [
+        ("_gen_first_digits_", [1]), ("_gen_first_digits_", [2]),
+        ("_gen_first_digits_", [3]), ("_gen_second_digits_", []),
+        ("_gen_last_two_digits_", []), ("_gen_last_two_digits_", [True])
+    ]
+
+    @pytest.mark.parametrize("func, dig", gen_digs)
+    def test_probs_sum_near_one(self, func, dig):
+        exp, _ = getattr(ex, func)(*dig)
         assert exp.sum() > 0.999999
+
+    @pytest.mark.parametrize("func, dig", gen_digs)
+    def test_no_negative_prob(self, func, dig):
+        exp, _ = getattr(ex, func)(*dig)
         assert (exp < 0).sum() == 0
 
-class TestGenFirstDigits():
+    digs_sums = [
+        ("_gen_first_digits_", [1], 45), ("_gen_first_digits_", [2], 4905),
+        ("_gen_first_digits_", [3], 494550), ("_gen_second_digits_",  [], 45),
+        ("_gen_last_two_digits_", [True], 4950) 
+    ]
 
-    def test_f1d(self):
-        exp, digits = ex._gen_first_digits_(1)
-        assert len(exp) == len(digits) == 9
-        assert exp.sum() > 0.999999
-        assert digits.sum() == 45
-        assert (exp < 0).sum() == 0
+    @pytest.mark.parametrize("func, dig, exp_sum", digs_sums)
+    def test_digs_sums(self, func, dig, exp_sum):
+        _, digits = getattr(ex, func)(*dig)
+        assert digits.sum() == exp_sum
 
-    
-    def test_f2d(self):
-        exp, digits = ex._gen_first_digits_(2)
-        assert len(exp) == len(digits) == 90
-        assert exp.sum() > 0.999999
-        assert digits.sum() == 4905
-        assert (exp < 0).sum() == 0
+    digs_lengths = [
+        ("_gen_first_digits_", [1], 9), ("_gen_first_digits_", [2], 90),
+        ("_gen_first_digits_", [3], 900), ("_gen_second_digits_",  [], 10),
+        ("_gen_last_two_digits_", [], 100), ("_gen_last_two_digits_", [True], 100) 
+    ]
 
- 
-    def test_f3d(self):
-        exp, digits = ex._gen_first_digits_(3)
-        assert len(exp) == len(digits) == 900
-        assert exp.sum() > 0.999999
-        assert digits.sum() == 494550
-        assert (exp < 0).sum() == 0
-
-
-class TestGenSecondDigits():
-
-    def test_gen_sec_dig(self):
-        exp, digits = ex._gen_second_digits_()
-        assert len(exp) == len(digits) == 10
-        assert exp.sum() > 0.999999
-        assert digits.sum() == 45
-        assert (exp < 0).sum() == 0
+    @pytest.mark.parametrize("func, dig, exp_len", digs_lengths)
+    def test_lengths(self, func, dig, exp_len):
+        exp, digits = getattr(ex, func)(*dig)
+        assert len(exp) == len(digits) == exp_len
