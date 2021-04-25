@@ -25,7 +25,7 @@ setup(name='benford_py',
       zip_safe=False,
       classifiers=[
           'Programming Language :: Python :: 3',
-          'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
+          'License :: OSI Approved :: BSD License',
           'Natural Language :: English',
           'Operating System :: OS Independent',
           'Development Status :: 2 - Pre-Alpha',
