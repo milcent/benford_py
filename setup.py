@@ -1,4 +1,4 @@
-''' Setup Pyt for benford's module'''
+''' Setup for benford's module'''
 from os import path
 from setuptools import setup
 
@@ -7,15 +7,15 @@ with open(path.join(this_directory, 'README-pypi.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='benford_py',
-      version='0.3.3',
+      version='0.4.0',
       description='A library for testing data sets with Bendford\'s Law',
       long_description=long_description,
       long_description_content_type='text/markdown',
       url='https://github.com/milcent/benford_py',
-      download_url='https://github.com/milcent/benford_py/archive/v0.3.3.tar.gz',
+      download_url='https://github.com/milcent/benford_py/archive/v0.4.0.tar.gz',
       author='Marcel Milcent',
       author_email='marcelmilcent@gmail.com',
-      license='GPLv3.0',
+      license='BSD 3-Clause',
       packages=['benford'],
       install_requires=[
           'pandas',
@@ -25,7 +25,7 @@ setup(name='benford_py',
       zip_safe=False,
       classifiers=[
           'Programming Language :: Python :: 3',
-          'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
+          'License :: OSI Approved :: BSD License',
           'Natural Language :: English',
           'Operating System :: OS Independent',
           'Development Status :: 2 - Pre-Alpha',
