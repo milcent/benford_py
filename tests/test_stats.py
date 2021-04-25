@@ -171,7 +171,7 @@ class TestBhattacharyya():
     
     def test_distance(self, gen_random_digs_and_proportions):
         exp, rand_prop = gen_random_digs_and_proportions
-        bhat_dist = st.bhattacharyya_distance(exp, rand_prop)
+        bhat_dist = st._bhattacharyya_distance_(exp, rand_prop)
         assert isinstance(bhat_dist, float)
         assert bhat_dist >= 0
 
@@ -180,6 +180,6 @@ class TestKLDivergence():
 
     def test_kld(self, gen_random_digs_and_proportions):
         exp, rand_prop = gen_random_digs_and_proportions
-        kl_diverg = st.kullback_leibler_divergence(exp, rand_prop)
+        kl_diverg = st._kullback_leibler_divergence_(exp, rand_prop)
         assert isinstance(kl_diverg, float)
         assert kl_diverg >= 0

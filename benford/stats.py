@@ -176,7 +176,7 @@ def _bhattacharyya_coefficient(dist_1, dist_2):
     return sqrt(dist_1 * dist_2).sum()
 
 
-def bhattacharyya_distance(dist_1, dist_2):
+def _bhattacharyya_distance_(dist_1, dist_2):
     """Computes the Bhattacharyya Dsitance between two probability
     distributions
 
@@ -192,7 +192,7 @@ def bhattacharyya_distance(dist_1, dist_2):
     return -log(_bhattacharyya_coefficient(dist_1, dist_2))
 
 
-def kullback_leibler_divergence(dist_1, dist_2):
+def _kullback_leibler_divergence_(dist_1, dist_2):
     """Computes the Kullback-Leibler Divergence between two probability
     distributions.
 

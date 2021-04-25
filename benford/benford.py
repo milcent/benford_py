@@ -14,7 +14,8 @@ from .viz import _get_plot_args, plot_digs, plot_sum, plot_ordered_mantissas,\
 from .reports import _inform_, _report_mad_, _report_test_, _deprecate_inform_,\
     _report_mantissa_
 from .stats import Z_score, chi_sq, chi_sq_2, kolmogorov_smirnov,\
-    kolmogorov_smirnov_2, bhattacharyya_distance, kullback_leibler_divergence
+    kolmogorov_smirnov_2, _bhattacharyya_distance_, \
+    _kullback_leibler_divergence_
 
 
 class Base(DataFrame):
@@ -94,9 +95,9 @@ class Test(DataFrame):
         base: The Base object with the data prepared for Analysis
         digs: Tells which test to perform: 1: first digit; 2: first two digits;
             3: furst three digits; 22: second digit; -2: last two digits.
-        confidence: confidence level to draw lower and upper limits when
+        confidence (int, float): confidence level to draw lower and upper limits when
             plotting and to limit the top deviations to show.
-        limit_N: sets a limit to N as the sample size for the calculation of
+        limit_N (int): sets a limit to N as the sample size for the calculation of
             the Z scores if the sample is too big. Defaults to None.
 
     Attributes:
@@ -129,9 +130,9 @@ class Test(DataFrame):
         self.KS = kolmogorov_smirnov_2(self)
         self.MAD = self.AbsDif.mean()
         self.MSE = (self.AbsDif ** 2).mean()
-        self.bhattacharyya_distance = bhattacharyya_distance(
+        self._bhattacharyya_distance_ = _bhattacharyya_distance_(
             self.Found.values, self.Expected.values)
-        self.kullback_leibler_divergence = kullback_leibler_divergence(
+        self._kullback_leibler_divergence_ = _kullback_leibler_divergence_(
             self.Found.values, self.Expected.values)
         self.confidence = confidence
         self.digs = digs
@@ -171,10 +172,10 @@ class Test(DataFrame):
         """Draws the test plot.
         
         Args:
-            save_plot: string with the path/name of the file in which the generated
+            save_plot (str): string with the path/name of the file in which the generated
                 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
                 is infered by the file name extension.
-            save_plot_kwargs: dict with any of the kwargs accepted by
+            save_plot_kwargs (dict): any of the kwargs accepted by
                 matplotlib.pyplot.savefig()
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
                 Only available when save_plot is a string with the figure file
@@ -192,7 +193,7 @@ class Test(DataFrame):
         and according to the current confidence level.
 
         Args:
-            high_Z: chooses which Z scores to be used when displaying results,
+            high_Z (int): chooses which Z scores to be used when displaying results,
                 according to the confidence level chosen. Defaluts to 'pos',
                 which will highlight only values higher than the expexted
                 frequencies; 'all' will highlight both extremes (positive and
@@ -200,11 +201,11 @@ class Test(DataFrame):
                 positive and negative, regardless of whether Z is higher than
                 the critical value or not.
             show_plot: calls the show_plot method, to draw the test plot
-            save_plot: string with the path/name of the file in which the generated
+            save_plot (str): string with the path/name of the file in which the generated
                 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
                 is infered by the file name extension. Only available when
                 plot=True.
-            save_plot_kwargs: dict with any of the kwargs accepted by
+            save_plot_kwargs (dict): any of the kwargs accepted by
                 matplotlib.pyplot.savefig()
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
                 Only available when plot=True and save_plot is a string with the
@@ -247,10 +248,10 @@ class Summ(DataFrame):
         """Draws the Summation test plot
         
         Args:
-            save_plot: string with the path/name of the file in which the generated
+            save_plot (str): string with the path/name of the file in which the generated
                 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
                 is infered by the file name extension.
-            save_plot_kwargs: dict with any of the kwargs accepted by
+            save_plot_kwargs (dict): any of the kwargs accepted by
                 matplotlib.pyplot.savefig()
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
                 Only available when save_plot is a string with the figure file
@@ -268,11 +269,11 @@ class Summ(DataFrame):
             high_diff: Number of records to show after ordering by the absolute
                 differences between the found and the expected proportions
             show_plot: calls the show_plot method, to draw the Summation test plot
-            save_plot: string with the path/name of the file in which the generated
+            save_plot (str): string with the path/name of the file in which the generated
                 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
                 is infered by the file name extension. Only available when
                 plot=True.
-            save_plot_kwargs: dict with any of the kwargs accepted by
+            save_plot_kwargs (dict): any of the kwargs accepted by
                 matplotlib.pyplot.savefig()
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
                 Only available when plot=True and save_plot is a string with the
@@ -309,11 +310,11 @@ class Mantissas(object):
         Args:
             show_plot: shows the Ordered Mantissas plot and the Arc Test plot.
                 Defaults to True.
-            save_plot: string with the path/name of the file in which the generated
+            save_plot (str): string with the path/name of the file in which the generated
                 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
                 is infered by the file name extension. Only available when
                 plot=True.
-            save_plot_kwargs: dict with any of the kwargs accepted by
+            save_plot_kwargs (dict): any of the kwargs accepted by
                 matplotlib.pyplot.savefig()
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
                 Only available when plot=True and save_plot is a string with the
@@ -331,10 +332,10 @@ class Mantissas(object):
 
         Args:
             figsize (tuple): figure size dimensions
-            save_plot: string with the path/name of the file in which the generated
+            save_plot (str): string with the path/name of the file in which the generated
                 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
                 is infered by the file name extension.
-            save_plot_kwargs: dict with any of the kwargs accepted by
+            save_plot_kwargs (dict): any of the kwargs accepted by
                 matplotlib.pyplot.savefig()
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
                 Only available when save_plot is a string with the figure file
@@ -356,11 +357,11 @@ class Mantissas(object):
             figsize (int): size of the figure to be displayed. Since it is a square,
                 there is no need to provide a tuple, like is usually the case with
                 matplotlib.
-            save_plot: string with the path/name of the file in which the generated
+            save_plot (str): string with the path/name of the file in which the generated
                 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
                 is infered by the file name extension. Only available when
                 plot=True.
-            save_plot_kwargs: dict with any of the kwargs accepted by
+            save_plot_kwargs (dict): any of the kwargs accepted by
                 matplotlib.pyplot.savefig()
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
                 Only available when plot=True and save_plot is a string with the
@@ -394,7 +395,7 @@ class Benford(object):
         sign: tells which portion of the data to consider. pos: only the positive
             entries; neg: only negative entries; all: all entries but zeros.
             Defaults to all.
-        confidence: confidence level to draw lower and upper limits when
+        confidence (int, float): confidence level to draw lower and upper limits when
             plotting and to limit the top deviations to show, as well as to
             calculate critical values for the tests' statistics. Defaults to 95.
         sec_order: runs the Second Order tests, which are the Benford's tests
@@ -405,7 +406,7 @@ class Benford(object):
         summation: creates the Summation DataFrames for the First, First Two, and
             First Three Digits. The summation tests can also be called separately,
             through the method summation().
-        limit_N: sets a limit to N as the sample size for the calculation of
+        limit_N (int): sets a limit to N as the sample size for the calculation of
             the Z scores if the sample is too big. Defaults to None.
         verbose: gives some information about the data and the registries used
             and discarded for each test.
@@ -572,7 +573,7 @@ class Source(DataFrame):
             Defaults to all.
         sec_order: choice for the Second Order Test, which cumputes the
             differences between the ordered entries before running the Tests.
-        verbose: tells the number of registries that are being subjected to
+        verbose (bool): tells the number of registries that are being subjected to
             the analysis; defaults to True.
 
     Raises:
@@ -640,11 +641,11 @@ class Source(DataFrame):
             show_plot: plots the ordered mantissas and a line with the expected
                 inclination. Defaults to True.
             figsize: tuple that sets the figure dimensions.
-            save_plot: string with the path/name of the file in which the generated
+            save_plot (str): string with the path/name of the file in which the generated
                 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
                 is infered by the file name extension. Only available when
                 plot=True.
-            save_plot_kwargs: dict with any of the kwargs accepted by
+            save_plot_kwargs (dict): any of the kwargs accepted by
                 matplotlib.pyplot.savefig()
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
                 Only available when plot=True and save_plot is a string with the
@@ -666,40 +667,44 @@ class Source(DataFrame):
     def first_digits(self, digs, confidence=None, high_Z='pos',
                      limit_N=None, MAD=False, MSE=False, chi_square=False,
                      KS=False, show_plot=True, save_plot=None, save_plot_kwargs=None,
-                     simple=False, ret_df=False):
+                     simple=False, bhat_dist=False, kl_diverg=False, ret_df=False):
         """Performs the Benford First Digits test with the series of
         numbers provided, and populates the mapping dict for future
         selection of the original series.
 
         Args:
-            digs: number of first digits to consider. Must be 1 (first digit),
+            digs (int): number of first digits to consider. Must be 1 (first digit),
                 2 (first two digits) or 3 (first three digits).
-            verbose: tells the number of registries that are being subjected to
+            verbose (bool): tells the number of registries that are being subjected to
                 the analysis; defaults to True
-            digs: number of first digits to consider. Must be 1 (first digit),
-                2 (first two digits) or 3 (first three digits).
-            confidence: confidence level to draw lower and upper limits when
+            confidence (int, float): confidence level to draw lower and upper limits when
                 plotting and to limit the top deviations to show, as well as to
                 calculate critical values for the tests' statistics. Defaults to None.
-            high_Z: chooses which Z scores to be used when displaying results,
+            high_Z (int): chooses which Z scores to be used when displaying results,
                 according to the confidence level chosen. Defaluts to 'pos',
                 which will highlight only values higher than the expexted
                 frequencies; 'all' will highlight both extremes (positive and
                 negative); and an integer, which will use the first n entries,
                 positive and negative, regardless of whether Z is higher than
                 the confidence or not.
-            limit_N: sets a limit to N as the sample size for the calculation of
+            limit_N (int): sets a limit to N as the sample size for the calculation of
                 the Z scores if the sample is too big. Defaults to None.
-            MAD: calculates the Mean Absolute Difference between the
+            MAD (bool): calculates the Mean Absolute Difference between the
                 found and the expected distributions; defaults to False.
-            MSE: calculates the Mean Square Error of the sample; defaults to
+            MSE (bool): calculates the Mean Square Error of the sample; defaults to
                 False.
-            show_plot: draws the test plot. Defaults to True.
-            save_plot: string with the path/name of the file in which the generated
+            bhat_dist (bool): calculates the Bhattacharrya Distance between
+                foudn and the expected (Benford) digits distribution; defaults
+                to Fasle
+            kl_diverg (bool): calculates the Kulback-Laibler Divergence between
+                the found and the expected (Benford) digits distribution;
+                defaults to False
+            show_plot (bool): draws the test plot. Defaults to True.
+            save_plot (str): string with the path/name of the file in which the generated
                 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
                 is infered by the file name extension. Only available when
                 plot=True.
-            save_plot_kwargs: dict with any of the kwargs accepted by
+            save_plot_kwargs (dict): any of the kwargs accepted by
                 matplotlib.pyplot.savefig()
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
                 Only available when plot=True and save_plot is a string with the
@@ -759,6 +764,16 @@ class Source(DataFrame):
             self.KS = kolmogorov_smirnov(df, confidence=confidence, N=len(temp),
                                          verbose=self.verbose)
 
+        if bhat_dist:
+            self.bhat_dist = _bhattacharyya_distance_(
+                                df.Found.values, df.Expected.values
+                            )
+        
+        if kl_diverg:
+            self.kl_diverg = _kullback_leibler_divergence_(
+                                df.Found.values, df.Expected.values
+                            )
+
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
             plot_digs(df, x=x, y_Exp=df.Expected, y_Found=df.Found, N=N,
@@ -770,36 +785,44 @@ class Source(DataFrame):
 
     def second_digit(self, confidence=None, high_Z='pos',
                      limit_N=None, MAD=False, MSE=False, chi_square=False,
-                     KS=False, show_plot=True, save_plot=None, save_plot_kwargs=None,
+                     KS=False, bhat_dist=False, kl_diverg=False,
+                     show_plot=True, save_plot=None,
+                     save_plot_kwargs=None,
                      simple=False, ret_df=False):
         """Performs the Benford Second Digit test with the series of
         numbers provided.
 
         Args:
-            verbose: tells the number of registries that are being subjected to
+            verbose (bool): tells the number of registries that are being subjected to
                 the analysis; defaults to True
-            MAD: calculates the Mean Absolute Difference between the
+            MAD (bool): calculates the Mean Absolute Difference between the
                 found and the expected distributions; defaults to False.
-            confidence: confidence level to draw lower and upper limits when
+            confidence (int, float): confidence level to draw lower and upper limits when
                 plotting and to limit the top deviations to show, as well as to
                 calculate critical values for the tests' statistics. Defaults to None.
-            high_Z: chooses which Z scores to be used when displaying results,
+            high_Z (int): chooses which Z scores to be used when displaying results,
                 according to the confidence level chosen. Defaluts to 'pos',
                 which will highlight only values higher than the expexted
                 frequencies; 'all' will highlight both extremes (positive and
                 negative); and an integer, which will use the first n entries,
                 positive and negative, regardless of whether Z is higher than
                 the confidence or not.
-            limit_N: sets a limit to N as the sample size for the calculation of
+            limit_N (int): sets a limit to N as the sample size for the calculation of
                 the Z scores if the sample is too big. Defaults to None.
-            MSE: calculates the Mean Square Error of the sample; defaults to
+            MSE (bool): calculates the Mean Square Error of the sample; defaults to
                 False.
-            show_plot: draws the test plot.
-            save_plot: string with the path/name of the file in which the generated
+            bhat_dist (bool): calculates the Bhattacharrya Distance between
+                foudn and the expected (Benford) digits distribution; defaults
+                to Fasle
+            kl_diverg (bool): calculates the Kulback-Laibler Divergence between
+                the found and the expected (Benford) digits distribution;
+                defaults to False
+            show_plot (bool): draws the test plot.
+            save_plot (str): string with the path/name of the file in which the generated
                 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
                 is infered by the file name extension. Only available when
                 plot=True.
-            save_plot_kwargs: dict with any of the kwargs accepted by
+            save_plot_kwargs (dict): any of the kwargs accepted by
                 matplotlib.pyplot.savefig()
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
                 Only available when plot=True and save_plot is a string with the
@@ -850,6 +873,16 @@ class Source(DataFrame):
             self.KS = kolmogorov_smirnov(df, confidence=confidence, N=len(temp),
                                          verbose=self.verbose)
 
+        if bhat_dist:
+            self.bhat_dist = _bhattacharyya_distance_(
+                                df.Found.values, df.Expected.values
+                            )
+        
+        if kl_diverg:
+            self.kl_diverg = _kullback_leibler_divergence_(
+                                df.Found.values, df.Expected.values
+                            )
+
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
             plot_digs(df, x=arange(0, 10), y_Exp=df.Expected,
@@ -860,36 +893,43 @@ class Source(DataFrame):
 
     def last_two_digits(self, confidence=None, high_Z='pos',
                         limit_N=None, MAD=False, MSE=False, chi_square=False,
-                        KS=False, show_plot=True, save_plot=None, save_plot_kwargs=None,
+                        KS=False, bhat_dist=False, kl_diverg=False,
+                        show_plot=True, save_plot=None, save_plot_kwargs=None,
                         simple=False, ret_df=False):
         """Performs the Benford Last Two Digits test with the series of
         numbers provided.
 
         Args:
-            verbose: tells the number of registries that are being subjected to
+            verbose (bool): tells the number of registries that are being subjected to
                 the analysis; defaults to True
-            MAD: calculates the Mean Absolute Difference between the
+            MAD (bool): calculates the Mean Absolute Difference between the
                 found and the expected distributions; defaults to False.
-            confidence: confidence level to draw lower and upper limits when
+            confidence (int, float): confidence level to draw lower and upper limits when
                 plotting and to limit the top deviations to show, as well as to
                 calculate critical values for the tests' statistics. Defaults to None.
-            high_Z: chooses which Z scores to be used when displaying results,
+            high_Z (int): chooses which Z scores to be used when displaying results,
                 according to the confidence level chosen. Defaluts to 'pos',
                 which will highlight only values higher than the expexted
                 frequencies; 'all' will highlight both extremes (positive and
                 negative); and an integer, which will use the first n entries,
                 positive and negative, regardless of whether Z is higher than
                 the confidence or not.
-            limit_N: sets a limit to N as the sample size for the calculation of
+            limit_N (int): sets a limit to N as the sample size for the calculation of
                 the Z scores if the sample is too big. Defaults to None.
-            MSE: calculates the Mean Square Error of the sample; defaults to
+            MSE (bool): calculates the Mean Square Error of the sample; defaults to
                 False.
-            show_plot: draws the test plot.
-            save_plot: string with the path/name of the file in which the generated
+            bhat_dist (bool): calculates the Bhattacharrya Distance between
+                foudn and the expected (Benford) digits distribution; defaults
+                to Fasle
+            kl_diverg (bool): calculates the Kulback-Laibler Divergence between
+                the found and the expected (Benford) digits distribution;
+                defaults to False
+            show_plot (bool): draws the test plot.
+            save_plot (str): string with the path/name of the file in which the generated
                 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
                 is infered by the file name extension. Only available when
                 plot=True.
-            save_plot_kwargs: dict with any of the kwargs accepted by
+            save_plot_kwargs (dict): any of the kwargs accepted by
                 matplotlib.pyplot.savefig()
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
                 Only available when plot=True and save_plot is a string with the
@@ -936,6 +976,16 @@ class Source(DataFrame):
             self.KS = kolmogorov_smirnov(df, confidence=confidence, N=len(temp),
                                          verbose=self.verbose)
 
+        if bhat_dist:
+            self.bhat_dist = _bhattacharyya_distance_(
+                                df.Found.values, df.Expected.values
+                            )
+        
+        if kl_diverg:
+            self.kl_diverg = _kullback_leibler_divergence_(
+                                df.Found.values, df.Expected.values
+                            )
+
         # Plotting expected frequencies (line) versus found ones (bars)
         if show_plot:
             plot_digs(df, x=arange(0, 100), y_Exp=df.Expected,
@@ -955,11 +1005,11 @@ class Source(DataFrame):
                 3- first three. Defaults to 2.
             top: choses how many top values to show. Defaults to 20.
             show_plot: plots the results. Defaults to True.
-            save_plot: string with the path/name of the file in which the generated
+            save_plot (str): string with the path/name of the file in which the generated
                 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
                 is infered by the file name extension. Only available when
                 plot=True.
-            save_plot_kwargs: dict with any of the kwargs accepted by
+            save_plot_kwargs (dict): any of the kwargs accepted by
                 matplotlib.pyplot.savefig()
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
                 Only available when plot=True and save_plot is a string with the
@@ -1006,7 +1056,7 @@ class Source(DataFrame):
         order.
 
         Args:
-            verbose: tells how many duplicated entries were found and prints the
+            verbose (bool): tells how many duplicated entries were found and prints the
                 top numbers according to the top_Rep argument. Defaluts to True.
             top_Rep: int or None. Chooses how many duplicated entries will be
                 shown withe the top repititions. Defaluts to 20. If None, returns
@@ -1072,11 +1122,11 @@ class Mantissas(object):
         Args:
             show_plot: shows the ordered mantissas plot and the Arc Test plot.
                 Defaults to True.
-            save_plot: string with the path/name of the file in which the generated
+            save_plot (str): string with the path/name of the file in which the generated
                 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
                 is infered by the file name extension. Only available when
                 plot=True.
-            save_plot_kwargs: dict with any of the kwargs accepted by
+            save_plot_kwargs (dict): any of the kwargs accepted by
                 matplotlib.pyplot.savefig()
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
                 Only available when plot=True and save_plot is a string with the
@@ -1101,10 +1151,10 @@ class Mantissas(object):
 
         Args:
             figsize: tuple that sets the figure size.
-            save_plot: string with the path/name of the file in which the generated
+            save_plot (str): string with the path/name of the file in which the generated
                 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
                 is infered by the file name extension.
-            save_plot_kwargs: dict with any of the kwargs accepted by
+            save_plot_kwargs (dict): any of the kwargs accepted by
                 matplotlib.pyplot.savefig()
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
                 Only available when save_plot is a string with the figure file
@@ -1124,10 +1174,10 @@ class Mantissas(object):
             figsize: size of the figure to be displayed. Since it is a square,
                 there is no need to provide a tuple, like is usually the case with
                 matplotlib.
-            save_plot: string with the path/name of the file in which the generated
+            save_plot (str): string with the path/name of the file in which the generated
                 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
                 is infered by the file name extension.
-            save_plot_kwargs: dict with any of the kwargs accepted by
+            save_plot_kwargs (dict): any of the kwargs accepted by
                 matplotlib.pyplot.savefig()
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
                 Only available when save_plot is a string with the figure file
@@ -1184,10 +1234,10 @@ class Roll_mad(object):
 
         Args:
             figsize: the figure dimensions.
-            save_plot: string with the path/name of the file in which the generated
+            save_plot (str): string with the path/name of the file in which the generated
                 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
                 is infered by the file name extension.
-            save_plot_kwargs: dict with any of the kwargs accepted by
+            save_plot_kwargs (dict): any of the kwargs accepted by
                 matplotlib.pyplot.savefig()
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
                 Only available when save_plot is a string with the figure file
@@ -1236,10 +1286,10 @@ class Roll_mse(object):
 
         Args:
             figsize: the figure dimensions.
-            save_plot: string with the path/name of the file in which the generated
+            save_plot (str): string with the path/name of the file in which the generated
                 plot will be saved. Uses matplotlib.pyplot.savefig(). File format
                 is infered by the file name extension.
-            save_plot_kwargs: dict with any of the kwargs accepted by
+            save_plot_kwargs (dict): any of the kwargs accepted by
                 matplotlib.pyplot.savefig()
                 https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
                 Only available when save_plot is a string with the figure file
@@ -1268,25 +1318,25 @@ def first_digits(data, digs, decimals=2, sign='all', verbose=True,
         sign: tells which portion of the data to consider. 'pos': only the positive
             entries; 'neg': only negative entries; 'all': all entries but zeros.
             Defaults to 'all'.
-        digs: number of first digits to consider. Must be 1 (first digit),
+        digs (int): number of first digits to consider. Must be 1 (first digit),
             2 (first two digits) or 3 (first three digits).
-        verbose: tells the number of registries that are being subjected to
+        verbose (bool): tells the number of registries that are being subjected to
             the analysis and returns tha analysis DataFrame sorted by the
             highest Z score down. Defaults to True.
-        MAD: calculates the Mean Absolute Difference between the
+        MAD (bool): calculates the Mean Absolute Difference between the
             found and the expected distributions; defaults to False.
-        confidence: confidence level to draw lower and upper limits when
+        confidence (int, float): confidence level to draw lower and upper limits when
             plotting and to limit the top deviations to show. Defaults to None.
-        high_Z: chooses which Z scores to be used when displaying results,
+        high_Z (int): chooses which Z scores to be used when displaying results,
             according to the confidence level chosen. Defaluts to 'pos',
             which will highlight only values higher than the expexted
             frequencies; 'all' will highlight both extremes (positive and
             negative); and an integer, which will use the first n entries,
             positive and negative, regardless of whether Z is higher than
             the confidence or not.
-        limit_N: sets a limit to N as the sample size for the calculation of
+        limit_N (int): sets a limit to N as the sample size for the calculation of
             the Z scores if the sample is too big. Defaults to None.
-        MSE: calculates the Mean Square Error of the sample; defaults to
+        MSE (bool): calculates the Mean Square Error of the sample; defaults to
             False.
         chi_square: calculates the chi_square statistic of the sample and
             compares it with a critical value, according to the confidence
@@ -1296,12 +1346,12 @@ def first_digits(data, digs, decimals=2, sign='all', verbose=True,
             distribution of the sample with the Benford's, according to the
             confidence level chosen. Defaults to False. Requires confidence
             != None.
-        show_plot: draws the test plot.
-        save_plot: string with the path/name of the file in which the generated
+        show_plot (bool): draws the test plot.
+        save_plot (str): string with the path/name of the file in which the generated
             plot will be saved. Uses matplotlib.pyplot.savefig(). File format
             is infered by the file name extension. Only available when
             plot=True.
-        save_plot_kwargs: dict with any of the kwargs accepted by
+        save_plot_kwargs (dict): any of the kwargs accepted by
             matplotlib.pyplot.savefig()
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
             Only available when plot=True and save_plot is a string with the
@@ -1348,23 +1398,23 @@ def second_digit(data, decimals=2, sign='all', verbose=True,
         sign: tells which portion of the data to consider. 'pos': only the positive
             entries; 'neg': only negative entries; 'all': all entries but zeros.
             Defaults to 'all'.
-        verbose: tells the number of registries that are being subjected to
+        verbose (bool): tells the number of registries that are being subjected to
             the analysis and returns tha analysis DataFrame sorted by the
             highest Z score down. Defaults to True.
-        MAD: calculates the Mean Absolute Difference between the
+        MAD (bool): calculates the Mean Absolute Difference between the
             found and the expected distributions; defaults to False.
-        confidence: confidence level to draw lower and upper limits when
+        confidence (int, float): confidence level to draw lower and upper limits when
             plotting and to limit the top deviations to show. Defaults to None.
-        high_Z: chooses which Z scores to be used when displaying results,
+        high_Z (int): chooses which Z scores to be used when displaying results,
             according to the confidence level chosen. Defaluts to 'pos',
             which will highlight only values higher than the expexted
             frequencies; 'all' will highlight both extremes (positive and
             negative); and an integer, which will use the first n entries,
             positive and negative, regardless of whether Z is higher than
             the confidence or not.
-        limit_N: sets a limit to N as the sample size for the calculation of
+        limit_N (int): sets a limit to N as the sample size for the calculation of
             the Z scores if the sample is too big. Defaults to None.
-        MSE: calculates the Mean Square Error of the sample; defaults to
+        MSE (bool): calculates the Mean Square Error of the sample; defaults to
             False.
         chi_square: calculates the chi_square statistic of the sample and
             compares it with a critical value, according to the confidence
@@ -1374,12 +1424,12 @@ def second_digit(data, decimals=2, sign='all', verbose=True,
             distribution of the sample with the Benford's, according to the
             confidence level chosen. Defaults to False. Requires confidence
             != None.
-        show_plot: draws the test plot.
-        save_plot: string with the path/name of the file in which the generated
+        show_plot (bool): draws the test plot.
+        save_plot (str): string with the path/name of the file in which the generated
             plot will be saved. Uses matplotlib.pyplot.savefig(). File format
             is infered by the file name extension. Only available when
             plot=True.
-        save_plot_kwargs: dict with any of the kwargs accepted by
+        save_plot_kwargs (dict): any of the kwargs accepted by
             matplotlib.pyplot.savefig()
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
             Only available when plot=True and save_plot is a string with the
@@ -1425,23 +1475,23 @@ def last_two_digits(data, decimals=2, sign='all', verbose=True,
         sign: tells which portion of the data to consider. 'pos': only the positive
             entries; 'neg': only negative entries; 'all': all entries but zeros.
             Defaults to 'all'.
-        verbose: tells the number of registries that are being subjected to
+        verbose (bool): tells the number of registries that are being subjected to
             the analysis and returns tha analysis DataFrame sorted by the
             highest Z score down. Defaults to True.
-        confidence: confidence level to draw lower and upper limits when
+        confidence (int, float): confidence level to draw lower and upper limits when
             plotting and to limit the top deviations to show. Defaults to None.
-        high_Z: chooses which Z scores to be used when displaying results,
+        high_Z (int): chooses which Z scores to be used when displaying results,
             according to the confidence level chosen. Defaluts to 'pos',
             which will highlight only values higher than the expexted
             frequencies; 'all' will highlight both extremes (positive and
             negative); and an integer, which will use the first n entries,
             positive and negative, regardless of whether Z is higher than
             the confidence or not.
-        limit_N: sets a limit to N as the sample size for the calculation of
+        limit_N (int): sets a limit to N as the sample size for the calculation of
             the Z scores if the sample is too big. Defaults to None.
-        MAD: calculates the Mean Absolute Difference between the
+        MAD (bool): calculates the Mean Absolute Difference between the
             found and the expected distributions; defaults to False.
-        MSE: calculates the Mean Square Error of the sample; defaults to
+        MSE (bool): calculates the Mean Square Error of the sample; defaults to
             False.
         chi_square: calculates the chi_square statistic of the sample and
             compares it with a critical value, according to the confidence
@@ -1451,12 +1501,12 @@ def last_two_digits(data, decimals=2, sign='all', verbose=True,
             distribution of the sample with the Benford's, according to the
             confidence level chosen. Defaults to False. Requires confidence
             != None.
-        show_plot: draws the test plot.
-        save_plot: string with the path/name of the file in which the generated
+        show_plot (bool): draws the test plot.
+        save_plot (str): string with the path/name of the file in which the generated
             plot will be saved. Uses matplotlib.pyplot.savefig(). File format
             is infered by the file name extension. Only available when
             plot=True.
-        save_plot_kwargs: dict with any of the kwargs accepted by
+        save_plot_kwargs (dict): any of the kwargs accepted by
             matplotlib.pyplot.savefig()
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
             Only available when plot=True and save_plot is a string with the
@@ -1496,11 +1546,11 @@ def mantissas(data, report=True, show_plot=True, arc_test=True,
         show_plot: plots the ordered mantissas and a line with the expected
             inclination. Defaults to True.
         arc_test: draws the Arc Test plot. Defaluts to True.
-        save_plot: string with the path/name of the file in which the generated
+        save_plot (str): string with the path/name of the file in which the generated
             plot will be saved. Uses matplotlib.pyplot.savefig(). File format
             is infered by the file name extension. Only available when
             plot=True.
-        save_plot_kwargs: dict with any of the kwargs accepted by
+        save_plot_kwargs (dict): any of the kwargs accepted by
             matplotlib.pyplot.savefig()
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
             Only available when plot=True and save_plot is a string with the
@@ -1536,11 +1586,11 @@ def summation(data, digs=2, decimals=2, sign='all', top=20, verbose=True,
             loose performance.
         top: choses how many top values to show. Defaults to 20.
         show_plot: plots the results. Defaults to True.
-        save_plot: string with the path/name of the file in which the generated
+        save_plot (str): string with the path/name of the file in which the generated
             plot will be saved. Uses matplotlib.pyplot.savefig(). File format
             is infered by the file name extension. Only available when
             plot=True.
-        save_plot_kwargs: dict with any of the kwargs accepted by
+        save_plot_kwargs (dict): any of the kwargs accepted by
             matplotlib.pyplot.savefig()
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
             Only available when plot=True and save_plot is a string with the
@@ -1579,6 +1629,7 @@ def mad(data, test, decimals=2, sign='all', verbose=False):
         sign: tells which portion of the data to consider. pos: only the positive
             entries; neg: only negative entries; all: all entries but zeros.
             Defaults to all.
+
     Returns:
         float: the Mean Absolute Deviation of the Series
     """
@@ -1609,6 +1660,7 @@ def mse(data, test, decimals=2, sign='all', verbose=False):
         sign: tells which portion of the data to consider. pos: only the positive
             entries; neg: only negative entries; all: all entries but zeros.
             Defaults to all.
+
     Returns:
         float: the Mean Squared Error of the Series
     """
@@ -1622,6 +1674,71 @@ def mse(data, test, decimals=2, sign='all', verbose=False):
     else:
         start.last_two_digits(MAD=False, MSE=True, simple=True)
     return start.MSE
+
+
+def bhattacharyya_distance(data, test, decimals, sign="all", verbose=False):
+    """Computes the Bhattacharyya Distance between the Found and the Expected
+    (Benford) digits distributions, according toe the test chosen
+    (First, Second, First Two...)
+
+    Args:
+        data (ndarray, Series): sequence to be evaluated, with values being
+            integers or floats.
+        test (int, str): informs which base test to be used.
+        decimals (int): number of decimal places to consider. Defaluts to 2.
+            If integers, set to 0. If set to -infer-, it will remove the zeros
+            and consider up to the fifth decimal place to the right, but will
+            loose performance.
+        sign (str, optional): tells which portion of the data to consider.
+            pos: only the positive entries; neg: only negative entries; all:
+            all entries but zeros. Defaults to "all".
+
+    Returns:
+        float: the Bhattacharyya Distance between the distributions
+    """
+    data = _check_num_array_(data)
+    test = _check_test_(test)
+    start = Source(data, sign=sign, decimals=decimals, verbose=verbose)
+    if test in [1, 2, 3]:
+        start.first_digits(digs=test, MAD=False, bhat_dist=True, simple=True)
+    elif test == 22:
+        start.second_digit(MAD=False, bhat_dist=True, simple=True)
+    else:
+        start.last_two_digits(MAD=False, bhat_dist=True, simple=True)
+    return start.bhat_dist
+
+
+def kullback_leibler_divergence(data, test, decimals, sign="all",
+                                verbose=False):
+    """Computes the Kulback-Leibler Divergence between the Found and the
+    Expected (Benford) digits distributions, according toe the test chosen
+    (First, Second, First Two...).
+
+    Args:
+        data (ndarray, Series): sequence to be evaluated, with values being
+            integers or floats.
+        test (int, str): informs which base test to be used.
+        decimals (int): number of decimal places to consider. Defaluts to 2.
+            If integers, set to 0. If set to -infer-, it will remove the zeros
+            and consider up to the fifth decimal place to the right, but will
+            loose performance.
+        sign (str, optional): tells which portion of the data to consider.
+            pos: only the positive entries; neg: only negative entries; all:
+            all entries but zeros. Defaults to "all".
+
+    Returns:
+        float: the Kulback-Leibler Divergence between the distributions
+    """
+    data = _check_num_array_(data)
+    test = _check_test_(test)
+    start = Source(data, sign=sign, decimals=decimals, verbose=verbose)
+    if test in [1, 2, 3]:
+        start.first_digits(digs=test, MAD=False, kl_diverg=True, simple=True)
+    elif test == 22:
+        start.second_digit(MAD=False, kl_diverg=True, simple=True)
+    else:
+        start.last_two_digits(MAD=False, kl_diverg=True, simple=True)
+    return start.kl_diverg
 
 
 def mad_summ(data, test, decimals=2, sign='all', verbose=False):
@@ -1675,12 +1792,12 @@ def rolling_mad(data, test, window, decimals=2, sign='all',
         sign: tells which portion of the data to consider. pos: only the positive
             entries; neg: only negative entries; all: all entries but zeros.
             Defaults to all.
-        show_plot: draws the test plot.
-        save_plot: string with the path/name of the file in which the generated
+        show_plot (bool): draws the test plot.
+        save_plot (str): string with the path/name of the file in which the generated
             plot will be saved. Uses matplotlib.pyplot.savefig(). File format
             is infered by the file name extension. Only available when
             plot=True.
-        save_plot_kwargs: dict with any of the kwargs accepted by
+        save_plot_kwargs (dict): any of the kwargs accepted by
             matplotlib.pyplot.savefig()
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
             Only available when plot=True and save_plot is a string with the
@@ -1714,12 +1831,12 @@ def rolling_mse(data, test, window, decimals=2, sign='all',
         sign: tells which portion of the data to consider. pos: only the positive
             entries; neg: only negative entries; all: all entries but zeros.
             Defaults to all.
-        show_plot: draws the test plot.
-        save_plot: string with the path/name of the file in which the generated
+        show_plot (bool): draws the test plot.
+        save_plot (str): string with the path/name of the file in which the generated
             plot will be saved. Uses matplotlib.pyplot.savefig(). File format
             is infered by the file name extension. Only available when
             plot=True.
-        save_plot_kwargs: dict with any of the kwargs accepted by
+        save_plot_kwargs (dict): any of the kwargs accepted by
             matplotlib.pyplot.savefig()
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
             Only available when plot=True and save_plot is a string with the
@@ -1742,7 +1859,7 @@ def duplicates(data, top_Rep=20, verbose=True, inform=None):
     Args:
         data: sequence to take the duplicates from. pandas Series or
             numpy Ndarray.
-        verbose: tells how many duplicated entries were found and prints the
+        verbose (bool): tells how many duplicated entries were found and prints the
             top numbers according to the top_Rep argument. Defaluts to True.
         top_Rep: chooses how many duplicated entries will be
             shown withe the top repititions. int or None. Defaluts to 20.
@@ -1799,23 +1916,23 @@ def second_order(data, test, decimals=2, sign='all', verbose=True, MAD=False,
         sign: tells which portion of the data to consider. pos: only the positive
             entries; neg: only negative entries; all: all entries but zeros.
             Defaults to all.
-        verbose: tells the number of registries that are being subjected to
+        verbose (bool): tells the number of registries that are being subjected to
             the analysis and returns tha analysis DataFrame sorted by the
             highest Z score down. Defaults to True.
-        MAD: calculates the Mean Absolute Difference between the
+        MAD (bool): calculates the Mean Absolute Difference between the
             found and the expected distributions; defaults to False.
-        confidence: confidence level to draw lower and upper limits when
+        confidence (int, float): confidence level to draw lower and upper limits when
             plotting and to limit the top deviations to show. Defaults to None.
-        high_Z: chooses which Z scores to be used when displaying results,
+        high_Z (int): chooses which Z scores to be used when displaying results,
             according to the confidence level chosen. Defaluts to 'pos',
             which will highlight only values higher than the expexted
             frequencies; 'all' will highlight both extremes (positive and
             negative); and an integer, which will use the first n entries,
             positive and negative, regardless of whether Z is higher than
             the confidence or not.
-        limit_N: sets a limit to N as the sample size for the calculation of
+        limit_N (int): sets a limit to N as the sample size for the calculation of
             the Z scores if the sample is too big. Defaults to None.
-        MSE: calculates the Mean Square Error of the sample; defaults to
+        MSE (bool): calculates the Mean Square Error of the sample; defaults to
             False.
         chi_square: calculates the chi_square statistic of the sample and
             compares it with a critical value, according to the confidence
@@ -1825,12 +1942,12 @@ def second_order(data, test, decimals=2, sign='all', verbose=True, MAD=False,
             distribution of the sample with the Benford's, according to the
             confidence level chosen. Defaults to False. Requires confidence
             != None.
-        show_plot: draws the test plot.
-        save_plot: string with the path/name of the file in which the generated
+        show_plot (bool): draws the test plot.
+        save_plot (str): string with the path/name of the file in which the generated
             plot will be saved. Uses matplotlib.pyplot.savefig(). File format
             is infered by the file name extension. Only available when
             plot=True.
-        save_plot_kwargs: dict with any of the kwargs accepted by
+        save_plot_kwargs (dict): any of the kwargs accepted by
             matplotlib.pyplot.savefig()
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
             Only available when plot=True and save_plot is a string with the
