@@ -1,38 +1,41 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>benford.expected &mdash; benford_py 0.3.0 documentation</title>
+  <title>benford.expected &mdash; benford_py 0.3.3 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
@@ -71,6 +74,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -86,6 +90,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -120,11 +125,13 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
@@ -174,10 +181,9 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">digs</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">_check_digs_</span><span class="p">(</span><span class="n">digs</span><span class="p">)</span>
         <span class="n">dig_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;First_</span><span class="si">{</span><span class="n">digs</span><span class="si">}</span><span class="s1">_Dig&#39;</span>
-        <span class="n">Dig</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="n">digs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">digs</span><span class="p">)</span>
-        <span class="n">Exp</span> <span class="o">=</span> <span class="n">log10</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">Dig</span><span class="p">))</span>
-
-        <span class="n">DataFrame</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Expected&#39;</span><span class="p">:</span> <span class="n">Exp</span><span class="p">},</span> <span class="n">index</span><span class="o">=</span><span class="n">Dig</span><span class="p">)</span>
+        <span class="n">exp_array</span><span class="p">,</span> <span class="n">dig_array</span> <span class="o">=</span> <span class="n">_gen_first_digits_</span><span class="p">(</span><span class="n">digs</span><span class="p">)</span>
+ 
+        <span class="n">DataFrame</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Expected&#39;</span><span class="p">:</span> <span class="n">exp_array</span><span class="p">},</span> <span class="n">index</span><span class="o">=</span><span class="n">dig_array</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">dig_name</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
@@ -203,13 +209,11 @@
 <span class="sd">            figure file path/name.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-        <span class="n">Expe</span> <span class="o">=</span> <span class="n">log10</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">a</span><span class="p">))</span>
-        <span class="n">Sec_Dig</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span> <span class="o">*</span> <span class="mi">9</span><span class="p">)</span>
 
-        <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;Expected&#39;</span><span class="p">:</span> <span class="n">Expe</span><span class="p">,</span> <span class="s1">&#39;Sec_Dig&#39;</span><span class="p">:</span> <span class="n">Sec_Dig</span><span class="p">})</span>
+        <span class="n">exp</span><span class="p">,</span> <span class="n">sec_digs</span> <span class="o">=</span> <span class="n">_gen_second_digits_</span><span class="p">()</span>
 
-        <span class="n">DataFrame</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;Sec_Dig&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+        <span class="n">DataFrame</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Expected&#39;</span><span class="p">:</span> <span class="n">exp</span><span class="p">,</span> <span class="s1">&#39;Sec_Dig&#39;</span><span class="p">:</span> <span class="n">sec_digs</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;Sec_Dig&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
             <span class="n">plot_expected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="n">save_plot</span><span class="o">=</span><span class="n">save_plot</span><span class="p">,</span>
@@ -234,16 +238,16 @@
 <span class="sd">            figure file path/name.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">exp</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">99.</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">exp</span><span class="p">,</span> <span class="n">l2d</span> <span class="o">=</span> <span class="n">_gen_last_two_digits_</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="n">num</span><span class="p">)</span>
         <span class="n">DataFrame</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Expected&#39;</span><span class="p">:</span> <span class="n">exp</span><span class="p">,</span>
-                                  <span class="s1">&#39;Last_2_Dig&#39;</span><span class="p">:</span> <span class="n">_lt_</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="n">num</span><span class="p">)})</span>
+                                  <span class="s1">&#39;Last_2_Dig&#39;</span><span class="p">:</span> <span class="n">l2d</span><span class="p">})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;Last_2_Dig&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
             <span class="n">plot_expected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">save_plot</span><span class="o">=</span><span class="n">save_plot</span><span class="p">,</span>
                           <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="n">save_plot_kwargs</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_test_</span><span class="p">(</span><span class="n">digs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_expected_digits_</span><span class="p">(</span><span class="n">digs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Chooses the Exxpected class to be used in a test</span>
 
 <span class="sd">    Args:</span>
@@ -260,44 +264,83 @@
         <span class="k">return</span> <span class="n">LastTwo</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_lt_</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates an array with the possible last two digits</span>
+<span class="k">def</span> <span class="nf">_gen_last_two_digits_</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates two arrays, one with the possible last two digits and one with</span>
+<span class="sd">    thei respective probabilities</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        num: returns numeric (ints) values. Defaluts to False,</span>
 <span class="sd">            which returns strings.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Array of ints or str, in any case representing all 100 possible</span>
-<span class="sd">            combinations of last two digits</span>
+<span class="sd">        exp (np.array): Array with the (constant) probabilities of occurrence of</span>
+<span class="sd">            each pair of last two digits </span>
+<span class="sd">        l2d (np.array): Array of ints or str, in any case representing all 100</span>
+<span class="sd">            possible combinations of last two digits</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">exp</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">99.</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">l2d</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">num</span><span class="p">:</span>
-        <span class="n">n</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">n</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
-        <span class="n">n</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="s1">&#39;00&#39;</span><span class="p">,</span> <span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="s1">&#39;02&#39;</span><span class="p">,</span> <span class="s1">&#39;03&#39;</span><span class="p">,</span> <span class="s1">&#39;04&#39;</span><span class="p">,</span> <span class="s1">&#39;05&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;06&#39;</span><span class="p">,</span> <span class="s1">&#39;07&#39;</span><span class="p">,</span> <span class="s1">&#39;08&#39;</span><span class="p">,</span> <span class="s1">&#39;09&#39;</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">n</span>
+        <span class="k">return</span> <span class="n">exp</span><span class="p">,</span> <span class="n">l2d</span>
+    <span class="n">l2d</span> <span class="o">=</span> <span class="n">l2d</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="n">l2d</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="s1">&#39;00&#39;</span><span class="p">,</span> <span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="s1">&#39;02&#39;</span><span class="p">,</span> <span class="s1">&#39;03&#39;</span><span class="p">,</span> <span class="s1">&#39;04&#39;</span><span class="p">,</span> <span class="s1">&#39;05&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;06&#39;</span><span class="p">,</span> <span class="s1">&#39;07&#39;</span><span class="p">,</span> <span class="s1">&#39;08&#39;</span><span class="p">,</span> <span class="s1">&#39;09&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">exp</span><span class="p">,</span> <span class="n">l2d</span>
+
+<span class="k">def</span> <span class="nf">_gen_first_digits_</span><span class="p">(</span><span class="n">digs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates two arrays, one with the possible digits combinations and the</span>
+<span class="sd">    other with their respective expected probabilities according to Benford</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        digs (int): 1, 2 or 3, for generation of the first, first two, or first</span>
+<span class="sd">            three digits</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tuple of arrays): the expected probabilities array and the digits</span>
+<span class="sd">            combination array. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dig_array</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="n">digs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">digs</span><span class="p">)</span>
+    <span class="n">exp_prob</span> <span class="o">=</span> <span class="n">log10</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">dig_array</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">exp_prob</span><span class="p">,</span> <span class="n">dig_array</span>
+
+<span class="k">def</span> <span class="nf">_gen_second_digits_</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Creates two arrays, one with he possible second digits combinations and</span>
+<span class="sd">    the other with their respective expected probabilities according to Benford</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tuple of arrays): the expected probabilities array and the second</span>
+<span class="sd">        digits array.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">exp_f2d</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_gen_first_digits_</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">sec_digs</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">sec_digs_in_f2d</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span> <span class="o">*</span> <span class="mi">9</span><span class="p">)</span>
+    <span class="n">exp</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="n">exp_f2d</span><span class="p">[</span><span class="n">sec_digs_in_f2d</span> <span class="o">==</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sec_digs</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">exp</span><span class="p">,</span> <span class="n">array</span><span class="p">(</span><span class="n">sec_digs</span><span class="p">)</span>
 </pre></div>
 
            </div>
            
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, Marcel Milcent
+        &#169; Copyright 2020, Marcel Milcent.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -305,7 +348,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
