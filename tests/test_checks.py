@@ -1,245 +1,166 @@
+from contextlib import suppress as do_not_raise
 import pytest
-import pandas as pd
-import numpy as np
+from pytest import raises
 from ..benford import checks as ch
+from ..benford.constants import confs, digs_dict
 
 
+class TestCheckDigs():
 
-class Test_check_digs():
+    digs_to_raise = [
+        (x, raises(ValueError)) for x in 
+        [0, 0.5, -3, -5, -1, 1.7, 22, 1000, "One", "Two", "Second", "LastTwo", "Three"]
+    ]
 
-    def test_zero(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_digs_(0)
-        assert str(
-            context.value) == "The value assigned to the parameter -digs- was 0. Value must be 1, 2 or 3."
+    @pytest.mark.parametrize("dig, expectation", digs_to_raise)
+    def test_digs_raise_msg(self, dig, expectation):
+        with expectation as context:
+            ch._check_digs_(dig)
+        assert str(context.value) == "The value assigned to the parameter " +\
+                                f"-digs- was {dig}. Value must be 1, 2 or 3."
 
-    def test_float(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_digs_(0.5)
-        assert str(
-            context.value) == "The value assigned to the parameter -digs- was 0.5. Value must be 1, 2 or 3."
+    @pytest.mark.parametrize("dig, expectation", digs_to_raise)
+    def test_check_digs_raise(self, dig, expectation):
+        with expectation:
+            assert ch._check_digs_(dig) is not None
 
-    def test_other_int(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_digs_(22)
-        assert str(
-            context.value) == "The value assigned to the parameter -digs- was 22. Value must be 1, 2 or 3."
-
-    def test_str(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_digs_('Two')
-        assert str(
-            context.value) == "The value assigned to the parameter -digs- was Two. Value must be 1, 2 or 3."
+    legit_digs = [
+        (y, do_not_raise()) for y in [1, 2, 3]
+    ]
+    @pytest.mark.parametrize("dig, expectation", legit_digs)
+    def test_check_digs_no_raise(self, dig, expectation):
+        with expectation:
+            assert ch._check_digs_(dig) is None
 
 
-class Test_check_test():
-        
-    def test_1(self):
-        assert ch._check_test_(1) == 1
+class TestCheckTest():
 
-    def test_2(self):
-        assert ch._check_test_(2) == 2
+    digs_tests = [(d, d) for d in digs_dict.keys()] +\
+        [(val, key) for key, val in digs_dict.items()]
+    
+    @pytest.mark.parametrize("dig, expected", digs_tests)
+    def test_choose(self, dig, expected):
+        assert ch._check_test_(dig) == expected   
+    
+    test_check_raise = [
+        (y, raises(ValueError)) for y in [4, -3, 2.0, "F4D", False]] +\
+        [(x, do_not_raise()) for x in digs_dict.keys()] +\
+        [(z, do_not_raise()) for z in digs_dict.values()]
 
-    def test_3(self):
-        assert ch._check_test_(3) == 3
+    @pytest.mark.parametrize("dig, expectation", test_check_raise)
+    def test_raise(self, dig, expectation):
+        with expectation:
+            assert ch._check_test_(dig) is not None
 
-    def test_minus_2(self):
-        assert ch._check_test_(-2) == -2
-
-    def test_22(self):
-        assert ch._check_test_(22) == 22
-
-    def test_not_in_digs(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_test_(4)
-
-    def test_F1D(self):
-        assert ch._check_test_('F1D') == 1
-
-    def test_F2D(self):
-        assert ch._check_test_('F2D') == 2
-
-    def test_F3D(self):
-        assert ch._check_test_('F3D') == 3
-
-    def test_L2D(self):
-        assert ch._check_test_('L2D') == -2
-
-    def test_check_test_SD(self):
-        assert ch._check_test_('SD') == 22
-
-    def test_not_in_rev_digs(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_test_('F4D')
-
-    def test_float(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_test_(2.0)
-            ch._check_test_(-3)
-
-    def test_bool(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_test_(False)
-        with pytest.raises(ValueError) as context:
+    def test_None(self):
+        with pytest.raises(ValueError):
             ch._check_test_(None)
 
 
-class Test_check_decimals():
-        
-    def test_positive_int(self):
-        assert ch._check_decimals_(2) == 2
-        assert ch._check_decimals_(0) == 0
-        assert ch._check_decimals_(8) == 8
+class TestCheckDecimals():
+    
+    pos_int = zip(range(21), range(21))
+    
+    @pytest.mark.parametrize("pos_int, expected", pos_int)
+    def test_positive_int(self, pos_int, expected):
+        assert ch._check_decimals_(pos_int) == expected
 
-    def test_negative_int(self):
+    dec_errors = [(x, raises(ValueError)) for x in range(-15, 0)] +\
+        [(y, do_not_raise()) for y in range(21)] +\
+        [(z, raises(ValueError)) for z in ["inf", "infe", "Infer", []]]
+
+    @pytest.mark.parametrize("dec, expectation", dec_errors)
+    def test_dec_raises(self, dec, expectation):
+        with expectation:
+            assert ch._check_decimals_(dec) is not None
+
+    def test_negative_int_msg(self):
         with pytest.raises(ValueError) as context:
             ch._check_decimals_(-2)
         assert str(
             context.value) == "Parameter -decimals- must be an int >= 0, or 'infer'."
-        with pytest.raises(ValueError):
-            ch._check_decimals_(-5)
 
     def test_infer(self):
         assert ch._check_decimals_('infer') == 'infer'
 
-    def test_other_str(self):
+    def test_None_type(self):
         with pytest.raises(ValueError):
-            ch._check_decimals_('infe')
+            ch._check_decimals_(None)
+
+
+class TestCheckConfidence():
+
+    conf_errors = [
+        (x, raises(ValueError)) for x in
+        [93, "95", 76, "80", "99", 84, 99.8]
+    ] + [ # Except None ([:1]) due to comparison below
+        (y, do_not_raise()) for y in list(confs.keys())[1:] 
+    ]
+    @pytest.mark.parametrize("conf, expectation", conf_errors)
+    def test_conf_raises(self, conf, expectation):
+        with expectation:
+            assert ch._check_confidence_(conf) is not None
+
+    all_confidences = zip(confs.keys(), confs.keys())
+
+    @pytest.mark.parametrize("conf, expected", all_confidences)
+    def test_all_confidences(self, conf, expected):
+        assert ch._check_confidence_(conf) == expected
+
+
+class TestCheckHighZ():
+
+    z_errors = [
+        (x, raises(ValueError)) for x in
+        [5.0, 0.3, "al", "poss", "po", "alll", ]
+    ] + [
+        (y, do_not_raise()) for y in 
+        [10, 20, 5, 2, "pos", "all"]
+    ]
+    @pytest.mark.parametrize("high_Z, expectation", z_errors)
+    def test_high_Z_raises(self, high_Z, expectation):
+        with expectation:
+            assert ch._check_high_Z_(high_Z) is not None
+
+    high_Zs = [
+        (10, 10), ("pos", "pos"), ("all", "all")
+    ]
+    @pytest.mark.parametrize("z, expected", high_Zs)
+    def test_high_zs(self, z, expected):
+        assert ch._check_high_Z_(z) == expected
+
+
+class TestCheckNunmArray():
+    
+    arrays = [
+        ['1', '2', '3', '4', '5', '6', '7'],
+        [1, 2, 3, 4, 5, 6, 7],
+        [1, 2, 3, 4, 5.0, 6.3, .17],
+        [True, False, False, True, True, True, False, False]
+    ]
+
+    @pytest.mark.parametrize("arr", arrays)
+    def test_arrays_to_float(self, arr):
+        assert ch._check_num_array_(arr).dtype == float
+
+    def test_small_arrays(self, get_small_arrays):
+        arr, expected = get_small_arrays
+        assert ch._check_num_array_(arr).dtype == expected
+    
+    def test_np_array_str(self, small_str_foo_array):
         with pytest.raises(ValueError):
-            ch._check_decimals_('Infer')
-
-    def test_other_type(self):
-        with pytest.raises(ValueError):
-            assert ch._check_decimals_(-2)
-        with pytest.raises(ValueError) as context:
-            assert ch._check_decimals_(-2)
-        assert str(
-            context.value) == "Parameter -decimals- must be an int >= 0, or 'infer'."
-        with pytest.raises(ValueError):
-            assert ch._check_decimals_(None)
-        with pytest.raises(ValueError) as context:
-            assert ch._check_decimals_([])
-
-
-class Test_check_confidence():
-        
-    def test_not_in_conf_keys(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_confidence_(93)
-
-    def test_str(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_confidence_('95')
-
-    def test_None(self):
-        assert ch._check_confidence_(None) is None
-
-    def test_80(self):
-        assert ch._check_confidence_(80) == 80
-
-    def test_85(self):
-        assert ch._check_confidence_(85) == 85
-
-    def test_90(self):
-        assert ch._check_confidence_(90) == 90
-
-    def test_95(self):
-        assert ch._check_confidence_(95) == 95
-
-    def test_99(self):
-        assert ch._check_confidence_(99) == 99
-
-    def test_9999(self):
-        assert ch._check_confidence_(99.9) == 99.9
-
-    def test_99999(self):
-        assert ch._check_confidence_(99.99) == 99.99
-
-    def test_999999(self):
-        assert ch._check_confidence_(99.999) == 99.999
-
-    def test_9999999(self):
-        assert ch._check_confidence_(99.9999) == 99.9999
-
-    def test_99999999(self):
-        assert ch._check_confidence_(99.99999) == 99.99999
-
-
-class Test_check_high_Z():
-        
-    def test_float(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_high_Z_(5.0)
-            ch._check_high_Z_(0.3)
-
-    def test_wrong_str(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_high_Z_('al')
-            ch._check_high_Z_('poss')
-
-    def test_int(self):
-        assert ch._check_high_Z_(10) == 10
-
-    def test_pos(self):
-        assert ch._check_high_Z_('pos') == 'pos'
-
-    def test_all(self):
-        assert ch._check_high_Z_('all') == 'all'
-
-
-class Test_check_nunm_array():
-        
-    def test_str(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_num_array_('alocdwneceo;u')
-
-    def test_list_str(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_num_array_(['foo', 'baar', 'baz', 'jinks'])
-
-    def test_list_of_str_num(self):
-        assert ch._check_num_array_(
-            ['1', '2', '3', '4', '5', '6', '7']).dtype == float
-
-    def test_list_of_int(self):
-        assert ch._check_num_array_([1, 2, 3, 4, 5, 6, 7]).dtype == float
-
-    def test_list_of_float(self):
-        assert ch._check_num_array_([1, 2, 3, 4, 5.0, 6.3, .17]).dtype == float
-
-    def test_npArray_float(self, small_float_array):
-        assert ch._check_num_array_(small_float_array).dtype == float
-
-    def test_npArray_int(self, small_int_array):
-        assert ch._check_num_array_(small_int_array).dtype == int
-
-    def test_npArray_str_num(self, small_str_dig_array):
-        assert ch._check_num_array_(small_str_dig_array).dtype == float
-
-    def test_npArray_str(self, small_str_foo_array):
-        with pytest.raises(ValueError) as context:
             ch._check_num_array_(small_str_foo_array)
 
-    def test_Series_float(self, small_float_series):
-        assert ch._check_num_array_(small_float_series).dtype == float
+    num_arr_raise = [
+        ({1, 2, 3, 4}, raises(ValueError)),
+        ({'a': 1, 'b': 2, 'c': 3, 'd': 4}, raises(ValueError)),
+        ([1, 2, 3, 4, 5.0, 6.3, .17], do_not_raise()),
+        (['foo', 'baar', 'baz', 'jinks'], raises(ValueError)),
+        ('alocdwneceo;u', raises(ValueError))
+    ]
 
-    def test_Series_int(self, small_int_series):
-        assert ch._check_num_array_(small_int_series).dtype == int
-
-    def test_Series_str_num(self, small_str_dig_series):
-        assert ch._check_num_array_(small_str_dig_series).dtype == float
-
-    def test_Series_str(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_num_array_(pd.Series(['foo', 'baar', 'baz', 'hixks']))
-
-    def test_npArray_str_num(self, small_str_dig_array):
-        assert ch._check_num_array_(small_str_dig_array).dtype == float
-
-    def test_dict(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_num_array_({'a': 1, 'b': 2, 'c': 3, 'd': 4})
-
-    def test_tuple(self):
-        with pytest.raises(ValueError) as context:
-            ch._check_num_array_({1, 2, 3, 4})
+    @pytest.mark.parametrize("num_array, expectation", num_arr_raise)
+    def test_num_array_raises(self, num_array, expectation):
+        with expectation:
+            print(num_array)
+            assert ch._check_num_array_(num_array) is not None
