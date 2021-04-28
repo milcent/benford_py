@@ -14,7 +14,7 @@ from .viz import _get_plot_args, plot_digs, plot_sum, plot_ordered_mantissas,\
 from .reports import _inform_, _report_mad_, _report_test_, _deprecate_inform_,\
     _report_mantissa_
 from .stats import Z_score, chi_sq, chi_sq_2, kolmogorov_smirnov,\
-    kolmogorov_smirnov_2, _bhattacharyya_distance_, \
+    kolmogorov_smirnov_2, _bhattacharyya_distance_, _bhattacharyya_coefficient,\
     _kullback_leibler_divergence_
 
 
@@ -130,9 +130,11 @@ class Test(DataFrame):
         self.KS = kolmogorov_smirnov_2(self)
         self.MAD = self.AbsDif.mean()
         self.MSE = (self.AbsDif ** 2).mean()
-        self._bhattacharyya_distance_ = _bhattacharyya_distance_(
+        self.bhattacharyya_coefficient = _bhattacharyya_coefficient(
             self.Found.values, self.Expected.values)
-        self._kullback_leibler_divergence_ = _kullback_leibler_divergence_(
+        self.bhattacharyya_distance = _bhattacharyya_distance_(
+            self.Found.values, self.Expected.values)
+        self.kullback_leibler_divergence = _kullback_leibler_divergence_(
             self.Found.values, self.Expected.values)
         self.confidence = confidence
         self.digs = digs
@@ -667,7 +669,8 @@ class Source(DataFrame):
     def first_digits(self, digs, confidence=None, high_Z='pos',
                      limit_N=None, MAD=False, MSE=False, chi_square=False,
                      KS=False, show_plot=True, save_plot=None, save_plot_kwargs=None,
-                     simple=False, bhat_dist=False, kl_diverg=False, ret_df=False):
+                     simple=False, bhat_coeff = False, bhat_dist=False,
+                     kl_diverg=False, ret_df=False):
         """Performs the Benford First Digits test with the series of
         numbers provided, and populates the mapping dict for future
         selection of the original series.
@@ -693,8 +696,11 @@ class Source(DataFrame):
                 found and the expected distributions; defaults to False.
             MSE (bool): calculates the Mean Square Error of the sample; defaults to
                 False.
-            bhat_dist (bool): calculates the Bhattacharrya Distance between
-                foudn and the expected (Benford) digits distribution; defaults
+            bhat_coeff (bool): computes the Bhattacharyya Coefficient between
+                the found and the expected (Benford) digits distribution; defaults
+                to Fasle
+            bhat_dist (bool): calculates the Bhattacharyya Distance between
+                the found and the expected (Benford) digits distribution; defaults
                 to Fasle
             kl_diverg (bool): calculates the Kulback-Laibler Divergence between
                 the found and the expected (Benford) digits distribution;
@@ -764,15 +770,17 @@ class Source(DataFrame):
             self.KS = kolmogorov_smirnov(df, confidence=confidence, N=len(temp),
                                          verbose=self.verbose)
 
+        if bhat_coeff:
+            self.bhat_coeff = _bhattacharyya_coefficient(
+                                df.Found.values, df.Expected.values)
+
         if bhat_dist:
             self.bhat_dist = _bhattacharyya_distance_(
-                                df.Found.values, df.Expected.values
-                            )
+                                df.Found.values, df.Expected.values)
         
         if kl_diverg:
             self.kl_diverg = _kullback_leibler_divergence_(
-                                df.Found.values, df.Expected.values
-                            )
+                                df.Found.values, df.Expected.values)
 
         # Plotting the expected frequncies (line) against the found ones(bars)
         if show_plot:
@@ -785,9 +793,8 @@ class Source(DataFrame):
 
     def second_digit(self, confidence=None, high_Z='pos',
                      limit_N=None, MAD=False, MSE=False, chi_square=False,
-                     KS=False, bhat_dist=False, kl_diverg=False,
-                     show_plot=True, save_plot=None,
-                     save_plot_kwargs=None,
+                     KS=False, bhat_coeff=False, bhat_dist=False, kl_diverg=False,
+                     show_plot=True, save_plot=None, save_plot_kwargs=None,
                      simple=False, ret_df=False):
         """Performs the Benford Second Digit test with the series of
         numbers provided.
@@ -811,8 +818,11 @@ class Source(DataFrame):
                 the Z scores if the sample is too big. Defaults to None.
             MSE (bool): calculates the Mean Square Error of the sample; defaults to
                 False.
-            bhat_dist (bool): calculates the Bhattacharrya Distance between
-                foudn and the expected (Benford) digits distribution; defaults
+            bhat_coeff (bool): computes the Bhattacharyya Coefficient between
+                the found and the expected (Benford) digits distribution; defaults
+                to Fasle
+            bhat_dist (bool): calculates the Bhattacharyya Distance between
+                the found and the expected (Benford) digits distribution; defaults
                 to Fasle
             kl_diverg (bool): calculates the Kulback-Laibler Divergence between
                 the found and the expected (Benford) digits distribution;
@@ -871,7 +881,11 @@ class Source(DataFrame):
         # KS test
         if KS:
             self.KS = kolmogorov_smirnov(df, confidence=confidence, N=len(temp),
+
                                          verbose=self.verbose)
+        if bhat_coeff:
+            self.bhat_coeff = _bhattacharyya_coefficient(
+                                df.Found.values, df.Expected.values)
 
         if bhat_dist:
             self.bhat_dist = _bhattacharyya_distance_(
@@ -893,7 +907,7 @@ class Source(DataFrame):
 
     def last_two_digits(self, confidence=None, high_Z='pos',
                         limit_N=None, MAD=False, MSE=False, chi_square=False,
-                        KS=False, bhat_dist=False, kl_diverg=False,
+                        KS=False, bhat_coeff=False, bhat_dist=False, kl_diverg=False,
                         show_plot=True, save_plot=None, save_plot_kwargs=None,
                         simple=False, ret_df=False):
         """Performs the Benford Last Two Digits test with the series of
@@ -918,8 +932,11 @@ class Source(DataFrame):
                 the Z scores if the sample is too big. Defaults to None.
             MSE (bool): calculates the Mean Square Error of the sample; defaults to
                 False.
-            bhat_dist (bool): calculates the Bhattacharrya Distance between
-                foudn and the expected (Benford) digits distribution; defaults
+            bhat_coeff (bool): computes the Bhattacharyya Coefficient between
+                the found and the expected (Benford) digits distribution; defaults
+                to Fasle
+            bhat_dist (bool): calculates the Bhattacharyya Distance between
+                the found and the expected (Benford) digits distribution; defaults
                 to Fasle
             kl_diverg (bool): calculates the Kulback-Laibler Divergence between
                 the found and the expected (Benford) digits distribution;
@@ -976,15 +993,17 @@ class Source(DataFrame):
             self.KS = kolmogorov_smirnov(df, confidence=confidence, N=len(temp),
                                          verbose=self.verbose)
 
+        if bhat_coeff:
+            self.bhat_coeff = _bhattacharyya_coefficient(
+                                df.Found.values, df.Expected.values)
+
         if bhat_dist:
             self.bhat_dist = _bhattacharyya_distance_(
-                                df.Found.values, df.Expected.values
-                            )
+                                df.Found.values, df.Expected.values)
         
         if kl_diverg:
             self.kl_diverg = _kullback_leibler_divergence_(
-                                df.Found.values, df.Expected.values
-                            )
+                                df.Found.values, df.Expected.values)
 
         # Plotting expected frequencies (line) versus found ones (bars)
         if show_plot:
