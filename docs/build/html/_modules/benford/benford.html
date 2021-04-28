@@ -167,7 +167,7 @@
 <span class="kn">from</span> <span class="nn">.reports</span> <span class="kn">import</span> <span class="n">_inform_</span><span class="p">,</span> <span class="n">_report_mad_</span><span class="p">,</span> <span class="n">_report_test_</span><span class="p">,</span> <span class="n">_deprecate_inform_</span><span class="p">,</span>\
     <span class="n">_report_mantissa_</span>
 <span class="kn">from</span> <span class="nn">.stats</span> <span class="kn">import</span> <span class="n">Z_score</span><span class="p">,</span> <span class="n">chi_sq</span><span class="p">,</span> <span class="n">chi_sq_2</span><span class="p">,</span> <span class="n">kolmogorov_smirnov</span><span class="p">,</span>\
-    <span class="n">kolmogorov_smirnov_2</span><span class="p">,</span> <span class="n">_bhattacharyya_distance_</span><span class="p">,</span> \
+    <span class="n">kolmogorov_smirnov_2</span><span class="p">,</span> <span class="n">_bhattacharyya_distance_</span><span class="p">,</span> <span class="n">_bhattacharyya_coefficient</span><span class="p">,</span>\
     <span class="n">_kullback_leibler_divergence_</span>
 
 
@@ -283,9 +283,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">KS</span> <span class="o">=</span> <span class="n">kolmogorov_smirnov_2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">MAD</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">AbsDif</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">MSE</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AbsDif</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_bhattacharyya_distance_</span> <span class="o">=</span> <span class="n">_bhattacharyya_distance_</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bhattacharyya_coefficient</span> <span class="o">=</span> <span class="n">_bhattacharyya_coefficient</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">Found</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Expected</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_kullback_leibler_divergence_</span> <span class="o">=</span> <span class="n">_kullback_leibler_divergence_</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bhattacharyya_distance</span> <span class="o">=</span> <span class="n">_bhattacharyya_distance_</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Found</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Expected</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kullback_leibler_divergence</span> <span class="o">=</span> <span class="n">_kullback_leibler_divergence_</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">Found</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Expected</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">confidence</span> <span class="o">=</span> <span class="n">confidence</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">digs</span> <span class="o">=</span> <span class="n">digs</span>
@@ -820,7 +822,8 @@
 <div class="viewcode-block" id="Source.first_digits"><a class="viewcode-back" href="../../api.html#benford.benford.Source.first_digits">[docs]</a>    <span class="k">def</span> <span class="nf">first_digits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">digs</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high_Z</span><span class="o">=</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span>
                      <span class="n">limit_N</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">MAD</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">MSE</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chi_square</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                      <span class="n">KS</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                     <span class="n">simple</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bhat_dist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kl_diverg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ret_df</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                     <span class="n">simple</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bhat_coeff</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">bhat_dist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="n">kl_diverg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ret_df</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Performs the Benford First Digits test with the series of</span>
 <span class="sd">        numbers provided, and populates the mapping dict for future</span>
 <span class="sd">        selection of the original series.</span>
@@ -846,8 +849,11 @@
 <span class="sd">                found and the expected distributions; defaults to False.</span>
 <span class="sd">            MSE (bool): calculates the Mean Square Error of the sample; defaults to</span>
 <span class="sd">                False.</span>
-<span class="sd">            bhat_dist (bool): calculates the Bhattacharrya Distance between</span>
-<span class="sd">                foudn and the expected (Benford) digits distribution; defaults</span>
+<span class="sd">            bhat_coeff (bool): computes the Bhattacharyya Coefficient between</span>
+<span class="sd">                the found and the expected (Benford) digits distribution; defaults</span>
+<span class="sd">                to Fasle</span>
+<span class="sd">            bhat_dist (bool): calculates the Bhattacharyya Distance between</span>
+<span class="sd">                the found and the expected (Benford) digits distribution; defaults</span>
 <span class="sd">                to Fasle</span>
 <span class="sd">            kl_diverg (bool): calculates the Kulback-Laibler Divergence between</span>
 <span class="sd">                the found and the expected (Benford) digits distribution;</span>
@@ -917,15 +923,17 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">KS</span> <span class="o">=</span> <span class="n">kolmogorov_smirnov</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="n">confidence</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
                                          <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">bhat_coeff</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bhat_coeff</span> <span class="o">=</span> <span class="n">_bhattacharyya_coefficient</span><span class="p">(</span>
+                                <span class="n">df</span><span class="o">.</span><span class="n">Found</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">Expected</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">bhat_dist</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bhat_dist</span> <span class="o">=</span> <span class="n">_bhattacharyya_distance_</span><span class="p">(</span>
-                                <span class="n">df</span><span class="o">.</span><span class="n">Found</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">Expected</span><span class="o">.</span><span class="n">values</span>
-                            <span class="p">)</span>
+                                <span class="n">df</span><span class="o">.</span><span class="n">Found</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">Expected</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="n">kl_diverg</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">kl_diverg</span> <span class="o">=</span> <span class="n">_kullback_leibler_divergence_</span><span class="p">(</span>
-                                <span class="n">df</span><span class="o">.</span><span class="n">Found</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">Expected</span><span class="o">.</span><span class="n">values</span>
-                            <span class="p">)</span>
+                                <span class="n">df</span><span class="o">.</span><span class="n">Found</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">Expected</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 
         <span class="c1"># Plotting the expected frequncies (line) against the found ones(bars)</span>
         <span class="k">if</span> <span class="n">show_plot</span><span class="p">:</span>
@@ -938,9 +946,8 @@
 
 <div class="viewcode-block" id="Source.second_digit"><a class="viewcode-back" href="../../api.html#benford.benford.Source.second_digit">[docs]</a>    <span class="k">def</span> <span class="nf">second_digit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high_Z</span><span class="o">=</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span>
                      <span class="n">limit_N</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">MAD</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">MSE</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chi_square</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                     <span class="n">KS</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bhat_dist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kl_diverg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                     <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                     <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">KS</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bhat_coeff</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bhat_dist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kl_diverg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                      <span class="n">simple</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ret_df</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Performs the Benford Second Digit test with the series of</span>
 <span class="sd">        numbers provided.</span>
@@ -964,8 +971,11 @@
 <span class="sd">                the Z scores if the sample is too big. Defaults to None.</span>
 <span class="sd">            MSE (bool): calculates the Mean Square Error of the sample; defaults to</span>
 <span class="sd">                False.</span>
-<span class="sd">            bhat_dist (bool): calculates the Bhattacharrya Distance between</span>
-<span class="sd">                foudn and the expected (Benford) digits distribution; defaults</span>
+<span class="sd">            bhat_coeff (bool): computes the Bhattacharyya Coefficient between</span>
+<span class="sd">                the found and the expected (Benford) digits distribution; defaults</span>
+<span class="sd">                to Fasle</span>
+<span class="sd">            bhat_dist (bool): calculates the Bhattacharyya Distance between</span>
+<span class="sd">                the found and the expected (Benford) digits distribution; defaults</span>
 <span class="sd">                to Fasle</span>
 <span class="sd">            kl_diverg (bool): calculates the Kulback-Laibler Divergence between</span>
 <span class="sd">                the found and the expected (Benford) digits distribution;</span>
@@ -1024,7 +1034,11 @@
         <span class="c1"># KS test</span>
         <span class="k">if</span> <span class="n">KS</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">KS</span> <span class="o">=</span> <span class="n">kolmogorov_smirnov</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="n">confidence</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
+
                                          <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bhat_coeff</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bhat_coeff</span> <span class="o">=</span> <span class="n">_bhattacharyya_coefficient</span><span class="p">(</span>
+                                <span class="n">df</span><span class="o">.</span><span class="n">Found</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">Expected</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">bhat_dist</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bhat_dist</span> <span class="o">=</span> <span class="n">_bhattacharyya_distance_</span><span class="p">(</span>
@@ -1046,7 +1060,7 @@
 
 <div class="viewcode-block" id="Source.last_two_digits"><a class="viewcode-back" href="../../api.html#benford.benford.Source.last_two_digits">[docs]</a>    <span class="k">def</span> <span class="nf">last_two_digits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high_Z</span><span class="o">=</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span>
                         <span class="n">limit_N</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">MAD</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">MSE</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chi_square</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                        <span class="n">KS</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bhat_dist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kl_diverg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">KS</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bhat_coeff</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bhat_dist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kl_diverg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                         <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">simple</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ret_df</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Performs the Benford Last Two Digits test with the series of</span>
@@ -1071,8 +1085,11 @@
 <span class="sd">                the Z scores if the sample is too big. Defaults to None.</span>
 <span class="sd">            MSE (bool): calculates the Mean Square Error of the sample; defaults to</span>
 <span class="sd">                False.</span>
-<span class="sd">            bhat_dist (bool): calculates the Bhattacharrya Distance between</span>
-<span class="sd">                foudn and the expected (Benford) digits distribution; defaults</span>
+<span class="sd">            bhat_coeff (bool): computes the Bhattacharyya Coefficient between</span>
+<span class="sd">                the found and the expected (Benford) digits distribution; defaults</span>
+<span class="sd">                to Fasle</span>
+<span class="sd">            bhat_dist (bool): calculates the Bhattacharyya Distance between</span>
+<span class="sd">                the found and the expected (Benford) digits distribution; defaults</span>
 <span class="sd">                to Fasle</span>
 <span class="sd">            kl_diverg (bool): calculates the Kulback-Laibler Divergence between</span>
 <span class="sd">                the found and the expected (Benford) digits distribution;</span>
@@ -1129,15 +1146,17 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">KS</span> <span class="o">=</span> <span class="n">kolmogorov_smirnov</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="n">confidence</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span>
                                          <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">bhat_coeff</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bhat_coeff</span> <span class="o">=</span> <span class="n">_bhattacharyya_coefficient</span><span class="p">(</span>
+                                <span class="n">df</span><span class="o">.</span><span class="n">Found</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">Expected</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">bhat_dist</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bhat_dist</span> <span class="o">=</span> <span class="n">_bhattacharyya_distance_</span><span class="p">(</span>
-                                <span class="n">df</span><span class="o">.</span><span class="n">Found</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">Expected</span><span class="o">.</span><span class="n">values</span>
-                            <span class="p">)</span>
+                                <span class="n">df</span><span class="o">.</span><span class="n">Found</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">Expected</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="n">kl_diverg</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">kl_diverg</span> <span class="o">=</span> <span class="n">_kullback_leibler_divergence_</span><span class="p">(</span>
-                                <span class="n">df</span><span class="o">.</span><span class="n">Found</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">Expected</span><span class="o">.</span><span class="n">values</span>
-                            <span class="p">)</span>
+                                <span class="n">df</span><span class="o">.</span><span class="n">Found</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">Expected</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 
         <span class="c1"># Plotting expected frequencies (line) versus found ones (bars)</span>
         <span class="k">if</span> <span class="n">show_plot</span><span class="p">:</span>
