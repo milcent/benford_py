@@ -120,8 +120,8 @@ def _report_test_(test, high=None, crit_vals=None):
     print('\n', f'  {test.name}  '.center(50, '#'), '\n')
     if not 'Summation' in test.name:
         _report_mad_(test.digs, test.MAD)
-        _report_bhattac_dist_(test._bhattacharyya_distance_)
-        _report_kl_diverg_(test._kullback_leibler_divergence_)
+        _report_bhattac_dist_(test.bhattacharyya_distance)
+        _report_kl_diverg_(test.kullback_leibler_divergence)
         if test.confidence is not None:
             print(f"For confidence level {test.confidence}%: ")
             _report_KS_(test.KS, crit_vals['KS'])

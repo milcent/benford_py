@@ -130,9 +130,9 @@ class Test(DataFrame):
         self.KS = kolmogorov_smirnov_2(self)
         self.MAD = self.AbsDif.mean()
         self.MSE = (self.AbsDif ** 2).mean()
-        self._bhattacharyya_distance_ = _bhattacharyya_distance_(
+        self.bhattacharyya_distance = _bhattacharyya_distance_(
             self.Found.values, self.Expected.values)
-        self._kullback_leibler_divergence_ = _kullback_leibler_divergence_(
+        self.kullback_leibler_divergence = _kullback_leibler_divergence_(
             self.Found.values, self.Expected.values)
         self.confidence = confidence
         self.digs = digs
