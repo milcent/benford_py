@@ -106,9 +106,15 @@ class Test(DataFrame):
         chi_square: Chi-square statistic for the given test
         KS: Kolmogorov-Smirnov statistic for the given test
         MAD: Mean Absolute Deviation for the given test
+        bhatt_coeff (float): the Bhattacharyya Coefficient between the found 
+            and expected (Benford) digits proportions
+        bhatt_dist (float): the Bhattacharyya Distance between the found 
+            and expected (Benford) digits proportions
+        kl_diverg (float): the Kullback-Leibler Divergence between the found 
+            and expected (Benford) digits proportions
         confidence: Confidence level to consider when setting some critical values
-        digs (int): numerical representation of the test at hand. 1: F1D; 2: F2D;
-            3: F3D; 22: SD; -2: L2D.
+        digs (int): numerical representation of the test at hand. 1: 'F1D'; 2: 'F2D';
+            3: 'F3D'; 22: 'SD'; -2: 'L2D'.
         sec_order (bool): True if the test is a Second Order one
     """
 
@@ -130,11 +136,11 @@ class Test(DataFrame):
         self.KS = kolmogorov_smirnov_2(self)
         self.MAD = self.AbsDif.mean()
         self.MSE = (self.AbsDif ** 2).mean()
-        self.bhattacharyya_coefficient = _bhattacharyya_coefficient(
+        self.bhatt_coeff = _bhattacharyya_coefficient(
             self.Found.values, self.Expected.values)
-        self.bhattacharyya_distance = _bhattacharyya_distance_(
+        self.bhatt_dist = _bhattacharyya_distance_(
             self.Found.values, self.Expected.values)
-        self.kullback_leibler_divergence = _kullback_leibler_divergence_(
+        self.kl_diverg = _kullback_leibler_divergence_(
             self.Found.values, self.Expected.values)
         self.confidence = confidence
         self.digs = digs
