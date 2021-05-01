@@ -37,7 +37,7 @@ class Base(DataFrame):
         TypeError: if not receiving `int` or `float` as input.
     """
 
-    def __init__(self, data, decimals, sign='all', sec_order=False):
+    def __init__(self, data, decimals, sign='all'):
 
         DataFrame.__init__(self, {'seq': data})
 
