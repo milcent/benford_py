@@ -725,7 +725,7 @@ class Source(DataFrame):
         # Check on the possible values for confidence levels
         confidence = _check_confidence_(confidence)
         # Check on possible digits
-        _check_test_(digs)
+        _check_digs_(digs)
 
         temp = self.loc[self.ZN >= 10 ** (digs - 1)]
         temp[digs_dict[digs]] = (temp.ZN // 10 ** ((log10(temp.ZN).astype(
