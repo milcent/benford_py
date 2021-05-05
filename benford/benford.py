@@ -1,14 +1,13 @@
-import warnings
 from pandas import Series, DataFrame
-from numpy import arange, log10, ones, abs, cos, sin, pi, mean
+from numpy import arange, log10, abs, cos, sin, pi, mean
 from .constants import confs, digs_dict, sec_order_dict, rev_digs, names, \
     mad_dict, crit_chi2, KS_crit
 from .checks import _check_digs_, _check_confidence_, _check_test_, \
-    _check_num_array_, _check_high_Z_
+    _check_num_array_, _check_high_Z_, _check_int_float_dtype_
 from .utils import _set_N_, input_data, prepare, \
     subtract_sorted, prep_to_roll, mad_to_roll, mse_to_roll, \
     get_mantissas
-from .expected import _get_expected_digits_ # First, Second, LastTwo
+from .expected import _get_expected_digits_
 from .viz import _get_plot_args, plot_digs, plot_sum, plot_ordered_mantissas,\
     plot_mantissa_arc_test, plot_roll_mse, plot_roll_mad
 from .reports import _inform_, _report_mad_, _report_test_, _deprecate_inform_,\
@@ -36,15 +35,11 @@ class Base(DataFrame):
     Raises:
         TypeError: if not receiving `int` or `float` as input.
     """
-
     def __init__(self, data, decimals, sign='all'):
 
         DataFrame.__init__(self, {'seq': data})
 
-        if (self.seq.dtype != 'float') & (self.seq.dtype != 'int'):
-            raise TypeError("The sequence dtype was neither int nor "
-                            "float. Convert it to whether int of float, "
-                            "and try again.")
+        _check_int_float_dtype_(self.seq)
 
         if sign == 'all':
             self.seq = self.seq.loc[self.seq != 0]
@@ -598,9 +593,7 @@ class Source(DataFrame):
 
         DataFrame.__init__(self, {'seq': data})
 
-        if self.seq.dtype != 'float' and self.seq.dtype != 'int':
-            raise TypeError('The sequence dtype was neither int nor float.\n'
-                            'Convert it to whether int or float, and try again.')
+        _check_int_float_dtype_(self.seq)
 
         if sign == 'pos':
             self.seq = self.seq.loc[self.seq > 0]

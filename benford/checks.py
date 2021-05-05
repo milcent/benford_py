@@ -93,3 +93,11 @@ def _check_num_array_(data):
             except:
                 raise ValueError('Could not convert data. Check input.')
     return data
+
+
+def _check_int_float_dtype_(arr):
+    """"""
+    if (arr.dtype != 'float') & (arr.dtype != 'int'):
+        raise TypeError("The sequence dtype was neither int nor "
+                        "float. Convert it to whether int of float, "
+                        "and try again.")
