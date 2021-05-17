@@ -1,7 +1,7 @@
 from numpy import array, arange, maximum, sqrt, ones
 import matplotlib.pyplot as plt
 from matplotlib.text import Annotation
-from .constants import colors, mad_dict
+from .constants import COLORS, MAD_CONFORM
 
 
 def plot_expected(df, digs, save_plot=None, save_plot_kwargs=None):
@@ -30,9 +30,9 @@ def plot_expected(df, digs, save_plot=None, save_plot_kwargs=None):
     plt.title('Expected Benford Distributions', size='xx-large')
     plt.xlabel(df.index.name, size='x-large')
     plt.ylabel('Distribution (%)', size='x-large')
-    ax.set_facecolor(colors['b'])
+    ax.set_facecolor(COLORS['b'])
     ax.set_ylim(0, y_max)
-    ax.bar(df.index, df.Expected * 100, color=colors['t'], align='center')
+    ax.bar(df.index, df.Expected * 100, color=COLORS['t'], align='center')
     ax.set_xticks(df.index)
     ax.set_xticklabels(df.index)
 
@@ -101,22 +101,22 @@ def plot_digs(df, x, y_Exp, y_Found, N, figsize, conf_Z, text_x=False,
         lower_zeros = array([0]*len(upper))
         lower = maximum(y_Exp - sig - (1 / (2 * N)), lower_zeros)
         u = (y_Found < lower) | (y_Found > upper)
-        c = array([colors['m']] * len(u))
-        c[u] = colors['af']
+        c = array([COLORS['m']] * len(u))
+        c[u] = COLORS['af']
         lower *= 100.
         upper *= 100.
-        ax.plot(x, upper, color=colors['s'], zorder=5)
-        ax.plot(x, lower, color=colors['s'], zorder=5)
-        ax.fill_between(x, upper, lower, color=colors['s'],
+        ax.plot(x, upper, color=COLORS['s'], zorder=5)
+        ax.plot(x, lower, color=COLORS['s'], zorder=5)
+        ax.fill_between(x, upper, lower, color=COLORS['s'],
                         alpha=.3, label='Conf')
     else:
-        c = colors['m']
+        c = COLORS['m']
     ax.bar(x, y_Found * 100., color=c, label='Found', zorder=3, align='center')
-    ax.plot(x, y_Exp * 100., color=colors['s'], linewidth=2.5,
+    ax.plot(x, y_Exp * 100., color=COLORS['s'], linewidth=2.5,
             label='Benford', zorder=4)
     ax.set_xticks(x)
     ax.set_xticklabels(x, rotation=rotation)
-    ax.set_facecolor(colors['b'])
+    ax.set_facecolor(COLORS['b'])
     if text_x:
         ind = array(df.index).astype(str)
         ind[:10] = array(['00', '01', '02', '03', '04', '05',
@@ -155,13 +155,13 @@ def plot_sum(df, figsize, li, text_x=False, save_plot=None, save_plot_kwargs=Non
     plt.title('Expected vs. Found Sums')
     plt.xlabel('Digits')
     plt.ylabel('Sums')
-    ax.bar(x, df.Percent, color=colors['m'],
+    ax.bar(x, df.Percent, color=COLORS['m'],
            label='Found Sums', zorder=3, align='center')
     ax.set_xlim(x[0] - 1, x[-1] + 1)
-    ax.axhline(li, color=colors['s'], linewidth=2, label='Expected', zorder=4)
+    ax.axhline(li, color=COLORS['s'], linewidth=2, label='Expected', zorder=4)
     ax.set_xticks(x)
     ax.set_xticklabels(x, rotation=rotation)
-    ax.set_facecolor(colors['b'])
+    ax.set_facecolor(COLORS['b'])
     if text_x:
         ind = array(x).astype(str)
         ind[:10] = array(['00', '01', '02', '03', '04', '05',
@@ -198,12 +198,12 @@ def plot_ordered_mantissas(col, figsize=(12, 12),
     fig = plt.figure(figsize=figsize)
     ax = fig.add_subplot(111)
     ax.plot(x, col.sort_values(), linestyle='--',
-            color=colors['s'], linewidth=3, label='Mantissas')
-    ax.plot(x, n.cumsum(), color=colors['m'],
+            color=COLORS['s'], linewidth=3, label='Mantissas')
+    ax.plot(x, n.cumsum(), color=COLORS['m'],
             linewidth=2, label='Expected')
     plt.ylim((0, 1.))
     plt.xlim((1, ld + 1))
-    ax.set_facecolor(colors['b'])
+    ax.set_facecolor(COLORS['b'])
     ax.set_title("Ordered Mantissas")
     plt.legend(loc='upper left')
 
@@ -235,11 +235,11 @@ def plot_mantissa_arc_test(df, gravity_center, grid=True, figsize=12,
     """
     fig = plt.figure(figsize=(figsize, figsize))
     ax = plt.subplot()
-    ax.set_facecolor(colors['b'])
+    ax.set_facecolor(COLORS['b'])
     ax.scatter(df.mant_x, df.mant_y, label="ARC TEST",
-               color=colors['m'])
+               color=COLORS['m'])
     ax.scatter(gravity_center[0], gravity_center[1],
-               color=colors['s'])
+               color=COLORS['s'])
     text_annotation = Annotation(
         "  Gravity Center: "
         f"x({round(gravity_center[0], 3)}),"
@@ -275,8 +275,8 @@ def plot_roll_mse(roll_series, figsize, save_plot=None, save_plot_kwargs=None):
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
     """
     fig, ax = plt.subplots(figsize=figsize)
-    ax.set_facecolor(colors['b'])
-    ax.plot(roll_series, color=colors['m'])
+    ax.set_facecolor(COLORS['b'])
+    ax.plot(roll_series, color=COLORS['m'])
 
     if save_plot:
         if not save_plot_kwargs:
@@ -299,13 +299,13 @@ def plot_roll_mad(roll_mad, figsize, save_plot=None, save_plot_kwargs=None):
             https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
     """
     fig, ax = plt.subplots(figsize=figsize)
-    ax.set_facecolor(colors['b'])
-    ax.plot(roll_mad.roll_series, color=colors['m'])
+    ax.set_facecolor(COLORS['b'])
+    ax.plot(roll_mad.roll_series, color=COLORS['m'])
 
     if roll_mad.test != -2:
-        plt.axhline(y=mad_dict[roll_mad.test][0], color=colors['af'], linewidth=3)
-        plt.axhline(y=mad_dict[roll_mad.test][1], color=colors['h2'], linewidth=3)
-        plt.axhline(y=mad_dict[roll_mad.test][2], color=colors['s'], linewidth=3)
+        plt.axhline(y=MAD_CONFORM[roll_mad.test][0], color=COLORS['af'], linewidth=3)
+        plt.axhline(y=MAD_CONFORM[roll_mad.test][1], color=COLORS['h2'], linewidth=3)
+        plt.axhline(y=MAD_CONFORM[roll_mad.test][2], color=COLORS['s'], linewidth=3)
 
     if save_plot:
         if not save_plot_kwargs:

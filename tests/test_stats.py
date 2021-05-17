@@ -1,6 +1,6 @@
 import pytest
 from ..benford import stats as st
-from ..benford.constants import crit_chi2
+from ..benford.constants import CRIT_CHI2
 
 
 def test_Z_score_F1D():
@@ -21,7 +21,7 @@ class TestChiSquare():
         ddf = len(jefd_F1D) - 1
         confidence = choose_confidence
         chis = st.chi_sq(jefd_F1D, ddf, choose_confidence, verbose=False)
-        assert chis[1] == crit_chi2[ddf][confidence]
+        assert chis[1] == CRIT_CHI2[ddf][confidence]
         assert chis[0] > 0
         assert isinstance(chis[0], float)
         
@@ -32,7 +32,7 @@ class TestChiSquare():
         ddf = len(jefd_F2D) - 1
         confidence = choose_confidence
         chis = st.chi_sq(jefd_F2D, ddf, choose_confidence, verbose=False)
-        assert chis[1] == crit_chi2[ddf][confidence]
+        assert chis[1] == CRIT_CHI2[ddf][confidence]
         assert chis[0] > 0
         assert isinstance(chis[0], float)
 
@@ -42,7 +42,7 @@ class TestChiSquare():
         ddf = len(jefd_F3D) - 1
         confidence = choose_confidence
         chis = st.chi_sq(jefd_F3D, ddf, choose_confidence, verbose=False)
-        assert chis[1] == crit_chi2[ddf][confidence]
+        assert chis[1] == CRIT_CHI2[ddf][confidence]
         assert chis[0] > 0
         assert isinstance(chis[0], float)
 
@@ -52,7 +52,7 @@ class TestChiSquare():
         ddf = len(jefd_SD) - 1
         confidence = choose_confidence
         chis = st.chi_sq(jefd_SD, ddf, choose_confidence, verbose=False)
-        assert chis[1] == crit_chi2[ddf][confidence]
+        assert chis[1] == CRIT_CHI2[ddf][confidence]
         assert chis[0] > 0
         assert isinstance(chis[0], float)
 
@@ -62,7 +62,7 @@ class TestChiSquare():
         ddf = len(jefd_L2D) - 1
         confidence = choose_confidence
         chis = st.chi_sq(jefd_L2D, ddf, choose_confidence, verbose=False)
-        assert chis[1] == crit_chi2[ddf][confidence]
+        assert chis[1] == CRIT_CHI2[ddf][confidence]
         assert chis[0] > 0
         assert isinstance(chis[0], float)
     
@@ -80,7 +80,7 @@ class TestChiSquare():
         r_test = gen_join_expect_found_diff_random_test
         ddf = len(r_test) - 1
         chis = st.chi_sq(r_test, ddf, 80, verbose=False)
-        assert chis[1] == crit_chi2[ddf][80]
+        assert chis[1] == CRIT_CHI2[ddf][80]
         assert chis[0] > 0
         assert isinstance(chis[0], float)
 
@@ -88,7 +88,7 @@ class TestChiSquare():
         r_test = gen_join_expect_found_diff_random_test
         ddf = len(r_test) - 1
         chis = st.chi_sq(r_test, ddf, 85, verbose=False)
-        assert chis[1] == crit_chi2[ddf][85]
+        assert chis[1] == CRIT_CHI2[ddf][85]
         assert chis[0] > 0
         assert isinstance(chis[0], float)
 
@@ -96,7 +96,7 @@ class TestChiSquare():
         r_test = gen_join_expect_found_diff_random_test
         ddf = len(r_test) - 1
         chis = st.chi_sq(r_test, ddf, 90, verbose=False)
-        assert chis[1] == crit_chi2[ddf][90]
+        assert chis[1] == CRIT_CHI2[ddf][90]
         assert chis[0] > 0
         assert isinstance(chis[0], float)
 
@@ -106,7 +106,7 @@ class TestChiSquare():
         ddf = len(r_test) - 1
         chis = st.chi_sq(r_test, ddf, 95, verbose=False)
         out, _ = capsys.readouterr()
-        assert chis[1] == crit_chi2[ddf][95]
+        assert chis[1] == CRIT_CHI2[ddf][95]
         assert chis[0] > 0
         assert isinstance(chis[0], float)
         assert f"The Chi-square statistic is {chis[0]:.4f}." not in out
@@ -116,7 +116,7 @@ class TestChiSquare():
         r_test = gen_join_expect_found_diff_random_test
         ddf = len(r_test) - 1
         chis = st.chi_sq(r_test, ddf, 99, verbose=False)
-        assert chis[1] == crit_chi2[ddf][99]
+        assert chis[1] == CRIT_CHI2[ddf][99]
         assert chis[0] > 0
         assert isinstance(chis[0], float)
 
@@ -124,7 +124,7 @@ class TestChiSquare():
         r_test = gen_join_expect_found_diff_random_test
         ddf = len(r_test) - 1
         chis = st.chi_sq(r_test, ddf, 99.9, verbose=False)
-        assert chis[1] == crit_chi2[ddf][99.9]
+        assert chis[1] == CRIT_CHI2[ddf][99.9]
         assert chis[0] > 0
         assert isinstance(chis[0], float)
 
@@ -132,7 +132,7 @@ class TestChiSquare():
         r_test = gen_join_expect_found_diff_random_test
         ddf = len(r_test) - 1
         chis = st.chi_sq(r_test, ddf, 99.99, verbose=False)
-        assert chis[1] == crit_chi2[ddf][99.99]
+        assert chis[1] == CRIT_CHI2[ddf][99.99]
         assert chis[0] > 0
         assert isinstance(chis[0], float)
 
@@ -140,7 +140,7 @@ class TestChiSquare():
         r_test = gen_join_expect_found_diff_random_test
         ddf = len(r_test) - 1
         chis = st.chi_sq(r_test, ddf, 99.999, verbose=False)
-        assert chis[1] == crit_chi2[ddf][99.999]
+        assert chis[1] == CRIT_CHI2[ddf][99.999]
         assert chis[0] > 0
         assert isinstance(chis[0], float)
 
@@ -148,7 +148,7 @@ class TestChiSquare():
         r_test = gen_join_expect_found_diff_random_test
         ddf = len(r_test) - 1
         chis = st.chi_sq(r_test, ddf, 99.9999, verbose=False)
-        assert chis[1] == crit_chi2[ddf][99.9999]
+        assert chis[1] == CRIT_CHI2[ddf][99.9999]
         assert chis[0] > 0
         assert isinstance(chis[0], float)
 
@@ -156,7 +156,7 @@ class TestChiSquare():
         r_test = gen_join_expect_found_diff_random_test
         ddf = len(r_test) - 1
         chis = st.chi_sq(r_test, ddf, 99.99999, verbose=False)
-        assert chis[1] == crit_chi2[ddf][99.99999]
+        assert chis[1] == CRIT_CHI2[ddf][99.99999]
         assert chis[0] > 0
         assert isinstance(chis[0], float)
 

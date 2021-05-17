@@ -3,7 +3,7 @@ import pytest
 import numpy as np
 import pandas as pd
 from ..benford import utils as ut
-from ..benford.constants import confs, rev_digs
+from ..benford.constants import CONFS, REV_DIGS
 from ..benford.expected import _get_expected_digits_
 
 
@@ -40,7 +40,7 @@ def choose_test():
 
 @pytest.fixture
 def choose_confidence():
-    return choice(list(confs.keys())[1:])
+    return choice(list(CONFS.keys())[1:])
 
 
 @pytest.fixture
@@ -114,7 +114,7 @@ def gen_proportions_L2D(gen_get_digs_df):
 @pytest.fixture
 def gen_proportions_random_test(choose_test, gen_get_digs_df):
     dig_str = choose_test
-    return ut.get_found_proportions(gen_get_digs_df[dig_str]), rev_digs[dig_str]
+    return ut.get_found_proportions(gen_get_digs_df[dig_str]), REV_DIGS[dig_str]
 
 
 @pytest.fixture

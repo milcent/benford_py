@@ -2,7 +2,7 @@ from contextlib import suppress as do_not_raise
 import pytest
 from pytest import raises
 from ..benford import checks as ch
-from ..benford.constants import confs, digs_dict
+from ..benford.constants import CONFS, DIGS
 
 
 class TestCheckDigs():
@@ -35,8 +35,8 @@ class TestCheckDigs():
 
 class TestCheckTest():
 
-    digs_tests = [(d, d) for d in digs_dict.keys()] +\
-        [(val, key) for key, val in digs_dict.items()]
+    digs_tests = [(d, d) for d in DIGS.keys()] +\
+        [(val, key) for key, val in DIGS.items()]
     
     @pytest.mark.parametrize("dig, expected", digs_tests)
     def test_choose(self, dig, expected):
@@ -44,8 +44,8 @@ class TestCheckTest():
     
     test_check_raise = [
         (y, raises(ValueError)) for y in [4, -3, 2.0, "F4D", False]] +\
-        [(x, do_not_raise()) for x in digs_dict.keys()] +\
-        [(z, do_not_raise()) for z in digs_dict.values()]
+        [(x, do_not_raise()) for x in DIGS.keys()] +\
+        [(z, do_not_raise()) for z in DIGS.values()]
 
     @pytest.mark.parametrize("dig, expectation", test_check_raise)
     def test_raise(self, dig, expectation):
@@ -94,14 +94,14 @@ class TestCheckConfidence():
         (x, raises(ValueError)) for x in
         [93, "95", 76, "80", "99", 84, 99.8]
     ] + [ # Except None ([:1]) due to comparison below
-        (y, do_not_raise()) for y in list(confs.keys())[1:] 
+        (y, do_not_raise()) for y in list(CONFS.keys())[1:] 
     ]
     @pytest.mark.parametrize("conf, expectation", conf_errors)
     def test_conf_raises(self, conf, expectation):
         with expectation:
             assert ch._check_confidence_(conf) is not None
 
-    all_confidences = zip(confs.keys(), confs.keys())
+    all_confidences = zip(CONFS.keys(), CONFS.keys())
 
     @pytest.mark.parametrize("conf, expected", all_confidences)
     def test_all_confidences(self, conf, expected):

@@ -1,5 +1,5 @@
 import warnings
-from .constants import mad_dict
+from .constants import MAD_CONFORM
 
 
 def _inform_(df, high_Z, conf):
@@ -46,7 +46,7 @@ def _report_mad_(digs, MAD):
     """
     print(f'Mean Absolute Deviation: {MAD:.6f}')
     if digs != -2:
-        mads = mad_dict[digs]
+        mads = MAD_CONFORM[digs]
         if MAD <= mads[0]:
             print(f'MAD <= {mads[0]:.6f}: Close conformity.\n')
         elif MAD <= mads[1]:
@@ -70,13 +70,13 @@ def _report_KS_(KS, crit_KS):
           f"\n\tCritical value: {crit_KS:.6f} -- {result}")
 
 
-def _report_chi2_(chi2, crit_chi2):
+def _report_chi2_(chi2, CRIT_CHI2):
     """Reports the test Chi-square statistic and compares it to critical values,
     depending on the confidence level
     """
-    result = 'PASS' if chi2 <= crit_chi2 else 'FAIL'
+    result = 'PASS' if chi2 <= CRIT_CHI2 else 'FAIL'
     print(f"\n\tChi square: {chi2:.6f}",
-          f"\n\tCritical value: {crit_chi2:.6f} -- {result}")
+          f"\n\tCritical value: {CRIT_CHI2:.6f} -- {result}")
 
 
 def _report_Z_(df, high_Z, crit_Z):

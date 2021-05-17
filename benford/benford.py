@@ -1,8 +1,8 @@
 import warnings
 from pandas import Series, DataFrame
 from numpy import arange, log10, ones, abs, cos, sin, pi, mean
-from .constants import confs, digs_dict, sec_order_dict, rev_digs, names, \
-    mad_dict, crit_chi2, KS_crit
+from .constants import CONFS, DIGS, SEC_ORDER_DIGS, REV_DIGS, TEST_NAMES, \
+    MAD_CONFORM, CRIT_CHI2, CRIT_KS
 from .checks import _check_digs_, _check_confidence_, _check_test_, \
     _check_num_array_, _check_high_Z_
 from .utils import _set_N_, input_data, prepare, \
@@ -69,9 +69,9 @@ class Base(DataFrame):
                 self['ZN'] = (ab * (10 ** decimals)).astype(int)
         # First digits
         for col in ['F1D', 'F2D', 'F3D']:
-            temp = self.ZN.loc[self.ZN >= 10 ** (rev_digs[col] - 1)]
+            temp = self.ZN.loc[self.ZN >= 10 ** (REV_DIGS[col] - 1)]
             self[col] = (temp // 10 ** ((log10(temp).astype(int)) -
-                                        (rev_digs[col] - 1)))
+                                        (REV_DIGS[col] - 1)))
             # fill NANs with -1, which is a non-usable value for digits,
             # to be discarded later.
             self[col] = self[col].fillna(-1).astype(int)
@@ -116,9 +116,9 @@ class Test(DataFrame):
         # create a separated Expected distributions object
         super(Test, self).__init__(_get_expected_digits_(digs))
         # create column with occurrences of the digits in the base
-        self['Counts'] = base[digs_dict[digs]].value_counts()
+        self['Counts'] = base[DIGS[digs]].value_counts()
         # create column with relative frequencies
-        self['Found'] = base[digs_dict[digs]].value_counts(normalize=True)
+        self['Found'] = base[DIGS[digs]].value_counts(normalize=True)
         self.fillna(0, inplace=True)
         # create column with absolute differences
         self['Dif'] = self.Found - self.Expected
@@ -141,9 +141,9 @@ class Test(DataFrame):
         self.sec_order = sec_order
 
         if sec_order:
-            self.name = names[sec_order_dict[digs]]
+            self.name = TEST_NAMES[SEC_ORDER_DIGS[digs]]
         else:
-            self.name = names[digs_dict[digs]]
+            self.name = TEST_NAMES[DIGS[digs]]
 
     def update_confidence(self, new_conf, check=True):
         """Sets a new confidence level for the Benford object, so as to be used to
@@ -164,10 +164,10 @@ class Test(DataFrame):
     def critical_values(self):
         """dict: a dictionary with the critical values for the test at hand,
             according to the current confidence level."""
-        return {'Z': confs[self.confidence],
-                'KS': KS_crit[self.confidence] / (self.N ** 0.5),
-                'chi2': crit_chi2[self.ddf][self.confidence],
-                'MAD': mad_dict[self.digs]
+        return {'Z': CONFS[self.confidence],
+                'KS': CRIT_KS[self.confidence] / (self.N ** 0.5),
+                'chi2': CRIT_CHI2[self.ddf][self.confidence],
+                'MAD': MAD_CONFORM[self.digs]
                 }
 
     def show_plot(self, save_plot=None, save_plot_kwargs=None):
@@ -185,7 +185,7 @@ class Test(DataFrame):
         """
         x, figsize, text_x = _get_plot_args(self.digs)
         plot_digs(self, x=x, y_Exp=self.Expected, y_Found=self.Found,
-                    N=self.N, figsize=figsize, conf_Z=confs[self.confidence],
+                    N=self.N, figsize=figsize, conf_Z=CONFS[self.confidence],
                     text_x=text_x, save_plot=save_plot, save_plot_kwargs=save_plot_kwargs
                     )
 
@@ -242,9 +242,9 @@ class Summ(DataFrame):
         #: Confidence level to consider when setting some critical values
         self.confidence = None
         # (int): numerical representation of the test at hand
-        self.digs = rev_digs[test]
+        self.digs = REV_DIGS[test]
         # (str): the name of the Summation test.
-        self.name = names[f'{test}_Summ']
+        self.name = TEST_NAMES[f'{test}_Summ']
 
     def show_plot(self, save_plot=None, save_plot_kwargs=None):
         """Draws the Summation test plot
@@ -438,7 +438,7 @@ class Benford(object):
         self.tests = []
 
         # Create a DatFrame for each Test
-        for key, val in digs_dict.items():
+        for key, val in DIGS.items():
             test = Test(self.base.loc[self.base[val] != -1],
                         digs=key, confidence=self.confidence,
                         limit_N=self.limit_N)
@@ -446,9 +446,9 @@ class Benford(object):
             self.tests.append(val)
         # dict with the numbers of discarded entries for each test column
         self._discarded = {key: val for (key, val) in
-                           zip(digs_dict.values(),
+                           zip(DIGS.values(),
                                [len(self.base[col].loc[self.base[col] == -1])
-                                for col in digs_dict.values()])}
+                                for col in DIGS.values()])}
 
         if self.verbose:
             print('\n', ' Benford Object Instantiated '.center(50, '#'), '\n')
@@ -531,18 +531,18 @@ class Benford(object):
         #: Base instance of the differences between the ordered sample
         self.base_sec = Base(subtract_sorted(self.chosen),
                              decimals=self.decimals, sign=self.sign)
-        for key, val in digs_dict.items():
+        for key, val in DIGS.items():
             test = Test(self.base_sec.loc[self.base_sec[val] != -1],
                         digs=key, confidence=self.confidence,
                         limit_N=self.limit_N, sec_order=True)
-            setattr(self, sec_order_dict[key], test)
+            setattr(self, SEC_ORDER_DIGS[key], test)
             self.tests.append(f'{val}_sec')
             # No need to populate crit_vals dict, since they are the
             # same and do not depend on N
             self._discarded_sec = {key: val for (key, val) in zip(
-                                   sec_order_dict.values(),
+                                   SEC_ORDER_DIGS.values(),
                                    [sum(self.base_sec[col] == -1) for col in
-                                    digs_dict.values()])}
+                                    DIGS.values()])}
         if self.verbose:
             print(f'\nSecond order tests run in {len(self.base_sec)} '
                   'registries.\n\nNumber of discarded entries for second order'
@@ -728,7 +728,7 @@ class Source(DataFrame):
         _check_digs_(digs)
 
         temp = self.loc[self.ZN >= 10 ** (digs - 1)]
-        temp[digs_dict[digs]] = (temp.ZN // 10 ** ((log10(temp.ZN).astype(
+        temp[DIGS[digs]] = (temp.ZN // 10 ** ((log10(temp.ZN).astype(
                                                    int)) - (digs - 1))).astype(
                                                        int)
         n, m = 10 ** (digs - 1), 10 ** (digs)
@@ -737,10 +737,10 @@ class Source(DataFrame):
         if simple:
             self.verbose = False
             show_plot = False
-            df = prepare(temp[digs_dict[digs]], digs, limit_N=limit_N,
+            df = prepare(temp[DIGS[digs]], digs, limit_N=limit_N,
                          simple=True)
         else:
-            N, df = prepare(temp[digs_dict[digs]], digs, limit_N=limit_N,
+            N, df = prepare(temp[DIGS[digs]], digs, limit_N=limit_N,
                             simple=False)
 
         if self.verbose:
@@ -748,7 +748,7 @@ class Source(DataFrame):
                   f"Discarded {len(self) - len(temp)} records < {10 ** (digs - 1)}"
                   " after preparation.")
             if confidence is not None:
-                _inform_(df, high_Z=high_Z, conf=confs[confidence])
+                _inform_(df, high_Z=high_Z, conf=CONFS[confidence])
 
         # Mean absolute difference
         if MAD:
@@ -786,7 +786,7 @@ class Source(DataFrame):
         if show_plot:
             plot_digs(df, x=x, y_Exp=df.Expected, y_Found=df.Found, N=N,
                        figsize=(2 * (digs ** 2 + 5), 1.5 * (digs ** 2 + 5)),
-                       conf_Z=confs[confidence], save_plot=save_plot,
+                       conf_Z=CONFS[confidence], save_plot=save_plot,
                        save_plot_kwargs=save_plot_kwargs)
         if ret_df:
             return df
@@ -846,7 +846,7 @@ class Source(DataFrame):
         """
         confidence = _check_confidence_(confidence)
 
-        conf = confs[confidence]
+        conf = CONFS[confidence]
 
         temp = self.loc[self.ZN >= 10, :]
         temp['SD'] = (temp.ZN // 10 ** ((log10(temp.ZN)).astype(
@@ -957,7 +957,7 @@ class Source(DataFrame):
                 the differences
         """
         confidence = _check_confidence_(confidence)
-        conf = confs[confidence]
+        conf = CONFS[confidence]
 
         temp = self.loc[self.ZN >= 1000]
         temp['L2D'] = temp.ZN % 100
@@ -1043,7 +1043,7 @@ class Source(DataFrame):
         if digs == 1:
             top = 9
         # Call the dict for F1D, F2D, F3D
-        d = digs_dict[digs]
+        d = DIGS[digs]
         if d not in self.columns:
             self[d] = self.ZN.astype(str).str[:digs].astype(int)
         # Call the expected proportion according to digs
@@ -1243,7 +1243,7 @@ class Roll_mad(object):
 
         Exp, ind = prep_to_roll(data, self.test)
 
-        self.roll_series = data[digs_dict[test]].rolling(
+        self.roll_series = data[DIGS[test]].rolling(
                                 window=window).apply(mad_to_roll, 
                                     args=(Exp, ind), raw=False)
         self.roll_series.dropna(inplace=True)
@@ -1295,7 +1295,7 @@ class Roll_mse(object):
 
         Exp, ind = prep_to_roll(data, test)
 
-        self.roll_series = data[digs_dict[test]].rolling(
+        self.roll_series = data[DIGS[test]].rolling(
                                 window=window).apply(mse_to_roll, 
                                     args=(Exp, ind), raw=False)
         self.roll_series.dropna(inplace=True)
@@ -1784,12 +1784,12 @@ def mad_summ(data, test, decimals=2, sign='all', verbose=False):
 
     start = Source(data, sign=sign, decimals=decimals, verbose=verbose)
     temp = start.loc[start.ZN >= 10 ** (test - 1)]
-    temp[digs_dict[test]] = (temp.ZN // 10 ** ((log10(temp.ZN).astype(
+    temp[DIGS[test]] = (temp.ZN // 10 ** ((log10(temp.ZN).astype(
                                                 int)) - (test - 1))).astype(
                                                     int)
     li = 1. / (9 * (10 ** (test - 1)))
 
-    df = temp.groupby(digs_dict[test]).sum()
+    df = temp.groupby(DIGS[test]).sum()
     return mean(abs(df.ZN / df.ZN.sum() - li))
 
 

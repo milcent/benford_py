@@ -1,5 +1,5 @@
 from numpy import sqrt, log, where
-from .constants import crit_chi2, KS_crit, mad_dict, digs_dict
+from .constants import CRIT_CHI2, CRIT_KS, MAD_CONFORM, DIGS
 
 
 def Z_score(frame, N):
@@ -41,7 +41,7 @@ def chi_sq(frame, ddf, confidence, verbose=True):
         exp_counts = frame.Counts.sum() * frame.Expected
         dif_counts = frame.Counts - exp_counts
         found_chi = (dif_counts ** 2 / exp_counts).sum()
-        crit_chi = crit_chi2[ddf][confidence]
+        crit_chi = CRIT_CHI2[ddf][confidence]
         if verbose:
             print(f"\nThe Chi-square statistic is {found_chi:.4f}.\n"
                   f"Critical Chi-square for this series: {crit_chi}.")
@@ -88,7 +88,7 @@ def kolmogorov_smirnov(frame, confidence, N, verbose=True):
         # finding the supremum - the largest cumul dist difference
         suprem = ((ks_frame.Found - ks_frame.Expected).abs()).max()
         # calculating the crittical value according to confidence
-        crit_KS = KS_crit[confidence] / sqrt(N)
+        crit_KS = CRIT_KS[confidence] / sqrt(N)
 
         if verbose:
             print(f"\nThe Kolmogorov-Smirnov statistic is {suprem:.4f}.\n"
@@ -132,11 +132,11 @@ def mad(frame, test, verbose=True):
         print(f"\nThe Mean Absolute Deviation is {mad}")
 
         if test != -2:
-            print(f"For the {mad_dict[digs_dict[test]]}:\n\
-            - 0.0000 to {mad_dict[test][0]}: Close Conformity\n\
-            - {mad_dict[test][0]} to {mad_dict[test][1]}: Acceptable Conformity\n\
-            - {mad_dict[test][1]} to {mad_dict[test][2]}: Marginally Acceptable Conformity\n\
-            - Above {mad_dict[test][2]}: Nonconformity")
+            print(f"For the {MAD_CONFORM[DIGS[test]]}:\n\
+            - 0.0000 to {MAD_CONFORM[test][0]}: Close Conformity\n\
+            - {MAD_CONFORM[test][0]} to {MAD_CONFORM[test][1]}: Acceptable Conformity\n\
+            - {MAD_CONFORM[test][1]} to {MAD_CONFORM[test][2]}: Marginally Acceptable Conformity\n\
+            - Above {MAD_CONFORM[test][2]}: Nonconformity")
         else:
             pass
     return mad

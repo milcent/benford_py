@@ -1,12 +1,12 @@
-digs_dict = {1: 'F1D', 2: 'F2D', 3: 'F3D', 22: 'SD', -2: 'L2D'}
+DIGS = {1: 'F1D', 2: 'F2D', 3: 'F3D', 22: 'SD', -2: 'L2D'}
 
-sec_order_dict = {key: f'{val}_sec' for key, val in digs_dict.items()}
+SEC_ORDER_DIGS = {key: f'{val}_sec' for key, val in DIGS.items()}
 
-rev_digs = {'F1D': 1, 'F2D': 2, 'F3D': 3, 'SD': 22, 'L2D': -2}
+REV_DIGS = {'F1D': 1, 'F2D': 2, 'F3D': 3, 'SD': 22, 'L2D': -2}
 
-len_test = {1: 9, 2: 90, 3: 900, 22: 10, -2: 100}
+LEN_TEST = {1: 9, 2: 90, 3: 900, 22: 10, -2: 100}
 
-names = {'F1D': 'First Digit Test', 'F2D': 'First Two Digits Test',
+TEST_NAMES = {'F1D': 'First Digit Test', 'F2D': 'First Two Digits Test',
          'F3D': 'First Three Digits Test', 'SD': 'Second Digit Test',
          'L2D': 'Last Two Digits Test',
          'F1D_sec': 'First Digit Second Order Test',
@@ -21,28 +21,28 @@ names = {'F1D': 'First Digit Test', 'F2D': 'First Two Digits Test',
          }
 
 # Critical values for Mean Absolute Deviation
-mad_dict = {1: [0.006, 0.012, 0.015], 2: [0.0012, 0.0018, 0.0022],
+MAD_CONFORM = {1: [0.006, 0.012, 0.015], 2: [0.0012, 0.0018, 0.0022],
             3: [0.00036, 0.00044, 0.00050], 22: [0.008, 0.01, 0.012],
             -2: None, 'F1D': 'First Digit', 'F2D': 'First Two Digits',
             'F3D': 'First Three Digits', 'SD': 'Second Digits'}
 
 # Color for the plotting
-colors = {'m': '#00798c', 'b': '#E2DCD8', 's': '#9c3848',
+COLORS = {'m': '#00798c', 'b': '#E2DCD8', 's': '#9c3848',
           'af': '#edae49', 'ab': '#33658a', 'h': '#d1495b',
           'h2': '#f64740', 't': '#16DB93'}
 
 # Critical Z-scores according to the confindence levels
-confs = {None: None, 80: 1.285, 85: 1.435, 90: 1.645, 95: 1.96,
+CONFS = {None: None, 80: 1.285, 85: 1.435, 90: 1.645, 95: 1.96,
          99: 2.576, 99.9: 3.29, 99.99: 3.89, 99.999: 4.417,
          99.9999: 4.892, 99.99999: 5.327}
 
-p_values = {None: 'None', 80: '0.2', 85: '0.15', 90: '0.1', 95: '0.05',
+P_VALUES = {None: 'None', 80: '0.2', 85: '0.15', 90: '0.1', 95: '0.05',
             99: '0.01', 99.9: '0.001', 99.99: '0.0001', 99.999: '0.00001',
             99.9999: '0.000001', 99.99999: '0.0000001'}
 
 # Critical Chi-Square values according to the tests degrees of freedom
 # and confidence levels
-crit_chi2 = {8: {80: 11.03, 85: 12.027, 90: 13.362, 95: 15.507,
+CRIT_CHI2 = {8: {80: 11.03, 85: 12.027, 90: 13.362, 95: 15.507,
                  99: 20.090, 99.9: 26.124, 99.99: 31.827, None: None,
                  99.999: 37.332, 99.9999: 42.701, 99.99999: 47.972},
              9: {80: 12.242, 85: 13.288, 90: 14.684, 95: 16.919,
@@ -64,6 +64,6 @@ crit_chi2 = {8: {80: 11.03, 85: 12.027, 90: 13.362, 95: 15.507,
 
 # Critical Kolmogorov-Smirnov values according to the confidence levels
 # These values are yet to be divided by the square root of the sample size
-KS_crit = {80: 1.075, 85: 1.139, 90: 1.225, 95: 1.36, 99: 1.63,
+CRIT_KS = {80: 1.075, 85: 1.139, 90: 1.225, 95: 1.36, 99: 1.63,
            99.9: 1.95, 99.99: 2.23, 99.999: 2.47,
            99.9999: 2.7, 99.99999: 2.9, None: None}

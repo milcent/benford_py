@@ -1,6 +1,6 @@
 from pandas import Series
 from numpy import array, ndarray
-from .constants import digs_dict, rev_digs, confs
+from .constants import DIGS, REV_DIGS, CONFS
 
 
 def _check_digs_(digs):
@@ -16,21 +16,21 @@ def _check_test_(test):
     """Checks the test chosen, both for int or str values
     """
     if isinstance(test, int):
-        if test in digs_dict.keys():
+        if test in DIGS.keys():
             return test
         else:
             raise ValueError(f'Test was set to {test}. Should be one of '
-                             f'{digs_dict.keys()}')
+                             f'{DIGS.keys()}')
     elif isinstance(test, str):
-        if test in rev_digs.keys():
-            return rev_digs[test]
+        if test in REV_DIGS.keys():
+            return REV_DIGS[test]
         else:
             raise ValueError(f'Test was set to {test}. Should be one of '
-                             f'{rev_digs.keys()}')
+                             f'{REV_DIGS.keys()}')
     else:
         raise ValueError('Wrong value chosen for test parameter. Possible '
-                         f'values are\n {list(digs_dict.keys())} for ints and'
-                         f'\n {list(rev_digs.keys())} for strings.')
+                         f'values are\n {list(DIGS.keys())} for ints and'
+                         f'\n {list(REV_DIGS.keys())} for strings.')
 
 
 def _check_decimals_(decimals):
@@ -56,9 +56,9 @@ def _check_sign_(sign):
 
 def _check_confidence_(confidence):
     """"""
-    if confidence not in confs.keys():
+    if confidence not in CONFS.keys():
         raise ValueError("Value of parameter -confidence- must be one of the "
-                         f"following:\n {list(confs.keys())}")
+                         f"following:\n {list(CONFS.keys())}")
     return confidence
 
 

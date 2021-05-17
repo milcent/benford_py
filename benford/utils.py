@@ -1,7 +1,7 @@
 from pandas import Series, DataFrame
 from numpy import array, arange, log10, ndarray
 from .expected import _get_expected_digits_
-from .constants import digs_dict, rev_digs
+from .constants import DIGS, REV_DIGS
 from .stats import Z_score
 from .checks import _check_num_array_, _check_sign_, _check_decimals_
 
@@ -105,9 +105,9 @@ def get_digs(data, decimals=2, sign="all"):
 
     # First digits
     for col in ['F1D', 'F2D', 'F3D']:
-        temp = df.ZN.loc[df.ZN >= 10 ** (rev_digs[col] - 1)]
+        temp = df.ZN.loc[df.ZN >= 10 ** (REV_DIGS[col] - 1)]
         df[col] = (temp // 10 ** ((log10(temp).astype(int)) -
-                                  (rev_digs[col] - 1)))
+                                  (REV_DIGS[col] - 1)))
         # fill NANs with -1, which is a non-usable value for digits,
         # to be discarded later.
         df[col] = df[col].fillna(-1).astype(int)
@@ -173,7 +173,7 @@ def prep_to_roll(start, test):
     respective expected proportions for later application to the Series subset
     """
     if test in [1, 2, 3]:
-        start[digs_dict[test]] = start.ZN // 10 ** ((
+        start[DIGS[test]] = start.ZN // 10 ** ((
             log10(start.ZN).astype(int)) - (test - 1))
         start = start.loc[start.ZN >= 10 ** (test - 1)]
 
@@ -181,7 +181,7 @@ def prep_to_roll(start, test):
         Exp = log10(1 + (1. / ind))
 
     elif test == 22:
-        start[digs_dict[test]] = (start.ZN // 10 ** ((
+        start[DIGS[test]] = (start.ZN // 10 ** ((
             log10(start.ZN)).astype(int) - 1)) % 10
         start = start.loc[start.ZN >= 10]
 
@@ -192,7 +192,7 @@ def prep_to_roll(start, test):
         ind = arange(0, 10)
 
     else:
-        start[digs_dict[test]] = start.ZN % 100
+        start[DIGS[test]] = start.ZN % 100
         start = start.loc[start.ZN >= 1000]
 
         ind = arange(0, 100)
