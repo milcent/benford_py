@@ -3,10 +3,10 @@ from numpy import arange, log10, abs, cos, sin, pi, mean
 from .constants import confs, digs_dict, sec_order_dict, rev_digs, names, \
     mad_dict, crit_chi2, KS_crit
 from .checks import _check_digs_, _check_confidence_, _check_test_, \
-    _check_num_array_, _check_high_Z_, _check_int_float_dtype_
-from .utils import _set_N_, input_data, prepare, \
+    _check_num_array_, _check_high_Z_, _check_int_float_dtype_, _check_sign_
+from .utils import _set_N_, _input_data_, prepare, \
     subtract_sorted, prep_to_roll, mad_to_roll, mse_to_roll, \
-    get_mantissas
+    _get_mantissas_
 from .expected import _get_expected_digits_
 from .viz import _get_plot_args, plot_digs, plot_sum, plot_ordered_mantissas,\
     plot_mantissa_arc_test, plot_roll_mse, plot_roll_mad
@@ -300,7 +300,7 @@ class Mantissas(object):
         data = Series(_check_num_array_(data))
         data = data.dropna().loc[data != 0].abs()
         #: (DataFrame): pandas DataFrame with the mantissas
-        self.data = DataFrame({'Mantissa': get_mantissas(data.abs())})
+        self.data = DataFrame({'Mantissa': _get_mantissas_(data.abs())})
         # (dict): Dictionary with the mantissas statistics
         self.stats = {'Mean': self.data.Mantissa.mean(),
                       'Var': self.data.Mantissa.var(),
@@ -429,7 +429,7 @@ class Benford(object):
     def __init__(self, data, decimals=2, sign='all', confidence=95,
                  mantissas=False, sec_order=False, summation=False,
                  limit_N=None, verbose=True):
-        self.data, self.chosen = input_data(data)
+        self.data, self.chosen = _input_data_(data)
         self.decimals = decimals
         self.sign = sign
         self.confidence = _check_confidence_(confidence)
@@ -587,9 +587,7 @@ class Source(DataFrame):
     def __init__(self, data, decimals=2, sign='all', sec_order=False,
                  verbose=True, inform=None):
 
-        if sign not in ['all', 'pos', 'neg']:
-            raise ValueError("The -sign- argument must be "
-                             "'all','pos' or 'neg'.")
+        sign = _check_sign_(sign)
 
         DataFrame.__init__(self, {'seq': data})
 
@@ -652,7 +650,7 @@ class Source(DataFrame):
                 Only available when plot=True and save_plot is a string with the
                 figure file path/name.
         """
-        self['Mant'] = get_mantissas(self.seq.abs())
+        self['Mant'] = _get_mantissas_(self.seq.abs())
         if report:
             p = self[['seq', 'Mant']]
             p = p.loc[p.seq > 0].sort_values('Mant')
@@ -1127,7 +1125,7 @@ class Mantissas(object):
         data = Series(_check_num_array_(data))
         data = data.dropna().loc[data != 0].abs()
 
-        self.data = DataFrame({'Mantissa': get_mantissas(data.abs())})
+        self.data = DataFrame({'Mantissa': _get_mantissas_(data.abs())})
 
         self.stats = {'Mean': self.data.Mantissa.mean(),
                       'Var': self.data.Mantissa.var(),

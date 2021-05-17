@@ -19,7 +19,7 @@ def _set_N_(len_df, limit_N):
             return max(1, limit_N)
 
 
-def get_mantissas(arr):
+def _get_mantissas_(arr):
     """Computes the mantissas, the non-integer part of the log of a number.
 
     Args:
@@ -32,7 +32,7 @@ def get_mantissas(arr):
     return log_a - log_a.astype(int)  # the number - its integer part
 
 
-def input_data(given):
+def _input_data_(given):
     """Internalizes and transforms the input data
 
     Args:
@@ -60,7 +60,7 @@ def input_data(given):
     return data, chosen
 
 
-def set_sign(data, sign="all"):
+def _set_sign_(data, sign="all"):
     """
     """
     sign = _check_sign_(sign)
@@ -94,7 +94,7 @@ def get_times_10_power(data, decimals=2):
     return data
 
 
-def get_digs(data, decimals=2, sign="all"):
+def get_all_digs(data, decimals=2, sign="all"):
     """ 
     """
     df = DataFrame({'seq': _check_num_array_(data)})

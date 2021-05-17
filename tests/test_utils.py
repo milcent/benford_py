@@ -27,51 +27,51 @@ class Test_set_N_():
 class Test_get_mantissas():
         
     def test_less_than_1(self, gen_array):
-        assert sum(ut.get_mantissas(gen_array) > 1) == 0
+        assert sum(ut._get_mantissas_(gen_array) > 1) == 0
 
     def test_less_than_0(self, gen_array):
-        assert sum(ut.get_mantissas(gen_array) < 0) == 0
+        assert sum(ut._get_mantissas_(gen_array) < 0) == 0
 
 
 class Test_input_data():
         
     def test_Series(self, gen_series):
-        tup = ut.input_data(gen_series)
+        tup = ut._input_data_(gen_series)
         assert tup[0] is tup[1]
 
     def test_array(self, gen_array):
-        tup = ut.input_data(gen_array)
+        tup = ut._input_data_(gen_array)
         assert tup[0] is gen_array
         assert type(tup[1]) == pd.Series
 
     def test_wrong_tuple(self, gen_array, gen_series, gen_data_frame):
         with pytest.raises(TypeError) as context:
-            ut.input_data((gen_array, 'seq'))
-            ut.input_data((gen_series, 'col1'))
-            ut.input_data((gen_data_frame, 2))
+            ut._input_data_((gen_array, 'seq'))
+            ut._input_data_((gen_series, 'col1'))
+            ut._input_data_((gen_data_frame, 2))
 
     def test_df(self, gen_data_frame):
-        tup = ut.input_data((gen_data_frame, 'seq'))
+        tup = ut._input_data_((gen_data_frame, 'seq'))
         assert type(tup[0]) == pd.DataFrame
         assert type(tup[1]) == pd.Series
 
     def test_wrong_input_type(self, gen_array):
         with pytest.raises(TypeError) as context:
-            ut.input_data(gen_array.tolist())
+            ut._input_data_(gen_array.tolist())
 
 
 class Test_set_sign():
         
     def test_all(self, gen_data_frame):
-        sign_df = ut.set_sign(gen_data_frame, 'all')
+        sign_df = ut._set_sign_(gen_data_frame, 'all')
         assert len(sign_df.loc[sign_df.seq == 0]) == 0
 
     def test_pos(self, gen_data_frame):
-        sign_df = ut.set_sign(gen_data_frame, 'pos')
+        sign_df = ut._set_sign_(gen_data_frame, 'pos')
         assert sum(sign_df.seq <= 0) == 0
 
     def test_neg(self, gen_data_frame):
-        sign_df = ut.set_sign(gen_data_frame, 'neg')
+        sign_df = ut._set_sign_(gen_data_frame, 'neg')
         assert sum(sign_df.seq >= 0) == 0
 
 
@@ -97,31 +97,31 @@ class Test_get_times_10_power():
         assert (pow_df.ZN.astype(str).str.len() == 5).all()
 
 
-class Test_get_digs():
+class Test_get_all_digs():
         
     def test_dec_8(self, gen_array):
-        e_digs = ut.get_digs(gen_array, decimals=8)
+        e_digs = ut.get_all_digs(gen_array, decimals=8)
         cols = ['seq', 'ZN', 'F1D', 'F2D', 'F3D', 'SD', 'L2D']
         assert e_digs.columns.str.contains('|'.join(cols)).all()
         assert (e_digs[['F1D', 'F2D', 'F3D', 'SD', 'L2D']].dtypes == int).all()
         assert e_digs.notna().all().all()
 
     def test_dec_0(self, gen_array):
-        e_digs = ut.get_digs(gen_array, decimals=0)
+        e_digs = ut.get_all_digs(gen_array, decimals=0)
         cols = ['seq', 'ZN', 'F1D', 'F2D', 'F3D', 'SD', 'L2D']
         assert e_digs.columns.str.contains('|'.join(cols)).all()
         assert (e_digs[['F1D', 'F2D', 'F3D', 'SD', 'L2D']].dtypes == int).all()
         assert e_digs.notna().all().all()
 
     def test_dec_2(self, gen_array):
-        e_digs = ut.get_digs(gen_array, decimals=2)
+        e_digs = ut.get_all_digs(gen_array, decimals=2)
         cols = ['seq', 'ZN', 'F1D', 'F2D', 'F3D', 'SD', 'L2D']
         assert e_digs.columns.str.contains('|'.join(cols)).all()
         assert (e_digs[['F1D', 'F2D', 'F3D', 'SD', 'L2D']].dtypes == int).all()
         assert e_digs.notna().all().all()
 
     def test_dec_infer(self, gen_array):
-        e_digs = ut.get_digs(gen_array, decimals='infer')
+        e_digs = ut.get_all_digs(gen_array, decimals='infer')
         cols = ['seq', 'ZN', 'F1D', 'F2D', 'F3D', 'SD', 'L2D']
         assert e_digs.columns.str.contains('|'.join(cols)).all()
         assert (e_digs[['F1D', 'F2D', 'F3D', 'SD', 'L2D']].dtypes == int).all()

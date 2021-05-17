@@ -83,7 +83,7 @@ def small_str_foo_series():
 
 @pytest.fixture
 def gen_get_digs_df(gen_series, gen_decimals):
-    return ut.get_digs(gen_series, decimals=gen_decimals)
+    return ut.get_all_digs(gen_series, decimals=gen_decimals)
 
 
 @pytest.fixture
