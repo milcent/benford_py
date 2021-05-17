@@ -1,5 +1,5 @@
 from pandas import Series, DataFrame
-from numpy import array, arange, log10, ndarray
+from numpy import abs, array, arange, log10, nan, ndarray, where
 from .expected import _get_expected_digits_
 from .constants import digs_dict, rev_digs
 from .stats import Z_score
@@ -99,7 +99,7 @@ def get_all_digs(data, decimals=2, sign="all"):
     """
     df = DataFrame({'seq': _check_num_array_(data)})
 
-    df = set_sign(df, sign=sign)
+    df = _set_sign_(df, sign=sign)
 
     df = get_times_10_power(df, decimals=decimals)
 
@@ -221,3 +221,54 @@ def mse_to_roll(arr, Exp, ind):
         temp = temp.reindex(ind).fillna(0)
 
     return ((temp - Exp) ** 2).mean()
+
+
+def _set_sign__np(arr, sign="all"):
+    
+    sign = _check_sign_(sign)
+
+    if sign == 'all':
+        return abs(arr[arr != 0])
+    elif sign == 'pos':
+        return arr[arr > 0]
+    return abs(arr[arr < 0])
+
+
+def _get_times_10_power_np_(arr, decimals=2):
+
+    decimals = _check_decimals_(decimals)
+
+    if decimals == 'infer':
+        return Series(arr).astype(str).str\
+            .replace(r'\D', '', regex=True)\
+            .str.lstrip('0')\
+            .str[:5].astype(int).values
+    return (arr * (10 ** decimals)).astype(int)
+
+
+def _get_first_digits_general_(arr, dig):
+    arr = where(arr >= 10 ** (dig - 1), arr, 0)
+    arr = (arr // 10 ** ((log10(arr).astype(int)) - (dig - 1)))
+    return where(arr > 0, arr, -1)
+
+
+def _get_first_digits_(arr):
+    return _get_first_digits_general_(arr, 1)
+
+
+def get_first_two_digits(arr):
+    return _get_first_digits_general_(arr, 2)
+
+
+def get_first_three_digits(arr):
+    return _get_first_digits_general_(arr, 3)
+
+
+def get_second_digits(arr):
+    return Series(arr).astype(str).str.replace(r"\D", "", regex=True)\
+                .str[1].fillna(-1).astype(int).values
+
+
+def get_last_two_digits(arr):
+    pass
+
