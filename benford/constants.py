@@ -6,6 +6,15 @@ rev_digs = {'F1D': 1, 'F2D': 2, 'F3D': 3, 'SD': 22, 'L2D': -2}
 
 len_test = {1: 9, 2: 90, 3: 900, 22: 10, -2: 100}
 
+
+DIGS_FUNCS = {
+    1: "first_digits_",
+    2: "first_two_digits_",
+    3: "first_three_digits_",
+    22: "second_digits_",
+    -2: "last_two_digits_"
+}
+
 names = {'F1D': 'First Digit Test', 'F2D': 'First Two Digits Test',
          'F3D': 'First Three Digits Test', 'SD': 'Second Digit Test',
          'L2D': 'Last Two Digits Test',
