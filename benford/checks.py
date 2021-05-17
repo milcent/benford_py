@@ -97,7 +97,15 @@ def _check_num_array_(data):
 
 def _check_int_float_dtype_(arr):
     """"""
-    if (arr.dtype != 'float') & (arr.dtype != 'int'):
-        raise TypeError("The sequence dtype was neither int nor "
+    try:
+        dt = arr.dtype
+    except AttributeError:
+        print("Impossible to check data dtype. Make sure it is a pandas Series"
+              " or a numpy array.")
+        raise
+
+    if (dt != 'float') & (dt != 'int'):
+        raise TypeError("The data dtype is neither int nor "
                         "float. Convert it to whether int of float, "
                         "and try again.")
+    return arr
