@@ -1,4 +1,4 @@
-from numpy import sqrt, log, where
+from numpy import errstate, log, sqrt, where
 from .constants import CRIT_CHI2, CRIT_KS, MAD_CONFORM, DIGS
 
 
@@ -205,4 +205,7 @@ def _kullback_leibler_divergence_(dist_1, dist_2):
     Returns:
         kulb_leib_diverg (float)        
     """
-    return (log((dist_1 / dist_2), where=(dist_1 != 0)) * dist_1).sum()
+    # ignore divide by zero warning in np.where
+    with errstate(divide='ignore'):
+        kl_d = (log((dist_1 / dist_2), where=(dist_1 != 0)) * dist_1).sum()
+    return kl_d
