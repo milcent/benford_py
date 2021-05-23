@@ -164,11 +164,12 @@ class Test(DataFrame):
     def critical_values(self):
         """dict: a dictionary with the critical values for the test at hand,
             according to the current confidence level."""
+        crit_ks = CRIT_KS[self.confidence] / (self.N ** 0.5) if self.confidence\
+            else None
         return {'Z': CONFS[self.confidence],
-                'KS': CRIT_KS[self.confidence] / (self.N ** 0.5),
+                'KS': crit_ks,
                 'chi2': CRIT_CHI2[self.ddf][self.confidence],
-                'MAD': MAD_CONFORM[self.digs]
-                }
+                'MAD': MAD_CONFORM[self.digs]}
 
     def show_plot(self, save_plot=None, save_plot_kwargs=None):
         """Draws the test plot.
