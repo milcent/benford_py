@@ -7,7 +7,7 @@ with open(path.join(this_directory, 'README-pypi.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='benford_py',
-      version='0.4.3',
+      version='0.4.3.0',
       description='A library for testing data sets with Bendford\'s Law',
       long_description=long_description,
       long_description_content_type='text/markdown',
