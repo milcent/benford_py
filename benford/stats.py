@@ -189,7 +189,9 @@ def _bhattacharyya_distance_(dist_1, dist_2):
     Returns:
         bhat_dist (float)
     """
-    return -log(_bhattacharyya_coefficient(dist_1, dist_2))
+    with errstate(divide='ignore'):
+        bhat_dist =  -log(_bhattacharyya_coefficient(dist_1, dist_2))
+    return bhat_dist
 
 
 def _kullback_leibler_divergence_(dist_1, dist_2):
