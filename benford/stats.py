@@ -112,18 +112,22 @@ def kolmogorov_smirnov_2(frame):
     return ((ks_frame.Found - ks_frame.Expected).abs()).max()
 
 
-def _two_dist_ks_(dist1, dist2):
+def _two_dist_ks_(dist1, dist2, cummulative=True):
     """Computes the Kolmogorov-Smirnov statistic between two distributions,
     a found one (dist2) and an expected one (dist1).
 
     Args:
         dist1 (np.arrat): array with the expected distribution
         dist2 (np.array): array with the found distribution
+        cummulative (bool): makes apply cummulutative sum to the
+            distributions (empirical cdf).
 
     Returns:
         tuple(floats): the KS statistic 
     """
-    return nabs(dist2.sort() - dist1.sort()).max()
+    if not cummulative:
+        return nabs(dist2.sort() - dist1.sort()).max()
+    return nabs(dist2.sort().cumsum() - dist1.sort().cumsum()).max()
 
 
 def mantissas_ks(mant_dist, confidence):
@@ -142,8 +146,9 @@ def mantissas_ks(mant_dist, confidence):
     size = len(mant_dist)
     crit_ks = CRIT_KS[confidence] * sqrt(2 * size / size ** 2)\
                 if confidence else None
+    # non-cummulative, uniformly distributed
     expected = linspace(0, 1, size, endpoint=False)
-    ks = _two_dist_ks_(expected, mant_dist)
+    ks = _two_dist_ks_(expected, mant_dist, cummulative=False)
     return ks, crit_ks
 
 
