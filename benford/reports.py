@@ -143,7 +143,7 @@ def _report_test_(test, high=None, crit_vals=None):
         _report_summ_(test, high)
 
 
-def _report_mantissa_(stats):
+def _report_mantissa_(stats, confidence):
     """Prints the mantissas statistics and their respective reference values
 
     Args:
@@ -158,6 +158,10 @@ def _report_mantissa_(stats):
           "\tRef: 0.0")
     print(f"The Mantissas KURTOSIS is  {stats['Kurt']:.6f}."
           "\tRef: -1.2\n")
+    print("\nThe Kolmogorov-Smirnov statistic for the Mantissas distribution"
+          f" is {stats['KS']:.6f}.\nThe critical value for the confidence "
+          f"level of {confidence}% is {stats['KS_critical']:.6f} -- "
+          f"{'PASS' if stats['KS'] < stats['KS_critical'] else 'FAIL'}\n")
 
 
 def _deprecate_inform_(verbose, inform):

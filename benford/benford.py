@@ -15,7 +15,7 @@ from .reports import _inform_, _report_mad_, _report_test_, _deprecate_inform_,\
     _report_mantissa_
 from .stats import Z_score, chi_sq, chi_sq_2, kolmogorov_smirnov,\
     kolmogorov_smirnov_2, _bhattacharyya_distance_, _bhattacharyya_coefficient,\
-    _kullback_leibler_divergence_
+    _kullback_leibler_divergence_, _mantissas_ks_
 
 
 class Base(DataFrame):
@@ -295,17 +295,42 @@ class Mantissas(object):
             Series of pandas DataFrame column.
     """
 
-    def __init__(self, data):
+    def __init__(self, data, confidence):
 
         data = Series(_check_num_array_(data))
         data = data.dropna().loc[data != 0].abs()
         #: (DataFrame): pandas DataFrame with the mantissas
         self.data = DataFrame({'Mantissa': get_mantissas(data.abs())})
+        self.confidence = confidence
         # (dict): Dictionary with the mantissas statistics
-        self.stats = {'Mean': self.data.Mantissa.mean(),
-                      'Var': self.data.Mantissa.var(),
-                      'Skew': self.data.Mantissa.skew(),
-                      'Kurt': self.data.Mantissa.kurt()}
+
+    @property
+    def stats(self):
+        ks, crit_ks = _mantissas_ks_(self.data.Mantissa.values,
+                                        confidence=self.confidence)
+        return {'Mean': self.data.Mantissa.mean(),
+                'Var': self.data.Mantissa.var(),
+                'Skew': self.data.Mantissa.skew(),
+                'Kurt': self.data.Mantissa.kurt(),
+                'KS': ks,
+                'KS_critical': crit_ks}
+
+
+    def update_confidence(self, new_conf, check=True):
+        """Sets a new confidence level for the Benford object, so as to be used to
+        produce critical values for the tests
+
+        Args:
+            new_conf: new confidence level to draw lower and upper limits when
+                plotting and to limit the top deviations to show, as well as to
+                calculate critical values for the tests' statistics.
+            check: checks the value provided for the confidence. Defaults to True
+        """
+        if check:
+            self.confidence = _check_confidence_(new_conf)
+        else:
+            self.confidence = new_conf
+
 
     def report(self, show_plot=True, save_plot=None, save_plot_kwargs=None):
         """Displays the Mantissas test stats.
@@ -492,14 +517,14 @@ class Benford(object):
         for test in tests:
             try:
                 getattr(self, test).update_confidence(
-                    self.confidence, check=False)
-            except AttributeError:
-                if test in ['Mantissas', 'F1D_Summ', 'F2D_Summ', 'F3D_Summ']:
+                            self.confidence, check=False)
+            except AttributeError as e:
+                if test in ['F1D_Summ', 'F2D_Summ', 'F3D_Summ']:
                     pass
                 else:
-                    print(
-                        f"{test} not in Benford instance tests - review test's name.")
-                    pass
+                    print(e,
+                        f"\n\n{test} not in Benford instance tests - "
+                        "review test's name.")
 
     @property
     def all_confidences(self):
@@ -510,14 +535,14 @@ class Benford(object):
             try:
                 con_dic[key] = getattr(self, key).confidence
             except AttributeError:
-                pass
+                continue
         return con_dic
 
     def mantissas(self):
         """Adds a Mantissas object to the tests, with all its statistics and
         plotting capabilities.
         """
-        self.Mantissas = Mantissas(self.base.seq)
+        self.Mantissas = Mantissas(self.base.seq, self.confidence)
         self.tests.append('Mantissas')
         if self.verbose:
             print('\nAdded Mantissas test.')

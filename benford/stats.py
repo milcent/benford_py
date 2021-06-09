@@ -130,7 +130,7 @@ def _two_dist_ks_(dist1, dist2, cummulative=True):
     return nabs(dist2.sort().cumsum() - dist1.sort().cumsum()).max()
 
 
-def mantissas_ks(mant_dist, confidence):
+def _mantissas_ks_(mant_dist, confidence):
     """Computes the Kolmogorov-Smirnof statistic for the Mantissas, also
     providing the KS critical value according the the sample size and
     confidence level provided
