@@ -287,12 +287,14 @@ class Summ(DataFrame):
             self.show_plot(save_plot=save_plot, save_plot_kwargs=save_plot_kwargs)
 
 
-class Mantissas(object):
+class Mantissas:
     """Computes and holds the mantissas of the logarithms of the records
 
     Args:
         data: sequence to compute mantissas from. numpy 1D array, pandas
             Series of pandas DataFrame column.
+        confidence: confidence level for computing the critical values to
+            compare with some statistics
     """
 
     def __init__(self, data, confidence):
@@ -302,10 +304,10 @@ class Mantissas(object):
         #: (DataFrame): pandas DataFrame with the mantissas
         self.data = DataFrame({'Mantissa': get_mantissas(data.abs())})
         self.confidence = confidence
-        # (dict): Dictionary with the mantissas statistics
 
     @property
     def stats(self):
+        # (dict): Dictionary with the mantissas statistics
         ks, crit_ks = _mantissas_ks_(self.data.Mantissa.values,
                                         confidence=self.confidence)
         return {'Mean': self.data.Mantissa.mean(),
@@ -348,7 +350,7 @@ class Mantissas(object):
                 Only available when plot=True and save_plot is a string with the
                 figure file path/name.
         """
-        _report_mantissa_(self.stats)
+        _report_mantissa_(self.stats, confidence=self.confidence)
 
         if show_plot:
             self.show_plot(save_plot=save_plot, save_plot_kwargs=save_plot_kwargs)
@@ -372,15 +374,13 @@ class Mantissas(object):
         plot_ordered_mantissas(self.data.Mantissa, figsize=figsize,
                                save_plot=save_plot, save_plot_kwargs=save_plot_kwargs)
 
-    def arc_test(self, decimals=2, grid=True, figsize=12,
+    def arc_test(self, grid=True, figsize=12,
                  save_plot=None, save_plot_kwargs=None):
         """Adds two columns to Mantissas's DataFrame equal to their "X" and "Y"
         coordinates, plots its to a scatter plot and calculates the gravity
         center of the circle.
 
         Args:
-            decimals: number of decimal places for displaying the gravity center.
-                Defaults to 2.
             grid: show grid of the plot. Defaluts to True.
             figsize (int): size of the figure to be displayed. Since it is a square,
                 there is no need to provide a tuple, like is usually the case with
@@ -395,13 +395,11 @@ class Mantissas(object):
                 Only available when plot=True and save_plot is a string with the
                 figure file path/name.
         """
-        if self.stats.get('gravity_center') is None:
-            self.data['mant_x'] = cos(2 * pi * self.data.Mantissa)
-            self.data['mant_y'] = sin(2 * pi * self.data.Mantissa)
-            self.stats['gravity_center'] = (self.data.mant_x.mean(),
-                                            self.data.mant_y.mean())
-        
-        plot_mantissa_arc_test(self.data, self.stats, decimals=decimals, 
+        self.data['mant_x'] = cos(2 * pi * self.data.Mantissa)
+        self.data['mant_y'] = sin(2 * pi * self.data.Mantissa)
+        self.gravity_center = (self.data.mant_x.mean(), self.data.mant_y.mean())
+
+        plot_mantissa_arc_test(self.data, self.gravity_center,
                                grid=grid, figsize=figsize,
                                save_plot=save_plot, save_plot_kwargs=save_plot_kwargs)
 
@@ -542,7 +540,7 @@ class Benford(object):
         """Adds a Mantissas object to the tests, with all its statistics and
         plotting capabilities.
         """
-        self.Mantissas = Mantissas(self.base.seq, self.confidence)
+        self.Mantissas = Mantissas(self.base.seq.values, self.confidence)
         self.tests.append('Mantissas')
         if self.verbose:
             print('\nAdded Mantissas test.')
