@@ -157,7 +157,7 @@ def _report_mantissa_(stats, confidence):
     print(f"The Mantissas SKEWNESS is  {stats['Skew']:.6f}."
           "\tRef: 0.0")
     print(f"The Mantissas KURTOSIS is  {stats['Kurt']:.6f}."
-          "\tRef: -1.2\n")
+          "\tRef: -1.2")
     print("\nThe Kolmogorov-Smirnov statistic for the Mantissas distribution"
           f" is {stats['KS']:.6f}.\nThe critical value for the confidence "
           f"level of {confidence}% is {stats['KS_critical']:.6f} -- "
