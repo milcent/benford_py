@@ -125,9 +125,10 @@ def _two_dist_ks_(dist1, dist2, cummulative=True):
     Returns:
         tuple(floats): the KS statistic 
     """
+    dist2.sort(); dist1.sort()
     if not cummulative:
-        return nabs(dist2.sort() - dist1.sort()).max()
-    return nabs(dist2.sort().cumsum() - dist1.sort().cumsum()).max()
+        return nabs(dist2 - dist1).max()
+    return nabs(dist2.cumsum() - dist1.cumsum()).max()
 
 
 def _mantissas_ks_(mant_dist, confidence):
