@@ -123,8 +123,8 @@ class Test(DataFrame):
         # create column with absolute differences
         self['Dif'] = self.Found - self.Expected
         self['AbsDif'] = self.Dif.abs()
-        self.N = _set_N_(len(base), limit_N)
-        self['Z_score'] = Z_score(self, self.N)
+        self.limit_N = _set_N_(len(base), limit_N)
+        self['Z_score'] = Z_score(self, self.limit_N)
         self.ddf = len(self) - 1
         self.chi_square = chi_sq_2(self)
         self.KS = kolmogorov_smirnov_2(self)
@@ -164,7 +164,7 @@ class Test(DataFrame):
     def critical_values(self):
         """dict: a dictionary with the critical values for the test at hand,
             according to the current confidence level."""
-        crit_ks = CRIT_KS[self.confidence] / (self.N ** 0.5) if self.confidence\
+        crit_ks = CRIT_KS[self.confidence] / (self.limit_N ** 0.5) if self.confidence\
             else None
         return {'Z': CONFS[self.confidence],
                 'KS': crit_ks,
@@ -186,7 +186,7 @@ class Test(DataFrame):
         """
         x, figsize, text_x = _get_plot_args(self.digs)
         plot_digs(self, x=x, y_Exp=self.Expected, y_Found=self.Found,
-                    N=self.N, figsize=figsize, conf_Z=CONFS[self.confidence],
+                    N=self.limit_N, figsize=figsize, conf_Z=CONFS[self.confidence],
                     text_x=text_x, save_plot=save_plot, save_plot_kwargs=save_plot_kwargs
                     )
 
@@ -297,10 +297,11 @@ class Mantissas:
             compare with some statistics
     """
 
-    def __init__(self, data, confidence):
+    def __init__(self, data, confidence=95, limit_N=None):
 
         data = Series(_check_num_array_(data))
         data = data.dropna().loc[data != 0].abs()
+        self.limit_N = _set_N_(len(data), limit_N)
         #: (DataFrame): pandas DataFrame with the mantissas
         self.data = DataFrame({'Mantissa': get_mantissas(data.abs())})
         self.confidence = confidence
@@ -309,7 +310,7 @@ class Mantissas:
     def stats(self):
         # (dict): Dictionary with the mantissas statistics
         ks, crit_ks = _mantissas_ks_(self.data.Mantissa.values,
-                                        confidence=self.confidence)
+                                     self.confidence, self.limit_N)
         return {'Mean': self.data.Mantissa.mean(),
                 'Var': self.data.Mantissa.var(),
                 'Skew': self.data.Mantissa.skew(),
@@ -540,7 +541,8 @@ class Benford(object):
         """Adds a Mantissas object to the tests, with all its statistics and
         plotting capabilities.
         """
-        self.Mantissas = Mantissas(self.base.seq.values, self.confidence)
+        self.Mantissas = Mantissas(self.base.seq.values,
+                                   self.confidence, self.limit_N)
         self.tests.append('Mantissas')
         if self.verbose:
             print('\nAdded Mantissas test.')

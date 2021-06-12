@@ -131,7 +131,7 @@ def _two_dist_ks_(dist1, dist2, cummulative=True):
     return nabs(dist2.cumsum() - dist1.cumsum()).max()
 
 
-def _mantissas_ks_(mant_dist, confidence):
+def _mantissas_ks_(mant_dist, confidence, sample_size):
     """Computes the Kolmogorov-Smirnof statistic for the Mantissas, also
     providing the KS critical value according the the sample size and
     confidence level provided
@@ -144,11 +144,10 @@ def _mantissas_ks_(mant_dist, confidence):
     Returns:
         tuple(floats): the KS statistic and the critical value
     """ 
-    size = len(mant_dist)
-    crit_ks = CRIT_KS[confidence] * sqrt(2 * size / size ** 2)\
+    crit_ks = CRIT_KS[confidence] * sqrt(2 * sample_size / sample_size ** 2)\
                 if confidence else None
     # non-cummulative, uniformly distributed
-    expected = linspace(0, 1, size, endpoint=False)
+    expected = linspace(0, 1, len(mant_dist), endpoint=False)
     ks = _two_dist_ks_(expected, mant_dist, cummulative=False)
     return ks, crit_ks
 
