@@ -189,11 +189,14 @@ class TestKLDivergence():
 class TestTwoDistKS():
      
     def test_type(self, get_mant_ks_types):
-        dist1, dist2, ks_type = get_mant_ks_types
-        ks = st._two_dist_ks_(dist1, dist2)
+        dist1, dist2, cummulative, ks_type = get_mant_ks_types
+        ks = st._two_dist_ks_(dist1, dist2, cummulative)
         assert type(ks) == ks_type
     
     def test_more_equal_zero(self, get_mant_ks_s):
-        dist1, dist2, zero = get_mant_ks_s
-        ks = st._two_dist_ks_(dist1, dist2)
+        dist1, dist2, cummulative, zero = get_mant_ks_s
+        ks = st._two_dist_ks_(dist1, dist2, cummulative)
         assert ks >= zero
+
+# class TestMantissasKS:
+

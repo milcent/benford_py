@@ -170,20 +170,28 @@ def gen_mant_dist():
     return ut.get_mantissas(abc)
 
 
-mant_ks_dists_types = [(gen_mant_dist(), np.float_) for i in range(10)]
+mant_ks_dists_types = [
+    (gen_mant_dist(), np.random.choice([True, False]), np.float_) 
+        for i in range(10)
+]
 
 @pytest.fixture(params=mant_ks_dists_types)
 def get_mant_ks_types(request):
-    dist2, ks_type = request.param
-    return np.linspace(0, 1, len(dist2), endpoint=False), dist2, ks_type
+    dist2, cummulative, ks_type = request.param
+    return np.linspace(0, 1, len(dist2), endpoint=False), \
+        dist2, cummulative, ks_type
 
 
-mant_dists = [(gen_mant_dist(), 0) for i in range(10)]
+mant_dists = [
+    (gen_mant_dist(), np.random.choice([True, False]), 0)
+        for i in range(10)
+]
 
 @pytest.fixture(params=mant_dists)
 def get_mant_ks_s(request):
-    dist2, zero = request.param
-    return np.linspace(0, 1, len(dist2), endpoint=False), dist2, zero
+    dist2, cummulative, zero = request.param
+    return np.linspace(0, 1, len(dist2), endpoint=False), \
+        dist2, cummulative, zero
 
 
 @pytest.fixture
