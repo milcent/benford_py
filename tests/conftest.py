@@ -5,6 +5,7 @@ import pandas as pd
 from ..benford import utils as ut
 from ..benford.constants import CONFS, REV_DIGS
 from ..benford.expected import _get_expected_digits_
+from ..benford.stats import _two_dist_ks_
 
 
 @pytest.fixture
@@ -26,7 +27,7 @@ def gen_N_lower(gen_N):
 def gen_array(gen_N):
     num = gen_N
     return np.abs(np.random.rand(num) * np.random.randn(num) * 
-                  np.random.randint(1, num))
+                  np.random.randint(1, num, num))
 
 @pytest.fixture
 def choose_digs_rand():
@@ -151,6 +152,38 @@ def gen_join_expect_found_diff_L2D(gen_proportions_L2D):
 @pytest.fixture
 def gen_linspaced_zero_one(cuts:int=1000):
     return np.linspace(0, 1, cuts)
+
+
+@pytest.fixture
+def gen_mantissas_ks_dists(gen_array):
+    dist2 = ut.get_mantissas(gen_array)
+    dist1 = np.linspace(0, 1, len(dist2), endpoint=False)
+    return dist1, dist2
+
+
+def gen_mant_dist():
+    num =  np.random.randint(800, 5000)
+    a = np.random.rand(num)
+    b = np.random.randint(1, 999, num)
+    c = np.random.randn(num)
+    abc = np.abs(a * b * c)
+    return ut.get_mantissas(abc)
+
+
+mant_ks_dists_types = [(gen_mant_dist(), np.float_) for i in range(10)]
+
+@pytest.fixture(params=mant_ks_dists_types)
+def get_mant_ks_types(request):
+    dist2, ks_type = request.param
+    return np.linspace(0, 1, len(dist2), endpoint=False), dist2, ks_type
+
+
+mant_dists = [(gen_mant_dist(), 0) for i in range(10)]
+
+@pytest.fixture(params=mant_dists)
+def get_mant_ks_s(request):
+    dist2, zero = request.param
+    return np.linspace(0, 1, len(dist2), endpoint=False), dist2, zero
 
 
 @pytest.fixture
