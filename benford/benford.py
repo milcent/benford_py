@@ -15,7 +15,7 @@ from .reports import _inform_, _report_mad_, _report_test_, _deprecate_inform_,\
     _report_mantissa_
 from .stats import Z_score, chi_sq, chi_sq_2, kolmogorov_smirnov,\
     kolmogorov_smirnov_2, _bhattacharyya_distance_, _bhattacharyya_coefficient,\
-    _kullback_leibler_divergence_
+    _kullback_leibler_divergence_, _mantissas_ks_
 
 
 class Base(DataFrame):
@@ -123,8 +123,8 @@ class Test(DataFrame):
         # create column with absolute differences
         self['Dif'] = self.Found - self.Expected
         self['AbsDif'] = self.Dif.abs()
-        self.N = _set_N_(len(base), limit_N)
-        self['Z_score'] = Z_score(self, self.N)
+        self.limit_N = _set_N_(len(base), limit_N)
+        self['Z_score'] = Z_score(self, self.limit_N)
         self.ddf = len(self) - 1
         self.chi_square = chi_sq_2(self)
         self.KS = kolmogorov_smirnov_2(self)
@@ -164,7 +164,7 @@ class Test(DataFrame):
     def critical_values(self):
         """dict: a dictionary with the critical values for the test at hand,
             according to the current confidence level."""
-        crit_ks = CRIT_KS[self.confidence] / (self.N ** 0.5) if self.confidence\
+        crit_ks = CRIT_KS[self.confidence] / (self.limit_N ** 0.5) if self.confidence\
             else None
         return {'Z': CONFS[self.confidence],
                 'KS': crit_ks,
@@ -186,7 +186,7 @@ class Test(DataFrame):
         """
         x, figsize, text_x = _get_plot_args(self.digs)
         plot_digs(self, x=x, y_Exp=self.Expected, y_Found=self.Found,
-                    N=self.N, figsize=figsize, conf_Z=CONFS[self.confidence],
+                    N=self.limit_N, figsize=figsize, conf_Z=CONFS[self.confidence],
                     text_x=text_x, save_plot=save_plot, save_plot_kwargs=save_plot_kwargs
                     )
 
@@ -287,25 +287,53 @@ class Summ(DataFrame):
             self.show_plot(save_plot=save_plot, save_plot_kwargs=save_plot_kwargs)
 
 
-class Mantissas(object):
+class Mantissas:
     """Computes and holds the mantissas of the logarithms of the records
 
     Args:
         data: sequence to compute mantissas from. numpy 1D array, pandas
             Series of pandas DataFrame column.
+        confidence: confidence level for computing the critical values to
+            compare with some statistics
     """
 
-    def __init__(self, data):
+    def __init__(self, data, confidence=95, limit_N=None):
 
         data = Series(_check_num_array_(data))
         data = data.dropna().loc[data != 0].abs()
+        self.limit_N = _set_N_(len(data), limit_N)
         #: (DataFrame): pandas DataFrame with the mantissas
         self.data = DataFrame({'Mantissa': get_mantissas(data.abs())})
+        self.confidence = confidence
+
+    @property
+    def stats(self):
         # (dict): Dictionary with the mantissas statistics
-        self.stats = {'Mean': self.data.Mantissa.mean(),
-                      'Var': self.data.Mantissa.var(),
-                      'Skew': self.data.Mantissa.skew(),
-                      'Kurt': self.data.Mantissa.kurt()}
+        ks, crit_ks = _mantissas_ks_(self.data.Mantissa.values,
+                                     self.confidence, self.limit_N)
+        return {'Mean': self.data.Mantissa.mean(),
+                'Var': self.data.Mantissa.var(),
+                'Skew': self.data.Mantissa.skew(),
+                'Kurt': self.data.Mantissa.kurt(),
+                'KS': ks,
+                'KS_critical': crit_ks}
+
+
+    def update_confidence(self, new_conf, check=True):
+        """Sets a new confidence level for the Benford object, so as to be used to
+        produce critical values for the tests
+
+        Args:
+            new_conf: new confidence level to draw lower and upper limits when
+                plotting and to limit the top deviations to show, as well as to
+                calculate critical values for the tests' statistics.
+            check: checks the value provided for the confidence. Defaults to True
+        """
+        if check:
+            self.confidence = _check_confidence_(new_conf)
+        else:
+            self.confidence = new_conf
+
 
     def report(self, show_plot=True, save_plot=None, save_plot_kwargs=None):
         """Displays the Mantissas test stats.
@@ -323,7 +351,7 @@ class Mantissas(object):
                 Only available when plot=True and save_plot is a string with the
                 figure file path/name.
         """
-        _report_mantissa_(self.stats)
+        _report_mantissa_(self.stats, confidence=self.confidence)
 
         if show_plot:
             self.show_plot(save_plot=save_plot, save_plot_kwargs=save_plot_kwargs)
@@ -347,15 +375,13 @@ class Mantissas(object):
         plot_ordered_mantissas(self.data.Mantissa, figsize=figsize,
                                save_plot=save_plot, save_plot_kwargs=save_plot_kwargs)
 
-    def arc_test(self, decimals=2, grid=True, figsize=12,
+    def arc_test(self, grid=True, figsize=12,
                  save_plot=None, save_plot_kwargs=None):
         """Adds two columns to Mantissas's DataFrame equal to their "X" and "Y"
         coordinates, plots its to a scatter plot and calculates the gravity
         center of the circle.
 
         Args:
-            decimals: number of decimal places for displaying the gravity center.
-                Defaults to 2.
             grid: show grid of the plot. Defaluts to True.
             figsize (int): size of the figure to be displayed. Since it is a square,
                 there is no need to provide a tuple, like is usually the case with
@@ -370,13 +396,11 @@ class Mantissas(object):
                 Only available when plot=True and save_plot is a string with the
                 figure file path/name.
         """
-        if self.stats.get('gravity_center') is None:
-            self.data['mant_x'] = cos(2 * pi * self.data.Mantissa)
-            self.data['mant_y'] = sin(2 * pi * self.data.Mantissa)
-            self.stats['gravity_center'] = (self.data.mant_x.mean(),
-                                            self.data.mant_y.mean())
-        
-        plot_mantissa_arc_test(self.data, self.stats, decimals=decimals, 
+        self.data['mant_x'] = cos(2 * pi * self.data.Mantissa)
+        self.data['mant_y'] = sin(2 * pi * self.data.Mantissa)
+        self.gravity_center = (self.data.mant_x.mean(), self.data.mant_y.mean())
+
+        plot_mantissa_arc_test(self.data, self.gravity_center,
                                grid=grid, figsize=figsize,
                                save_plot=save_plot, save_plot_kwargs=save_plot_kwargs)
 
@@ -492,14 +516,14 @@ class Benford(object):
         for test in tests:
             try:
                 getattr(self, test).update_confidence(
-                    self.confidence, check=False)
-            except AttributeError:
-                if test in ['Mantissas', 'F1D_Summ', 'F2D_Summ', 'F3D_Summ']:
+                            self.confidence, check=False)
+            except AttributeError as e:
+                if test in ['F1D_Summ', 'F2D_Summ', 'F3D_Summ']:
                     pass
                 else:
-                    print(
-                        f"{test} not in Benford instance tests - review test's name.")
-                    pass
+                    print(e,
+                        f"\n\n{test} not in Benford instance tests - "
+                        "review test's name.")
 
     @property
     def all_confidences(self):
@@ -510,14 +534,15 @@ class Benford(object):
             try:
                 con_dic[key] = getattr(self, key).confidence
             except AttributeError:
-                pass
+                continue
         return con_dic
 
     def mantissas(self):
         """Adds a Mantissas object to the tests, with all its statistics and
         plotting capabilities.
         """
-        self.Mantissas = Mantissas(self.base.seq)
+        self.Mantissas = Mantissas(self.base.seq.values,
+                                   self.confidence, self.limit_N)
         self.tests.append('Mantissas')
         if self.verbose:
             print('\nAdded Mantissas test.')
@@ -1109,109 +1134,6 @@ class Source(DataFrame):
             print(dup_count.head(top_Rep))
         else:
             return dup_count
-
-
-class Mantissas(object):
-    """
-    Returns a Series with the data mantissas,
-
-    Args:
-        data: sequence to compute mantissas from, numpy 1D array, pandas
-            Series of pandas DataFrame column.
-    Attributes:
-        data (DataFrame): holds the computed mantissas and, if the arc_test
-            is also called, the respecttive x and Y coordinates for the plot.
-        stats (dict): holds the relevant statistics about the data mantissas.
-    """
-
-    def __init__(self, data):
-
-        data = Series(_check_num_array_(data))
-        data = data.dropna().loc[data != 0].abs()
-
-        self.data = DataFrame({'Mantissa': get_mantissas(data.abs())})
-
-        self.stats = {'Mean': self.data.Mantissa.mean(),
-                      'Var': self.data.Mantissa.var(),
-                      'Skew': self.data.Mantissa.skew(),
-                      'Kurt': self.data.Mantissa.kurt()}
-
-    def report(self, show_plot=True, save_plot=None, save_plot_kwargs=None):
-        """Displays the Mantissas stats.
-
-        Args:
-            show_plot: shows the ordered mantissas plot and the Arc Test plot.
-                Defaults to True.
-            save_plot (str): string with the path/name of the file in which the generated
-                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
-                is infered by the file name extension. Only available when
-                plot=True.
-            save_plot_kwargs (dict): any of the kwargs accepted by
-                matplotlib.pyplot.savefig()
-                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
-                Only available when plot=True and save_plot is a string with the
-                figure file path/name.
-        """
-        print("\n", '  Mantissas Test  '.center(52, '#'))
-        print(f"\nThe Mantissas MEAN is      {self.stats['Mean']:.6f}."
-              "\tRef: 0.5")
-        print(f"The Mantissas VARIANCE is  {self.stats['Var']:.6f}."
-              "\tRef: 0.08333")
-        print(f"The Mantissas SKEWNESS is  {self.stats['Skew']:.6f}."
-              "\tRef: 0.0")
-        print(f"The Mantissas KURTOSIS is  {self.stats['Kurt']:.6f}."
-              "\tRef: -1.2\n")
-        if show_plot:
-            self.show_plot(save_plot=save_plot, save_plot_kwargs=save_plot_kwargs)
-            self.arc_test(save_plot=save_plot, save_plot_kwargs=save_plot_kwargs)
-
-    def show_plot(self, figsize=(12, 12), save_plot=None, save_plot_kwargs=None):
-        """Plots the ordered mantissas and compares them to the expected, straight
-        line that should be formed in a Benford-cmpliant set.
-
-        Args:
-            figsize: tuple that sets the figure size.
-            save_plot (str): string with the path/name of the file in which the generated
-                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
-                is infered by the file name extension.
-            save_plot_kwargs (dict): any of the kwargs accepted by
-                matplotlib.pyplot.savefig()
-                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
-                Only available when save_plot is a string with the figure file
-                path/name.
-        """
-        plot_ordered_mantissas(self.data.Mantissa, figsize=figsize,
-                               save_plot=save_plot, save_plot_kwargs=save_plot_kwargs)
- 
-    def arc_test(self, grid=True, figsize=12, save_plot=None, save_plot_kwargs=None):
-        """
-        Add two columns to Mantissas's DataFrame equal to their "X" and "Y"
-        coordinates, plots its to a scatter plot and calculates the gravity
-        center of the circle.
-
-        Args:
-            grid:show grid of the plot. Defaluts to True.
-            figsize: size of the figure to be displayed. Since it is a square,
-                there is no need to provide a tuple, like is usually the case with
-                matplotlib.
-            save_plot (str): string with the path/name of the file in which the generated
-                plot will be saved. Uses matplotlib.pyplot.savefig(). File format
-                is infered by the file name extension.
-            save_plot_kwargs (dict): any of the kwargs accepted by
-                matplotlib.pyplot.savefig()
-                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html
-                Only available when save_plot is a string with the figure file
-                path/name.
-        """
-        if self.stats.get('gravity_center') is None:
-            self.data['mant_x'] = cos(2 * pi * self.data.Mantissa)
-            self.data['mant_y'] = sin(2 * pi * self.data.Mantissa)
-            self.stats['gravity_center'] = (self.data.mant_x.mean(),
-                                            self.data.mant_y.mean())
-        plot_mantissa_arc_test(self.data, self.stats['gravity_center'],
-                               figsize=figsize, save_plot=save_plot,
-                               save_plot_kwargs=save_plot_kwargs)
-
 
 class Roll_mad(object):
     """Applies the MAD to sequential subsets of the Series, returning another

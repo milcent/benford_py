@@ -1,4 +1,4 @@
-from numpy import errstate, log, sqrt, where
+from numpy import abs as nabs, errstate, linspace, log, sqrt, where
 from .constants import CRIT_CHI2, CRIT_KS, MAD_CONFORM, DIGS
 
 
@@ -110,6 +110,46 @@ def kolmogorov_smirnov_2(frame):
     ks_frame = frame.sort_index()[['Found', 'Expected']].cumsum()
     # finding the supremum - the largest cumul dist difference
     return ((ks_frame.Found - ks_frame.Expected).abs()).max()
+
+
+def _two_dist_ks_(dist1, dist2, cummulative=True):
+    """Computes the Kolmogorov-Smirnov statistic between two distributions,
+    a found one (dist2) and an expected one (dist1).
+
+    Args:
+        dist1 (np.arrat): array with the expected distribution
+        dist2 (np.array): array with the found distribution
+        cummulative (bool): makes apply cummulutative sum to the
+            distributions (empirical cdf).
+
+    Returns:
+        tuple(floats): the KS statistic 
+    """
+    dist2.sort(); dist1.sort()
+    if not cummulative:
+        return nabs(dist2 - dist1).max()
+    return nabs(dist2.cumsum() - dist1.cumsum()).max()
+
+
+def _mantissas_ks_(mant_dist, confidence, sample_size):
+    """Computes the Kolmogorov-Smirnof statistic for the Mantissas, also
+    providing the KS critical value according the the sample size and
+    confidence level provided
+
+    Args:
+        mant_dist (np.array): array with the mantissas distribution found
+        confidence (float, int): level of confidence to compute the critical
+            value
+
+    Returns:
+        tuple(floats): the KS statistic and the critical value
+    """ 
+    crit_ks = CRIT_KS[confidence] * sqrt(2 * sample_size / sample_size ** 2)\
+                if confidence else None
+    # non-cummulative, uniformly distributed
+    expected = linspace(0, 1, len(mant_dist), endpoint=False)
+    ks = _two_dist_ks_(expected, mant_dist, cummulative=False)
+    return ks, crit_ks
 
 
 def mad(frame, test, verbose=True):
