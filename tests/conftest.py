@@ -161,8 +161,8 @@ def gen_mantissas_ks_dists(gen_array):
     return dist1, dist2
 
 
-def gen_mant_dist():
-    num =  np.random.randint(800, 5000)
+def gen_mantissa_distribution():
+    num =  np.random.randint(1500, 5000)
     a = np.random.rand(num)
     b = np.random.randint(1, 999, num)
     c = np.random.randn(num)
@@ -171,7 +171,7 @@ def gen_mant_dist():
 
 
 mant_ks_dists_types = [
-    (gen_mant_dist(), np.random.choice([True, False]), np.float_) 
+    (gen_mantissa_distribution(), np.random.choice([True, False]), np.float_) 
         for i in range(10)
 ]
 
@@ -183,7 +183,7 @@ def get_mant_ks_types(request):
 
 
 mant_dists = [
-    (gen_mant_dist(), np.random.choice([True, False]), 0)
+    (gen_mantissa_distribution(), np.random.choice([True, False]), 0)
         for i in range(10)
 ]
 
@@ -192,6 +192,21 @@ def get_mant_ks_s(request):
     dist2, cummulative, zero = request.param
     return np.linspace(0, 1, len(dist2), endpoint=False), \
         dist2, cummulative, zero
+
+def gen_mantissa_distribution_len():
+    mants = gen_mantissa_distribution()
+    return mants, len(mants)
+
+mant_ks_confidences = [
+    (*gen_mantissa_distribution_len(), conf) for conf in CONFS.keys()
+]
+
+@pytest.fixture(params=mant_ks_confidences)
+def get_mant_ks_confs_limit_N(request):
+    mants, mants_lengths, confidence = request.param
+    cap_sample = mants_lengths - np.random.randint(500, 1400)
+    sample_size = np.random.choice([mants_lengths, cap_sample])
+    return mants, confidence, sample_size
 
 
 @pytest.fixture

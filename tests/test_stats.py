@@ -198,5 +198,13 @@ class TestTwoDistKS():
         ks = st._two_dist_ks_(dist1, dist2, cummulative)
         assert ks >= zero
 
-# class TestMantissasKS:
+class TestMantissasKS:
 
+    def test_confidence_limit_N(self, get_mant_ks_confs_limit_N):
+        mants, confidence, sample_size = get_mant_ks_confs_limit_N
+        ks, crit_ks = st._mantissas_ks_(mants, confidence, sample_size)
+        assert ks >= 0
+        if crit_ks is not None:
+            assert crit_ks >= 0
+    
+    
