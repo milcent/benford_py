@@ -1,3 +1,5 @@
+[![Downloads](https://pepy.tech/badge/benford-py)](https://pepy.tech/project/benford-py)
+
 # Benford for Python
 
 --------------------------------------------------------------------------------
