@@ -1,3 +1,5 @@
+[![Downloads](https://pepy.tech/badge/benford-py)](https://pepy.tech/project/benford-py)
+
 # Benford for Python
 
 --------------------------------------------------------------------------------
@@ -20,7 +22,7 @@ If you find *Benford_py* useful in your research, please consider adding the fol
 
 --------------------------------------------------------------------------------
 
-`current version = 0.4.2`
+`current version = 0.5.0`
 
 ### See [release notes](https://github.com/milcent/benford_py/releases/) for features in this and in older versions
 
