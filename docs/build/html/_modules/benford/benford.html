@@ -168,7 +168,7 @@
     <span class="n">_report_mantissa_</span>
 <span class="kn">from</span> <span class="nn">.stats</span> <span class="kn">import</span> <span class="n">Z_score</span><span class="p">,</span> <span class="n">chi_sq</span><span class="p">,</span> <span class="n">chi_sq_2</span><span class="p">,</span> <span class="n">kolmogorov_smirnov</span><span class="p">,</span>\
     <span class="n">kolmogorov_smirnov_2</span><span class="p">,</span> <span class="n">_bhattacharyya_distance_</span><span class="p">,</span> <span class="n">_bhattacharyya_coefficient</span><span class="p">,</span>\
-    <span class="n">_kullback_leibler_divergence_</span>
+    <span class="n">_kullback_leibler_divergence_</span><span class="p">,</span> <span class="n">_mantissas_ks_</span>
 
 
 <div class="viewcode-block" id="Base"><a class="viewcode-back" href="../../api.html#benford.benford.Base">[docs]</a><span class="k">class</span> <span class="nc">Base</span><span class="p">(</span><span class="n">DataFrame</span><span class="p">):</span>
@@ -276,8 +276,8 @@
         <span class="c1"># create column with absolute differences</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;Dif&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Found</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">Expected</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;AbsDif&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Dif</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">_set_N_</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">base</span><span class="p">),</span> <span class="n">limit_N</span><span class="p">)</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;Z_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Z_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">limit_N</span> <span class="o">=</span> <span class="n">_set_N_</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">base</span><span class="p">),</span> <span class="n">limit_N</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;Z_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Z_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit_N</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ddf</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chi_square</span> <span class="o">=</span> <span class="n">chi_sq_2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">KS</span> <span class="o">=</span> <span class="n">kolmogorov_smirnov_2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -317,7 +317,7 @@
     <span class="k">def</span> <span class="nf">critical_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;dict: a dictionary with the critical values for the test at hand,</span>
 <span class="sd">            according to the current confidence level.&quot;&quot;&quot;</span>
-        <span class="n">crit_ks</span> <span class="o">=</span> <span class="n">CRIT_KS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">confidence</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">confidence</span>\
+        <span class="n">crit_ks</span> <span class="o">=</span> <span class="n">CRIT_KS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">confidence</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">limit_N</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">confidence</span>\
             <span class="k">else</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;Z&#39;</span><span class="p">:</span> <span class="n">CONFS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">confidence</span><span class="p">],</span>
                 <span class="s1">&#39;KS&#39;</span><span class="p">:</span> <span class="n">crit_ks</span><span class="p">,</span>
@@ -339,7 +339,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">figsize</span><span class="p">,</span> <span class="n">text_x</span> <span class="o">=</span> <span class="n">_get_plot_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digs</span><span class="p">)</span>
         <span class="n">plot_digs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y_Exp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Expected</span><span class="p">,</span> <span class="n">y_Found</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Found</span><span class="p">,</span>
-                    <span class="n">N</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span> <span class="n">conf_Z</span><span class="o">=</span><span class="n">CONFS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">confidence</span><span class="p">],</span>
+                    <span class="n">N</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">limit_N</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span> <span class="n">conf_Z</span><span class="o">=</span><span class="n">CONFS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">confidence</span><span class="p">],</span>
                     <span class="n">text_x</span><span class="o">=</span><span class="n">text_x</span><span class="p">,</span> <span class="n">save_plot</span><span class="o">=</span><span class="n">save_plot</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="n">save_plot_kwargs</span>
                     <span class="p">)</span></div>
 
@@ -440,27 +440,55 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">show_plot</span><span class="p">(</span><span class="n">save_plot</span><span class="o">=</span><span class="n">save_plot</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="n">save_plot_kwargs</span><span class="p">)</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">Mantissas</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Mantissas"><a class="viewcode-back" href="../../api.html#benford.benford.Mantissas">[docs]</a><span class="k">class</span> <span class="nc">Mantissas</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Computes and holds the mantissas of the logarithms of the records</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        data: sequence to compute mantissas from. numpy 1D array, pandas</span>
 <span class="sd">            Series of pandas DataFrame column.</span>
+<span class="sd">        confidence: confidence level for computing the critical values to</span>
+<span class="sd">            compare with some statistics</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="mi">95</span><span class="p">,</span> <span class="n">limit_N</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">_check_num_array_</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">limit_N</span> <span class="o">=</span> <span class="n">_set_N_</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">limit_N</span><span class="p">)</span>
         <span class="c1">#: (DataFrame): pandas DataFrame with the mantissas</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;Mantissa&#39;</span><span class="p">:</span> <span class="n">get_mantissas</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">abs</span><span class="p">())})</span>
-        <span class="c1"># (dict): Dictionary with the mantissas statistics</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Mean&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
-                      <span class="s1">&#39;Var&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="o">.</span><span class="n">var</span><span class="p">(),</span>
-                      <span class="s1">&#39;Skew&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="o">.</span><span class="n">skew</span><span class="p">(),</span>
-                      <span class="s1">&#39;Kurt&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="o">.</span><span class="n">kurt</span><span class="p">()}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">confidence</span> <span class="o">=</span> <span class="n">confidence</span>
 
-    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># (dict): Dictionary with the mantissas statistics</span>
+        <span class="n">ks</span><span class="p">,</span> <span class="n">crit_ks</span> <span class="o">=</span> <span class="n">_mantissas_ks_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">confidence</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit_N</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;Mean&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+                <span class="s1">&#39;Var&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="o">.</span><span class="n">var</span><span class="p">(),</span>
+                <span class="s1">&#39;Skew&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="o">.</span><span class="n">skew</span><span class="p">(),</span>
+                <span class="s1">&#39;Kurt&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="o">.</span><span class="n">kurt</span><span class="p">(),</span>
+                <span class="s1">&#39;KS&#39;</span><span class="p">:</span> <span class="n">ks</span><span class="p">,</span>
+                <span class="s1">&#39;KS_critical&#39;</span><span class="p">:</span> <span class="n">crit_ks</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="Mantissas.update_confidence"><a class="viewcode-back" href="../../api.html#benford.benford.Mantissas.update_confidence">[docs]</a>    <span class="k">def</span> <span class="nf">update_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_conf</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets a new confidence level for the Benford object, so as to be used to</span>
+<span class="sd">        produce critical values for the tests</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_conf: new confidence level to draw lower and upper limits when</span>
+<span class="sd">                plotting and to limit the top deviations to show, as well as to</span>
+<span class="sd">                calculate critical values for the tests&#39; statistics.</span>
+<span class="sd">            check: checks the value provided for the confidence. Defaults to True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">check</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">confidence</span> <span class="o">=</span> <span class="n">_check_confidence_</span><span class="p">(</span><span class="n">new_conf</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">confidence</span> <span class="o">=</span> <span class="n">new_conf</span></div>
+
+
+<div class="viewcode-block" id="Mantissas.report"><a class="viewcode-back" href="../../api.html#benford.benford.Mantissas.report">[docs]</a>    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Displays the Mantissas test stats.</span>
 
 <span class="sd">        Args:</span>
@@ -476,13 +504,13 @@
 <span class="sd">                Only available when plot=True and save_plot is a string with the</span>
 <span class="sd">                figure file path/name.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">_report_mantissa_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
+        <span class="n">_report_mantissa_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">confidence</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">show_plot</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">show_plot</span><span class="p">(</span><span class="n">save_plot</span><span class="o">=</span><span class="n">save_plot</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="n">save_plot_kwargs</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">arc_test</span><span class="p">(</span><span class="n">save_plot</span><span class="o">=</span><span class="n">save_plot</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="n">save_plot_kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">arc_test</span><span class="p">(</span><span class="n">save_plot</span><span class="o">=</span><span class="n">save_plot</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="n">save_plot_kwargs</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">save_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Mantissas.show_plot"><a class="viewcode-back" href="../../api.html#benford.benford.Mantissas.show_plot">[docs]</a>    <span class="k">def</span> <span class="nf">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">save_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Plots the ordered mantissas and a line with the expected</span>
 <span class="sd">        inclination.</span>
 
@@ -498,17 +526,15 @@
 <span class="sd">                path/name.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plot_ordered_mantissas</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span>
-                               <span class="n">save_plot</span><span class="o">=</span><span class="n">save_plot</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="n">save_plot_kwargs</span><span class="p">)</span>
+                               <span class="n">save_plot</span><span class="o">=</span><span class="n">save_plot</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="n">save_plot_kwargs</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">arc_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+<div class="viewcode-block" id="Mantissas.arc_test"><a class="viewcode-back" href="../../api.html#benford.benford.Mantissas.arc_test">[docs]</a>    <span class="k">def</span> <span class="nf">arc_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
                  <span class="n">save_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Adds two columns to Mantissas&#39;s DataFrame equal to their &quot;X&quot; and &quot;Y&quot;</span>
 <span class="sd">        coordinates, plots its to a scatter plot and calculates the gravity</span>
 <span class="sd">        center of the circle.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            decimals: number of decimal places for displaying the gravity center.</span>
-<span class="sd">                Defaults to 2.</span>
 <span class="sd">            grid: show grid of the plot. Defaluts to True.</span>
 <span class="sd">            figsize (int): size of the figure to be displayed. Since it is a square,</span>
 <span class="sd">                there is no need to provide a tuple, like is usually the case with</span>
@@ -523,15 +549,13 @@
 <span class="sd">                Only available when plot=True and save_plot is a string with the</span>
 <span class="sd">                figure file path/name.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;gravity_center&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;mant_x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;mant_y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;gravity_center&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">mant_x</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
-                                            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">mant_y</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
-        
-        <span class="n">plot_mantissa_arc_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="n">decimals</span><span class="p">,</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;mant_x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;mant_y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gravity_center</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">mant_x</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">mant_y</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+
+        <span class="n">plot_mantissa_arc_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gravity_center</span><span class="p">,</span>
                                <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span>
-                               <span class="n">save_plot</span><span class="o">=</span><span class="n">save_plot</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="n">save_plot_kwargs</span><span class="p">)</span>
+                               <span class="n">save_plot</span><span class="o">=</span><span class="n">save_plot</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="n">save_plot_kwargs</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="Benford"><a class="viewcode-back" href="../../api.html#benford.benford.Benford">[docs]</a><span class="k">class</span> <span class="nc">Benford</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -554,6 +578,8 @@
 <span class="sd">        confidence (int, float): confidence level to draw lower and upper limits when</span>
 <span class="sd">            plotting and to limit the top deviations to show, as well as to</span>
 <span class="sd">            calculate critical values for the tests&#39; statistics. Defaults to 95.</span>
+<span class="sd">        mantissas (bool): opts for also running the mantissas Test. Defaulst to</span>
+<span class="sd">            True</span>
 <span class="sd">        sec_order: runs the Second Order tests, which are the Benford&#39;s tests</span>
 <span class="sd">            performed on the differences between the ordered sample (a value minus</span>
 <span class="sd">            the one before it, and so on). If the original series is Benford-</span>
@@ -580,7 +606,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="mi">95</span><span class="p">,</span>
-                 <span class="n">mantissas</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sec_order</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">summation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">mantissas</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sec_order</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">summation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">limit_N</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chosen</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">decimals</span> <span class="o">=</span> <span class="n">decimals</span>
@@ -645,14 +671,14 @@
         <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span><span class="o">.</span><span class="n">update_confidence</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">confidence</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">test</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Mantissas&#39;</span><span class="p">,</span> <span class="s1">&#39;F1D_Summ&#39;</span><span class="p">,</span> <span class="s1">&#39;F2D_Summ&#39;</span><span class="p">,</span> <span class="s1">&#39;F3D_Summ&#39;</span><span class="p">]:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">confidence</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">test</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;F1D_Summ&#39;</span><span class="p">,</span> <span class="s1">&#39;F2D_Summ&#39;</span><span class="p">,</span> <span class="s1">&#39;F3D_Summ&#39;</span><span class="p">]:</span>
                     <span class="k">pass</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">test</span><span class="si">}</span><span class="s2"> not in Benford instance tests - review test&#39;s name.&quot;</span><span class="p">)</span>
-                    <span class="k">pass</span></div>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="si">{</span><span class="n">test</span><span class="si">}</span><span class="s2"> not in Benford instance tests - &quot;</span>
+                        <span class="s2">&quot;review test&#39;s name.&quot;</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">all_confidences</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -663,14 +689,15 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">con_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">confidence</span>
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="k">pass</span>
+                <span class="k">continue</span>
         <span class="k">return</span> <span class="n">con_dic</span>
 
 <div class="viewcode-block" id="Benford.mantissas"><a class="viewcode-back" href="../../api.html#benford.benford.Benford.mantissas">[docs]</a>    <span class="k">def</span> <span class="nf">mantissas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Adds a Mantissas object to the tests, with all its statistics and</span>
 <span class="sd">        plotting capabilities.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Mantissas</span> <span class="o">=</span> <span class="n">Mantissas</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">seq</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Mantissas</span> <span class="o">=</span> <span class="n">Mantissas</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">seq</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">confidence</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit_N</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Mantissas&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Added Mantissas test.&#39;</span><span class="p">)</span></div>
@@ -1262,109 +1289,6 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">dup_count</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">top_Rep</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dup_count</span></div></div>
-
-
-<div class="viewcode-block" id="Mantissas"><a class="viewcode-back" href="../../api.html#benford.benford.Mantissas">[docs]</a><span class="k">class</span> <span class="nc">Mantissas</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns a Series with the data mantissas,</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        data: sequence to compute mantissas from, numpy 1D array, pandas</span>
-<span class="sd">            Series of pandas DataFrame column.</span>
-<span class="sd">    Attributes:</span>
-<span class="sd">        data (DataFrame): holds the computed mantissas and, if the arc_test</span>
-<span class="sd">            is also called, the respecttive x and Y coordinates for the plot.</span>
-<span class="sd">        stats (dict): holds the relevant statistics about the data mantissas.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-
-        <span class="n">data</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">_check_num_array_</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;Mantissa&#39;</span><span class="p">:</span> <span class="n">get_mantissas</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">abs</span><span class="p">())})</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Mean&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
-                      <span class="s1">&#39;Var&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="o">.</span><span class="n">var</span><span class="p">(),</span>
-                      <span class="s1">&#39;Skew&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="o">.</span><span class="n">skew</span><span class="p">(),</span>
-                      <span class="s1">&#39;Kurt&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="o">.</span><span class="n">kurt</span><span class="p">()}</span>
-
-<div class="viewcode-block" id="Mantissas.report"><a class="viewcode-back" href="../../api.html#benford.benford.Mantissas.report">[docs]</a>    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Displays the Mantissas stats.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            show_plot: shows the ordered mantissas plot and the Arc Test plot.</span>
-<span class="sd">                Defaults to True.</span>
-<span class="sd">            save_plot (str): string with the path/name of the file in which the generated</span>
-<span class="sd">                plot will be saved. Uses matplotlib.pyplot.savefig(). File format</span>
-<span class="sd">                is infered by the file name extension. Only available when</span>
-<span class="sd">                plot=True.</span>
-<span class="sd">            save_plot_kwargs (dict): any of the kwargs accepted by</span>
-<span class="sd">                matplotlib.pyplot.savefig()</span>
-<span class="sd">                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</span>
-<span class="sd">                Only available when plot=True and save_plot is a string with the</span>
-<span class="sd">                figure file path/name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s1">&#39;  Mantissas Test  &#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">52</span><span class="p">,</span> <span class="s1">&#39;#&#39;</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The Mantissas MEAN is      </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;Mean&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">.&quot;</span>
-              <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Ref: 0.5&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The Mantissas VARIANCE is  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;Var&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">.&quot;</span>
-              <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Ref: 0.08333&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The Mantissas SKEWNESS is  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;Skew&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">.&quot;</span>
-              <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Ref: 0.0&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The Mantissas KURTOSIS is  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;Kurt&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">.&quot;</span>
-              <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Ref: -1.2</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">show_plot</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">show_plot</span><span class="p">(</span><span class="n">save_plot</span><span class="o">=</span><span class="n">save_plot</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="n">save_plot_kwargs</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">arc_test</span><span class="p">(</span><span class="n">save_plot</span><span class="o">=</span><span class="n">save_plot</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="n">save_plot_kwargs</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Mantissas.show_plot"><a class="viewcode-back" href="../../api.html#benford.benford.Mantissas.show_plot">[docs]</a>    <span class="k">def</span> <span class="nf">show_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">save_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Plots the ordered mantissas and compares them to the expected, straight</span>
-<span class="sd">        line that should be formed in a Benford-cmpliant set.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            figsize: tuple that sets the figure size.</span>
-<span class="sd">            save_plot (str): string with the path/name of the file in which the generated</span>
-<span class="sd">                plot will be saved. Uses matplotlib.pyplot.savefig(). File format</span>
-<span class="sd">                is infered by the file name extension.</span>
-<span class="sd">            save_plot_kwargs (dict): any of the kwargs accepted by</span>
-<span class="sd">                matplotlib.pyplot.savefig()</span>
-<span class="sd">                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</span>
-<span class="sd">                Only available when save_plot is a string with the figure file</span>
-<span class="sd">                path/name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">plot_ordered_mantissas</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span>
-                               <span class="n">save_plot</span><span class="o">=</span><span class="n">save_plot</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="n">save_plot_kwargs</span><span class="p">)</span></div>
- 
-<div class="viewcode-block" id="Mantissas.arc_test"><a class="viewcode-back" href="../../api.html#benford.benford.Mantissas.arc_test">[docs]</a>    <span class="k">def</span> <span class="nf">arc_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">save_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add two columns to Mantissas&#39;s DataFrame equal to their &quot;X&quot; and &quot;Y&quot;</span>
-<span class="sd">        coordinates, plots its to a scatter plot and calculates the gravity</span>
-<span class="sd">        center of the circle.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            grid:show grid of the plot. Defaluts to True.</span>
-<span class="sd">            figsize: size of the figure to be displayed. Since it is a square,</span>
-<span class="sd">                there is no need to provide a tuple, like is usually the case with</span>
-<span class="sd">                matplotlib.</span>
-<span class="sd">            save_plot (str): string with the path/name of the file in which the generated</span>
-<span class="sd">                plot will be saved. Uses matplotlib.pyplot.savefig(). File format</span>
-<span class="sd">                is infered by the file name extension.</span>
-<span class="sd">            save_plot_kwargs (dict): any of the kwargs accepted by</span>
-<span class="sd">                matplotlib.pyplot.savefig()</span>
-<span class="sd">                https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html</span>
-<span class="sd">                Only available when save_plot is a string with the figure file</span>
-<span class="sd">                path/name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;gravity_center&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;mant_x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;mant_y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Mantissa</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;gravity_center&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">mant_x</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
-                                            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">mant_y</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
-        <span class="n">plot_mantissa_arc_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;gravity_center&#39;</span><span class="p">],</span>
-                               <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span> <span class="n">save_plot</span><span class="o">=</span><span class="n">save_plot</span><span class="p">,</span>
-                               <span class="n">save_plot_kwargs</span><span class="o">=</span><span class="n">save_plot_kwargs</span><span class="p">)</span></div></div>
-
 
 <div class="viewcode-block" id="Roll_mad"><a class="viewcode-back" href="../../api.html#benford.benford.Roll_mad">[docs]</a><span class="k">class</span> <span class="nc">Roll_mad</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Applies the MAD to sequential subsets of the Series, returning another</span>

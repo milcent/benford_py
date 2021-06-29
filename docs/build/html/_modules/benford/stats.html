@@ -151,7 +151,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for benford.stats</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">errstate</span><span class="p">,</span> <span class="n">log</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">where</span>
+<span></span><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="nb">abs</span> <span class="k">as</span> <span class="n">nabs</span><span class="p">,</span> <span class="n">errstate</span><span class="p">,</span> <span class="n">linspace</span><span class="p">,</span> <span class="n">log</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">where</span>
 <span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">CRIT_CHI2</span><span class="p">,</span> <span class="n">CRIT_KS</span><span class="p">,</span> <span class="n">MAD_CONFORM</span><span class="p">,</span> <span class="n">DIGS</span>
 
 
@@ -263,6 +263,46 @@
     <span class="n">ks_frame</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()[[</span><span class="s1">&#39;Found&#39;</span><span class="p">,</span> <span class="s1">&#39;Expected&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
     <span class="c1"># finding the supremum - the largest cumul dist difference</span>
     <span class="k">return</span> <span class="p">((</span><span class="n">ks_frame</span><span class="o">.</span><span class="n">Found</span> <span class="o">-</span> <span class="n">ks_frame</span><span class="o">.</span><span class="n">Expected</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">())</span><span class="o">.</span><span class="n">max</span><span class="p">()</span></div>
+
+
+<span class="k">def</span> <span class="nf">_two_dist_ks_</span><span class="p">(</span><span class="n">dist1</span><span class="p">,</span> <span class="n">dist2</span><span class="p">,</span> <span class="n">cummulative</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the Kolmogorov-Smirnov statistic between two distributions,</span>
+<span class="sd">    a found one (dist2) and an expected one (dist1).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dist1 (np.arrat): array with the expected distribution</span>
+<span class="sd">        dist2 (np.array): array with the found distribution</span>
+<span class="sd">        cummulative (bool): makes apply cummulutative sum to the</span>
+<span class="sd">            distributions (empirical cdf).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple(floats): the KS statistic </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dist2</span><span class="o">.</span><span class="n">sort</span><span class="p">();</span> <span class="n">dist1</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cummulative</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">nabs</span><span class="p">(</span><span class="n">dist2</span> <span class="o">-</span> <span class="n">dist1</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">nabs</span><span class="p">(</span><span class="n">dist2</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span> <span class="o">-</span> <span class="n">dist1</span><span class="o">.</span><span class="n">cumsum</span><span class="p">())</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_mantissas_ks_</span><span class="p">(</span><span class="n">mant_dist</span><span class="p">,</span> <span class="n">confidence</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the Kolmogorov-Smirnof statistic for the Mantissas, also</span>
+<span class="sd">    providing the KS critical value according the the sample size and</span>
+<span class="sd">    confidence level provided</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mant_dist (np.array): array with the mantissas distribution found</span>
+<span class="sd">        confidence (float, int): level of confidence to compute the critical</span>
+<span class="sd">            value</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple(floats): the KS statistic and the critical value</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="n">crit_ks</span> <span class="o">=</span> <span class="n">CRIT_KS</span><span class="p">[</span><span class="n">confidence</span><span class="p">]</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sample_size</span> <span class="o">/</span> <span class="n">sample_size</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>\
+                <span class="k">if</span> <span class="n">confidence</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="c1"># non-cummulative, uniformly distributed</span>
+    <span class="n">expected</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">mant_dist</span><span class="p">),</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ks</span> <span class="o">=</span> <span class="n">_two_dist_ks_</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">mant_dist</span><span class="p">,</span> <span class="n">cummulative</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ks</span><span class="p">,</span> <span class="n">crit_ks</span>
 
 
 <div class="viewcode-block" id="mad"><a class="viewcode-back" href="../../api.html#benford.stats.mad">[docs]</a><span class="k">def</span> <span class="nf">mad</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
