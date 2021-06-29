@@ -425,6 +425,8 @@ class Benford(object):
         confidence (int, float): confidence level to draw lower and upper limits when
             plotting and to limit the top deviations to show, as well as to
             calculate critical values for the tests' statistics. Defaults to 95.
+        mantissas (bool): opts for also running the mantissas Test. Defaulst to
+            True
         sec_order: runs the Second Order tests, which are the Benford's tests
             performed on the differences between the ordered sample (a value minus
             the one before it, and so on). If the original series is Benford-
@@ -451,7 +453,7 @@ class Benford(object):
     """
 
     def __init__(self, data, decimals=2, sign='all', confidence=95,
-                 mantissas=False, sec_order=False, summation=False,
+                 mantissas=True, sec_order=False, summation=False,
                  limit_N=None, verbose=True):
         self.data, self.chosen = input_data(data)
         self.decimals = decimals
