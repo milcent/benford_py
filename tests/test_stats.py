@@ -1,6 +1,7 @@
 import pytest
+from numpy import float_
 from ..benford import stats as st
-from ..benford.constants import CRIT_CHI2
+from ..benford.constants import CRIT_CHI2, CRIT_KS
 
 
 def test_Z_score_F1D():
@@ -183,3 +184,27 @@ class TestKLDivergence():
         kl_diverg = st._kullback_leibler_divergence_(exp, rand_prop)
         assert isinstance(kl_diverg, float)
         assert kl_diverg >= 0
+
+
+class TestTwoDistKS():
+     
+    def test_type(self, get_mant_ks_types):
+        dist1, dist2, cummulative, ks_type = get_mant_ks_types
+        ks = st._two_dist_ks_(dist1, dist2, cummulative)
+        assert type(ks) == ks_type
+    
+    def test_more_equal_zero(self, get_mant_ks_s):
+        dist1, dist2, cummulative, zero = get_mant_ks_s
+        ks = st._two_dist_ks_(dist1, dist2, cummulative)
+        assert ks >= zero
+
+class TestMantissasKS:
+
+    def test_confidence_limit_N(self, get_mant_ks_confs_limit_N):
+        mants, confidence, sample_size = get_mant_ks_confs_limit_N
+        ks, crit_ks = st._mantissas_ks_(mants, confidence, sample_size)
+        assert ks >= 0
+        if crit_ks is not None:
+            assert crit_ks >= 0
+    
+    
