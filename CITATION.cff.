@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Milcent"
+  given-names: "Marcel"
+  orcid: 
+title: "Benford_py: a Python Implementation of Benford's Law Tests"
+version: 0.5.0
+doi: 
+date-released: 2017
+url: "https://github.com/milcent/benford_py"
